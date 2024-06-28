@@ -1,16 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<main>
+<div>
 <div class="container mt-5">
     <!-- 1:1 문의 및 FAQ 링크 메뉴바 -->
     <div class="d-flex justify-content-center mb-4">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link" href="/CustomerService/CustomerPage">1:1 문의</a>
+                <a class="nav-link" href="/customerService/customerPage">1:1 문의</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/CustomerService/CustomerFAQ">FAQ</a>
+                <a class="nav-link" href="/customerService/customerFaq">FAQ</a>
             </li>
         </ul>
     </div>
@@ -22,16 +22,16 @@
                 <a class="nav-link ${category == 'all' ? 'active' : ''}" href="?category=all&page=1" data-category="all">전체</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${category == '1' ? 'active' : ''}" href="?category=1&page=1" data-category="1">상품문의</a>
+                <a class="nav-link ${category == '상품문의' ? 'active' : ''}" href="?category=상품문의&page=1" data-category="상품문의">상품문의</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${category == '2' ? 'active' : ''}" href="?category=2&page=1" data-category="2">경기문의</a>
+                <a class="nav-link ${category == '경기문의' ? 'active' : ''}" href="?category=경기문의&page=1" data-category="경기문의">경기문의</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${category == '3' ? 'active' : ''}" href="?category=3&page=1" data-category="3">배송문의</a>
+                <a class="nav-link ${category == '배송문의' ? 'active' : ''}" href="?category=배송문의&page=1" data-category="배송문의">배송문의</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${category == '4' ? 'active' : ''}" href="?category=4&page=1" data-category="4">주문/결제</a>
+                <a class="nav-link ${category == '주문/결제' ? 'active' : ''}" href="?category=주문/결제&page=1" data-category="주문/결제">주문/결제</a>
             </li>
         </ul>
     </div>
@@ -51,26 +51,28 @@
             </thead>
             <tbody id="inquiryTableBody">
                 <c:forEach var="inquiry" items="${inquiryList}">
-                    <tr data-category="${inquiry.boardType}">
-                        <td class="text-center">${inquiry.inquiryID}</td>
-                        <td class="text-center">
-                            <c:choose>
-                                <c:when test="${inquiry.boardType == 1}">상품문의</c:when>
-                                <c:when test="${inquiry.boardType == 2}">경기문의</c:when>
-                                <c:when test="${inquiry.boardType == 3}">배송문의</c:when>
-                                <c:when test="${inquiry.boardType == 4}">주문/결제</c:when>
-                                <c:otherwise>알 수 없음</c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td class="text-center">
-                            <a href="#" data-href="CustomerDetail/${inquiry.inquiryID}" data-bs-toggle="modal" data-bs-target="#passwordModal">
-                                ${inquiry.title}
-                            </a>
-                        </td>
-                        <td class="text-center">${inquiry.userID}</td>
-                        <td class="text-center">${inquiry.formattedCreatedDate}</td>
-                        <td class="text-center">${inquiry.isReplyHandled}</td>
-                    </tr>
+                    <c:if test="${inquiry.boardType != 'FAQ'}">
+                        <tr data-category="${inquiry.boardType}">
+                            <td class="text-center">${inquiry.inquiryID}</td>
+                            <td class="text-center">
+                                <c:choose>
+                                    <c:when test="${inquiry.boardType == '상품문의'}">상품문의</c:when>
+                                    <c:when test="${inquiry.boardType == '경기문의'}">경기문의</c:when>
+                                    <c:when test="${inquiry.boardType == '배송문의'}">배송문의</c:when>
+                                    <c:when test="${inquiry.boardType == '주문/결제'}">주문/결제</c:when>
+                                    <c:otherwise>알 수 없음</c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" data-href="customerDetail/${inquiry.inquiryID}" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                                    ${inquiry.title}
+                                </a>
+                            </td>
+                            <td class="text-center">${inquiry.userID}</td>
+                            <td class="text-center">${inquiry.formattedCreatedDate}</td>
+                            <td class="text-center">${inquiry.isReplyHandled}</td>
+                        </tr>
+                    </c:if>
                 </c:forEach>
             </tbody>
         </table>
@@ -102,7 +104,7 @@
     </nav>
 
     <!-- 검색폼 시작 -->
-    <form class="row g-3 justify-content-center mb-4" action="CustomerPage" method="get" onsubmit="return searchCheck()">
+    <form class="row g-3 justify-content-center mb-4" action="customerPage" method="get" onsubmit="return searchCheck()">
         <div class="col-auto">
             <select name="col" class="form-select">
                 <option value="subject_content" ${col == 'subject_content' ? 'selected' : ''}>제목+내용</option>
@@ -118,13 +120,13 @@
             <button type="submit" class="btn btn-secondary">검색</button>
         </div>
         <div class="col-auto">
-            <!-- 글쓰기 버튼, 클릭 시 CustomerForm.jsp로 이동 -->
-            <button type="button" class="btn btn-primary" onclick="location.href='CustomerForm'">글쓰기</button>
+            <!-- 글쓰기 버튼, 클릭 시 customerForm.jsp로 이동 -->
+            <button type="button" class="btn btn-primary" onclick="location.href='customerForm'">글쓰기</button>
         </div>
     </form>
     <!-- 검색폼 끝 -->
 </div>
-</main>
+</div>
 
 <!-- 비밀번호 입력 모달 -->
 <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
@@ -189,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 비밀번호 검증 AJAX 요청
         $.ajax({
             type: 'POST',
-            url: '${pageContext.request.contextPath}/CustomerService/checkPassword',
+            url: '${pageContext.request.contextPath}/customerService/checkPassword',
             data: {
                 inquiryID: targetUrl.split('/').pop(), // URL에서 inquiryID 추출
                 password: password

@@ -1,128 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Customer">
 
-    <!-- 고객 문의 삽입 쿼리 -->
+    <!-- 공통 컬럼 정의 -->
+    <sql id="baseColumns">
+        inquiryID, title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled, inquiryReply, replyDate
+    </sql>
+
+    <!-- 고객 문의 등록 -->
     <insert id="insert" parameterType="kr.co.matchday.customer.CustomerDTO">
         INSERT INTO Inquiries (title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled)
         VALUES (#{title}, #{content}, #{referenceID}, #{userID}, #{createdDate}, #{boardType}, #{inqpasswd}, #{isReplyHandled})
     </insert>
 
-    <!-- 전체 문의 목록 조회 쿼리 -->
-    <select id="listAll" resultType="kr.co.matchday.customer.CustomerDTO">
-        SELECT inquiryID, title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled
-        FROM Inquiries 
+    <!-- 카테고리별 고객 문의 목록 조회 (FAQ 제외) -->
+    <select id="listByCategory" parameterType="kr.co.matchday.customer.CustomerDTO" resultType="kr.co.matchday.customer.CustomerDTO">
+        SELECT inquiryID, boardType, title, userID, createdDate, isReplyHandled
+        FROM Inquiries
+        WHERE (#{category} = 'all' OR boardType = #{category})
+        AND boardType != 'FAQ'
         ORDER BY createdDate DESC
+        LIMIT #{start}, #{pageSize}
     </select>
 
-    <!-- 공통 컬럼 정의 -->
-    <sql id="customerColumns">
-        inquiryID, title, content, referenceID, userID, createdDate, inquiryReply, isReplyHandled, boardType, inqpasswd
-    </sql>
+    <!-- 카테고리별 고객 문의 수 조회 (FAQ 제외) -->
+    <select id="countByCategory" parameterType="kr.co.matchday.customer.CustomerDTO" resultType="int">
+        SELECT COUNT(*)
+        FROM Inquiries
+        WHERE (#{category} = 'all' OR boardType = #{category})
+        AND boardType != 'FAQ'
+    </select>
 
-    <!-- 카테고리별 문의 목록 조회 쿼리 -->
-    <select id="listByCategory" parameterType="map" resultType="kr.co.matchday.customer.CustomerDTO">
-        SELECT 
-            <include refid="customerColumns"/>
-        FROM 
+    <!-- 검색어를 포함한 고객 문의 목록 조회 (FAQ 제외) -->
+    <select id="searchInquiries" parameterType="kr.co.matchday.customer.CustomerDTO" resultType="kr.co.matchday.customer.CustomerDTO">
+        SELECT
+            inquiryID, title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled, inquiryReply, replyDate
+        FROM
             Inquiries
-        <where>
-            <if test="category != 'all'">
-                boardType = #{category}
+        WHERE
+            <if test="col != null and col != ''">
+                <choose>
+                    <when test="col == 'title'">
+                        title LIKE CONCAT('%', #{word}, '%')
+                    </when>
+                    <when test="col == 'content'">
+                        content LIKE CONCAT('%', #{word}, '%')
+                    </when>
+                    <when test="col == 'userID'">
+                        userID LIKE CONCAT('%', #{word}, '%')
+                    </when>
+                    <when test="col == 'subject_content'">
+                        (title LIKE CONCAT('%', #{word}, '%') OR content LIKE CONCAT('%', #{word}, '%'))
+                    </when>
+                </choose>
             </if>
-        </where>
+        AND boardType != 'FAQ'
         ORDER BY
             createdDate DESC
         LIMIT #{start}, #{pageSize}
     </select>
 
-    <!-- 카테고리별 게시글 수 조회 쿼리 -->
-    <select id="countByCategory" parameterType="map" resultType="int">
+    <!-- 검색어를 포함한 고객 문의 수 조회 (FAQ 제외) -->
+    <select id="countSearchInquiries" parameterType="kr.co.matchday.customer.CustomerDTO" resultType="int">
         SELECT COUNT(*)
         FROM Inquiries
-        <where>
-            <if test="category != 'all'">
-                boardType = #{category}
+        WHERE
+            <if test="col != null and col != ''">
+                <choose>
+                    <when test="col == 'title'">
+                        title LIKE CONCAT('%', #{word}, '%')
+                    </when>
+                    <when test="col == 'content'">
+                        content LIKE CONCAT('%', #{word}, '%')
+                    </when>
+                    <when test="col == 'userID'">
+                        userID LIKE CONCAT('%', #{word}, '%')
+                    </when>
+                    <when test="col == 'subject_content'">
+                        (title LIKE CONCAT('%', #{word}, '%') OR content LIKE CONCAT('%', #{word}, '%'))
+                    </when>
+                </choose>
             </if>
-        </where>
+        AND boardType != 'FAQ'
     </select>
 
-    <!-- 검색어를 포함한 문의 목록 조회 쿼리 -->
-    <select id="searchInquiries" parameterType="map" resultType="kr.co.matchday.customer.CustomerDTO">
-        SELECT 
-            <include refid="customerColumns"/>
-        FROM 
-            Inquiries
-        <where>
-            <if test="col == 'subject_content'">
-                (title LIKE CONCAT('%', #{word}, '%') OR content LIKE CONCAT('%', #{word}, '%'))
-            </if>
-            <if test="col == 'title'">
-                title LIKE CONCAT('%', #{word}, '%')
-            </if>
-            <if test="col == 'content'">
-                content LIKE CONCAT('%', #{word}, '%')
-            </if>
-            <if test="col == 'userID'">
-                userID LIKE CONCAT('%', #{word}, '%')
-            </if>
-            <if test="category != 'all'">
-                AND boardType = #{category}
-            </if>
-        </where>
-        ORDER BY
-            createdDate DESC
-        LIMIT #{start}, #{pageSize}
-    </select>
-
-    <!-- 검색어를 포함한 문의 수 조회 쿼리 -->
-    <select id="countSearchInquiries" parameterType="map" resultType="int">
-        SELECT COUNT(*)
+    <!-- 고객 문의 상세 정보 조회 -->
+    <select id="customerDetail" parameterType="int" resultType="kr.co.matchday.customer.CustomerDTO">
+        SELECT <include refid="baseColumns"/>
         FROM Inquiries
-        <where>
-            <if test="col == 'subject_content'">
-                (title LIKE CONCAT('%', #{word}, '%') OR content LIKE CONCAT('%', #{word}, '%'))
-            </if>
-            <if test="col == 'title'">
-                title LIKE CONCAT('%', #{word}, '%')
-            </if>
-            <if test="col == 'content'">
-                content LIKE CONCAT('%', #{word}, '%')
-            </if>
-            <if test="col == 'userID'">
-                userID LIKE CONCAT('%', #{word}, '%')
-            </if>
-            <if test="category != 'all'">
-                AND boardType = #{category}
-            </if>
-        </where>
-    </select>
-
-    <!-- 문의 상세 정보 조회 쿼리 -->
-    <select id="customerDetail" resultType="kr.co.matchday.customer.CustomerDTO">
-        SELECT inquiryID, title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled, inquiryReply, replyDate
-        FROM Inquiries 
         WHERE inquiryID = #{inquiryID}
     </select>
-    
-    <!-- 문의 삭제 쿼리 -->
+
+    <!-- 고객 문의 삭제 -->
     <delete id="deleteInquiry" parameterType="int">
-        DELETE FROM Inquiries WHERE inquiryID = #{inquiryID}
+        DELETE FROM Inquiries
+        WHERE inquiryID = #{inquiryID}
     </delete>
-    
-    <!-- 문의 수정 쿼리 -->
+
+    <!-- 고객 문의 수정 -->
     <update id="updateInquiry" parameterType="kr.co.matchday.customer.CustomerDTO">
         UPDATE Inquiries
-        SET title = #{title}, content = #{content}, inqpasswd = #{inqpasswd}
+        SET title = #{title},
+            content = #{content},
+            boardType = #{boardType},
+            inqpasswd = #{inqpasswd},
+            isReplyHandled = #{isReplyHandled},
+            inquiryReply = #{inquiryReply},
+            replyDate = #{replyDate}
         WHERE inquiryID = #{inquiryID}
     </update>
-    
-    <!-- 관리자의 답변 추가 및 상태 업데이트 쿼리 -->
-    <update id="replyInquiry" parameterType="map">
+
+    <!-- 비밀번호 확인 -->
+    <select id="checkPassword" parameterType="kr.co.matchday.customer.CustomerDTO" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM Inquiries
+        WHERE inquiryID = #{inquiryID}
+        AND inqpasswd = #{inqpasswd}
+    </select>
+
+    <!-- 답변 등록 -->
+    <update id="replyInquiry" parameterType="kr.co.matchday.customer.CustomerDTO">
         UPDATE Inquiries
-        SET inquiryReply = #{replyContent}, isReplyHandled = '답변완료', replyDate = CURRENT_TIMESTAMP
+        SET inquiryReply = #{inquiryReply},
+            replyDate = NOW(),
+            isReplyHandled = '답변완료'
         WHERE inquiryID = #{inquiryID}
     </update>
+
+    <!-- FAQ 카테고리의 글을 가져오는 쿼리 추가 -->
+    <select id="getFaqList" parameterType="kr.co.matchday.customer.CustomerDTO" resultType="kr.co.matchday.customer.CustomerDTO">
+        SELECT
+            inquiryID, title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled, inquiryReply, replyDate
+        FROM
+            Inquiries
+        WHERE
+            boardType = 'FAQ'
+        ORDER BY
+            createdDate DESC
+    </select>
+
+    <!-- FAQ 삽입 쿼리 추가 -->
+    <insert id="insertFaq" parameterType="kr.co.matchday.customer.CustomerDTO">
+        INSERT INTO Inquiries (title, content, referenceID, userID, createdDate, boardType, inqpasswd, isReplyHandled, inquiryReply, replyDate)
+        VALUES (#{title}, #{content}, #{referenceID}, #{userID}, NOW(), #{boardType}, #{inqpasswd}, #{isReplyHandled}, #{inquiryReply}, #{replyDate})
+    </insert>
+
+    <!-- FAQ 수정 쿼리 추가 -->
+    <update id="updateFaq" parameterType="kr.co.matchday.customer.CustomerDTO">
+	    UPDATE Inquiries
+	    SET title = #{title}, content = #{content}, referenceID = #{referenceID}, userID = #{userID}, isReplyHandled = #{isReplyHandled}, inquiryReply = #{inquiryReply}, replyDate = #{replyDate}
+	    WHERE inquiryID = #{inquiryID} AND boardType = 'FAQ'
+	</update>
+
+
+    <!-- FAQ 삭제 쿼리 추가 -->
+    <delete id="deleteFaq" parameterType="int">
+        DELETE FROM Inquiries WHERE inquiryID = #{inquiryID} AND boardType = 'FAQ'
+    </delete>
 
 </mapper>

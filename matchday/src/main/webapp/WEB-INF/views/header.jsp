@@ -110,7 +110,7 @@
 						    <li><a class="dropdown-item" href="#" style="color: white;">이벤트</a></li>
 						</ul>
                      </div>
-                    <li class="nav-item"><a class="nav-link" href="/CustomerService/CustomerPage">고객센터</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
                 </ul>
             </div>
         </nav>
