@@ -4,6 +4,9 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
@@ -18,9 +21,8 @@ header {
     align-items: center;
     padding: 0 20px;
     position: relative;
-    flex-wrap: wrap; /* 반응형 레이아웃을 위해 flex-wrap 사용 */
+    flex-wrap: wrap;
 }
-
 
 .logo-container {
     position: absolute;
@@ -32,7 +34,7 @@ header {
 .logo {
     font-size: 24px;
     margin: 0;
-    color: white; /* 명시적으로 하얀색으로 설정 */
+    color: white;
 }
 
 .user-options {
@@ -60,7 +62,7 @@ nav ul {
     padding: 0;
     display: flex;
     justify-content: center;
-    flex-wrap: wrap; /* Make nav links wrap on smaller screens */
+    flex-wrap: wrap;
 }
 
 nav ul li {
@@ -71,186 +73,64 @@ nav ul li a,
 nav ul li a:visited,
 nav ul li a:active,
 nav ul li a:focus {
-    color: white !important; /* 모든 링크 상태에서 명시적으로 하얀색으로 설정 */
+    color: white !important;
     text-decoration: none;
 }
 
 nav ul li a:hover {
-    color: #cccccc !important; /* 하얀색에서 회색으로 변경 */
+    color: #cccccc !important;
 }
 
-.footer-content {
-    background-color: #000;
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    font-size: 14px;
-}
 
-.footer-content p {
-    margin: 5px 0;
-}
 
-/* 경기 일정 섹션 스타일 */
-.match-schedule {
-    position: relative;
-    color: white; /* 텍스트 색상을 하얀색으로 설정 */
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    overflow: hidden; /* ::before 요소가 넘어가지 않도록 설정 */
-}
-
-.match-schedule::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://image.fmkorea.com/files/attach/new3/20230227/5665468/3826303654/5535929957/b721c13a829f41bad8f790a78b692e04.jpg');
-    background-size: cover;
-    background-position: center;
-    z-index: -1; /* 텍스트와 컨텐츠 뒤에 배치 */
-}
-
-.match-schedule .countdown .time-box {
-    color: white;
-    font-size: 24px;
-}
-
-.match-schedule .countdown .time-box .time {
-    font-size: 48px;
-    font-weight: bold;
-}
-
-.match-schedule .countdown .time-box .label {
-    font-size: 16px;
-}
-
-.match-schedule .teams {
+body {
     display: flex;
-    justify-content: around;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.match-schedule .teams .team {
-    text-align: center;
-}
-
-.match-schedule .teams .team-logo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    padding: 2px; /* 필요 시 이미지에 여백 추가 */
-}
-
-.match-schedule .teams .team-name {
-    color: white;
-    margin-top: 10px;
-    font-size: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.match-schedule .vs {
-    color: #ffdd57;
-    font-size: 32px;
-    font-weight: bold;
-}
-
-.match-schedule .match-details {
-    margin-top: 20px;
-    font-size: 18px;
-}
-
-.match-schedule .match-details i {
-    margin-right: 5px;
-}
-
-/* 반응형 웹을 위한 미디어 쿼리 추가 */
-@media (max-width: 768px) {
-    .header-container {
-        flex-direction: column;
-    }
-
-    .logo-container {
-        position: static;
-        transform: none;
-        margin-bottom: 10px;
-    }
-
-    .user-options {
-        justify-content: center;
-        margin-top: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    nav ul li {
-        margin: 0 5px;
-    }
-
-    .match-schedule .teams {
-        flex-direction: column;
-    }
-
-    .match-schedule .vs {
-        margin: 20px 0;
-    }
-    
-    body {
-    background-color: #f8f9fa;
-}
-
-a {
-    text-decoration: none;
-    color: black;
-    font-weight: bold;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-table {
-    margin-top: 20px;
-}
-
-table thead {
-    background-color: #e9ecef;
-}
-
-table tbody tr {
-    cursor: pointer;
-}
-
-table tbody tr:hover {
-    background-color: #f1f3f5;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 main {
-    text-align: center;
+    flex: 1;
+    padding-bottom: 2rem;
 }
 
-main h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+.main-container {
+    margin-top: 5rem;
+    flex: 1;
 }
 
-.main-links a {
-    font-size: 1.1rem;
-    margin: 0 10px;
+.shadow-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-/* CustomerForm 페이지 */
-  
-  #summernote {
+
+.reply-section {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 2rem;
+}
+
+.reply-header {
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.reply-content {
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.reply-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: right;
+}
+
+#summernote {
     border: 1px solid #ced4da;
     padding: 10px;
     border-radius: 0.25rem;
-  }
-  
-
-    
-    
 }

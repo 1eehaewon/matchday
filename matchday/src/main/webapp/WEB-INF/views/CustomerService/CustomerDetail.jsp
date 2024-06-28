@@ -1,62 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="../header.jsp" %>
-
-<style>
-    /* 카드 헤더의 커스텀 스타일 */
-    .custom-card-header {
-        background-color: #007bff;
-        color: white;
-        text-align: center;
-    }
-    /* 폼 라벨의 커스텀 스타일 */
-    .custom-form-label {
-        font-weight: bold;
-        color: black;
-    }
-    /* 폼 컨트롤의 커스텀 스타일 */
-    .custom-form-control {
-        border-radius: 0.25rem;
-    }
-    /* 버튼의 커스텀 스타일 */
-    .custom-button {
-        border-radius: 0.25rem;
-    }
-    /* 메인 컨테이너의 상단 마진 */
-    .main-container {
-        margin-top: 5rem;
-    }
-    /* 카드의 그림자 효과 */
-    .shadow-card {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    /* 답변 섹션의 스타일 */
-    .reply-section {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        padding: 1rem;
-        border-radius: 0.25rem;
-        margin-top: 2rem;
-    }
-    /* 답변 헤더의 스타일 */
-    .reply-header {
-        background-color: #007bff;
-        color: white;
-        padding: 0.5rem;
-        border-radius: 0.25rem 0.25rem 0 0;
-    }
-    /* 답변 내용의 스타일 */
-    .reply-content {
-        padding: 1rem;
-        border-top: 1px solid #dee2e6;
-    }
-    /* 답변 날짜의 스타일 */
-    .reply-date {
-        font-size: 0.9rem;
-        color: #6c757d;
-        text-align: right;
-    }
-</style>
 
 <script>
 $(document).ready(function() {
@@ -132,7 +75,7 @@ function addReply(inquiryID) {
 }
 </script>
 
-<main class="main-container">
+<div class="main-container">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
@@ -219,7 +162,7 @@ function addReply(inquiryID) {
             </div>
         </div>
     </div>
-</main>
+</div>
 
 
 <%@ include file="../footer.jsp" %>
