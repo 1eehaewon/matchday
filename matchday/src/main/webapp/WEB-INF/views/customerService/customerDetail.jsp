@@ -4,75 +4,84 @@
 <script>
 $(document).ready(function() {
     // 주문 선택 시 referenceID 자동 입력
+    // orderSelect 드롭다운 메뉴에서 항목을 선택하면 referenceID 입력 필드에 해당 값이 자동으로 입력됩니다.
     $("#orderSelect").change(function() {
-        var selectedValue = $(this).val();
-        $("#referenceID").val(selectedValue);
+        var selectedValue = $(this).val(); // 선택된 값 가져오기
+        $("#referenceID").val(selectedValue); // referenceID 입력 필드에 값 설정
     });
 
-    // 디버깅을 위해 메시지를 로그로 출력
-    console.log("message: ${message}");
-    console.log("error: ${error}");
+    // 디버깅을 위해 메시지를 콘솔 로그로 출력
+    console.log("message: ${message}"); // 서버에서 전달된 메시지 출력
+    console.log("error: ${error}"); // 서버에서 전달된 오류 메시지 출력
 
     // 수정 완료 또는 실패 메시지를 alert로 출력
+    // 서버에서 전달된 메시지가 있는 경우 알림을 표시하고, 수정이 완료되면 문의 목록 페이지로 이동
     <c:if test="${not empty message}">
         alert("${message}");
         window.location.href = "/customerService/customerPage";
     </c:if>
+    // 서버에서 전달된 오류 메시지가 있는 경우 알림을 표시
     <c:if test="${not empty error}">
         alert("${error}");
     </c:if>
 
-    // 관리자인 경우 답변하기 버튼 추가
+    // 관리자인 경우 답변하기 버튼을 추가
+    // 만약 문의에 답변이 없는 경우 답변 입력 섹션을 표시
     <c:if test="${empty inquiry.inquiryReply}">
         $("#replySection").show();
     </c:if>
 });
 
+// 문의글 삭제 기능
 function deleteInquiry(inquiryID) {
+    // 사용자가 삭제를 확인하면 AJAX 요청을 통해 서버에 삭제 요청을 보냄
     if (confirm("정말로 이 문의글을 삭제하시겠습니까?")) {
         $.ajax({
-            url: "/customerService/delete/" + inquiryID,
-            type: 'POST',
+            url: "/customerService/delete/" + inquiryID, // 삭제 요청을 보낼 URL
+            type: 'POST', // HTTP POST 메서드 사용
             success: function(response) {
-                alert("문의글이 삭제되었습니다.");
-                window.location.href = "/customerService/customerPage";
+                alert("문의글이 삭제되었습니다."); // 삭제 성공 시 알림 표시
+                window.location.href = "/customerService/customerPage"; // 문의 목록 페이지로 이동
             },
             error: function(xhr, status, error) {
-                console.error("삭제 요청 중 오류 발생:", error);
-                alert("삭제에 실패하였습니다.");
+                console.error("삭제 요청 중 오류 발생:", error); // 오류 발생 시 콘솔에 출력
+                alert("삭제에 실패하였습니다."); // 오류 메시지 표시
             }
         });
     }
 }
 
+// 답변 추가 기능
 function addReply(inquiryID) {
-    var replyContent = $("#replyContent").val();
-    if (replyContent.trim() === "") {
-        alert("답변 내용을 입력해주세요.");
-        return;
+    var replyContent = $("#replyContent").val(); // 답변 내용 가져오기
+    if (replyContent.trim() === "") { // 답변 내용이 비어있는 경우
+        alert("답변 내용을 입력해주세요."); // 알림 표시
+        return; // 함수 종료
     }
 
+    // AJAX 요청을 통해 서버에 답변 추가 요청을 보냄
     $.ajax({
-        url: "/customerService/addReply",
-        type: 'POST',
+        url: "/customerService/addReply", // 답변 추가 요청을 보낼 URL
+        type: 'POST', // HTTP POST 메서드 사용
         data: {
-            inquiryID: inquiryID,
-            inquiryReply: replyContent // 변경: 필드 이름을 DTO와 일치시킴
+            inquiryID: inquiryID, // 문의 ID
+            inquiryReply: replyContent // 답변 내용 (필드 이름을 DTO와 일치시킴)
         },
         success: function(response) {
-            if (response.status === "success") {
-                alert("답변이 등록되었습니다.");
-                window.location.href = "/customerService/customerPage";
+            if (response.status === "success") { // 답변 추가 성공 시
+                alert("답변이 등록되었습니다."); // 알림 표시
+                window.location.href = "/customerService/customerPage"; // 문의 목록 페이지로 이동
             } else {
-                alert(response.message);
+                alert(response.message); // 서버에서 전달된 오류 메시지 표시
             }
         },
         error: function(xhr, status, error) {
-            console.error("답변 등록 중 오류 발생:", error);
-            alert("답변 등록에 실패하였습니다.");
+            console.error("답변 등록 중 오류 발생:", error); // 오류 발생 시 콘솔에 출력
+            alert("답변 등록에 실패하였습니다."); // 오류 메시지 표시
         }
     });
 }
+
 
 </script>
 
