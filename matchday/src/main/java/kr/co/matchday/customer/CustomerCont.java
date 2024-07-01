@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
+import net.utility.MailUtil;
 
 @Controller
 @RequestMapping("/customerService")
@@ -40,7 +43,8 @@ public class CustomerCont {
     public ModelAndView customerPage(@RequestParam(defaultValue = "all") String category,
                                      @RequestParam(defaultValue = "1") int page,
                                      @RequestParam(required = false) String col,
-                                     @RequestParam(required = false) String word) {
+                                     @RequestParam(required = false) String word,
+                                     HttpSession session) {
         int pageSize = 10; // 페이지 당 게시글 수
         int start = (page - 1) * pageSize;
 
@@ -80,13 +84,19 @@ public class CustomerCont {
         mav.addObject("category", category);
         mav.addObject("col", col);
         mav.addObject("word", word);
+        mav.addObject("sessionUserID", session.getAttribute("userID"));
         return mav;
     }
 
     // 고객 문의 폼 페이지를 반환하는 메서드
     @GetMapping("/customerForm")
-    public ModelAndView customerForm() {
+    public ModelAndView customerForm(HttpSession session) {
         ModelAndView mav = new ModelAndView("customerService/customerForm");
+
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return new ModelAndView("redirect:/login"); // 로그인 페이지로 리다이렉트
+        }
 
         // 임의의 데이터로 matchList와 productList 생성
         List<CustomerDTO> matchList = new ArrayList<>();
@@ -126,7 +136,11 @@ public class CustomerCont {
     public ModelAndView customerFormInsert(CustomerDTO customerDto, 
                                            @RequestParam("category") String category, 
                                            HttpSession session) throws Exception {
-        String userID = "Test";
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return new ModelAndView("redirect:/login"); // 로그인 페이지로 리다이렉트
+        }
+
         customerDto.setUserID(userID);
         customerDto.setCreatedDate(new Date());
         
@@ -153,16 +167,22 @@ public class CustomerCont {
 
     // 문의 상세 페이지를 반환하는 메서드
     @GetMapping("/customerDetail/{inquiryID}")
-    public ModelAndView detail(@PathVariable int inquiryID) {
+    public ModelAndView detail(@PathVariable int inquiryID, HttpSession session) {
         ModelAndView mav = new ModelAndView("customerService/customerDetail");
         CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
         mav.addObject("inquiry", inquiry);
+        mav.addObject("sessionUserID", session.getAttribute("userID"));
         return mav;
     }
     
     // 문의 삭제를 처리하는 메서드
     @PostMapping("/delete/{inquiryID}")
-    public ModelAndView deleteInquiry(@PathVariable("inquiryID") int inquiryID) {
+    public ModelAndView deleteInquiry(@PathVariable("inquiryID") int inquiryID, HttpSession session) {
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return new ModelAndView("redirect:/login"); // 로그인 페이지로 리다이렉트
+        }
+
         int result = customerDao.deleteInquiry(inquiryID);
         ModelAndView mav = new ModelAndView("redirect:/customerService/customerPage");
         if (result > 0) {
@@ -192,9 +212,15 @@ public class CustomerCont {
 
     // 문의 수정을 처리하는 메서드
     @PostMapping("/update")
-    public String updateInquiry(@ModelAttribute CustomerDTO customerDto, @RequestParam("category") String category, RedirectAttributes redirectAttributes) {
+    public String updateInquiry(@ModelAttribute CustomerDTO customerDto, @RequestParam("category") String category, RedirectAttributes redirectAttributes, HttpSession session) {
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        }
+
         try {
             customerDto.setBoardType(category); // 카테고리 설정
+            customerDto.setUserID(userID); // 세션에서 가져온 사용자 ID 설정
             int result = customerDao.updateInquiry(customerDto);
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "문의글이 성공적으로 수정되었습니다.");
@@ -207,11 +233,17 @@ public class CustomerCont {
         return "redirect:/customerService/customerPage";
     }
 
-    // 답변을 추가하는 메서드
     @PostMapping("/addReply")
     @ResponseBody
-    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
+    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            response.put("status", "error");
+            response.put("message", "로그인 후 답변을 등록할 수 있습니다.");
+            return response;
+        }
+
         try {
             CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
             if (inquiry.getInquiryReply() != null && !inquiry.getInquiryReply().isEmpty()) {
@@ -226,6 +258,19 @@ public class CustomerCont {
 
             if (result > 0) {
                 response.put("status", "success");
+
+                // 답변 등록 성공 시 이메일 발송
+                String recipient = "sskkyy6685@naver.com"; // 테스트를 위한 이메일 주소
+                String subject = "고객님의 문의에 대한 답변이 등록되었습니다.";
+                String content = "안녕하세요, 고객님. 문의하신 내용에 대한 답변이 등록되었습니다. 답변 내용: " + inquiryReply;
+
+                try {
+                    MailUtil.sendMail(recipient, subject, content);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                    response.put("status", "error");
+                    response.put("message", "답변은 등록되었으나 이메일 발송에 실패하였습니다.");
+                }
             } else {
                 response.put("status", "error");
                 response.put("message", "답변 등록에 실패하였습니다.");
@@ -239,7 +284,7 @@ public class CustomerCont {
 
     // FAQ 페이지를 반환하는 메서드
     @GetMapping("/customerFaq")
-    public ModelAndView customerFaq() {
+    public ModelAndView customerFaq(HttpSession session) {
         CustomerDTO params = new CustomerDTO();
         params.setBoardType("FAQ");
 
@@ -247,22 +292,29 @@ public class CustomerCont {
 
         ModelAndView mav = new ModelAndView("customerService/customerFaq");
         mav.addObject("faqList", faqList);
+        mav.addObject("sessionUserID", session.getAttribute("userID"));
         return mav;
     }
 
     // FAQ 작성 폼 페이지를 반환하는 메서드
     @GetMapping("/customerFaqForm")
-    public ModelAndView customerFaqForm() {
+    public ModelAndView customerFaqForm(HttpSession session) {
         ModelAndView mav = new ModelAndView("customerService/customerFaqForm");
         mav.addObject("faq", new CustomerDTO());
+        mav.addObject("sessionUserID", session.getAttribute("userID"));
         return mav;
     }
 
     // FAQ를 삽입하는 메서드
     @PostMapping("/insertFaq")
-    public String insertFaq(@ModelAttribute CustomerDTO customerDto, RedirectAttributes redirectAttributes) {
+    public String insertFaq(@ModelAttribute CustomerDTO customerDto, RedirectAttributes redirectAttributes, HttpSession session) {
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        }
+
         customerDto.setBoardType("FAQ");
-        customerDto.setUserID("webmaster"); // userID를 임의로 설정
+        customerDto.setUserID(userID); // 세션에서 가져온 사용자 ID 설정
         int result = customerDao.insertFaq(customerDto);
         if (result > 0) {
             redirectAttributes.addFlashAttribute("message", "FAQ가 성공적으로 등록되었습니다.");
@@ -271,31 +323,38 @@ public class CustomerCont {
         }
         return "redirect:/customerService/customerFaq";
     }
-    
+
     // FAQ 상세 페이지로 이동
     @GetMapping("/customerFaqDetail/{inquiryID}")
-    public ModelAndView customerFaqDetail(@PathVariable int inquiryID) {
+    public ModelAndView customerFaqDetail(@PathVariable int inquiryID, HttpSession session) {
         ModelAndView mav = new ModelAndView("customerService/customerFaqDetail");
         CustomerDTO faq = customerDao.customerDetail(inquiryID);
         mav.addObject("faq", faq);
+        mav.addObject("sessionUserID", session.getAttribute("userID"));
         return mav;
     }
-    
 
     // FAQ 수정 폼 페이지를 반환하는 메서드
     @GetMapping("/customerFaqForm/{inquiryID}")
-    public ModelAndView customerFaqEditForm(@PathVariable int inquiryID) {
+    public ModelAndView customerFaqEditForm(@PathVariable int inquiryID, HttpSession session) {
         ModelAndView mav = new ModelAndView("customerService/customerFaqForm");
         CustomerDTO faq = customerDao.customerDetail(inquiryID);
         mav.addObject("faq", faq);
+        mav.addObject("sessionUserID", session.getAttribute("userID"));
         return mav;
     }
 
     // FAQ 수정을 처리하는 메서드
     @PostMapping("/updateFaq")
-    public String updateFaq(@ModelAttribute CustomerDTO customerDto, RedirectAttributes redirectAttributes) {
+    public String updateFaq(@ModelAttribute CustomerDTO customerDto, RedirectAttributes redirectAttributes, HttpSession session) {
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        }
+
         try {
             customerDto.setBoardType("FAQ");
+            customerDto.setUserID(userID); // 세션에서 가져온 사용자 ID 설정
             int result = customerDao.updateFaq(customerDto);
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "FAQ가 성공적으로 수정되었습니다.");
@@ -310,7 +369,12 @@ public class CustomerCont {
 
     // FAQ 삭제를 처리하는 메서드
     @PostMapping("/deleteFaq/{inquiryID}")
-    public String deleteFaq(@PathVariable int inquiryID, RedirectAttributes redirectAttributes) {
+    public String deleteFaq(@PathVariable int inquiryID, RedirectAttributes redirectAttributes, HttpSession session) {
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return "redirect:/login"; // 로그인 페이지로 리다이렉트
+        }
+
         int result = customerDao.deleteFaq(inquiryID);
         if (result > 0) {
             redirectAttributes.addFlashAttribute("message", "FAQ가 성공적으로 삭제되었습니다.");
@@ -319,9 +383,7 @@ public class CustomerCont {
         }
         return "redirect:/customerService/customerFaq";
     }
-    
-    
-    
+
     @PostMapping("/uploadImage")
     @ResponseBody
     public String uploadImage(@RequestParam("file") MultipartFile file) {
@@ -340,5 +402,4 @@ public class CustomerCont {
         }
         return imageUrl;
     }
-    
 }

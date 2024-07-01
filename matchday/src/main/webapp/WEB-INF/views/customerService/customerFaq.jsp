@@ -12,11 +12,13 @@
                 <a class="nav-link" href="/customerService/customerFaq">FAQ</a>
             </li>
         </ul>
-    </div>      
+    </div>
 
     <div class="d-flex justify-content-between mb-4">
         <h2 class="text-center">FAQ</h2>
-        <button type="button" class="btn btn-primary" onclick="location.href='/customerService/customerFaqForm'">FAQ 글쓰기</button>
+        <c:if test="${sessionScope.userGrade == 'M'}">
+            <button type="button" class="btn btn-primary" onclick="location.href='/customerService/customerFaqForm'">FAQ 글쓰기</button>
+        </c:if>
     </div>
 
     <div class="accordion" id="faqAccordion">
@@ -30,7 +32,9 @@
                 <div id="collapse${faq.inquiryID}" class="accordion-collapse collapse" aria-labelledby="heading${faq.inquiryID}" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
                         <c:out value="${faq.content}" escapeXml="false"/>
-                        <a href="/customerService/customerFaqDetail/${faq.inquiryID}" class="btn btn-link">자세히 보기</a>
+                        <c:if test="${sessionScope.userGrade == 'M'}">
+                            <a href="/customerService/customerFaqDetail/${faq.inquiryID}" class="btn btn-link">자세히 보기</a>
+                        </c:if>
                     </div>
                 </div>
             </div>

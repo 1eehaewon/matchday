@@ -121,7 +121,7 @@
         </div>
         <div class="col-auto">
             <!-- 글쓰기 버튼, 클릭 시 customerForm.jsp로 이동 -->
-            <button type="button" class="btn btn-primary" onclick="location.href='customerForm'">글쓰기</button>
+            <button type="button" class="btn btn-primary" onclick="checkLoginStatus()">글쓰기</button>
         </div>
     </form>
     <!-- 검색폼 끝 -->
@@ -242,6 +242,16 @@ document.addEventListener('DOMContentLoaded', function() {
      });
  });
 });
+
+// 로그인 여부를 확인하는 함수
+function checkLoginStatus() {
+    var isLoggedIn = ${not empty sessionScope.userID}; // 세션에 userID가 있는지 확인하여 로그인 여부를 판단
+    if (!isLoggedIn) {
+        alert("로그인 후 이용해주세요.");
+    } else {
+        location.href = 'customerForm';
+    }
+}
 
 //검색어가 비어있는 경우 검색어 입력 필드를 비활성화하는 함수입니다.
 function searchCheck() {

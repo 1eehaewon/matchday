@@ -19,7 +19,8 @@ $(document).ready(function() {
         alert("${error}");
     </c:if>
 
-    <c:if test="${empty inquiry.inquiryReply}">
+    // 답변 섹션을 회원 등급이 M인 경우에만 보이게 처리
+    <c:if test="${sessionScope.userGrade == 'M'}">
         $("#replySection").show();
     </c:if>
 
