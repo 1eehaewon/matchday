@@ -3,103 +3,124 @@
 
 <script>
 $(document).ready(function() {
-    // 주문 선택 시 referenceID 자동 입력
-    // orderSelect 드롭다운 메뉴에서 항목을 선택하면 referenceID 입력 필드에 해당 값이 자동으로 입력됩니다.
     $("#orderSelect").change(function() {
-        var selectedValue = $(this).val(); // 선택된 값 가져오기
-        $("#referenceID").val(selectedValue); // referenceID 입력 필드에 값 설정
+        var selectedValue = $(this).val();
+        $("#referenceID").val(selectedValue);
     });
 
-    // 디버깅을 위해 메시지를 콘솔 로그로 출력
-    console.log("message: ${message}"); // 서버에서 전달된 메시지 출력
-    console.log("error: ${error}"); // 서버에서 전달된 오류 메시지 출력
+    console.log("message: ${message}");
+    console.log("error: ${error}");
 
-    // 수정 완료 또는 실패 메시지를 alert로 출력
-    // 서버에서 전달된 메시지가 있는 경우 알림을 표시하고, 수정이 완료되면 문의 목록 페이지로 이동
     <c:if test="${not empty message}">
         alert("${message}");
         window.location.href = "/customerService/customerPage";
     </c:if>
-    // 서버에서 전달된 오류 메시지가 있는 경우 알림을 표시
     <c:if test="${not empty error}">
         alert("${error}");
     </c:if>
 
-    // 관리자인 경우 답변하기 버튼을 추가
-    // 만약 문의에 답변이 없는 경우 답변 입력 섹션을 표시
     <c:if test="${empty inquiry.inquiryReply}">
         $("#replySection").show();
     </c:if>
+
+    // Summernote 초기화
+    $('.summernote').summernote({
+        height: 300,
+        lang: 'ko-KR',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                sendFile(files[0]);
+            }
+        }
+    });
+
+    function sendFile(file) {
+        var data = new FormData();
+        data.append("file", file);
+        $.ajax({
+            url: '/customerService/uploadImage',
+            method: 'POST',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                $('.summernote').summernote('insertImage', url);
+            },
+            error: function() {
+                alert('이미지 업로드 중 오류가 발생하였습니다.');
+            }
+        });
+    }
 });
 
-// 문의글 삭제 기능
 function deleteInquiry(inquiryID) {
-    // 사용자가 삭제를 확인하면 AJAX 요청을 통해 서버에 삭제 요청을 보냄
     if (confirm("정말로 이 문의글을 삭제하시겠습니까?")) {
         $.ajax({
-            url: "/customerService/delete/" + inquiryID, // 삭제 요청을 보낼 URL
-            type: 'POST', // HTTP POST 메서드 사용
+            url: "/customerService/delete/" + inquiryID,
+            type: 'POST',
             success: function(response) {
-                alert("문의글이 삭제되었습니다."); // 삭제 성공 시 알림 표시
-                window.location.href = "/customerService/customerPage"; // 문의 목록 페이지로 이동
+                alert("문의글이 삭제되었습니다.");
+                window.location.href = "/customerService/customerPage";
             },
             error: function(xhr, status, error) {
-                console.error("삭제 요청 중 오류 발생:", error); // 오류 발생 시 콘솔에 출력
-                alert("삭제에 실패하였습니다."); // 오류 메시지 표시
+                console.error("삭제 요청 중 오류 발생:", error);
+                alert("삭제에 실패하였습니다.");
             }
         });
     }
 }
 
-// 답변 추가 기능
 function addReply(inquiryID) {
-    var replyContent = $("#replyContent").val(); // 답변 내용 가져오기
-    if (replyContent.trim() === "") { // 답변 내용이 비어있는 경우
-        alert("답변 내용을 입력해주세요."); // 알림 표시
-        return; // 함수 종료
+    var replyContent = $("#replyContent").val();
+    if (replyContent.trim() === "") {
+        alert("답변 내용을 입력해주세요.");
+        return;
     }
 
-    // AJAX 요청을 통해 서버에 답변 추가 요청을 보냄
     $.ajax({
-        url: "/customerService/addReply", // 답변 추가 요청을 보낼 URL
-        type: 'POST', // HTTP POST 메서드 사용
+        url: "/customerService/addReply",
+        type: 'POST',
         data: {
-            inquiryID: inquiryID, // 문의 ID
-            inquiryReply: replyContent // 답변 내용 (필드 이름을 DTO와 일치시킴)
+            inquiryID: inquiryID,
+            inquiryReply: replyContent
         },
         success: function(response) {
-            if (response.status === "success") { // 답변 추가 성공 시
-                alert("답변이 등록되었습니다."); // 알림 표시
-                window.location.href = "/customerService/customerPage"; // 문의 목록 페이지로 이동
+            if (response.status === "success") {
+                alert("답변이 등록되었습니다.");
+                window.location.href = "/customerService/customerPage";
             } else {
-                alert(response.message); // 서버에서 전달된 오류 메시지 표시
+                alert(response.message);
             }
         },
         error: function(xhr, status, error) {
-            console.error("답변 등록 중 오류 발생:", error); // 오류 발생 시 콘솔에 출력
-            alert("답변 등록에 실패하였습니다."); // 오류 메시지 표시
+            console.error("답변 등록 중 오류 발생:", error);
+            alert("답변 등록에 실패하였습니다.");
         }
     });
 }
-
-
 </script>
 
 <div class="main-container">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <!-- 문의 목록으로 돌아가기 버튼 -->
                 <div class="text-center mb-4">
                     <a href="/customerService/customerPage" class="btn btn-outline-primary btn-lg">문의목록</a>
                 </div>
-                <!-- 문의글 상세 정보 카드 -->
                 <div class="card shadow-card border-0 rounded-lg">
                     <div class="card-header custom-card-header">
                         <h2 class="mb-0 fw-bold">문의글 상세정보</h2>
                     </div>
                     <div class="card-body p-5">
-                        <!-- 문의글 상세 정보 폼 -->
                         <form name="customerDetailForm" id="customerDetailForm" method="post" action="/customerService/update" enctype="multipart/form-data">
                             <div class="mb-4">
                                 <label for="inquiryID" class="form-label custom-form-label">문의 ID</label>
@@ -129,7 +150,7 @@ function addReply(inquiryID) {
                             </div>
                             <div class="mb-4">
                                 <label for="content" class="form-label custom-form-label">내용</label>
-                                <textarea name="content" id="content" class="form-control custom-form-control">${inquiry.content}</textarea>
+                                <textarea name="content" id="content" class="form-control custom-form-control summernote" required>${inquiry.content}</textarea>
                             </div>
                             <div class="mb-4">
                                 <label for="inqpasswd" class="form-label custom-form-label">비밀번호</label>
@@ -140,7 +161,6 @@ function addReply(inquiryID) {
                                 <button type="button" class="btn btn-danger btn-lg custom-button" onclick="deleteInquiry(${inquiry.inquiryID})">삭제하기</button>
                             </div>
                         </form>
-                        <!-- 관리자용 답변 입력 섹션 -->
                         <div id="replySection" style="display: none;">
                             <hr>
                             <h3>답변하기</h3>
@@ -152,8 +172,6 @@ function addReply(inquiryID) {
                                 <button type="button" class="btn btn-primary btn-lg custom-button" onclick="addReply(${inquiry.inquiryID})">답변 등록</button>
                             </div>
                         </div>
-
-                        <!-- 답변 내용 표시 섹션 -->
                         <c:if test="${not empty inquiry.inquiryReply}">
                             <div class="reply-section">
                                 <div class="reply-header">

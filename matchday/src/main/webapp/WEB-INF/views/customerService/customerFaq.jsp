@@ -29,7 +29,7 @@
                 </h2>
                 <div id="collapse${faq.inquiryID}" class="accordion-collapse collapse" aria-labelledby="heading${faq.inquiryID}" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        ${faq.content}
+                        <c:out value="${faq.content}" escapeXml="false"/>
                         <a href="/customerService/customerFaqDetail/${faq.inquiryID}" class="btn btn-link">자세히 보기</a>
                     </div>
                 </div>

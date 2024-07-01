@@ -54,7 +54,7 @@
                             </div>
                             <div class="mb-4">
                                 <label for="content" class="form-label custom-form-label">내용</label>
-                                <textarea name="content" id="content" class="form-control custom-form-control" required></textarea>
+                                <textarea name="content" id="content" class="form-control custom-form-control summernote" required></textarea>
                             </div>
                             <div class="mb-4">
                                 <label for="inqpasswd" class="form-label custom-form-label">비밀번호</label>
@@ -78,6 +78,44 @@ $(document).ready(function() {
         var selectedValue = $(this).val();
         $("#referenceID").val(selectedValue);
     });
+
+    // Summernote 초기화
+    $('.summernote').summernote({
+        height: 300,
+        lang: 'ko-KR',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                sendFile(files[0]);
+            }
+        }
+    });
+
+    function sendFile(file) {
+        var data = new FormData();
+        data.append("file", file);
+        $.ajax({
+            url: '/customerService/uploadImage',
+            method: 'POST',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                $('.summernote').summernote('insertImage', url);
+            },
+            error: function() {
+                alert('이미지 업로드 중 오류가 발생하였습니다.');
+            }
+        });
+    }
 });
 </script>
 
