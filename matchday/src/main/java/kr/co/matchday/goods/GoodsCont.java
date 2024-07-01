@@ -135,7 +135,7 @@ public class GoodsCont {
         String filename = oldGoods.getFilename();
         long filesize = oldGoods.getFilesize();
 
-        if (img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면
+        if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면
             ServletContext application = req.getServletContext();
             String basePath = application.getRealPath("/storage");
 
