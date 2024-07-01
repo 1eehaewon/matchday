@@ -1,6 +1,7 @@
 package kr.co.matchday.goods;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -194,7 +196,24 @@ public class GoodsCont {
         return goodsDao.filename(goodsid);
     }
     
-    
+    @PostMapping("/uploadImage")
+    @ResponseBody
+    public String uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
+        String imageUrl = "";
+        try {
+            ServletContext application = req.getServletContext();
+            String basePath = application.getRealPath("/storage");
+
+            String fileName = file.getOriginalFilename();
+            File dest = new File(basePath + File.separator + fileName);
+            file.transferTo(dest);
+
+            imageUrl = "/storage/" + fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageUrl;
+    }
     
     
     
