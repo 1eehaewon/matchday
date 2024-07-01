@@ -12,7 +12,7 @@
 	</insert>
 	
 	<select id="list" resultType="kr.co.matchday.goods.GoodsDTO">
-	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout
+	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
 	    FROM goods
 	    ORDER BY productname
 	</select>

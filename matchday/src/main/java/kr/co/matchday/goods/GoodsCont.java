@@ -30,7 +30,8 @@ public class GoodsCont {
 	@Autowired
     private GoodsDAO goodsDao;
 
-    @RequestMapping("/list")
+	@RequestMapping("/list")
+	/* @GetMapping("/list") */
     public ModelAndView list() {
         List<GoodsDTO> goodsList = goodsDao.list();
         ModelAndView mav = new ModelAndView();
@@ -45,15 +46,9 @@ public class GoodsCont {
     }
 
     @PostMapping("/insert")
-    public String insert(@RequestParam Map<String, Object> map,       // write.jsp의 "product_name", "price", "description"
+    public String insert(@RequestParam Map<String, Object> map,       // write.jsp의 "productname", "price", "description"
                          @RequestParam("img") MultipartFile img,      // write.jsp의 "img"
                          HttpServletRequest req) {
-        // 매개변수가 Map이면 name이 key로 저장된다
-        // 예) <input type="text" name="product_name">
-        // System.out.println(map); // {product_name=스프링4, price=10000, description=스프링부트}
-        // System.out.println(map.get("product_name"));
-        // System.out.println(map.get("price"));
-        // System.out.println(map.get("description"));
         
         // 첨부된 파일 처리
         // -> 실제 파일 /storage 폴더에 저장
@@ -140,7 +135,7 @@ public class GoodsCont {
         String filename = oldGoods.getFilename();
         long filesize = oldGoods.getFilesize();
 
-        if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면
+        if (img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면
             ServletContext application = req.getServletContext();
             String basePath = application.getRealPath("/storage");
 
@@ -194,7 +189,10 @@ public class GoodsCont {
         return "redirect:/goods/list";
     }//delete end
 
-	
+    @GetMapping("/filename/{goodsid}")
+    public String getFilename(@PathVariable String goodsid) {
+        return goodsDao.filename(goodsid);
+    }
     
     
     

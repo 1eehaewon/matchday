@@ -25,6 +25,7 @@
     		display: none;
 		}
 		
+		/* 왼쪽 카테고리 + 오른쪽 상품들 */
         .shop-container {
             display: flex;
             /* height: calc(100vh - 400px); /* 최대 높이 설정 */ */
@@ -64,7 +65,6 @@
         }
 
         .item-card {
-            width: 150px;
             margin: 10px;
             text-align: center;
             padding: 10px;
@@ -84,36 +84,9 @@
             margin-bottom: 10px;
             border-radius: 4px;
         }
-
-        .item-card h3 {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-
-        .item-card p {
-            font-size: 14px;
-            color: #888;
-        }
-
-        #item-details {
-            text-align: center;
-        }
-
-        #item-image {
-            max-width: 100%;
-            height: auto;
-            display: none; /* Initially hidden */
-        }
-
-        #item-name {
-            margin-top: 20px;
-            font-size: 24px;
-        }
-
-        #item-price {
-            margin-top: 10px;
+        
+        .item-card p { /* 상품명,가격 */
             font-size: 20px;
-            color: #888;
         }
         
 		.small-image {
@@ -207,27 +180,22 @@
 	    <div class="row"> <!-- 상품 정보 -->
 	        <c:forEach items="${list}" var="row" varStatus="vs">
 	            <div class="col-sm-3 col-md-3">
-	                <c:choose>
-	                    <c:when test="${not empty row.filename && row.filename != '-'}">
-	                        <%-- <a href="detail/${row.goodsid}">
-	                            <img src="/storage/${row.filename}" class="img-responsive margin" style="width:100%">
-	                        </a> --%>
-	                         <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
-	                            <img src="${pageContext.request.contextPath}/storage/${row.filename}" class="img-responsive margin" style="width:100%">
-	                        </a>
-	                    </c:when>
-	                    <c:otherwise>
-	                        <!-- <p>등록된 사진 없음</p> -->
-	                        <!-- <p><img src="../images/울산 홈 유니폼.jpg" alt="울산 홈 유니폼" class="small-image"></p> -->
-	                         <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
-	                        <img src="${pageContext.request.contextPath}/images/울산 홈 유니폼.jpg" alt="울산 홈 유니폼" class="small-image">  <!-- 삭제 -->
-	                        <img src="${pageContext.request.contextPath}/storage/${goods.filename}" alt="${goods.productname}" />
-	                    </c:otherwise>
-	                </c:choose>
-	                <br>
-	                <%-- <p>상품명: <a href="detail/${row.goodid}">${row.productname}</a></p> --%>
-	                <p><a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">${row.productname}</a></p>
-	                <p><fmt:formatNumber value="${row.price}" pattern="#,###원"/></p>
+	            	<div class="item-card">
+		                <c:choose>
+		                    <c:when test="${not empty row.filename && row.filename != '-'}">
+		                        <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
+		                            <img src="${pageContext.request.contextPath}/storage/${row.filename}" class="img-responsive margin" style="width:100%">
+		                        </a>
+		                    </c:when>
+		                    <c:otherwise>
+		                        <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
+		                        	<img src="${pageContext.request.contextPath}/images/default_product_image.jpg" alt="등록된 사진 없음" class="small-image">
+		                    	</a>
+		                    </c:otherwise>
+		                </c:choose>
+			                <p><a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">${row.productname}</a></p>
+			                <p><fmt:formatNumber value="${row.price}" pattern="#,###원"/></p>
+	            	</div>
 	            </div>
 	            <!-- 행의 4번째 항목인지 확인하여 닫고 새 행을 시작하세요 -->
 	            <c:if test="${vs.count % 4 == 0}">
@@ -237,8 +205,8 @@
 	            </c:if>
 	        </c:forEach>
 	    </div> <!-- 상품 정보 -->
-	</div> <!-- container end -->
-	</div>
+	</div> <!-- right container end -->
+	</div> <!-- shop container end -->
 <!-- 본문 끝 -->
 
 <%@ include file="../footer.jsp" %>

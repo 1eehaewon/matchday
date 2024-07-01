@@ -23,7 +23,8 @@
 <!-- 본문 시작 main.jsp -->
 <div>
     <div>
-        <form name="goodsfrm" id="goodsfrm" method="post" action="insert" enctype="multipart/form-data">
+       		<form name="goodsfrm" id="goodsfrm" method="post" action="insert" enctype="multipart/form-data">
+            <!-- <form name="goodsfrm" id="goodsfrm" method="post" action="/goods/update" enctype="multipart/form-data"> -->
             <table class="table table-hover">
                 <tbody style="text-align: left;">
                     <tr>
@@ -44,6 +45,7 @@
                         <td>굿즈 ID</td>
                         <td>
 	                        <input type="text" name="goodsid" id="goodsid" class="form-control">
+	                        <%-- <input type="text" name="goodsid" id="goodsid" class="form-control" value="${goods.goodsid}" readonly> --%>
 	                        <span id="duplicateMsg" style="color: red;"></span>
 	                    </td>
                     </tr>
@@ -51,6 +53,7 @@
                         <td>상품명</td>
                         <td>
                         	<input type="text" name="productname" id="productname" class="form-control" id="goodsid">
+                            <%-- <input type="text" name="productname" id="productname" class="form-control" value="${goods.productname}"> --%>
                             <span id="productnameMsg" style="color: red;"></span>
                         </td>
                     </tr>
@@ -64,6 +67,7 @@
                     <tr>
                         <td>설명</td>
                         <td><textarea rows="5" name="description" id="description" class="form-control"></textarea></td>
+                    	<%-- <td><textarea rows="5" name="description" id="description" class="form-control">${goods.description}</textarea></td> --%>
                     </tr>
                     <tr>
                         <td>사이즈</td>
@@ -75,6 +79,11 @@
 					            <option value="M">Medium</option>
 					            <option value="L">Large</option>
 					            <option value="XL">XLarge</option>
+					            <%-- <option value="FREE" <c:if test="${goods.size == 'FREE'}">selected</c:if>>FREE</option>
+                                <option value="S" <c:if test="${goods.size == 'S'}">selected</c:if>>Small</option>
+                                <option value="M" <c:if test="${goods.size == 'M'}">selected</c:if>>Medium</option>
+                                <option value="L" <c:if test="${goods.size == 'L'}">selected</c:if>>Large</option>
+                                <option value="XL" <c:if test="${goods.size == 'XL'}">selected</c:if>>XLarge</option> --%>
                             </select>
                             <span id="sizeMsg" style="color: red;"></span>
                         </td>
@@ -83,6 +92,7 @@
                         <td>가격</td>
                         <td>
                         	<input type="number" name="price" id="price" class="form-control">
+                        	<%-- <input type="number" name="price" id="price" class="form-control" value="${goods.price}"> --%>
                         	<span id="priceMsg" style="color: red;"></span>
                         </td>
                     </tr>
@@ -90,6 +100,7 @@
                         <td>재고 수량</td>
                         <td>
                         	<input type="number" name="stockquantity" id="stockquantity" class="form-control">
+                        	<%-- <input type="number" name="stockquantity" id="stockquantity" class="form-control" value="${goods.stockquantity}"> --%>
                         	<span id="stockquantityMsg" style="color: red;"></span>
                         </td>
                     </tr>
@@ -98,11 +109,14 @@
                         <td>
                         	<label><input type="radio" name="issoldout" value="N"> 재고 있음</label>
                             <label><input type="radio" name="issoldout" value="Y"> 품절</label>
+                            <%-- <label><input type="radio" name="issoldout" value="N" <c:if test="${goods.issoldout == 'N'}">checked</c:if>> 재고 있음</label>
+                            <label><input type="radio" name="issoldout" value="Y" <c:if test="${goods.issoldout == 'Y'}">checked</c:if>> 품절</label> --%>
                             <span id="issoldoutMsg" style="color: red;"></span>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">
                             <input type="submit" value="상품등록">
+                            <input type="submit" value="상품수정">
                         </td>
                     </tr>
                 </tbody>

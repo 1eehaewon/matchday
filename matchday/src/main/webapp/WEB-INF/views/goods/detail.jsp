@@ -127,8 +127,7 @@
         
         /* 상세보기 */
         .info-container {
-		    border: 1px solid #ccc;
-		    border-radius: 4px;
+		    
 		    background-color: #fff;
 		    padding: 20px;
 		    margin-top: 20px;
@@ -145,33 +144,38 @@
 		.info-tab li {
 		    flex: 1;
 		    text-align: center;
+		    cursor: pointer;
+	        padding: 10px 15px;
+	        background-color: #f0f0f0;
+	        border-top-left-radius: 4px;
+	        border-top-right-radius: 4px;
+	        transition: background-color 0.3s ease;
 		}
 		
-		.info-tab li a {
-		    display: block;
-		    padding: 10px 15px;
-		    text-decoration: none;
-		    color: #333;
-		    font-weight: bold;
-		    border: 1px solid transparent;
-		    border-radius: 4px 4px 0 0;
-		    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Added transition */
-		}
-		
-		.info-tab li a:hover {
-		    background-color: #007bff;
-		    color: #fff;
-		    border-color: #007bff;
-		}
-		
-		#content {
-		    padding: 20px;
-		    box-sizing: border-box;
-		    border: 1px solid #ccc;
-		    border-top: none;
-		    border-radius: 0 0 4px 4px;
-		    background-color: #fff;
-		}
+		.info-tab li.on {
+	        background-color: #007bff;
+	        color: #fff;
+	    }
+
+	    .info-tab li:hover {
+	        background-color: #ccc;
+	    }
+	
+	    #info-content {
+	        border: 1px solid #ccc;
+	        border-top: none;
+	        padding: 20px;
+	        border-radius: 0 0 4px 4px;
+	        background-color: #fff;
+	    }
+	
+	    .tabcont {
+	        display: none;
+	    }
+	
+	    .tabcont.on {
+	        display: block;
+	    }
     
   </style>
 <!-- 본문 시작 main.jsp -->
@@ -258,36 +262,90 @@
             </div> <!-- 사진+글 -->
             
             <div class="info-container"> <!-- 상세보기 -->
-
-	            <ul class="info-tab"> <!-- 상세보기 탭 -->
-	            	<li class="on" data-tab="info01">
-	            		<a href="#" onclick="loadContent('detail')">상세정보</a>
-	            	</li>
-	            	<li data-tab="info02">
-	            		<a href="#" onclick="loadContent('notice')">상품 주의사항</a>
-					</li>
-	            	<li data-tab="info03">
-	            		<a href="#" onclick="loadContent('delivery')">배송/반품/교환</a>
-	            	</li>
-	            	<li data-tab="info04">
-				       	<a href="#" onclick="loadContent('review')">구매후기</a>
-				    </li>
-	            </ul> <!-- 상세보기 탭 -->
+            <ul class="info-tab"> <!-- 상세보기 탭 -->
+		        <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
+		        <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
+		        <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
+		        <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
+		    </ul> <!-- 상세보기 탭 -->
 	            
-	            <div id="inf-content"> <!-- 상세보기 내용 -->
-				    	<div id="info01" class="tabcont on">
-				    	(설명)
+	            <div id="info-content"> <!-- 상세보기 내용 -->
+				    	<div id="info01" class="tabcont on"> <!-- 상세정보 내용 -->
+				    	상세보기 내용
                             ${goods.description}
 				    	
 				    	</div>
-				    	<div id="info02" class="tabcont">
-				    	2
+				    	<div id="info02" class="tabcont"> <!-- 상품 주의사항 내용 -->
+				    	상품 주의사항 내용
+				    	
+				    	현장 수령 장소
+						홈경기일 : 북측광장 FC서울 현장수령처
+						** 현장수령은 홈경기일에 북측광장 현장수령처에서 수령 가능합니다 (비경기일 수령불가)
+						
+						
+						
+						* 현장수령 상품의 경우 '상품준비완료' 상태에서만 수령이 가능합니다. 
+						
+						(결제완료 또는 PRE오더1 상태일 시 수령불가)
+						
+						 
+						
+						FC서울 팬파크 운영시간
+						
+						평일) 10:00 ~ 20:00
+						
+						주말, 공휴일) 10:00 ~ 20:00
+						
+						
+						
+						FC서울 팬파크 고객센터
+						
+						070-4101-7710
+						
+						
+						
+						평일) 10:00 ~ 18:00
+						
+						
+						
+						 * 주말 및 공휴일, 홈경기일은 고객센터를 운영하지 않습니다.
 				    	</div>
-				    	<div id="info03" class="tabcont">
-				    	3
+				    	<div id="info03" class="tabcont"> <!-- 배송/반품/교환 내용 -->
+				    	배송/반품/교환 내용
+				    	
+				    	배송 안내
+						방법
+						CJ대한통운
+						배송 지역
+						전국 배송
+						배송비
+						10만원 이상 구매 시 무료배송
+						
+						※ 제주도를 포함한 도서, 산간지역은 배송비(항공료 또는 도선료) 3,500원이 추가되며 착불로 발송
+						기간
+						결제 후 2~5일 이내에 배송 완료
+						반품/교환 안내
+						반품/교환
+						구입 후 7일 이내에 동일 제품으로 교환 가능하며 운송비는 구매자 부담
+						
+						주문제작 유니폼이나, 공동구매 제작상품, 마킹된 유니폼의 경우 소량 제작된 상품의 특성상 제품에 이상이 있을 시를 제외하고 교환 및 환불 불가
+						
+						다른 제품으로 교환, 또는 이상이 없는 제품과 함께 교환하실 경우 운송비는 구매자 부담
+						
+						착불 배송비 초과금액(3,500원) 발생시 초과된 금액은 구매자 부담
+						
+						선불 배송 또는 3500원을 동봉하여 착불로 배송 (운송사 : CJ대한통운 택배 이용)
+						
+						반품/교환 주소 : 서울시 마포구 월드컵로 240 월드컵경기장역 2번 출구 앞 FC서울 팬파크 (TEL 070-4101-7710)
+						제품에 이상이 있을 경우
+						색상, 사이즈, 다른 상품 교환
+						
+						구입후 7일이내 교환 가능하며 운송비는 구매자 부담
+						주의사항
+						비닐포장 및 Tag 폐기 또는 훼손 등으로 상품 가치가 멸실된 경우, 제한 반품 시에 해당 사은품이 있을 경우 같이 배송
 				    	</div>
-				    	<div id="info04" class="tabcont">
-				    	4
+				    	<div id="info04" class="tabcont"> <!-- 구매후기 내용 -->
+				    	구매후기 내용
 				    	</div>
 				</div> <!-- 상세보기 내용 -->
 				
@@ -313,7 +371,7 @@
 	    updateTotalPrice();
 	}
 	
-	function updateTotalPrice() {
+	function updateTotalPrice() { 
         var quantity = parseInt(document.getElementById('quantity-input').value);
         var price = ${goods.price};
         var totalPrice = quantity * price;
@@ -327,30 +385,31 @@
         updateTotalPrice();
     });
 
-    function loadContent(tab) { //상세보기
-        $.ajax({
-            url: 'https://www.fcseoul.com/fcshop/productView',
-            method: 'GET',
-            data: { menu_b: 'UNI', goods_id: 'PT3FS24M021', tab: tab },
-            success: function(response) {
-                var content;
+    function loadContent(tabId) {//상세보기
+        try {
+            // 모든 탭 콘텐츠 숨기기
+            var tabContents = document.querySelectorAll('.tabcont');
+            tabContents.forEach(function(content) {
+                content.style.display = 'none'; // 모든 탭 숨기기
+            });
 
-                if (tab === 'detail') {
-                    content = $(response).find('.detail-content').html();
-                } else if (tab === 'notice') {
-                    content = $(response).find('.notice-content').html();
-                } else if (tab === 'delivery') {
-                    content = $(response).find('.delivery-content').html();
-                } else if (tab === 'review') {
-                    content = $(response).find('.review-content').html(); // Adjust with actual selector for reviews
-                }
-                
-                $('#content').html(content);
-            },
-            error: function() {
-                alert('Failed to load content.');
-            }
-        });
+            // 클릭된 탭 콘텐츠 보이기
+            var selectedTabContent = document.getElementById(tabId);
+            selectedTabContent.style.display = 'block'; // 클릭된 탭 보이기
+
+            // 모든 탭 메뉴에서 활성화 클래스 제거
+            var tabMenuItems = document.querySelectorAll('.info-tab li');
+            tabMenuItems.forEach(function(item) {
+                item.classList.remove('on');
+            });
+
+            // 클릭된 탭 메뉴에 활성화 클래스 추가
+            var selectedTabMenuItem = document.querySelector('.info-tab li[data-tab="' + tabId + '"]');
+            selectedTabMenuItem.classList.add('on');
+        } catch (error) {
+            console.error('Error in loadContent function:', error);
+            alert('Failed to load content. Please try again later.');
+        }
     }
 
     function goods_update(){
