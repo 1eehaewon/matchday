@@ -1,0 +1,14 @@
+-- goods 테이블 생성
+
+CREATE TABLE Goods(
+    GoodsID VARCHAR(50) NOT NULL PRIMARY KEY,
+    Category VARCHAR(50) NOT NULL,
+    ProductName VARCHAR(100),
+    Description TEXT NOT NULL,
+    Size VARCHAR(50) NOT NULL,
+    Price INT NOT NULL,
+    StockQuantity INT NOT NULL DEFAULT 0,
+    IsSoldOut CHAR(1) NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    filesize BIGINT
+);

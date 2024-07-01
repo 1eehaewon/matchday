@@ -102,7 +102,7 @@
                 <ul class="nav justify-content-center">
                     <li class="nav-item"><a class="nav-link" href="EX2.html" style="color: white;">예매</a></li>
                     <li class="nav-item"><a class="nav-link" href="/video/list" style="color: white;">하이라이트</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" style="color: white;">쇼핑몰</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/goods/list" style="color: white;">쇼핑몰</a></li>
                     <div class="dropdown" data-bs-toggle="dropdown">
 	                    <li class="nav-item"><a class="nav-link" href="#" style="color: white;">알림마당</a></li>
 	                    <ul class="dropdown-menu">
