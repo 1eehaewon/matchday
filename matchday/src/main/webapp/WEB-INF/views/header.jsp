@@ -15,6 +15,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/jquery-3.7.1.min.js"></script>
   <link href="/css/styles.css" rel="stylesheet" type="text/css">
+  <!-- Summernote CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+  <!-- Summernote JS -->
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+  <!-- Summernote 한국어 설정 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>
   <style>
         .card img {
             width: 100%;
@@ -53,12 +59,14 @@
             display: block;
         }
         .dropdown-menu a {
-            color: black !important; /* 드롭다운 메뉴의 텍스트 색상을 검정색으로 설정 */
+            color: white !important; /* 드롭다운 메뉴의 텍스트 색상을 하얀색으로 설정 */
         }
         .dropdown:hover .dropdown-menu {
             display: block;
             background-color: #003366; /* 드롭다운 배경색 */
         }
+        
+        
         
         .footer-content {
 		    background-color: #000;
@@ -74,6 +82,14 @@
 		
 		.footer-content p {
 		    margin: 5px 0;
+		}
+		
+		a {
+		    color: black; /* 링크 색상을 검정색으로 설정 */
+		    text-decoration: none; /* 밑줄 제거 */
+		}
+		a:hover {
+			color: black; /* 링크를 호버할 때 색상 유지 */
 		}
         
   </style>

@@ -760,7 +760,7 @@ public class Utility {
     try{
       //path = request.getRealPath(dir) + "/";  //<-Tomcat 10에서부터 사리진 메소드
       ServletContext application = request.getServletContext();
-      path = application.getRealPath(dir) + "/";
+      path = application.getRealPath(dir);
       System.out.println("Upload path: " + path);
     }catch(Exception e){
       System.out.println(e.toString());
