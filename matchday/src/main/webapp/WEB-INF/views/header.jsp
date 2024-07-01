@@ -59,12 +59,14 @@
             display: block;
         }
         .dropdown-menu a {
-            color: black !important; /* 드롭다운 메뉴의 텍스트 색상을 검정색으로 설정 */
+            color: white !important; /* 드롭다운 메뉴의 텍스트 색상을 하얀색으로 설정 */
         }
         .dropdown:hover .dropdown-menu {
             display: block;
             background-color: #003366; /* 드롭다운 배경색 */
         }
+        
+        
         
         .footer-content {
 		    background-color: #000;
@@ -80,6 +82,14 @@
 		
 		.footer-content p {
 		    margin: 5px 0;
+		}
+		
+		a {
+		    color: black; /* 링크 색상을 검정색으로 설정 */
+		    text-decoration: none; /* 밑줄 제거 */
+		}
+		a:hover {
+			color: black; /* 링크를 호버할 때 색상 유지 */
 		}
         
   </style>
