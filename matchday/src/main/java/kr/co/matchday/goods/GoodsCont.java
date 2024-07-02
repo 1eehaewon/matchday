@@ -32,20 +32,20 @@ public class GoodsCont {
 	@Autowired
     private GoodsDAO goodsDao;
 
-	@RequestMapping("/list")
-	/* @GetMapping("/list") */
+	/* @RequestMapping("/list") */
+	@GetMapping("/list")
     public ModelAndView list() {
         List<GoodsDTO> goodsList = goodsDao.list();
         ModelAndView mav = new ModelAndView();
         mav.setViewName("goods/list");
         mav.addObject("list", goodsList);
         return mav;
-    }
+    }//list end
 
     @GetMapping("/write")
     public String write(@ModelAttribute("goodsDto") GoodsDTO goodsDto) {
         return "goods/write";
-    }
+    }//write end
 
     @PostMapping("/insert")
     public String insert(@RequestParam Map<String, Object> map,       // write.jsp의 "productname", "price", "description"
@@ -118,15 +118,31 @@ public class GoodsCont {
         return mav;
     }//search end
 
-    @GetMapping("/detail/{goodsid}")
-    public ModelAndView detail(@PathVariable String goodsid) {
+    
+    //@GetMapping("/detail/{goodsid}")
+    //public ModelAndView detail(@PathVariable String goodsid) {
+    @GetMapping("/detail")
+    public ModelAndView detail(@RequestParam("goodsid") String goodsid) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("goods/detail");
-        mav.addObject("goods", goodsDao.detail(goodsid));
+        mav.addObject("goodsDto", goodsDao.detail(goodsid));
         return mav;
     }//detail end
 
-    @PostMapping("/update/{goodsid}")
+    //수정하고자 하는 행을 디비에서 가져오기(select문)
+    @PostMapping("/updateform")
+    public ModelAndView updateform(@RequestParam("goodsid") String goodsid) {
+    	
+    	ModelAndView mav = new ModelAndView();
+    	mav.setViewName("goods/updateform");
+    	GoodsDTO goodsDto = goodsDao.detail(goodsid);
+    	mav.addObject("goodsDto", goodsDto);
+    	return mav;
+    }//updateform() end
+    
+    
+    //수정하기 (update문)
+    @PostMapping("/update")
     public String update(@ModelAttribute GoodsDTO goodsDto,
                          @RequestParam(value = "img", required = false) MultipartFile img,
                          HttpServletRequest req) {
@@ -138,7 +154,8 @@ public class GoodsCont {
         long filesize = oldGoods.getFilesize();
 
         if (img != null && !img.isEmpty()) {
-			/* if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면 */            ServletContext application = req.getServletContext();
+			/* if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면 */            
+        	ServletContext application = req.getServletContext();
             String basePath = application.getRealPath("/storage");
 
             try {
@@ -189,15 +206,17 @@ public class GoodsCont {
             }//if end
         }//if end
 
-        goodsDao.delete(goodsid); // 테이블 행 삭제
+        goodsDao.delete(goodsid); // 테이블 행 삭제						
 
         return "redirect:/goods/list";
     }//delete end
 
+    
     @GetMapping("/filename/{goodsid}")
     public String getFilename(@PathVariable String goodsid) {
         return goodsDao.filename(goodsid);
-    }
+    }//filename end
+    
     
     @PostMapping("/uploadImage")
     @ResponseBody

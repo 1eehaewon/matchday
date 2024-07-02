@@ -179,23 +179,22 @@
 	    }
     
   </style>
-<!-- 본문 시작 main.jsp -->
+<!-- 본문 시작 detail.jsp -->
 
-<body>
     <div class="container">
-        <c:if test="${not empty goods}">
+        <c:if test="${not empty goodsDto}">
             <div class="product-section"> <!-- 사진+글 -->
                 <div class="product-image">
-                    <c:if test="${not empty goods.filename}"> <!-- 메인 이미지 -->
-                        <img src="${pageContext.request.contextPath}/storage/${goods.filename}" alt="${goods.productname}" />
+                    <c:if test="${not empty goodsDto.filename}"> <!-- 메인 이미지 -->
+                        <img src="${pageContext.request.contextPath}/storage/${goodsDto.filename}" alt="${goodsDto.productname}" />
                     </c:if>                  
                 </div>
                 
                 <div class="product-info"> <!-- 글 -->
-                    <div class="product-title">${goods.productname}</div>
+                    <div class="product-title">${goodsDto.productname}</div>
                     	
                     <div class="product-price">
-                        <fmt:formatNumber value="${goods.price}" pattern="#,###원"/>
+                        <fmt:formatNumber value="${goodsDto.price}" pattern="#,###원"/>
                     </div>
                     
                     <div class="product-description">
@@ -228,7 +227,7 @@
                             </dd>
 
                            <%--  <dt>재고 수량</dt>
-                            <dd>${goods.stockquantity}개</dd> --%>
+                            <dd>${goodsDto.stockquantity}개</dd> --%>
                         </dl>
                     </div>
                     <hr>
@@ -249,9 +248,9 @@
                     
                     <!-- 관리자용 상품 수정, 상품 삭제 -->
                     <br>
-                    <form name="goodsfrm" method="post" enctype="multipart/form-data">
-		                <input type="hidden" name="goodsid" value="${goodsid}">
-			            <input type="submit" value="상품수정" onclick="goods_update()">
+                    <form name="goodsfrm" method="post">
+		                <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+			            <input type="button" value="상품수정" onclick="goods_update()">
 			            <input type="button" value="상품삭제" onclick="goods_delete()">
 	                </form>
 	                    	
@@ -259,17 +258,17 @@
             </div> <!-- 사진+글 -->
             
             <div class="info-container"> <!-- 상세보기 -->
-            <ul class="info-tab"> <!-- 상세보기 탭 -->
-		        <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
-		        <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
-		        <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
-		        <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
-		    </ul> <!-- 상세보기 탭 -->
+	            <ul class="info-tab"> <!-- 상세보기 탭 -->
+			        <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
+			        <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
+			        <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
+			        <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
+			    </ul> <!-- 상세보기 탭 -->
 	            
 	            <div id="info-content"> <!-- 상세보기 내용 -->
 				    	<div id="info01" class="tabcont on"> <!-- 상세정보 내용 -->
 				    	상세보기 내용
-                            ${goods.description}
+                            ${goodsDto.description}
 				    	
 				    	</div>
 				    	<div id="info02" class="tabcont"> <!-- 상품 주의사항 내용 -->
@@ -351,7 +350,7 @@
         </c:if>
     </div>
     
-</body>
+
 <!-- 본문 끝 -->
 
 <script>
@@ -371,7 +370,7 @@
 	// 총 가격 업데이트 함수
 	function updateTotalPrice() { 
         var quantity = parseInt(document.getElementById('quantity-input').value);
-        var price = ${goods.price};
+        var price = ${goodsDto.price};
         var totalPrice = quantity * price;
 
         document.getElementById('order-quantity').innerText = quantity;
@@ -412,7 +411,7 @@
 
  	// 상품 수정 함수
     function goods_update(){
-        document.goodsfrm.action = "/goods/update";
+        document.goodsfrm.action = "/goods/updateform";
         document.goodsfrm.submit();
     } // goods_update() end
 

@@ -34,16 +34,18 @@
 	    }
 	}
     
+    
+    
 </style>
 
 <div class="col-sm-12 text-center">
-    <p><h1>상품등록</h1></p>
+    <p><h1>상품수정</h1></p>
 </div>
 
 <!-- 본문 시작 main.jsp -->
 <div>
     <div>
-        <form name="goodsfrm" id="goodsfrm" method="post" action="/goods/insert" enctype="multipart/form-data">
+        <form name="goodsfrm" id="goodsfrm" method="post" action="/goods/update" enctype="multipart/form-data">
             <table class="table table-hover">
                 <tbody style="text-align: left;">
                     <tr>
@@ -51,11 +53,11 @@
                         <td>
                             <select name="category" class="form-control" id="category">
                                 <option value="">카테고리 선택</option>
-                                <option value="Uniform">Uniform</option>
-                                <option value="Hairband">Hairband</option>
-                                <option value="Stick">Stick</option>
-                                <option value="Merplur">Merplur</option>
-                                <option value="Keyring">Keyring</option>
+                                <option value="Uniform" <c:if test="${goodsDto.category == 'Uniform'}">selected</c:if>>Uniform</option>
+                                <option value="Hairband" <c:if test="${goodsDto.category == 'Hairband'}">selected</c:if>>Hairband</option>
+                                <option value="Stick" <c:if test="${goodsDto.category == 'Stick'}">selected</c:if>>Stick</option>
+                                <option value="Merplur" <c:if test="${goodsDto.category == 'Merplur'}">selected</c:if>>Merplur</option>
+                                <option value="Keyring" <c:if test="${goodsDto.category == 'Keyring'}">selected</c:if>>Keyring</option>
                             </select>
                             <span id="categoryMsg" style="color: red;"></span>
                         </td>
@@ -63,38 +65,39 @@
                     <tr>
                         <th>굿즈 ID</th>
                         <td>
-                            <input type="text" name="goodsid" id="goodsid" class="form-control">
+                            <input type="text" name="goodsid" id="goodsid" class="form-control" value="${goodsDto.goodsid}" readonly>
                             <span id="duplicateMsg" style="color: red;"></span>
                         </td>
                     </tr>
                     <tr>
                         <th>상품명</th>
                         <td>
-                            <input type="text" name="productname" id="productname" class="form-control">
+                            <input type="text" name="productname" id="productname" class="form-control" value="${goodsDto.productname}">
                             <span id="productnameMsg" style="color: red;"></span>
                         </td>
                     </tr>
                     <tr>
                         <th>상품 사진</th>
                         <td>
-                            <input type="file" name="img" id="img"class="form-control">
+                            <img src="../storage/${goodsDto.filename}">
+                            <input type="file" name="img" id="img" class="form-control">
                             <span id="imgMsg" style="color: red;"></span>
                         </td>
                     </tr>
                     <tr>
                         <th>설명</th>
-                        <td><textarea rows="5" name="description" id="description" class="form-control summernote"></textarea></td>
+                        <td><textarea rows="5" name="description" id="description" class="form-control summernote">${goodsDto.description}</textarea></td>
                     </tr>
                     <tr>
                         <th>사이즈</th>
                         <td>
                             <select name="size" id="size" class="form-control">
                                 <option value="">사이즈 선택</option>
-                                <option value="FREE">FREE</option>
-                                <option value="S">Small</option>
-                                <option value="M">Medium</option>
-                                <option value="L">Large</option>
-                                <option value="XL">XLarge</option>
+                                <option value="FREE" <c:if test="${goodsDto.size == 'FREE'}">selected</c:if>>FREE</option>
+                                <option value="S" <c:if test="${goodsDto.size == 'S'}">selected</c:if>>Small</option>
+                                <option value="M" <c:if test="${goodsDto.size == 'M'}">selected</c:if>>Medium</option>
+                                <option value="L" <c:if test="${goodsDto.size == 'L'}">selected</c:if>>Large</option>
+                                <option value="XL" <c:if test="${goodsDto.size == 'XL'}">selected</c:if>>XLarge</option>
                             </select>
                             <span id="sizeMsg" style="color: red;"></span>
                         </td>
@@ -102,27 +105,27 @@
                     <tr>
                         <th>가격</th>
                         <td>
-                            <input type="number" name="price" id="price" class="form-control">
+                            <input type="number" name="price" id="price" class="form-control" value="${goodsDto.price}">
                             <span id="priceMsg" style="color: red;"></span>
                         </td>
                     </tr>
                     <tr>
                         <th>재고 수량</th>
                         <td>
-                            <input type="number" name="stockquantity" id="stockquantity" class="form-control">
+                            <input type="number" name="stockquantity" id="stockquantity" class="form-control" value="${goodsDto.stockquantity}">
                             <span id="stockquantityMsg" style="color: red;"></span>
                         </td>
                     </tr>
                     <tr>
                         <th>품절 여부</th>
                         <td>
-                            <label><input type="radio" name="issoldout" value="N"> 재고 있음</label>
-                            <label><input type="radio" name="issoldout" value="Y"> 품절</label>
+                            <label><input type="radio" name="issoldout" value="N" <c:if test="${goodsDto.issoldout == 'N'}">checked</c:if>> 재고 있음</label>
+                            <label><input type="radio" name="issoldout" value="Y" <c:if test="${goodsDto.issoldout == 'Y'}">checked</c:if>> 품절</label>
                             <span id="issoldoutMsg" style="color: red;"></span>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">
-                            <input type="submit" value="상품등록">
+                            <input type="submit" value="상품수정">
                         </td>
                     </tr>
                 </tbody>
@@ -169,7 +172,7 @@
                 productnameMsg.textContent = '';
             }
 
-            // 상품 사진 유효성 검사
+            /* // 상품 사진 유효성 검사
             var img = document.getElementById('img').value;
             var imgMsg = document.getElementById('imgMsg');
             if (img === "") {
@@ -177,7 +180,7 @@
                 isValid = false;
             } else {
                 imgMsg.textContent = '';
-            }
+            } */
 
             // 사이즈 유효성 검사
             var size = document.getElementById('size').value;
