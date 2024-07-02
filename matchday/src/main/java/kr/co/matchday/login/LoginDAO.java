@@ -29,28 +29,4 @@ public class LoginDAO {
         return sqlSession.selectOne("login.getUserGrade", userID);
     }
     
-    /**
-     * 이메일을 통해 사용자 ID를 찾는 메서드
-     *
-     * @param email 사용자 이메일
-     * @return 사용자 ID
-     */
-    public String findIDByEmail(String email) {
-        return sqlSession.selectOne("login.findIDByEmail", email);
-    }
-
-    
-    /**
-     * 사용자 ID와 이메일을 통해 비밀번호를 찾는 메서드
-     *
-     * @param userID 사용자 ID
-     * @param email 사용자 이메일
-     * @return 사용자 비밀번호
-     */
-    public String findPasswordByIDAndEmail(String userID, String email) {
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setUserID(userID);
-        loginDTO.setEmail(email);
-        return sqlSession.selectOne("login.findPasswordByIDAndEmail", loginDTO);
-    }
 }//class end
