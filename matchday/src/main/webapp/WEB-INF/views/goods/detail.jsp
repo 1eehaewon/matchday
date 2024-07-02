@@ -98,8 +98,9 @@
 	
 	    .quantity-control input {
 	        width: 50px;
+	        height: 45px;
 	        text-align: center;
-	        margin: 0 10px;
+	        margin: 0 5px;
 	        padding: 5px;
 	        border: 1px solid #ccc;
 	        border-radius: 4px;
@@ -185,7 +186,7 @@
         <c:if test="${not empty goods}">
             <div class="product-section"> <!-- 사진+글 -->
                 <div class="product-image">
-                    <c:if test="${not empty goods.filename}">
+                    <c:if test="${not empty goods.filename}"> <!-- 메인 이미지 -->
                         <img src="${pageContext.request.contextPath}/storage/${goods.filename}" alt="${goods.productname}" />
                     </c:if>                  
                 </div>
@@ -208,10 +209,6 @@
                                     <option value="M">M</option>
                                     <option value="L">L</option>
                                     <option value="XL">XL</option>
-						       <%--  <option value="S" <c:if test="${goods.size == 'S'}"></c:if>>S</option>
-						        <option value="M" <c:if test="${goods.size == 'M'}"></c:if>>M</option>
-						        <option value="L" <c:if test="${goods.size == 'L'}"></c:if>>L</option>
-						        <option value="XL" <c:if test="${goods.size == 'XL'}"></c:if>>XL</option> --%>     
 						    </select>
                             </dd>
 
@@ -225,13 +222,13 @@
                             <dd>
                                 <div class="quantity-control">
                                     <button type="button" onclick="updateQuantity(-1)">-</button>
-                                    <input type="text" id="quantity-input" name="quantity" value="1" />
+                                    <input type="text" id="quantity-input" name="quantity" value="1" readonly/>
                                     <button type="button" onclick="updateQuantity(1)">+</button>
                                 </div>
                             </dd>
 
-                            <dt>재고 수량</dt>
-                            <dd>${goods.stockquantity}개</dd>
+                           <%--  <dt>재고 수량</dt>
+                            <dd>${goods.stockquantity}개</dd> --%>
                         </dl>
                     </div>
                     <hr>
@@ -371,6 +368,7 @@
 	    updateTotalPrice();
 	}
 	
+	// 총 가격 업데이트 함수
 	function updateTotalPrice() { 
         var quantity = parseInt(document.getElementById('quantity-input').value);
         var price = ${goods.price};
@@ -412,12 +410,13 @@
         }
     }
 
+ 	// 상품 수정 함수
     function goods_update(){
-        // document.goodsfrm refers to the <form name="goodsfrm"> in the HTML
         document.goodsfrm.action = "/goods/update";
         document.goodsfrm.submit();
     } // goods_update() end
 
+ 	// 상품 삭제 함수
     function goods_delete(){
         if(confirm("상품은 영구히 삭제됩니다\n진행할까요?")){
             document.goodsfrm.action = "/goods/delete";

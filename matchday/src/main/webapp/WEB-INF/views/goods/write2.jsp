@@ -188,8 +188,8 @@
 <!-- 본문 끝 -->
 
 <script>
-	document.addEventListener('DOMContentLoaded', function() {
-	    var form = document.getElementById('updateForm');
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('goodsfrm');
 
         function validateForm() {
             var isValid = true;

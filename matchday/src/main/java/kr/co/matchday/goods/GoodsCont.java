@@ -89,21 +89,21 @@ public class GoodsCont {
             
         } // if end
         
-        // Create and populate GoodsDTO object
-        GoodsDTO goodsDTO = new GoodsDTO();
-        goodsDTO.setGoodsid((String) map.get("goodsid"));                  // 굿즈 ID
-        goodsDTO.setCategory((String) map.get("category"));                // 굿즈 카테고리
-        goodsDTO.setProductname((String) map.get("productname"));         // 상품명
-        goodsDTO.setDescription((String) map.get("description"));          // 설명
-        goodsDTO.setSize((String) map.get("size"));                        // 사이즈
-        goodsDTO.setPrice(Integer.parseInt((String) map.get("price")));    // 가격
-        goodsDTO.setStockquantity(Integer.parseInt((String) map.get("stockquantity"))); // 재고 수량
-        goodsDTO.setIssoldout((String) map.get("issoldout"));              // 품절 여부
-        goodsDTO.setFilename(filename);                                    // 파일 이름
-        goodsDTO.setFilesize(filesize);                                    // 파일 크기
-        
-        // Insert the goodsDTO object into the database
-        goodsDao.insert(goodsDTO);
+        // goodsDTO 객체를 데이터베이스에 삽입합니다.
+        GoodsDTO goodsDto = new GoodsDTO();
+        goodsDto.setGoodsid((String) map.get("goodsid"));
+        goodsDto.setCategory((String) map.get("category"));
+        goodsDto.setProductname((String) map.get("productname"));
+        goodsDto.setDescription((String) map.get("description"));
+        goodsDto.setSize((String) map.get("size"));
+        goodsDto.setPrice(Integer.parseInt((String) map.get("price")));
+        goodsDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity")));
+        goodsDto.setIssoldout((String) map.get("issoldout"));
+        goodsDto.setFilename(filename);
+        goodsDto.setFilesize(filesize);
+            
+        // goodsDTO 객체를 데이터베이스에 삽입합니다.
+        goodsDao.insert(goodsDto);
         
         return "redirect:/goods/list";
     } // insert end
@@ -126,19 +126,19 @@ public class GoodsCont {
         return mav;
     }//detail end
 
-    @PostMapping("/update")
-    public String update(@ModelAttribute GoodsDTO goodsDTO,
+    @PostMapping("/update/{goodsid}")
+    public String update(@ModelAttribute GoodsDTO goodsDto,
                          @RequestParam(value = "img", required = false) MultipartFile img,
                          HttpServletRequest req) {
 
-        String goodsid = goodsDTO.getGoodsid();
+        String goodsid = goodsDto.getGoodsid();
         GoodsDTO oldGoods = goodsDao.detail(goodsid); // Retrieve old goods details
 
         String filename = oldGoods.getFilename();
         long filesize = oldGoods.getFilesize();
 
-        if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면
-            ServletContext application = req.getServletContext();
+        if (img != null && !img.isEmpty()) {
+			/* if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면 */            ServletContext application = req.getServletContext();
             String basePath = application.getRealPath("/storage");
 
             try {
@@ -163,13 +163,16 @@ public class GoodsCont {
             }//try end
         }//if end
 
-        goodsDTO.setFilename(filename);
-        goodsDTO.setFilesize(filesize);
-
-        goodsDao.update(goodsDTO); // Update goods information
+        goodsDto.setFilename(filename);
+        goodsDto.setFilesize(filesize);
+        
+        System.out.println("Updated goodsDTO: " + goodsDto);
+        
+        goodsDao.update(goodsDto);
 
         return "redirect:/goods/list";
     }//update end
+
 
     @PostMapping("/delete")
     public String delete(HttpServletRequest req) {

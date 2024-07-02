@@ -134,78 +134,78 @@
 	</div>
 	
 	    <div class="container text-center"> <!-- 검색 -->
-	    <div class="col-l-20">
-	        <form method="get" action="search">
-	            <br> 
-	            상품명: <input type="text" name="productname" value="${productname}" size="30">
-	            		<input type="submit" value="검색">
-	            <br> 
-	        </form>
-	    </div>
+		    <div class="col-l-20">
+		        <form method="get" action="search">
+		            <br>
+		            상품명: <input type="text" name="productname" value="${productname}" size="30">
+		            		<input type="submit" value="검색">
+		            <br> 
+		        </form>
+		    </div>
 		</div>  <!-- 검색 -->
     
    <div class="container mt-4">
-   <div class="row justify-content-end">
-        <div class="col-auto">
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    기본상품순
-                </button>
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">기본상품순</a>
-                    <a class="dropdown-item" href="#">최신등록순</a>
-                    <a class="dropdown-item" href="#">높은가격순</a>
-                    <a class="dropdown-item" href="#">낮은가격순</a>
-                </div>
-            </div>
-        </div>
-    </div>
+	   <div class="row justify-content-end">
+	        <div class="col-auto">
+	            <div class="dropdown">
+	                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	                    기본상품순
+	                </button>
+	                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+	                    <a class="dropdown-item" href="#">기본상품순</a>
+	                    <a class="dropdown-item" href="#">최신등록순</a>
+	                    <a class="dropdown-item" href="#">높은가격순</a>
+	                    <a class="dropdown-item" href="#">낮은가격순</a>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
 	</div>
 
 	<div class="shop-container">
-    <div class="left"> <!-- 왼쪽 카테고리 -->
-        <ul>
-            <li data-name="전체" data-category="all">전체</li>
-            <li data-name="키링" data-category="keyring">키링</li>
-            <li data-name="유니폼" data-category="uniform">유니폼</li>
-            <li data-name="헤어밴드" data-category="hairband">헤어밴드</li>
-            <li data-name="머플러" data-category="muffler">머플러</li>
-            <li data-name="응원봉" data-category="lightstick">응원봉</li>        
-        </ul>
-        <br>
-        <p><button type="button" onclick="location.href='write'">상품등록</button></p>
-    </div> <!-- 왼쪽 카테고리 -->
+	    <div class="left"> <!-- 왼쪽 카테고리 -->
+	        <ul>
+	            <li data-name="전체" data-category="all">전체</li>
+	            <li data-name="키링" data-category="keyring">키링</li>
+	            <li data-name="유니폼" data-category="uniform">유니폼</li>
+	            <li data-name="헤어밴드" data-category="hairband">헤어밴드</li>
+	            <li data-name="머플러" data-category="muffler">머플러</li>
+	            <li data-name="응원봉" data-category="lightstick">응원봉</li>        
+	        </ul>
+	        <br>
+	        <p><button type="button" onclick="location.href='write'">상품등록</button></p>
+	    </div> <!-- 왼쪽 카테고리 -->
     
-    <div class="right" id="right-container">
-	    <div class="row"> <!-- 상품 정보 -->
-	        <c:forEach items="${list}" var="row" varStatus="vs">
-	            <div class="col-sm-3 col-md-3">
-	            	<div class="item-card">
-		                <c:choose>
-		                    <c:when test="${not empty row.filename && row.filename != '-'}">
-		                        <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
-		                            <img src="${pageContext.request.contextPath}/storage/${row.filename}" class="img-responsive margin" style="width:100%">
-		                        </a>
-		                    </c:when>
-		                    <c:otherwise>
-		                        <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
-		                        	<img src="${pageContext.request.contextPath}/images/default_product_image.jpg" alt="등록된 사진 없음" class="small-image">
-		                    	</a>
-		                    </c:otherwise>
-		                </c:choose>
-			                <p><a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">${row.productname}</a></p>
-			                <p><fmt:formatNumber value="${row.price}" pattern="#,###원"/></p>
-	            	</div>
-	            </div>
-	            <!-- 행의 4번째 항목인지 확인하여 닫고 새 행을 시작하세요 -->
-	            <c:if test="${vs.count % 4 == 0}">
-		<!-- </div>이전 행 닫기 -->
-	                <div style="height: 50px;"></div><!-- 행 사이의 공백 -->
-	    <!-- <div class="row">새 행 시작 -->
-	            </c:if>
-	        </c:forEach>
-	    </div> <!-- 상품 정보 -->
-	</div> <!-- right container end -->
+	    <div class="right" id="right-container">
+		    <div class="row"> <!-- 상품 정보 -->
+		        <c:forEach items="${list}" var="row" varStatus="vs">
+		            <div class="col-sm-3 col-md-3">
+		            	<div class="item-card">
+			                <c:choose>
+			                    <c:when test="${not empty row.filename && row.filename != '-'}">
+			                        <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
+			                            <img src="${pageContext.request.contextPath}/storage/${row.filename}" class="img-responsive margin" style="width:100%">
+			                        </a>
+			                    </c:when>
+			                    <c:otherwise>
+			                        <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">
+			                        	<img src="${pageContext.request.contextPath}/images/default_product_image.jpg" alt="등록된 사진 없음" class="small-image">
+			                    	</a>
+			                    </c:otherwise>
+			                </c:choose>
+				                <p><a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">${row.productname}</a></p>
+				                <p><fmt:formatNumber value="${row.price}" pattern="#,###원"/></p>
+		            	</div>
+		            </div>
+		            <!-- 행의 4번째 항목인지 확인하여 닫고 새 행을 시작하세요 -->
+		            <c:if test="${vs.count % 4 == 0}">
+			<!-- </div>이전 행 닫기 -->
+		                <div style="height: 50px;"></div><!-- 행 사이의 공백 -->
+		    <!-- <div class="row">새 행 시작 -->
+		            </c:if>
+		        </c:forEach>
+		    </div> <!-- 상품 정보 -->
+		</div> <!-- right container end -->
 	</div> <!-- shop container end -->
 <!-- 본문 끝 -->
 
