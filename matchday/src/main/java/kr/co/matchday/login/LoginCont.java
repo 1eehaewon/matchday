@@ -23,7 +23,7 @@ public class LoginCont {
 		return "/member/login"; // login.jsp 반환
 	}
 
-	@PostMapping("/login.do")
+	@PostMapping("/login.do") //파라미터 두개면 RequestParam
 	public ModelAndView login(@RequestParam("userID") String userID, @RequestParam("password") String password,
 			HttpSession session) {
 		boolean isValidUser = loginDao.validateUser(userID, password);

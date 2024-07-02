@@ -136,6 +136,12 @@
 
 		<!-- 사용자 추가 라이브러리(의존성) 끝 -->
 		
+		<!-- SMTP 아이디 비밀번호 찾기용 -->
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
