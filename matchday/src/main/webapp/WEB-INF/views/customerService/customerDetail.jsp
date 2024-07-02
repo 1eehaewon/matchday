@@ -10,6 +10,7 @@ $(document).ready(function() {
 
     console.log("message: ${message}");
     console.log("error: ${error}");
+    console.log("sessionScope.grade: ${sessionScope.grade}");  // 디버깅을 위해 추가
 
     <c:if test="${not empty message}">
         alert("${message}");
@@ -17,11 +18,6 @@ $(document).ready(function() {
     </c:if>
     <c:if test="${not empty error}">
         alert("${error}");
-    </c:if>
-
-    // 답변 섹션을 회원 등급이 M인 경우에만 보이게 처리
-    <c:if test="${sessionScope.userGrade == 'M'}">
-        $("#replySection").show();
     </c:if>
 
     // Summernote 초기화
@@ -162,17 +158,19 @@ function addReply(inquiryID) {
                                 <button type="button" class="btn btn-danger btn-lg custom-button" onclick="deleteInquiry(${inquiry.inquiryID})">삭제하기</button>
                             </div>
                         </form>
-                        <div id="replySection" style="display: none;">
-                            <hr>
-                            <h3>답변하기</h3>
-                            <div class="mb-4">
-                                <label for="replyContent" class="form-label custom-form-label">답변 내용</label>
-                                <textarea id="replyContent" class="form-control custom-form-control"></textarea>
+                        <c:if test="${sessionScope.grade == 'M'}">
+                            <div id="replySection">
+                                <hr>
+                                <h3>답변하기</h3>
+                                <div class="mb-4">
+                                    <label for="replyContent" class="form-label custom-form-label">답변 내용</label>
+                                    <textarea id="replyContent" class="form-control custom-form-control"></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary btn-lg custom-button" onclick="addReply(${inquiry.inquiryID})">답변 등록</button>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary btn-lg custom-button" onclick="addReply(${inquiry.inquiryID})">답변 등록</button>
-                            </div>
-                        </div>
+                        </c:if>
                         <c:if test="${not empty inquiry.inquiryReply}">
                             <div class="reply-section">
                                 <div class="reply-header">

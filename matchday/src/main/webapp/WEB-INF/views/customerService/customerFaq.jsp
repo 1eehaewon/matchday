@@ -16,7 +16,7 @@
 
     <div class="d-flex justify-content-between mb-4">
         <h2 class="text-center">FAQ</h2>
-        <c:if test="${sessionScope.userGrade == 'M'}">
+        <c:if test="${sessionScope.grade == 'M'}">
             <button type="button" class="btn btn-primary" onclick="location.href='/customerService/customerFaqForm'">FAQ 글쓰기</button>
         </c:if>
     </div>
@@ -32,7 +32,7 @@
                 <div id="collapse${faq.inquiryID}" class="accordion-collapse collapse" aria-labelledby="heading${faq.inquiryID}" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
                         <c:out value="${faq.content}" escapeXml="false"/>
-                        <c:if test="${sessionScope.userGrade == 'M'}">
+                        <c:if test="${sessionScope.grade == 'M'}">
                             <a href="/customerService/customerFaqDetail/${faq.inquiryID}" class="btn btn-link">자세히 보기</a>
                         </c:if>
                     </div>
@@ -41,5 +41,9 @@
         </c:forEach>
     </div>
 </div>
+
+<script>
+    console.log("sessionScope.grade: ${sessionScope.grade}");  // 디버깅을 위해 추가
+</script>
 
 <%@ include file="../footer.jsp" %>
