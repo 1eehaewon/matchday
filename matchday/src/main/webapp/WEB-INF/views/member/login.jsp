@@ -60,5 +60,8 @@
             </script>
         <% } %>
         </form>
+        <div class="text-center mt-3">
+            <a href="/member/findID">아이디 찾기</a> | <a href="/member/findPassword">비밀번호 찾기</a>
+        </div>
     </div>
 <%@ include file="../footer.jsp" %>

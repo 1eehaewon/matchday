@@ -2,6 +2,7 @@ package kr.co.matchday.login;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,5 +55,64 @@ public class LoginCont {
 	public String logout(HttpSession session) {
 		session.invalidate(); // 세션 무효화하여 로그아웃
 		return "redirect:/home.do"; // 메인 페이지로 리다이렉트
-	}
+	}//logout() end
+	
+	/**
+     * 아이디 찾기 폼을 보여주는 메서드
+     *
+     * @return 아이디 찾기 페이지
+     */
+    @GetMapping("/findID")
+    public String findIDForm() {
+        return "/member/findID";
+    }
+
+    /**
+     * 아이디 찾기 요청을 처리하는 메서드
+     *
+     * @param email 사용자 이메일
+     * @param model 뷰에 데이터를 전달하기 위한 모델 객체
+     * @return 아이디 찾기 결과 페이지
+     */
+    @PostMapping("/findID")
+    public String findID(@RequestParam("email") String email, Model model) {
+        String userID = loginDao.findIDByEmail(email);
+        if (userID != null) {
+            model.addAttribute("userID", userID);
+        } else {
+            model.addAttribute("alert", true);
+            model.addAttribute("errorMessage", "Email not found");
+        }
+        return "findIDResult";
+    }
+
+    /**
+     * 비밀번호 찾기 폼을 보여주는 메서드
+     *
+     * @return 비밀번호 찾기 페이지
+     */
+    @GetMapping("/findPassword")
+    public String findPasswordForm() {
+        return "findPassword";
+    }
+
+    /**
+     * 비밀번호 찾기 요청을 처리하는 메서드
+     *
+     * @param userID 사용자 ID
+     * @param email 사용자 이메일
+     * @param model 뷰에 데이터를 전달하기 위한 모델 객체
+     * @return 비밀번호 찾기 결과 페이지
+     */
+    @PostMapping("/findPassword")
+    public String findPassword(@RequestParam("userID") String userID, @RequestParam("email") String email, Model model) {
+        String password = loginDao.findPasswordByIDAndEmail(userID, email);
+        if (password != null) {
+            model.addAttribute("password", password);
+        } else {
+            model.addAttribute("alert", true);
+            model.addAttribute("errorMessage", "UserID or Email not found");
+        }
+        return "findPasswordResult";
+    }
 }// class end

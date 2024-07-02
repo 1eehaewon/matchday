@@ -82,14 +82,14 @@
                     <th><label for="password">비밀번호</label></th>
                     <td>
                         <input type="password" id="password" name="password" class="form-control" required placeholder="(8~12자 영문, 숫자, 특수문자)" oninput="pwCheck(); validatePassword();">
-                        <span id="password-validation-message" class="form-text text-muted"></span>
+                        <span id="password-validation-message"></span>
                     </td>
                 </tr>
                 <tr>
                     <th><label for="confirmPassword">비밀번호 확인</label></th>
                     <td>
                         <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required placeholder="비밀번호를 다시 입력하세요" oninput="pwCheck()">
-                        <span id="password-match-message" class="form-text text-muted"></span>
+                        <span id="password-match-message"></span>
                     </td>
                 </tr>
                 <tr>
