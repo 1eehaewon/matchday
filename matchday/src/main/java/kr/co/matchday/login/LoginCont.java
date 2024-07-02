@@ -40,7 +40,7 @@ public class LoginCont {
 
 		if (isValidUser) {
 			session.setAttribute("userID", userID); // 로그인 성공 시 세션에 사용자 정보 저장
-			session.setAttribute("grade", grade); // 세션에 사용자 등급 저장
+			session.setAttribute("grade", grade); // 세션에 사용자 등급 저장(M,A,F)
 			modelAndView.setViewName("redirect:/home.do"); // 메인 페이지로 리다이렉트
 		} else {
 			modelAndView.setViewName("/member/login"); // /WEB-INF/views/member/login.jsp
