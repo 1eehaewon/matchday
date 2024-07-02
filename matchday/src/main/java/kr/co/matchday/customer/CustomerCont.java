@@ -307,10 +307,26 @@ public class CustomerCont {
                 if (email != null && !email.isEmpty()) {
                     String recipient = email;
                     String subject = "고객님의 문의에 대한 답변이 등록되었습니다.";
-                    String content = "<p>안녕하세요, 고객님.</p>" +
-                                     "<p>문의하신 내용에 대한 답변이 등록되었습니다.</p>" +
-                                     "<p>답변 내용: " + inquiryReply + "</p>";
-
+                    String content = "<html>" +
+                            "<body style='font-family: Arial, sans-serif; margin: 0; padding: 0;'>" +
+                            "<div style='padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>" +
+                            "<div style='background-color: #f7f7f7; padding: 10px; border-bottom: 1px solid #ddd;'>" +
+                            "<h2 style='margin: 0;'>고객님의 문의에 대한 답변이 등록되었습니다.</h2>" +
+                            "</div>" +
+                            "<div style='margin-top: 20px;'>" +
+                            "<p>안녕하세요, 고객님.</p>" +
+                            "<p>문의하신 내용에 대한 답변이 등록되었습니다. 아래 내용을 확인해 주세요:</p>" +
+                            "<blockquote style='margin: 20px 0; padding: 10px; background-color: #f9f9f9; border-left: 5px solid #ccc;'>" +
+                            "<p style='margin: 0;'>" + inquiryReply + "</p>" +
+                            "</blockquote>" +
+                            "</div>" +
+                            "<div style='margin-top: 30px; font-size: 12px; color: #777;'>" +
+                            "<p>감사합니다.</p>" +
+                            "<p>고객 지원팀 드림</p>" +
+                            "</div>" +
+                            "</div>" +
+                            "</body>" +
+                            "</html>";
                     try {
                         String mailserver = "mw-002.cafe24.com"; // cafe24 메일 서버
                         Properties props = new Properties();
