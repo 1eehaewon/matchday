@@ -6,6 +6,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.matchday.join.JoinDTO;
+
 @Repository
 public class CustomerDAO {
 
@@ -86,4 +88,9 @@ public class CustomerDAO {
     public int deleteFaq(int inquiryID) {
         return sqlSession.delete("Customer.deleteFaq", inquiryID);
     }
+    
+    public String getUserEmail(String userID) {
+        return sqlSession.selectOne("Customer.getUserEmail", userID);
+    }
+
 }

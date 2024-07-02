@@ -53,7 +53,7 @@
             display: block;
         }
         .dropdown-menu a {
-            color: black !important; /* 드롭다운 메뉴의 텍스트 색상을 검정색으로 설정 */
+            color: white !important; /* 드롭다운 메뉴의 텍스트 색상을 하얀색으로 설정 */
         }
         .dropdown:hover .dropdown-menu {
             display: block;
