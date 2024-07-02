@@ -159,5 +159,12 @@
     <delete id="deleteFaq" parameterType="int">
         DELETE FROM Inquiries WHERE inquiryID = #{inquiryID} AND boardType = 'FAQ'
     </delete>
-
+    
+    <!-- 회원 이메일 조회 -->
+    <select id="getUserEmail" parameterType="string" resultType="string">
+        SELECT email
+        FROM Users
+        WHERE userID = #{userID}
+    </select>
+    
 </mapper>

@@ -8,8 +8,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +33,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
-import net.utility.MailUtil;
+import kr.co.matchday.join.JoinDTO;
+import net.utility.MyAuthenticator;
 
 @Controller
 @RequestMapping("/customerService")
@@ -233,16 +240,47 @@ public class CustomerCont {
         return "redirect:/customerService/customerPage";
     }
 
+    /*
+    // 답변을 추가하는 메서드
     @PostMapping("/addReply")
     @ResponseBody
-    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply, HttpSession session) {
+    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
         Map<String, Object> response = new HashMap<>();
-        String userID = (String) session.getAttribute("userID");
-        if (userID == null) {
+        try {
+            CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
+            if (inquiry.getInquiryReply() != null && !inquiry.getInquiryReply().isEmpty()) {
+                response.put("status", "error");
+                response.put("message", "이미 등록된 답변이 있습니다.");
+                return response;
+            }
+
+            inquiry.setInquiryReply(inquiryReply);
+            inquiry.setReplyDate(new Date()); // 답변 시간을 현재 시간으로 설정
+            int result = customerDao.replyInquiry(inquiry);
+
+            if (result > 0) {
+                response.put("status", "success");
+            } else {
+                response.put("status", "error");
+                response.put("message", "답변 등록에 실패하였습니다.");
+            }
+        } catch (Exception e) {
             response.put("status", "error");
-            response.put("message", "로그인 후 답변을 등록할 수 있습니다.");
-            return response;
+            response.put("message", "답변 등록 중 오류가 발생하였습니다.");
         }
+        return response;
+    }
+    */
+    
+    
+    @PostMapping("/addReply")
+    @ResponseBody
+    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
+        Map<String, Object> response = new HashMap<>();
+        Logger logger = LoggerFactory.getLogger(CustomerCont.class);
+
+        logger.info("addReply 메서드 시작");
+        System.out.println("addReply 메서드 시작");
 
         try {
             CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
@@ -258,29 +296,76 @@ public class CustomerCont {
 
             if (result > 0) {
                 response.put("status", "success");
+                logger.info("답변이 성공적으로 등록되었습니다.");
+                System.out.println("답변이 성공적으로 등록되었습니다.");
 
                 // 답변 등록 성공 시 이메일 발송
-                String recipient = "sskkyy6685@naver.com"; // 테스트를 위한 이메일 주소
-                String subject = "고객님의 문의에 대한 답변이 등록되었습니다.";
-                String content = "안녕하세요, 고객님. 문의하신 내용에 대한 답변이 등록되었습니다. 답변 내용: " + inquiryReply;
+                String email = customerDao.getUserEmail(inquiry.getUserID());
+                logger.info("이메일 발송 대상: " + email);
+                System.out.println("이메일 발송 대상: " + email);
 
-                try {
-                    MailUtil.sendMail(recipient, subject, content);
-                } catch (MessagingException e) {
-                    e.printStackTrace();
+                if (email != null && !email.isEmpty()) {
+                    String recipient = email;
+                    String subject = "고객님의 문의에 대한 답변이 등록되었습니다.";
+                    String content = "<p>안녕하세요, 고객님.</p>" +
+                                     "<p>문의하신 내용에 대한 답변이 등록되었습니다.</p>" +
+                                     "<p>답변 내용: " + inquiryReply + "</p>";
+
+                    try {
+                        String mailserver = "mw-002.cafe24.com"; // cafe24 메일 서버
+                        Properties props = new Properties();
+                        props.put("mail.smtp.host", mailserver);
+                        props.put("mail.smtp.auth", "true");
+                        props.put("mail.smtp.port", "587"); // 필요시 수정
+                        props.put("mail.smtp.starttls.enable", "true"); // TLS 사용
+
+                        javax.mail.Authenticator myAuth = new MyAuthenticator();
+                        Session sess = Session.getInstance(props, myAuth);
+                        sess.setDebug(true); // Enable debug mode
+
+                        Message msg = new MimeMessage(sess);
+                        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
+                        msg.setFrom(new InternetAddress("webmaster@itwill.co.kr"));
+                        msg.setSubject(subject);
+                        msg.setContent(content, "text/html; charset=UTF-8");
+                        msg.setSentDate(new Date());
+
+                        logger.info("이메일 발송 준비 완료. 발송 시작.");
+                        System.out.println("이메일 발송 준비 완료. 발송 시작.");
+                        Transport.send(msg);
+                        logger.info("Email sent successfully to " + recipient);
+                        System.out.println("Email sent successfully to " + recipient);
+                    } catch (MessagingException e) {
+                        logger.error("MessagingException: ", e);
+                        System.err.println("MessagingException: " + e);
+                        response.put("status", "error");
+                        response.put("message", "답변은 등록되었으나 이메일 발송에 실패하였습니다.");
+                    } catch (Exception e) {
+                        logger.error("Exception: ", e);
+                        System.err.println("Exception: " + e);
+                        response.put("status", "error");
+                        response.put("message", "예기치 않은 오류로 이메일 발송에 실패하였습니다.");
+                    }
+                } else {
+                    logger.error("유효한 이메일 주소를 찾을 수 없습니다.");
+                    System.err.println("유효한 이메일 주소를 찾을 수 없습니다.");
                     response.put("status", "error");
-                    response.put("message", "답변은 등록되었으나 이메일 발송에 실패하였습니다.");
+                    response.put("message", "유효한 이메일 주소를 찾을 수 없습니다.");
                 }
             } else {
                 response.put("status", "error");
                 response.put("message", "답변 등록에 실패하였습니다.");
             }
         } catch (Exception e) {
+            logger.error("Exception: ", e);
+            System.err.println("Exception: " + e);
             response.put("status", "error");
             response.put("message", "답변 등록 중 오류가 발생하였습니다.");
         }
         return response;
     }
+
+    
 
     // FAQ 페이지를 반환하는 메서드
     @GetMapping("/customerFaq")

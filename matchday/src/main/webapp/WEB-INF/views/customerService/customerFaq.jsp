@@ -42,8 +42,5 @@
     </div>
 </div>
 
-<script>
-    console.log("sessionScope.grade: ${sessionScope.grade}");  // 디버깅을 위해 추가
-</script>
 
 <%@ include file="../footer.jsp" %>
