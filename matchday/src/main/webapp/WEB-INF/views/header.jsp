@@ -109,8 +109,16 @@
 					</h1>
                 </div>
                 <div class="user-options">
-                    <a class="btn btn-outline-light btn-sm" href="#">LOGIN</a>
-                    <a class="btn btn-outline-light btn-sm" href="#">JOIN</a>
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.userID}">
+                            <a class="btn btn-outline-light btn-sm" href="/member/logout">LOGOUT</a>
+                            <a class="btn btn-outline-light btn-sm" href="/member/mypage">MYPAGE</a>
+                        </c:when>
+                        <c:otherwise>
+                            <a class="btn btn-outline-light btn-sm" href="/member/login">LOGIN</a>
+                            <a class="btn btn-outline-light btn-sm" href="/member/join">JOIN</a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>
