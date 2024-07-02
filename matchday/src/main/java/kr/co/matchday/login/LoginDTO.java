@@ -12,4 +12,5 @@ import lombok.ToString;
 public class LoginDTO {
 	private String userID;
     private String password;
+    private char grade;
 }//class end
