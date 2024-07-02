@@ -1,19 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<title>회원정보 수정</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/jquery-3.7.1.min.js"></script>
-<script src="/js/script.js"></script>
-<link href="/css/styles.css" rel="stylesheet" type="text/css">
-</head>
-<body>
+<%@ include file="../header.jsp" %>
     <div class="container">
         <h2>회원정보 수정</h2>		<!-- action : 이동할 url -->
         <form id="editForm" action="/member/mypage" method="post" onsubmit="return validateEditForm()">
@@ -69,5 +56,4 @@
 	<script
 		src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     
-</body>
-</html>
+<%@ include file="../footer.jsp" %>

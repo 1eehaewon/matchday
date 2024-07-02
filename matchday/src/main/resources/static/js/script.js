@@ -160,6 +160,39 @@ function validateForm() { //회원가입폼 유효성검사
 	return true;
 }//validateForm() end
 
+// 회원가입폼 제출 후 서버 응답 처리
+$(document).ready(function() {
+	$('#signup-form').submit(function(event) {
+		event.preventDefault(); // 기본 제출 방지
+
+		// AJAX를 통해 폼 데이터를 서버로 전송
+		$.ajax({
+			url: '/member/join/insert', // 서버 URL
+			type: 'POST',
+			data: $('#signup-form').serialize(), // 폼 데이터 직렬화하여 전송
+			success: function(response) {
+				// 서버에서의 응답(response)을 처리
+				if (response === '회원가입 성공') {
+					// 성공 메시지를 alert 창으로 표시
+					alert('회원가입이 성공적으로 완료되었습니다. 로그인 해주세요');
+					// 홈페이지로 이동 (예시로 홈페이지 URL을 지정)
+					window.location.href = '/home.do';
+				} else {
+					// 실패 메시지를 alert 창으로 표시
+					alert('회원가입에 실패하였습니다. 다시 시도해 주세요.');
+				}
+			},
+			error: function(xhr, status, error) {
+				// AJAX 요청 실패 시 처리
+				console.error('AJAX 요청 중 오류 발생: ' + error);
+				alert('회원가입 중 오류가 발생하였습니다. 관리자에게 문의하세요.');
+			}
+		});
+	});
+});
+// 전역 변수 설정
+var isIdChecked = false; // 아이디 중복 확인 여부 변수
+
 function idCheck() { //id 중복확인
 	var userId = $('#userID').val(); // 입력된 아이디 값 가져오기
 

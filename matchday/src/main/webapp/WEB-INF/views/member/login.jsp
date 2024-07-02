@@ -1,21 +1,37 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!-- 로그인 폼 -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로그인</title>
-<link rel="stylesheet" href="/css/styles.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="/js/script.js"></script>
-</head>
-<body>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="../header.jsp" %>
+<style>
+    .login-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80vh; /* 화면 높이의 80%를 사용하여 중앙에 배치 */
+        background-color: #f8f9fa; /* 백그라운드 색상을 약간 회색으로 설정 */
+    }
+    .login-form {
+        width: 100%;
+        max-width: 400px; /* 최대 너비 설정 */
+        padding: 30px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff; /* 폼 배경 색상을 흰색으로 설정 */
+    }
+    .login-title {
+        text-align: center;
+        margin-bottom: 20px; /* 제목 아래에 여백 추가 */
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 15px; /* 폼 그룹 아래에 여백 추가 */
+    }
+</style>
     <div class="login-container">
-        <h2>로그인</h2>
+        <h4 class="login-title">로그인</h4>
         <!-- 마이페이지에 로그인이 안되어있을 때 alert창 -->
          <c:if test="${not empty message}">
             <script type="text/javascript">
@@ -45,5 +61,4 @@
         <% } %>
         </form>
     </div>
-</body>
-</html>
+<%@ include file="../footer.jsp" %>
