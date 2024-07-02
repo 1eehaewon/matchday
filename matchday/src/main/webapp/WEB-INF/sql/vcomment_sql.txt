@@ -1,0 +1,16 @@
+-- pcomment_sql.txt
+
+--- 상품 댓글 테이블
+CREATE TABLE vcomment (
+    cno          INT            AUTO_INCREMENT PRIMARY KEY,  -- 댓글번호, 자동 증가 및 기본 키 설정
+    video_code   INT            NOT NULL,                    -- 부모글번호
+    content      VARCHAR(255)   NOT NULL,                    -- 댓글내용
+    wname        VARCHAR(100)   NOT NULL,                    -- 작성자
+    regdate      DATETIME       DEFAULT CURRENT_TIMESTAMP   -- 작성일, 현재 시간으로 기본값 설정
+);
+
+-- 댓글 목록
+
+-- video_code가 부모글번호인 댓글 목록 조회
+SELECT * FROM vcomment WHERE video_code = 부모글번호;
+

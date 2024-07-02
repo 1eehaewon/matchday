@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<!-- video.xml -->
+
+<mapper namespace="video">
+
+    <insert id="insert" parameterType="kr.co.matchday.video.VideoDTO">
+        INSERT INTO video (video_name, description, video_url)
+        VALUES (#{video_name}, #{description}, #{video_url})
+    </insert>
+    
+    <select id="list" resultType="kr.co.matchday.video.VideoDTO">
+        SELECT video_code, video_name, description, video_url, regdate
+        FROM video
+    </select>
+    
+    <select id="detail" parameterType="int" resultType="kr.co.matchday.video.VideoDTO">
+        SELECT video_code, video_name, description, video_url, regdate
+        FROM video
+        WHERE video_code = #{video_code}
+    </select>
+    
+    <update id="update" parameterType="kr.co.matchday.video.VideoDTO">
+        UPDATE video
+        SET video_name=#{video_name}
+           ,description=#{description}
+           ,video_url=#{video_url}           
+       	WHERE video_code=#{video_code}
+    </update>
+    
+   <delete id="delete" parameterType="Integer">
+	    DELETE FROM video
+	    WHERE video_code = #{video_code}
+	</delete> 
+	 
+	 <select id="search" resultType="kr.co.matchday.video.VideoDTO" parameterType="String">
+        SELECT video_code, video_name, description, video_url, regdate
+        FROM video
+        WHERE video_name LIKE #{video_name}
+        ORDER BY video_name
+    </select>
+    
+      <!-- 전체 게시물 목록 조회 추가 코드 시작-->
+    <select id="listWithPaging" resultType="kr.co.matchday.video.VideoDTO" parameterType="map">
+        SELECT video_code, video_name, description, video_url, regdate
+        FROM video
+        ORDER BY regdate DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 게시물 수 조회 -->
+    <select id="countVideos" resultType="int">
+        SELECT COUNT(*) FROM video
+    </select>
+    
+
+</mapper>

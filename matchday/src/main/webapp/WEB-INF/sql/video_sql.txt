@@ -1,0 +1,38 @@
+-- video_sql.txt
+
+
+-- 비디오 테이블 생성
+CREATE TABLE video (
+    video_code INT AUTO_INCREMENT PRIMARY KEY,  -- 비디오번호
+    video_name VARCHAR(255) NOT NULL,           -- 비디오명
+    description VARCHAR(2000),                  -- 비디오내용
+    video_url VARCHAR(3000) NOT NULL,           -- 비디오주소
+    regdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 비디오등록일
+);
+
+
+-- 시퀀스용 테이블 생성
+CREATE TABLE video_seq (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT
+);
+
+-- 시퀀스 값 초기화
+INSERT INTO video_seq (id) VALUES (0);
+
+-- 트리거 생성
+DELIMITER $$
+
+CREATE TRIGGER before_insert_video
+BEFORE INSERT ON video
+FOR EACH ROW
+BEGIN
+    IF new.video_code IS NULL THEN
+        SET new.video_code = (SELECT id FROM video_seq);
+        UPDATE video_seq SET id = LAST_INSERT_ID(id + 1);
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+-- MariaDB
