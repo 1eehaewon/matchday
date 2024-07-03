@@ -49,6 +49,7 @@
         .carousel-indicators {
     		display: none;
 		}
+		
 		.dropdown:hover .dropdown-menu {
             display: block;
         }
@@ -59,6 +60,22 @@
             display: block;
             background-color: #003366; /* 드롭다운 배경색 */
         }
+        .footer-content {
+		    background-color: #000;
+		    color: white;
+		    text-align: center;
+		    padding: 20px 0;
+		    font-size: 14px;
+		    width: 100%;
+		    position: relative;
+		    bottom: 0;
+		    margin-top: auto;
+		}
+		
+		.footer-content p {
+		    margin: 5px 0;
+		}
+		
   </style>
 </head>
 <body>

@@ -5,103 +5,109 @@
 <div class="container mt-5">
     <!-- 1:1 문의 및 FAQ 링크 메뉴바 -->
     <div class="d-flex justify-content-center mb-4">
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a class="nav-link" href="/customerService/customerPage">1:1 문의</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/customerService/customerFaq">FAQ</a>
-            </li>
-        </ul>
+        <div class="btn-group" role="group">
+            <a class="btn btn-outline-primary d-flex align-items-center" href="/customerService/customerPage">
+                <i class="bi bi-envelope-fill me-2"></i> 1:1 문의
+            </a>
+            <a class="btn btn-outline-primary d-flex align-items-center" href="/customerService/customerFaq">
+                <i class="bi bi-question-circle-fill me-2"></i> FAQ
+            </a>
+        </div>
     </div>
 
     <!-- 상단 메뉴 바 -->
     <div class="d-flex justify-content-center mb-4">
-        <ul class="nav nav-tabs" id="categoryTabs">
-            <li class="nav-item">
-                <a class="nav-link ${category == 'all' ? 'active' : ''}" href="?category=all&page=1" data-category="all">전체</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${category == '상품문의' ? 'active' : ''}" href="?category=상품문의&page=1" data-category="상품문의">상품문의</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${category == '경기문의' ? 'active' : ''}" href="?category=경기문의&page=1" data-category="경기문의">경기문의</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${category == '배송문의' ? 'active' : ''}" href="?category=배송문의&page=1" data-category="배송문의">배송문의</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${category == '주문/결제' ? 'active' : ''}" href="?category=주문/결제&page=1" data-category="주문/결제">주문/결제</a>
-            </li>
-        </ul>
+        <div class="btn-group" role="group">
+            <a class="btn btn-outline-secondary d-flex align-items-center ${category == 'all' ? 'active' : ''}" href="?category=all&page=1" data-category="all">
+                <i class="bi bi-list me-2"></i> 전체
+            </a>
+            <a class="btn btn-outline-secondary d-flex align-items-center ${category == '상품문의' ? 'active' : ''}" href="?category=상품문의&page=1" data-category="상품문의">
+                <i class="bi bi-box-seam me-2"></i> 상품문의
+            </a>
+            <a class="btn btn-outline-secondary d-flex align-items-center ${category == '경기문의' ? 'active' : ''}" href="?category=경기문의&page=1" data-category="경기문의">
+                <i class="bi bi-trophy me-2"></i> 경기문의
+            </a>
+            <a class="btn btn-outline-secondary d-flex align-items-center ${category == '배송문의' ? 'active' : ''}" href="?category=배송문의&page=1" data-category="배송문의">
+                <i class="bi bi-truck me-2"></i> 배송문의
+            </a>
+            <a class="btn btn-outline-secondary d-flex align-items-center ${category == '주문/결제' ? 'active' : ''}" href="?category=주문/결제&page=1" data-category="주문/결제">
+                <i class="bi bi-credit-card me-2"></i> 주문/결제
+            </a>
+        </div>
     </div>
 
     <!-- 테이블 -->
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col" class="text-center">번호</th>
-                    <th scope="col" class="text-center">카테고리</th>
-                    <th scope="col" class="text-center">제목</th>
-                    <th scope="col" class="text-center">작성자</th>
-                    <th scope="col" class="text-center">등록일</th>
-                    <th scope="col" class="text-center">답변처리상태</th>
-                </tr>
-            </thead>
-            <tbody id="inquiryTableBody">
-                <c:forEach var="inquiry" items="${inquiryList}">
-                    <c:if test="${inquiry.boardType != 'FAQ'}">
-                        <tr data-category="${inquiry.boardType}">
-                            <td class="text-center">${inquiry.inquiryID}</td>
-                            <td class="text-center">
-                                <c:choose>
-                                    <c:when test="${inquiry.boardType == '상품문의'}">상품문의</c:when>
-                                    <c:when test="${inquiry.boardType == '경기문의'}">경기문의</c:when>
-                                    <c:when test="${inquiry.boardType == '배송문의'}">배송문의</c:when>
-                                    <c:when test="${inquiry.boardType == '주문/결제'}">주문/결제</c:when>
-                                    <c:otherwise>알 수 없음</c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td class="text-center">
-                                <a href="#" data-href="customerDetail/${inquiry.inquiryID}" data-bs-toggle="modal" data-bs-target="#passwordModal">
-                                    ${inquiry.title}
-                                </a>
-                            </td>
-                            <td class="text-center">${inquiry.userID}</td>
-                            <td class="text-center">${inquiry.formattedCreatedDate}</td>
-                            <td class="text-center">${inquiry.isReplyHandled}</td>
-                        </tr>
-                    </c:if>
-                </c:forEach>
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-header bg-Secondary text-black">
+            <h5 class="mb-0" align="left">문의 목록</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="text-center">번호</th>
+                        <th scope="col" class="text-center">카테고리</th>
+                        <th scope="col" class="text-center">제목</th>
+                        <th scope="col" class="text-center">작성자</th>
+                        <th scope="col" class="text-center">등록일</th>
+                        <th scope="col" class="text-center">답변처리상태</th>
+                    </tr>
+                </thead>
+                <tbody id="inquiryTableBody">
+                    <c:forEach var="inquiry" items="${inquiryList}">
+                        <c:if test="${inquiry.boardType != 'FAQ'}">
+                            <tr data-category="${inquiry.boardType}">
+                                <td class="text-center">${inquiry.inquiryID}</td>
+                                <td class="text-center">
+                                    <c:choose>
+                                        <c:when test="${inquiry.boardType == '상품문의'}">상품문의</c:when>
+                                        <c:when test="${inquiry.boardType == '경기문의'}">경기문의</c:when>
+                                        <c:when test="${inquiry.boardType == '배송문의'}">배송문의</c:when>
+                                        <c:when test="${inquiry.boardType == '주문/결제'}">주문/결제</c:when>
+                                        <c:otherwise>알 수 없음</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" data-href="customerDetail/${inquiry.inquiryID}" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                                        ${inquiry.title}
+                                    </a>
+                                </td>
+                                <td class="text-center">${inquiry.userID}</td>
+                                <td class="text-center">${inquiry.formattedCreatedDate}</td>
+                                <td class="text-center">${inquiry.isReplyHandled}</td>
+                            </tr>
+                        </c:if>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- 페이징 -->
-    <nav aria-label="Page navigation example" class="my-4">
-        <ul>
-            <c:if test="${currentPage > 1}">
-                <li class="page-item">
-                    <a class="page-link" href="?category=${category}&page=${currentPage - 1}&col=${col}&word=${word}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            </c:if>
-            <c:forEach begin="1" end="${totalPages}" var="i">
-                <li class="page-item ${i == currentPage ? 'active' : ''}">
-                    <a class="page-link" href="?category=${category}&page=${i}&col=${col}&word=${word}">${i}</a>
-                </li>
-            </c:forEach>
-            <c:if test="${currentPage < totalPages}">
-                <li class="page-item">
-                    <a class="page-link" href="?category=${category}&page=${currentPage + 1}&col=${col}&word=${word}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </c:if>
-        </ul>
-    </nav>
+	<nav aria-label="Page navigation example" class="my-4">
+	    <ul>
+	        <c:if test="${currentPage > 1}">
+	            <li class="page-item">
+	                <a class="page-link" href="?category=${category}&page=${currentPage - 1}&col=${col}&word=${word}" aria-label="Previous">
+	                    <span aria-hidden="true">&laquo; 이전</span>
+	                </a>
+	            </li>
+	        </c:if>
+	        <c:forEach begin="1" end="${totalPages}" var="i">
+	            <li class="page-item ${i == currentPage ? 'active' : ''}">
+	                <a class="page-link" href="?category=${category}&page=${i}&col=${col}&word=${word}">${i}</a>
+	            </li>
+	        </c:forEach>
+	        <c:if test="${currentPage < totalPages}">
+	            <li class="page-item">
+	                <a class="page-link" href="?category=${category}&page=${currentPage + 1}&col=${col}&word=${word}" aria-label="Next">
+	                    <span aria-hidden="true">다음 &raquo;</span>
+	                </a>
+	            </li>
+	        </c:if>
+	    </ul>
+	</nav>
+
 
     <!-- 검색폼 시작 -->
     <form class="row g-3 justify-content-center mb-4" action="customerPage" method="get" onsubmit="return searchCheck()">
@@ -117,11 +123,15 @@
             <input type="text" name="word" id="word" class="form-control" value="${word}" placeholder="검색어">
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-secondary">검색</button>
+            <button type="submit" class="btn btn-secondary">
+                <i class="bi bi-search me-2"></i> 검색
+            </button>
         </div>
         <div class="col-auto">
             <!-- 글쓰기 버튼, 클릭 시 customerForm.jsp로 이동 -->
-            <button type="button" class="btn btn-primary" onclick="location.href='customerForm'">글쓰기</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='customerForm'">
+                <i class="bi bi-pencil-square me-2"></i> 글쓰기
+            </button>
         </div>
     </form>
     <!-- 검색폼 끝 -->

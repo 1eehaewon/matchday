@@ -3,21 +3,23 @@
 
 <div class="container mt-5">
     <!-- 1:1 문의 및 FAQ 링크 메뉴바 -->
-    <div class="d-flex justify-content-center mb-4">
-        <ul class="nav nav-pills">
-            <li class="nav-item">
-                <a class="nav-link" href="/customerService/customerPage">1:1 문의</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/customerService/customerFaq">FAQ</a>
-            </li>
-        </ul>
-    </div>
+	<div class="d-flex justify-content-center mb-4">
+	    <div class="btn-group" role="group">
+	        <a class="btn btn-outline-primary d-flex align-items-center" href="/customerService/customerPage">
+	            <i class="bi bi-envelope-fill me-2"></i> 1:1 문의
+	        </a>
+	        <a class="btn btn-outline-primary d-flex align-items-center" href="/customerService/customerFaq">
+	            <i class="bi bi-question-circle-fill me-2"></i> FAQ
+	        </a>
+	    </div>
+	</div>
 
-    <div class="d-flex justify-content-between mb-4">
-        <h2 class="text-center">FAQ</h2>
+    <div class="d-flex justify-content-between mb-4 align-items-center">
+        <h2 class="text-center m-0">FAQ</h2>
         <c:if test="${sessionScope.grade == 'M'}">
-            <button type="button" class="btn btn-primary" onclick="location.href='/customerService/customerFaqForm'">FAQ 글쓰기</button>
+            <button type="button" class="btn btn-primary" onclick="location.href='/customerService/customerFaqForm'">
+                <i class="bi bi-pencil-fill me-2"></i> FAQ 글쓰기
+            </button>
         </c:if>
     </div>
 
@@ -33,7 +35,9 @@
                     <div class="accordion-body">
                         <c:out value="${faq.content}" escapeXml="false"/>
                         <c:if test="${sessionScope.grade == 'M'}">
-                            <a href="/customerService/customerFaqDetail/${faq.inquiryID}" class="btn btn-link">자세히 보기</a>
+                            <a href="/customerService/customerFaqDetail/${faq.inquiryID}" class="btn btn-link">
+                                <i class="bi bi-eye-fill me-2"></i> 자세히 보기
+                            </a>
                         </c:if>
                     </div>
                 </div>
