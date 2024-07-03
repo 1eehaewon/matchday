@@ -250,8 +250,8 @@
                     <br>
                     <form name="goodsfrm" method="post">
 		                <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
-			            <input type="button" value="상품수정" onclick="goods_update()">
-			            <input type="button" value="상품삭제" onclick="goods_delete()">
+			            <input type="button" value="상품수정" onclick="goods_update()" class="btn btn-success">
+			            <input type="button" value="상품삭제" onclick="goods_delete()" class="btn btn-danger">
 	                </form>
 	                    	
                 </div> <!-- 글 -->

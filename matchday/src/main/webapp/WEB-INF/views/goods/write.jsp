@@ -53,8 +53,8 @@
                                 <option value="">카테고리 선택</option>
                                 <option value="Uniform">Uniform</option>
                                 <option value="Hairband">Hairband</option>
-                                <option value="Stick">Stick</option>
-                                <option value="Merplur">Merplur</option>
+                                <option value="Lightstick">Lightstick</option>
+                                <option value="Muffler">Muffler</option>
                                 <option value="Keyring">Keyring</option>
                             </select>
                             <span id="categoryMsg" style="color: red;"></span>
@@ -122,7 +122,7 @@
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">
-                            <input type="submit" value="상품등록">
+                            <input type="submit" value="상품등록" class="btn btn-success">
                         </td>
                     </tr>
                 </tbody>

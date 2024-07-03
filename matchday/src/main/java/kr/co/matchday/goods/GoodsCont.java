@@ -2,6 +2,7 @@ package kr.co.matchday.goods;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class GoodsCont {
 	@Autowired
     private GoodsDAO goodsDao;
 
-	/* @RequestMapping("/list") */
+	/* @RequestMapping("/list") 
 	@GetMapping("/list")
     public ModelAndView list() {
         List<GoodsDTO> goodsList = goodsDao.list();
@@ -40,8 +41,29 @@ public class GoodsCont {
         mav.setViewName("goods/list");
         mav.addObject("list", goodsList);
         return mav;
-    }//list end
+    }//list end*/
 
+	/* @RequestMapping("/list") */
+	@GetMapping("/list")
+    public ModelAndView list(@RequestParam(defaultValue = "1") int page) {
+        int pageSize = 9;
+        int offset = (page - 1) * pageSize;
+
+        int totalRecords = goodsDao.countGoods();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        Map<String, Integer> params = new HashMap<>();
+        params.put("limit", pageSize);
+        params.put("offset", offset);
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("goods/list");
+        mav.addObject("list", goodsDao.listWithPaging(params));
+        mav.addObject("currentPage", page);
+        mav.addObject("totalPages", totalPages);
+        return mav;
+    }//list end
+	
     @GetMapping("/write")
     public String write(@ModelAttribute("goodsDto") GoodsDTO goodsDto) {
         return "goods/write";
@@ -235,7 +257,7 @@ public class GoodsCont {
             e.printStackTrace();
         }
         return imageUrl;
-    }
+    }//uploadImage end
     
     
     

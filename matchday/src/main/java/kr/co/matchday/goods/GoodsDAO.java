@@ -1,6 +1,7 @@
 package kr.co.matchday.goods;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,15 @@ public class GoodsDAO {
 
 	public String filename(String goodsid) {
 	    return sqlSession.selectOne("goods.filename", goodsid);
-	}
+	}//filename end
 	
+	public List<GoodsDTO> listWithPaging(Map<String, Integer> params) {
+        return sqlSession.selectList("goods.listWithPaging", params);
+    }//listWithPaging end
+
+    public int countGoods() {
+        return sqlSession.selectOne("goods.countGoods");
+    }//countGoods end
 	
 	
 	
