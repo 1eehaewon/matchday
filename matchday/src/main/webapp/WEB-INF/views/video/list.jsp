@@ -1,28 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<div class="container text-center">
+<div class="container mt-4"> <!-- mt-4 클래스 추가하여 위쪽 여백 추가 -->
     <div class="row">
-        <div class="col-12"> 
-            <h1>하이라이트 목록</h1>
-            <p>
-                <c:if test="${sessionScope.grade == 'M'}">
-                    <button type="button" class="btn btn-success" onclick="location.href='write'">하이라이트 등록</button>
-                </c:if>
-            </p>
+        <div class="col-6">
+            <h1>하이라이트</h1>
+        </div>
+        <div class="col-6 text-right">
+            <c:if test="${sessionScope.grade == 'M'}">
+                <button type="button" class="btn btn-success" onclick="location.href='write'">하이라이트 등록</button>
+            </c:if>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <!-- 검색 -->
-            <form method="get" action="search">
-                하이라이트명: <input type="text" name="video_name" value="${video_name}">
-                <input type="submit" value="검색" class="btn btn-primary">
+    
+    <!-- 검색 시작-->
+    <div class="row justify-content-end mb-3"> <!-- 수정된 부분 -->
+        <div class="col-sm-3"> <!-- 수정된 부분 -->
+            <form method="get" action="search" class="form-inline">
+                <div class="input-group">
+                    <input type="text" name="video_name" id="video_name" value="${video_name}" class="form-control" placeholder="하이라이트명 입력">
+                    <div class="input-group-append">
+                        <input type="submit" value="검색" class="btn btn-primary">
+                    </div>
+                </div>
             </form>
-            <hr>
         </div>
-    </div>
-
+    </div> 
+      <!-- 검색 끝 -->
+      
     <div class="row">
         <c:forEach items="${list}" var="row" varStatus="vs">
             <div class="col-sm-4 col-md-4 mb-4">
