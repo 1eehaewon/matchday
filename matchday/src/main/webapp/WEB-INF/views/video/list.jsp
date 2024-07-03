@@ -1,13 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-
 <div class="container text-center">
     <div class="row">
         <div class="col-12"> 
             <h1>하이라이트 목록</h1>
             <p>
-                <button type="button" class="btn btn-success" onclick="location.href='write'">하이라이트 등록</button>
+                <c:if test="${sessionScope.grade == 'M'}">
+                    <button type="button" class="btn btn-success" onclick="location.href='write'">하이라이트 등록</button>
+                </c:if>
             </p>
         </div>
     </div>
@@ -88,5 +89,3 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 <%@ include file="../footer.jsp" %>
-
-
