@@ -435,4 +435,18 @@ public class CustomerCont {
         return imageUrl;
     }
     
+    // FAQ 페이지를 반환하는 메서드
+    @GetMapping("/customerFaq")
+    public ModelAndView customerFaq() {
+        CustomerDTO params = new CustomerDTO();
+        params.setBoardType("FAQ");
+
+        List<CustomerDTO> faqList = customerDao.getFaqList(params);
+
+        ModelAndView mav = new ModelAndView("customerService/customerFaq");
+        mav.addObject("faqList", faqList);
+        return mav;
+    }
+
+    
 }
