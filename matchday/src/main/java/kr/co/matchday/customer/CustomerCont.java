@@ -10,16 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -32,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import net.utility.MyAuthenticator;
 
@@ -43,6 +41,9 @@ public class CustomerCont {
 
     @Autowired
     private CustomerDAO customerDao;
+    
+    @Autowired
+    private JavaMailSender mailSender;
 
     public CustomerCont() {
         System.out.println("-----CustomerCont() 호출됨");
@@ -218,7 +219,8 @@ public class CustomerCont {
         }
         return "redirect:/customerService/customerPage";
     }
-
+    
+    /*
     @PostMapping("/addReply")
     @ResponseBody
     public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
@@ -309,6 +311,68 @@ public class CustomerCont {
             response.put("message", "답변 등록 중 오류가 발생하였습니다.");
         }
         return response;
+    }
+    */
+    
+    @PostMapping("/addReply")
+    @ResponseBody
+    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
+            if (inquiry.getInquiryReply() != null && !inquiry.getInquiryReply().isEmpty()) {
+                response.put("status", "error");
+                response.put("message", "이미 등록된 답변이 있습니다.");
+                return response;
+            }
+
+            inquiry.setInquiryReply(inquiryReply);
+            inquiry.setReplyDate(new Date()); // 답변 시간을 현재 시간으로 설정
+            int result = customerDao.replyInquiry(inquiry);
+
+            if (result > 0) {
+                response.put("status", "success");
+
+                // 이메일 발송
+                String email = customerDao.getUserEmail(inquiry.getUserID());
+                if (email != null && !email.isEmpty()) {
+                    sendEmail(email, inquiry.getTitle(), inquiryReply);
+                } else {
+                    response.put("status", "error");
+                    response.put("message", "유효한 이메일 주소를 찾을 수 없습니다.");
+                }
+            } else {
+                response.put("status", "error");
+                response.put("message", "답변 등록에 실패하였습니다.");
+            }
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "답변 등록 중 오류가 발생하였습니다.");
+        }
+        return response;
+    }
+
+    private void sendEmail(String to, String inquiryTitle, String inquiryReply) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject("고객님의 문의에 대한 답변이 등록되었습니다.");
+            
+            StringBuilder content = new StringBuilder();
+            content.append("<p>안녕하세요, 고객님.</p>");
+            content.append("<p>고객님께서 문의하신 내용에 대한 답변이 등록되었습니다.</p>");
+            content.append("<p><b>문의 제목:</b> ").append(inquiryTitle).append("</p>");
+            content.append("<p><b>답변 내용:</b> ").append(inquiryReply).append("</p>");
+            content.append("<p>더 궁금한 사항이 있으시면 언제든지 문의해 주세요.</p>");
+            content.append("<p>감사합니다.</p>");
+
+            helper.setText(content.toString(), true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
     // FAQ 작성 폼 페이지를 반환하는 메서드
