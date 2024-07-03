@@ -43,9 +43,9 @@ public class CustomerCont {
 
     @Autowired
     private CustomerDAO customerDao;
-    
+
     public CustomerCont() {
-    	System.out.println("-----CustomerCont() 호출됨");
+        System.out.println("-----CustomerCont() 호출됨");
     }
 
     // 고객 문의 페이지를 반환하는 메서드
@@ -98,7 +98,7 @@ public class CustomerCont {
 
     // 고객 문의 폼 페이지를 반환하는 메서드
     @GetMapping("/customerForm")
-    public ModelAndView customerForm() {
+    public ModelAndView customerForm(HttpSession session) {
         ModelAndView mav = new ModelAndView("customerService/customerForm");
 
         // 임의의 데이터로 matchList와 productList 생성
@@ -108,7 +108,7 @@ public class CustomerCont {
         match1.setTitle("축구 경기 1");
         match1.setFormattedCreatedDate("2023-06-01");
         matchList.add(match1);
-        
+
         CustomerDTO match2 = new CustomerDTO();
         match2.setInquiryID(2);
         match2.setTitle("축구 경기 2");
@@ -121,7 +121,7 @@ public class CustomerCont {
         product1.setTitle("상품 1");
         product1.setFormattedCreatedDate("2023-06-05");
         productList.add(product1);
-        
+
         CustomerDTO product2 = new CustomerDTO();
         product2.setInquiryID(2);
         product2.setTitle("상품 2");
@@ -130,6 +130,7 @@ public class CustomerCont {
 
         mav.addObject("matchList", matchList);
         mav.addObject("productList", productList);
+        mav.addObject("userID", session.getAttribute("userID")); // 세션에서 userID를 가져와서 추가
 
         return mav;
     }
@@ -139,15 +140,13 @@ public class CustomerCont {
     public ModelAndView customerFormInsert(CustomerDTO customerDto, 
                                            @RequestParam("category") String category, 
                                            HttpSession session) throws Exception {
-        String userID = "Test";
-        customerDto.setUserID(userID);
+        String userID = (String) session.getAttribute("userID");
+        customerDto.setUserID(userID); // 세션에서 가져온 사용자 ID 설정
         customerDto.setCreatedDate(new Date());
-        
+
         // 선택된 카테고리를 그대로 저장
         customerDto.setBoardType(category);
-        
-        customerDto.setInqpasswd(1234);
-        
+
         if (customerDto.getIsReplyHandled() == null) {
             customerDto.setIsReplyHandled("답변처리중");
         }
@@ -172,7 +171,7 @@ public class CustomerCont {
         mav.addObject("inquiry", inquiry);
         return mav;
     }
-    
+
     // 문의 삭제를 처리하는 메서드
     @PostMapping("/delete/{inquiryID}")
     public ModelAndView deleteInquiry(@PathVariable("inquiryID") int inquiryID) {
@@ -185,7 +184,7 @@ public class CustomerCont {
         }
         return mav;
     }
-    
+
     // 비밀번호 확인을 처리하는 메서드
     @PostMapping("/checkPassword")
     @ResponseBody
@@ -220,38 +219,6 @@ public class CustomerCont {
         return "redirect:/customerService/customerPage";
     }
 
-    /*
-    // 답변을 추가하는 메서드
-    @PostMapping("/addReply")
-    @ResponseBody
-    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
-            if (inquiry.getInquiryReply() != null && !inquiry.getInquiryReply().isEmpty()) {
-                response.put("status", "error");
-                response.put("message", "이미 등록된 답변이 있습니다.");
-                return response;
-            }
-
-            inquiry.setInquiryReply(inquiryReply);
-            inquiry.setReplyDate(new Date()); // 답변 시간을 현재 시간으로 설정
-            int result = customerDao.replyInquiry(inquiry);
-
-            if (result > 0) {
-                response.put("status", "success");
-            } else {
-                response.put("status", "error");
-                response.put("message", "답변 등록에 실패하였습니다.");
-            }
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "답변 등록 중 오류가 발생하였습니다.");
-        }
-        return response;
-    }
-    */
-    
     @PostMapping("/addReply")
     @ResponseBody
     public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
@@ -365,7 +332,7 @@ public class CustomerCont {
         }
         return "redirect:/customerService/customerFaq";
     }
-    
+
     // FAQ 상세 페이지로 이동
     @GetMapping("/customerFaqDetail/{inquiryID}")
     public ModelAndView customerFaqDetail(@PathVariable int inquiryID) {
@@ -374,7 +341,6 @@ public class CustomerCont {
         mav.addObject("faq", faq);
         return mav;
     }
-    
 
     // FAQ 수정 폼 페이지를 반환하는 메서드
     @GetMapping("/customerFaqForm/{inquiryID}")
@@ -413,9 +379,7 @@ public class CustomerCont {
         }
         return "redirect:/customerService/customerFaq";
     }
-    
-    
-    
+
     @PostMapping("/uploadImage")
     @ResponseBody
     public String uploadImage(@RequestParam("file") MultipartFile file) {
@@ -434,7 +398,7 @@ public class CustomerCont {
         }
         return imageUrl;
     }
-    
+
     // FAQ 페이지를 반환하는 메서드
     @GetMapping("/customerFaq")
     public ModelAndView customerFaq() {
@@ -447,6 +411,4 @@ public class CustomerCont {
         mav.addObject("faqList", faqList);
         return mav;
     }
-
-    
 }

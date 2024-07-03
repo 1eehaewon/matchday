@@ -46,7 +46,7 @@
                             </div>
                             <div class="mb-4">
                                 <label for="userID" class="form-label custom-form-label">회원 ID</label>
-                                <input type="text" name="userID" id="userID" value="${sessionScope.userID}" readonly class="form-control custom-form-control">
+                                <input type="text" name="userID" id="userID" value="${userID}" readonly class="form-control custom-form-control">
                             </div>
                             <div class="mb-4">
                                 <label for="title" class="form-label custom-form-label">제목</label>
