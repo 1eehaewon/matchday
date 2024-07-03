@@ -7,7 +7,7 @@
 <mapper namespace="login">
     <select id="validateUser" parameterType="kr.co.matchday.login.LoginDTO" resultType="int">
         SELECT COUNT(*) 
-        FROM Users 
+        FROM users 
         WHERE UserID = #{userID} AND Password = #{password}
     </select>
     

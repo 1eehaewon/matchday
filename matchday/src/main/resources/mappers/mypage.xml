@@ -10,7 +10,7 @@
     
     <!-- 마이페이지 항목 불러오기 -->
     <select id="getUserById" parameterType="String" resultType="kr.co.matchday.mypage.MypageDTO">
-        SELECT * FROM Users WHERE UserID = #{userID}
+        SELECT * FROM users WHERE UserID = #{userID}
     </select>
     
     <!-- 마이페이지 수정 -->
