@@ -5,12 +5,37 @@
  
 <!-- video.xml -->
 
-<mapper namespace="video">
+<mapper namespace="matches">
 
     <insert id="insert" parameterType="kr.co.matchday.matches.MatchesDTO">
-        INSERT INTO video (matchid, hometeamid, awayteamid, stadiumid, matchdate, matchtime)
-        VALUES (#{matchid}, #{hometeamid},  #{awayteamid},  #{stadiumid}, #{matchdate},  #{matchtime})
+        INSERT INTO matches (matchid, hometeamid, awayteamid, stadiumid, matchdate, matchtime, referee, bookingstartdate, bookingenddate)
+        VALUES (#{matchid}, #{hometeamid}, #{awayteamid}, #{stadiumid}, #{matchdate}, #{matchtime}, #{referee}, #{bookingstartdate}, #{bookingenddate})
     </insert>
-    
+
+    <select id="list" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, matchtime, referee, bookingstartdate, bookingenddate
+        FROM matches
+    </select>
+
+	<web-app>
+    <!-- 서블릿 등록 -->
+    <servlet>
+        <servlet-name>SaveMatchServlet</servlet-name>
+        <servlet-class>kr.co.matchday.matches.SaveMatchServlet</servlet-class>
+    </servlet>
+
+    <!-- 서블릿 매핑 -->
+    <servlet-mapping>
+        <servlet-name>SaveMatchServlet</servlet-name>
+        <url-pattern>/saveMatch</url-pattern>
+    </servlet-mapping>
+
+    <!-- 기타 설정 -->
+</web-app>
+
+
+
+
+
 
 </mapper>

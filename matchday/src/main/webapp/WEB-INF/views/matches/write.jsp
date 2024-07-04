@@ -1,58 +1,34 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
 <%@ include file="../header.jsp" %>
 
-	<div class="row">
-	<div class="col-sm-12 text-center">
-		<!-- 본문 시작 main.jsp -->	
-				<p><h1>경기 일정 등록</h1></p>
-				<p>
-					<button type="button" class="btn btn-primary" onclick="location.href='list'">경기 일정 전체목록</button>					
-				</p>								
-			</div><!-- col end -->
-	</div><!-- row end -->
-	
-	<div class="row">
-	<div class="col-sm-12 text-center">
-		
-				<form name="matchesfrm" id="matchesfrm" method="post" action="insert">
-				<table class="table table-hover">
-			    <tbody style="text-align: left;">
-			    <tr>
-					<td>경기 날짜</td>
-					<td> <input type="text" name="matchedate" class="form-control" required> </td>
-			    </tr>
-			     <tr>
-					<td>시간</td>
-					<td> <input type="text" name="matchetime" class="form-control" required> </td>
-			    </tr>		    
-			   <tr>
-					<td>홈팀</td>
-					<td> <input type="text" name="hometeamid" class="form-control" required> </td>
-			    </tr>
-			    <tr>
-					<td>원정팀</td>
-					<td> <input type="text" name="awayteamid" class="form-control" required> </td>
-			    </tr>
-			     <tr>
-					<td>경기장</td>
-					<td> <input type="text" name="stadiumid" class="form-control" required> </td>
-			    </tr>									    
-			    <tr>
-					<td colspan="2" align="center">
-					    <input type="submit" value=" 경기 일정 등록" class="btn btn-success" required> 
-					</td>
-			    </tr>   
-			    </tbody> 
-		    </table>	
-				</form>
-			</div><!-- col end -->
-	</div><!-- row end -->
-	
-
-</main>
-
-
+<!-- 본문 시작 write.jsp -->
+<div class="container mt-4">
+    <h1>경기 일정 등록</h1>
+    <form action="${pageContext.request.contextPath}/saveMatch" method="post">
+        <div class="form-group">
+            <label for="matchdate">경기 날짜</label>
+            <input type="date" class="form-control" id="matchdate" name="matchdate" required>
+        </div>
+        <div class="form-group">
+            <label for="matchtime">경기 시간</label>
+            <input type="time" class="form-control" id="matchtime" name="matchtime" required>
+        </div>
+        <div class="form-group">
+            <label for="hometeamid">홈팀 이름</label>
+            <input type="text" class="form-control" id="hometeamid" name="hometeamid" required>
+        </div>
+        <div class="form-group">
+            <label for="awayteamid">원정팀 이름</label>
+            <input type="text" class="form-control" id="awayteamid" name="awayteamid" required>
+        </div>
+        <div class="form-group">
+            <label for="stadiumid">경기장 이름</label>
+            <input type="text" class="form-control" id="stadiumid" name="stadiumid" required>
+        </div>
+        <button type="submit" class="btn btn-success">저장하기</button>
+    </form>
+</div>
+<!-- 본문 끝 -->
 
 <%@ include file="../footer.jsp" %>
