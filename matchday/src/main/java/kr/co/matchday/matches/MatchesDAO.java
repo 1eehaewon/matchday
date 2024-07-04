@@ -1,14 +1,15 @@
 package kr.co.matchday.matches;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-@Mapper
 @Repository
+@Mapper
 public class MatchesDAO {
 
     @Autowired
@@ -19,14 +20,14 @@ public class MatchesDAO {
     }
 
     public List<MatchesDTO> list() {
-        return sqlSession.selectList("matches.list");
+        return sqlSession.selectList("kr.co.matchday.matches.MatchesDAO.list");
     }
     
-    public List<MatchesDTO> getAllTeams() {
+    public List<Map<String, Object>> getAllTeams() {
         return sqlSession.selectList("kr.co.matchday.matches.MatchesDAO.getAllTeams");
     }
 
-    public List<MatchesDTO> getAllStadiums() {
+    public List<Map<String, Object>> getAllStadiums() {
         return sqlSession.selectList("kr.co.matchday.matches.MatchesDAO.getAllStadiums");
     }
 

@@ -93,7 +93,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <h1><c:out value="${match.hometeamid}"/> vs <c:out value="${match.awayteamid}"/> (7.8)</h1>
+                <h1><c:out value="${match.hometeamid}"/> vs <c:out value="${match.awayteamid}"/></h1>
                 <p>경기일정: <fmt:formatDate value="${match.matchdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></p>
                 <div class="list-group mb-3">
                     <a href="#" data-section="north" class="section-link">N 구역</a>

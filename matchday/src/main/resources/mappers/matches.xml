@@ -1,28 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.matchday.matches.MatchesDAO">
-
-    <insert id="insert" parameterType="kr.co.matchday.matches.MatchesDTO">
-        INSERT INTO matches (matchid, hometeamid, awayteamid, stadiumid, matchdate, matchtime, referee, bookingstartdate, bookingenddate)
-        VALUES (#{matchid}, #{hometeamid}, #{awayteamid}, #{stadiumid}, #{matchdate}, #{matchtime}, #{referee}, #{bookingstartdate}, #{bookingenddate})
-    </insert>
-
-    <select id="list" resultType="kr.co.matchday.matches.MatchesDTO">
-        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, matchtime, referee, bookingstartdate, bookingenddate
-        FROM matches
-    </select>
-
-    <select id="getAllTeams" resultType="kr.co.matchday.matches.MatchesDTO">
+    <select id="getAllTeams" resultType="map">
         SELECT teamname FROM teams
     </select>
 
-    <select id="getAllStadiums" resultType="kr.co.matchday.matches.MatchesDTO">
-        SELECT stadiumid FROM stadiums
+    <select id="getAllStadiums" resultType="map">
+        SELECT stadiumname FROM stadiums
     </select>
 
-    <select id="getMaxMatchIdForDate" parameterType="String" resultType="String">
+    <select id="getMaxMatchIdForDate" resultType="string" parameterType="string">
         SELECT MAX(matchid) FROM matches WHERE matchdate = #{matchdate}
     </select>
 
+    <insert id="insert" parameterType="kr.co.matchday.matches.MatchesDTO">
+        INSERT INTO matches (matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate)
+        VALUES (#{matchid}, #{hometeamid}, #{awayteamid}, #{stadiumid}, #{matchdate}, #{bookingstartdate}, #{bookingenddate})
+    </insert>
+
+    <select id="list" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate
+        FROM matches
+    </select>
 </mapper>

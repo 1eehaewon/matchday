@@ -17,7 +17,6 @@ public class MatchesDTO {
     private String awayteamid;
     private String stadiumid;
     private Date matchdate;
-    private String matchtime;
     private String referee;
     private Date bookingstartdate;
     private Date bookingenddate;
