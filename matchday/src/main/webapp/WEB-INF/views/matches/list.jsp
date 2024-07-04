@@ -10,7 +10,7 @@
             <h1>예매하기</h1>
             <c:if test="${sessionScope.grade == 'M'}">
                 <button type="button" class="btn btn-success" onclick="location.href='write'">경기 일정 등록</button>
-                <button type="button" class="btn btn-primary">예매하기</button>
+                <button type="button" class="btn btn-primary" onclick="location.href='/tickets/ticketspayment'">예매하기</button>
             </c:if>
         </div>
     </div>
