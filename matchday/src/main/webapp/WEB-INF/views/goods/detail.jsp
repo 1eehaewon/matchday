@@ -242,10 +242,17 @@
                     </div>
                     
                     <div class="product-action">
-					    <button>구매하기</button>
+					    <button onclick="addToCart()">구매하기</button>
+					    <!--
 					    <form action="/carts/list" method="get" style="display: inline;">
 					        <button type="submit">장바구니에 추가</button>
 					    </form>
+					    -->
+					    <%-- <form onsubmit="${pageContext.request.contextPath}/cart/list/insert" method="get" style="display: inline;">
+						    <input type="hidden" name="userID" value="${userID}">
+						    <button type="submit">장바구니에 추가</button>
+						</form> --%>
+					    <input type="button" value="장바구니에 추가" onclick="goToCart()" class="btn btn-info">
 					</div>
 
                     <!-- 관리자용 상품 수정, 상품 삭제 -->
@@ -348,6 +355,20 @@
         }
     }
 
+    
+    function addToCart() {
+        // 구매하기 버튼을 눌렀을 때 수행할 동작
+        // 예를 들어, Ajax를 사용하여 서버로 상품 추가 요청을 보낼 수 있습니다.
+        // 이 예제에서는 간단히 alert로 표시
+        alert('상품을 구매합니다.');
+    }
+
+    function goToCart() {
+        // 장바구니 버튼을 눌렀을 때 수행할 동작
+        // JavaScript를 사용하여 원하는 URL로 이동
+        window.location.href = '/cart/list'; // 장바구니 목록 페이지 URL로 이동
+    }
+    
  	// 상품 수정 함수
     function goods_update(){
         document.goodsfrm.action = "/goods/updateform";

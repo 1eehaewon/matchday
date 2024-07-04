@@ -1,6 +1,6 @@
---carts 테이블 생성
+--cart 테이블 생성
 
-CREATE TABLE Carts (
+CREATE TABLE Cart (
     CartID INT PRIMARY KEY AUTO_INCREMENT,
     UserID VARCHAR(20) NOT NULL,
     GoodsID VARCHAR(50) NOT NULL,
