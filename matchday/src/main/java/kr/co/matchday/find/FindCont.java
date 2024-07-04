@@ -1,6 +1,5 @@
 package kr.co.matchday.find;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,9 +39,10 @@ public class FindCont {
         String userID = findDao.findIdByNameAndEmail(name, email);
         if (userID != null) {
             senduserID(email, userID);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.ok("{\"message\": \"메일이 성공적으로 발송되었습니다.\"}");
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                             .body("{\"message\": \"유효한 사용자 정보가 없습니다.\"}");
     }
 
     private void senduserID(String email, String userID) {

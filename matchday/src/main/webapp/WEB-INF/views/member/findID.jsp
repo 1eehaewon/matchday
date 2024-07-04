@@ -46,14 +46,51 @@
             padding: 10px;
             font-size: 16px;
         }
+         .matchday-box {
+            background-color: #007bff; /* 파란색 배경 */
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px; /* 최대 너비 설정 */
+            text-align: center;
+            margin: 0 auto; /* 가운데 정렬 */
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+        function findID(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('find-id-form');
+            const formData = new FormData(form);
+
+            fetch('/member/findID.do', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.message === "메일이 성공적으로 발송되었습니다.") {
+                    window.location.href = "/member/login";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            });
+        }
+    </script>
 </head>
 <body>
+<div class="matchday-box">
+<a href="/" class="home-link" style="color: white; font-size: 24px;">matchday</a>
+</div>
 <div class="find-id-container">
     <h2>아이디 찾기</h2>
-    <form id="find-id-form" method="post" action="/member/findID.do">
+    <form id="find-id-form" onsubmit="findID(event)">
         <div class="form-group">
             <label for="name">이름</label>
             <input type="text" id="name" name="name" class="form-control" required>

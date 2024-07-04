@@ -12,6 +12,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons CDN 추가 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/jquery-3.7.1.min.js"></script>
   <link href="/css/styles.css" rel="stylesheet" type="text/css">
@@ -54,9 +57,9 @@
             height: auto;
         }
         .carousel-indicators {
-    		display: none;
-		}
-		.dropdown:hover .dropdown-menu {
+            display: none;
+        }
+        .dropdown:hover .dropdown-menu {
             display: block;
         }
         .dropdown-menu a {
@@ -66,79 +69,73 @@
             display: block;
             background-color: #003366; /* 드롭다운 배경색 */
         }
-        
-        
-        
         .footer-content {
-		    background-color: #000;
-		    color: white;
-		    text-align: center;
-		    padding: 20px 0;
-		    font-size: 14px;
-		    width: 100%;
-		    position: relative;
-		    bottom: 0;
-		    margin-top: auto;
-		}
-		
-		.footer-content p {
-		    margin: 5px 0;
-		}
-		
-		a {
-		    color: black; /* 링크 색상을 검정색으로 설정 */
-		    text-decoration: none; /* 밑줄 제거 */
-		}
-		a:hover {
-			color: black; /* 링크를 호버할 때 색상 유지 */
-		}
-        
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 14px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+            margin-top: auto;
+        }
+        .footer-content p {
+            margin: 5px 0;
+        }
+        a {
+            color: black; /* 링크 색상을 검정색으로 설정 */
+            text-decoration: none; /* 밑줄 제거 */
+        }
+        a:hover {
+            color: black; /* 링크를 호버할 때 색상 유지 */
+        }
   </style>
 </head>
 <body>
-
-    <header>
-        <div class="container">
-            <div class="header-container">
-                <div class="social-icons">
-                    <!-- 소셜 아이콘 추가 가능 -->
-                </div>
-                <div class="logo-container">
-                    <h1 class="logo">
-					    <a href="/home.do" style="text-decoration: none; color: inherit;">MatchDay Ticket</a>
-					</h1>
-                </div>
-                <div class="user-options">
-                    <c:choose>
-                        <c:when test="${not empty sessionScope.userID}">
-                            <a class="btn btn-outline-light btn-sm" href="/member/logout">LOGOUT</a>
-                            <a class="btn btn-outline-light btn-sm" href="/member/mypage">MYPAGE</a>
-                        </c:when>
-                        <c:otherwise>
-                            <a class="btn btn-outline-light btn-sm" href="/member/login">LOGIN</a>
-                            <a class="btn btn-outline-light btn-sm" href="/member/join">JOIN</a>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
+<header>
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <div class="col-6 col-md-3">
+                <h1 class="logo">
+                    <a href="/home.do" style="text-decoration: none; color: inherit;">MatchDay Ticket</a>
+                </h1>
+            </div>
+            <div class="col-6 col-md-9 text-end">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.userID}">
+                        <a class="btn btn-outline-light btn-sm" href="/member/logout">LOGOUT</a>
+                        <a class="btn btn-outline-light btn-sm" href="/member/mypage">MYPAGE</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a class="btn btn-outline-light btn-sm" href="/member/login">LOGIN</a>
+                        <a class="btn btn-outline-light btn-sm" href="/member/join">JOIN</a>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
-        <nav>
-            <div class="container">
-                <ul class="nav justify-content-center">
-                    <li class="nav-item"><a class="nav-link" href="/matches/list" style="color: white;">예매</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/video/list" style="color: white;">하이라이트</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/goods/list" style="color: white;">SHOP</a></li>
-                    <div class="dropdown" data-bs-toggle="dropdown">
-	                    <li class="nav-item"><a class="nav-link" href="#" style="color: white;">알림마당</a></li>
-	                    <ul class="dropdown-menu">
-						    <li><a class="dropdown-item" href="#" style="color: white;">공지사항</a></li>
-						    <li><a class="dropdown-item" href="#" style="color: white;">이벤트</a></li>
-						</ul>
-                     </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="EX2.html">예매</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/video/list">하이라이트</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/goods/list">쇼핑몰</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">알림마당</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">공지사항</a></li>
+                            <li><a class="dropdown-item" href="#">이벤트</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
                 </ul>
             </div>
-        </nav>
-    </header><!-- header end -->
-
-    <main>
+        </div>
+    </nav>
+</header>
+<main>
