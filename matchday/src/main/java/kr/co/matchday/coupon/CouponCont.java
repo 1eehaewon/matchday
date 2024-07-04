@@ -1,4 +1,4 @@
-package kr.co.matchday.point;
+package kr.co.matchday.coupon;
 
 import java.util.List;
 
@@ -11,21 +11,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.mypage.MypageDAO;
 import kr.co.matchday.mypage.MypageDTO;
+import kr.co.matchday.point.PointHistoryDTO;
 
 @Controller
 @RequestMapping("/member/mypage")
-public class PointHistoryCont {
-	public PointHistoryCont() {
-		System.out.println("PointCont() 객체 생성됨");
-	}// end
-
+public class CouponCont {
+	public CouponCont() {
+		System.out.println("CouponCont() 객체 생성됨");
+	}//end
+	
 	@Autowired
 	MypageDAO mypageDao;
-
+	
 	@Autowired
-	PointHistoryDAO pointHistoryDao;
-
-	@GetMapping("/point")
+	CouponDAO couponDao;
+	
+	@GetMapping("/coupon")
 	public String point(HttpSession session, Model model) {
 		String userID = (String) session.getAttribute("userID");
 		if (userID == null) {
@@ -35,9 +36,9 @@ public class PointHistoryCont {
 		MypageDTO user = mypageDao.getUserById(userID);
 		model.addAttribute("user", user);
 
-		// 포인트 적립 내역 조회
-		List<PointHistoryDTO> pointHistoryList = pointHistoryDao.getPointHistoryList(userID);
-		model.addAttribute("pointHistoryList", pointHistoryList); //jsp에서의 items명, 불러올리스트
-		return "/member/point"; // 마이페이지의 포인트로 이동
+		// 쿠폰목록 조회
+		List<CouponDTO> couponList = couponDao.selectCouponList(userID);
+		model.addAttribute("couponList", couponList);
+		return "/member/coupon"; // 마이페이지의 쿠폰으로 이동
 	}
-}// class end
+}//class end

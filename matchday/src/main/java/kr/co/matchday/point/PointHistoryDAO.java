@@ -17,6 +17,6 @@ public class PointHistoryDAO {
 	
 	//포인트내역 불러오기
 	public List<PointHistoryDTO> getPointHistoryList(String userid){
-		return sqlSession.selectList("point.getPointHistoryList", userid);
+		return sqlSession.selectList("mypage.getPointHistoryList", userid); //namespace.메서드이름
 	}
 }// class end

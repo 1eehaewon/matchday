@@ -31,4 +31,33 @@
         SET Grade = 'F'
         WHERE UserID = #{userID}
     </update>
+    
+    <!-- 포인트 적립 내역 조회 쿼리 -->
+    <select id="getPointHistoryList" resultType="kr.co.matchday.point.PointHistoryDTO">
+        SELECT
+            pointhistoryid,
+            userid,
+            pointcategoryid,
+            pointtype,
+            reviewid,
+            pointsource,
+            pointamount,
+            pointcreationdate,
+            pointusedate
+        FROM
+            pointhistory
+        WHERE
+            userid = #{userid}
+        ORDER BY
+            pointhistoryid DESC
+    </select>
+    
+    <!-- 쿠폰목록 조회 쿠폰마스터의 정보를 가져오기위해 조인 -->
+    <select id="selectCouponList" resultType="kr.co.matchday.coupon.CouponDTO">
+        SELECT c.couponid, c.coupontypeid, c.userid, c.usage, 
+               cm.coupontypename, cm.startdate, cm.enddate, cm.applicationcategory
+        FROM coupon c
+        JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
+    </select>
 </mapper>
+
