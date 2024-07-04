@@ -21,7 +21,7 @@
         background-color: #f2f2f2; /* 테이블 헤더 배경색 설정 */
         font-size: 18px; /* 헤더 글자 크기 설정 */
         font-weight: bold; /* 헤더 글자 굵기 설정 */
-        width: 10%; /* 원하는 너비로 설정 */
+        width: 12%; /* 원하는 너비로 설정 */
     }
     
     /* 작은 화면에 대한 조정 */
@@ -40,7 +40,7 @@
     <p><h1>상품등록</h1></p>
 </div>
 
-<!-- 본문 시작 main.jsp -->
+<!-- 본문 시작 write.jsp -->
 <div>
     <div>
         <form name="goodsfrm" id="goodsfrm" method="post" action="/goods/insert" enctype="multipart/form-data">
@@ -86,6 +86,14 @@
                         <td><textarea rows="5" name="description" id="description" class="form-control summernote"></textarea></td>
                     </tr>
                     <tr>
+                        <th>상품 주의사항</th>
+                        <td><textarea rows="5" name="caution" id="caution" class="form-control summernote"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th>배송/반품/교환</th>
+                        <td><textarea rows="5" name="deliveryreturnsexchangesinfo" id="deliveryreturnsexchangesinfo" class="form-control summernote"></textarea></td>
+                    </tr>
+                    <tr>
                         <th>사이즈</th>
                         <td>
                             <select name="size" id="size" class="form-control">
@@ -116,9 +124,10 @@
                     <tr>
                         <th>품절 여부</th>
                         <td>
-                            <label><input type="radio" name="issoldout" value="N"> 재고 있음</label>
-                            <label><input type="radio" name="issoldout" value="Y"> 품절</label>
+                            <label><input type="radio" name="issoldout" value='N'> 재고 있음</label>
+                            <label><input type="radio" name="issoldout" value='Y'> 품절</label>
                             <span id="issoldoutMsg" style="color: red;"></span>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">

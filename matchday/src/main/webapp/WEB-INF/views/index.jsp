@@ -49,7 +49,6 @@
         .carousel-indicators {
     		display: none;
 		}
-		
 		.dropdown:hover .dropdown-menu {
             display: block;
         }
@@ -60,22 +59,6 @@
             display: block;
             background-color: #003366; /* 드롭다운 배경색 */
         }
-        .footer-content {
-		    background-color: #000;
-		    color: white;
-		    text-align: center;
-		    padding: 20px 0;
-		    font-size: 14px;
-		    width: 100%;
-		    position: relative;
-		    bottom: 0;
-		    margin-top: auto;
-		}
-		
-		.footer-content p {
-		    margin: 5px 0;
-		}
-		
   </style>
 </head>
 <body>
@@ -108,9 +91,9 @@
         <nav>
             <div class="container">
                 <ul class="nav justify-content-center">
-                    <li class="nav-item"><a class="nav-link" href="/matches/list" style="color: white;">예매</a></li>
+                    <li class="nav-item"><a class="nav-link" href="EX2.html" style="color: white;">예매</a></li>
                     <li class="nav-item"><a class="nav-link" href="/video/list" style="color: white;">하이라이트</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/goods/list" style="color: white;">쇼핑몰</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/goods/list" style="color: white;">SHOP</a></li>
                     <div class="dropdown" data-bs-toggle="dropdown">
 	                    <li class="nav-item"><a class="nav-link" href="#" style="color: white;">알림마당</a></li>
 	                    <ul class="dropdown-menu">

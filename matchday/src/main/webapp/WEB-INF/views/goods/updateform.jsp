@@ -21,7 +21,7 @@
         background-color: #f2f2f2; /* 테이블 헤더 배경색 설정 */
         font-size: 18px; /* 헤더 글자 크기 설정 */
         font-weight: bold; /* 헤더 글자 굵기 설정 */
-        width: 10%; /* 원하는 너비로 설정 */
+        width: 12%; /* 원하는 너비로 설정 */
     }
     
     /* 작은 화면에 대한 조정 */
@@ -55,8 +55,8 @@
                                 <option value="">카테고리 선택</option>
                                 <option value="Uniform" <c:if test="${goodsDto.category == 'Uniform'}">selected</c:if>>Uniform</option>
                                 <option value="Hairband" <c:if test="${goodsDto.category == 'Hairband'}">selected</c:if>>Hairband</option>
-                                <option value="Stick" <c:if test="${goodsDto.category == 'Stick'}">selected</c:if>>Stick</option>
-                                <option value="Merplur" <c:if test="${goodsDto.category == 'Merplur'}">selected</c:if>>Merplur</option>
+                                <option value="Lightstick" <c:if test="${goodsDto.category == 'Lightstick'}">selected</c:if>>Lightstick</option>
+                                <option value="Muffler" <c:if test="${goodsDto.category == 'Muffler'}">selected</c:if>>Muffler</option>
                                 <option value="Keyring" <c:if test="${goodsDto.category == 'Keyring'}">selected</c:if>>Keyring</option>
                             </select>
                             <span id="categoryMsg" style="color: red;"></span>
@@ -89,6 +89,14 @@
                         <td><textarea rows="5" name="description" id="description" class="form-control summernote">${goodsDto.description}</textarea></td>
                     </tr>
                     <tr>
+                        <th>상품 주의사항</th>
+                        <td><textarea rows="5" name="caution" id="caution" class="form-control summernote">${goodsDto.caution}</textarea></td>
+                    </tr>
+                    <tr>
+                        <th>배송/반품/교환</th>
+                        <td><textarea rows="5" name="deliveryreturnsexchangesinfo" id="deliveryreturnsexchangesinfo" class="form-control summernote">${goodsDto.deliveryreturnsexchangesinfo}</textarea></td>
+                    </tr>
+                    <tr>
                         <th>사이즈</th>
                         <td>
                             <select name="size" id="size" class="form-control">
@@ -119,13 +127,14 @@
                     <tr>
                         <th>품절 여부</th>
                         <td>
-                            <label><input type="radio" name="issoldout" value="N" <c:if test="${goodsDto.issoldout == 'N'}">checked</c:if>> 재고 있음</label>
-                            <label><input type="radio" name="issoldout" value="Y" <c:if test="${goodsDto.issoldout == 'Y'}">checked</c:if>> 품절</label>
+                            <label><input type="radio" name="issoldout" value='N' <c:if test="${goodsDto.issoldout == 'N'}">checked</c:if>> 재고 있음</label>
+                            <label><input type="radio" name="issoldout" value='Y' <c:if test="${goodsDto.issoldout == 'Y'}">checked</c:if>> 품절</label>
                             <span id="issoldoutMsg" style="color: red;"></span>
+                        <td>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;">
-                            <input type="submit" value="상품수정">
+                            <input type="submit" value="상품수정" class="btn btn-success">
                         </td>
                     </tr>
                 </tbody>

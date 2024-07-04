@@ -2,6 +2,7 @@ package kr.co.matchday.goods;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +44,10 @@ public class GoodsCont {
         return mav;
     }//list end*/
 
-	/* @RequestMapping("/list") */
-	@GetMapping("/list")
+	@RequestMapping("/list")
+	/* @GetMapping("/list") */
     public ModelAndView list(@RequestParam(defaultValue = "1") int page) {
-        int pageSize = 9;
+        int pageSize = 16;
         int offset = (page - 1) * pageSize;
 
         int totalRecords = goodsDao.countGoods();
@@ -120,10 +121,19 @@ public class GoodsCont {
         goodsDto.setSize((String) map.get("size"));
         goodsDto.setPrice(Integer.parseInt((String) map.get("price")));
         goodsDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity")));
+        /*goodsDto.setIssoldout(((String) map.get("issoldout")).charAt(0)); // issoldout은 String에서 char로 변환할 때 첫 번째 문자를 사용*/
         goodsDto.setIssoldout((String) map.get("issoldout"));
         goodsDto.setFilename(filename);
         goodsDto.setFilesize(filesize);
-            
+        // regdate를 String에서 Timestamp로 변환
+        String regdateString = (String) map.get("regdate");
+        if (regdateString != null && !regdateString.isEmpty()) {
+            Timestamp regdate = Timestamp.valueOf(regdateString);
+            goodsDto.setRegdate(regdate);
+        }
+        goodsDto.setCaution((String) map.get("caution"));
+        goodsDto.setDeliveryreturnsexchangesinfo((String) map.get("deliveryreturnsexchangesinfo"));
+
         // goodsDTO 객체를 데이터베이스에 삽입합니다.
         goodsDao.insert(goodsDto);
         

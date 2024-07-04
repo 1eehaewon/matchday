@@ -12,9 +12,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons CDN 추가 -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/jquery-3.7.1.min.js"></script>
   <link href="/css/styles.css" rel="stylesheet" type="text/css">
@@ -130,7 +127,7 @@
                 <ul class="nav justify-content-center">
                     <li class="nav-item"><a class="nav-link" href="EX2.html" style="color: white;">예매</a></li>
                     <li class="nav-item"><a class="nav-link" href="/video/list" style="color: white;">하이라이트</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/goods/list" style="color: white;">쇼핑몰</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/goods/list" style="color: white;">SHOP</a></li>
                     <div class="dropdown" data-bs-toggle="dropdown">
 	                    <li class="nav-item"><a class="nav-link" href="#" style="color: white;">알림마당</a></li>
 	                    <ul class="dropdown-menu">

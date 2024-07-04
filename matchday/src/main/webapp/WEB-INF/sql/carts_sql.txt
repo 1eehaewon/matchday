@@ -1,0 +1,12 @@
+--carts 테이블 생성
+
+CREATE TABLE Carts (
+    CartID INT PRIMARY KEY AUTO_INCREMENT,
+    UserID VARCHAR(20) NOT NULL,
+    GoodsID VARCHAR(50) NOT NULL,
+    Quantity INT NOT NULL,
+    UnitPrice INT NOT NULL,
+    TotalPrice INT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (GoodsID) REFERENCES Goods(GoodsID)
+);

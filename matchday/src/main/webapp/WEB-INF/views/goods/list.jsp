@@ -29,7 +29,7 @@
 		display: none;
 	}
 	
-	/* 왼쪽 카테고리 + 오른쪽 상품들 */  
+	/* 왼쪽 카테고리 + 오른쪽 상품들 */
 	.shop-container {
 		display: flex;
 		/* height: calc(100vh - 400px); /* 최대 높이 설정 */ */
@@ -43,6 +43,42 @@
 		overflow-y: auto; /* 세로로 넘치는 부분을 스크롤 가능하게 설정 */
 		background-color: #f8f9fa; /* 연한 회색 배경색 설정 */
 	}
+	
+	/* left 멤버쉽 */
+	.category-item {
+	    list-style: none;
+	    padding: 20px;
+	    text-align: center;
+	}
+	
+	.category-header {
+	margin-left: 20px;
+	    cursor: pointer;
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
+	    font-size: 20px;
+	}
+	
+	.listBtn {
+	    margin-left: 10px;
+	    transition: transform 0.3s ease;
+	}
+	
+	.subcategory-list {
+	    display: none;
+	    list-style: none;
+	    padding-left: 20px;
+	}
+	
+	.subcategory-list li {
+	    margin: 5px 0;
+	}
+	
+	.subcategory-list.show {
+	    display: block;
+	}
+	/* left 멤버쉽 end */
 	
 	.left ul {
 	    list-style-type: none; /* 리스트 스타일 타입 없음 */
@@ -160,6 +196,14 @@
 		margin-bottom: 10px;
 	}
 	
+	.category-list {
+	    list-style: none;
+	    padding: 0;
+	    margin: 0;
+	}
+	
+	
+
 	
 	
 </style>
@@ -225,7 +269,7 @@
                 <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">기본상품순</button>
                 <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="#">기본상품순</a> 
-                    <a class="dropdown-item" href="#">최신등록순</a> 
+                    <a class="dropdown-item" href="#" id="latestItems">최신등록순</a> 
                     <a class="dropdown-item" href="#">높은가격순</a> 
                     <a class="dropdown-item" href="#">낮은가격순</a>
                 </div>
@@ -237,7 +281,21 @@
 <div class="shop-container">
 	<div class="left">
 		<!-- 왼쪽 카테고리 -->
-		<ul>
+		<ul class="category-list">
+			<li class="category-item">
+		        <div class="category-header" data-category="Membership">
+		            멤버쉽
+		            <span class="listBtn">&#9662;</span>
+		        </div>
+		        <ul class="subcategory-list">
+		            <li class="subcategory-item" data-category="Membership-Sub1">첼시 멤버쉽</li>
+		            <li class="subcategory-item" data-category="Membership-Sub2">아스날 멤버쉽</li>
+		            <li class="subcategory-item" data-category="Membership-Sub3">리버풀 멤버쉽</li>
+		            <li class="subcategory-item" data-category="Membership-Sub4">맨체스터시티 멤버쉽</li>
+		            <li class="subcategory-item" data-category="Membership-Sub5">바이에른 뮌헨 멤버쉽</li>
+		            <li class="subcategory-item" data-category="Membership-Sub6">토트넘 멤버쉽</li>
+		        </ul>
+		    </li>
 			<li data-name="전체" data-category="All">전체</li>
 			<li data-name="키링" data-category="Keyring">키링</li>
 			<li data-name="유니폼" data-category="Uniform">유니폼</li>
@@ -246,14 +304,13 @@
 			<li data-name="응원봉" data-category="Lightstick">응원봉</li>
 		</ul>
 		<br>
+		
 		<p class="centered-button"> <!-- 관리자용 상품등록 -->
-			<button type="button" onclick="location.href='write'" class="btn btn-success">상품등록</button>
-		</p>
-		<%-- <c:if test="${userGrade == 'M'}">
-			<p class="centered-button"> <!-- 관리자용 상품등록 -->
-				<button type="button" onclick="location.href='write'" class="btn btn-success">상품등록</button>
-			</p>
-		</c:if> --%>
+		 <c:if test="${sessionScope.grade == 'M'}">
+		 	<button type="button" onclick="location.href='write'" class="btn btn-success">상품등록</button>
+		 </c:if>
+      	</p>
+      	
 	</div>
 	<!-- 왼쪽 카테고리 -->
 
@@ -334,6 +391,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+	
+	
+    
     const categoryItems = document.querySelectorAll('.left li');  // 왼쪽 카테고리 메뉴의 각 항목들을 선택합니다.
     const shopItems = document.querySelectorAll('.item-card');  // 오른쪽 상품 카드들을 선택합니다.
 
@@ -369,23 +429,23 @@ document.addEventListener('DOMContentLoaded', function() {
     dropdownItems.forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault(); // 기본 이벤트 동작을 막습니다.
-
             const sortType = this.textContent.trim(); // 클릭된 항목의 텍스트 콘텐츠를 가져옵니다.
-
-            // 상품을 가격에 따라 정렬합니다.
-            if (sortType === '높은가격순') {
-                sortItemsByPrice('desc');
+            
+            if (sortType === '최신등록순') {
+                sortItemsByRegistration(); // 최신 등록순으로 상품을 정렬합니다.
+            } else if (sortType === '높은가격순') {
+                sortItemsByPrice('desc'); // 높은 가격순으로 상품을 정렬합니다.
             } else if (sortType === '낮은가격순') {
-                sortItemsByPrice('asc');
+                sortItemsByPrice('asc'); // 낮은 가격순으로 상품을 정렬합니다.
             } else {
-                showAllItems(); // 기본상품순일 경우 모든 상품을 보여줍니다.
+                showAllItems(); // 기본 상품순일 경우 모든 상품을 보여줍니다.
             }
-        }); //item.addEventListener('click', function(e) end
-    });//dropdownItems.forEach(item => end
+        });
+    });
 
     // 가격에 따라 상품을 정렬하는 함수
     function sortItemsByPrice(order) {
-        const items = Array.from(shopContainer.querySelectorAll('.item-card'));
+        const items = Array.from(shopItems);
 
         items.sort(function(a, b) {
             const priceA = parseFloat(a.querySelector('p:nth-child(3)').textContent.replace(/[^\d]/g, ''));
@@ -396,20 +456,32 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 return priceA - priceB; // 낮은 가격순으로 정렬
             }
-        });//items.sort(function(a, b) end
+        });
 
         // 정렬된 상품을 다시 컨테이너에 추가합니다.
-        shopContainer.innerHTML = '';
-        items.forEach(item => {
-            shopContainer.appendChild(item);
+        shopItems.forEach(item => item.parentNode.removeChild(item));
+        items.forEach(item => shopContainer.appendChild(item));
+    }
+
+    // 최신 등록일에 따라 상품을 정렬하는 함수
+    function sortItemsByRegistration() {
+        const items = Array.from(shopItems);
+
+        items.sort(function(a, b) {
+            const dateA = new Date(a.getAttribute('data-registration'));
+            const dateB = new Date(b.getAttribute('data-registration'));
+
+            return dateB - dateA; // 최신 등록일순으로 정렬
         });
+
+        // 정렬된 상품을 다시 컨테이너에 추가합니다.
+        shopItems.forEach(item => item.parentNode.removeChild(item));
+        items.forEach(item => shopContainer.appendChild(item));
     }
 
     // 모든 상품을 보여주는 함수
     function showAllItems() {
-        const items = Array.from(shopContainer.querySelectorAll('.item-card'));
-
-        items.forEach(item => {
+        shopItems.forEach(item => {
             item.style.display = 'block'; // 모든 상품을 보이도록 설정합니다.
         });
     }//showAllItems()end
@@ -418,9 +490,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     
-    
-    
 }); //document.addEventListener('DOMContentLoaded', function() end
+
+/* left 멤버쉽 */
+document.addEventListener('DOMContentLoaded', () => {
+    const categoryHeader = document.querySelector('.category-header');
+    const subcategoryList = document.querySelector('.subcategory-list');
+    const listBtn = document.querySelector('.listBtn');
+
+    categoryHeader.addEventListener('click', () => {
+        subcategoryList.classList.toggle('show');
+        listBtn.style.transform = subcategoryList.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+});/* left 멤버쉽 end */
 
 
 

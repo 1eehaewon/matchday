@@ -7,25 +7,25 @@
  
  
  	<insert id="insert" parameterType="kr.co.matchday.goods.GoodsDTO">
-	    INSERT INTO goods(goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize)
-	    VALUES(#{goodsid}, #{category}, #{productname}, #{description}, #{size}, #{price}, #{stockquantity}, #{issoldout}, #{filename}, #{filesize})
+	    INSERT INTO goods(goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo)
+	    VALUES(#{goodsid}, #{category}, #{productname}, #{description}, #{size}, #{price}, #{stockquantity}, #{issoldout}, #{filename}, #{filesize}, #{regdate}, #{caution}, #{deliveryreturnsexchangesinfo})
 	</insert>
 	
 	<select id="list" resultType="kr.co.matchday.goods.GoodsDTO">
-	   	SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+	   	SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo
         FROM goods
         ORDER BY productname
 	</select>
 	
 	<select id="search" resultType="kr.co.matchday.goods.GoodsDTO" parameterType="String">
-	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo
 	    FROM goods
 	    WHERE productname LIKE #{keyword}
 	    ORDER BY productname
 	</select>
 	
 	<select id="detail" resultType="kr.co.matchday.goods.GoodsDTO" parameterType="String">
-	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo
 	    FROM goods
 	    WHERE goodsid = #{goodsid}
 	</select>
@@ -40,7 +40,10 @@
 	        stockquantity = #{stockquantity},
 	        issoldout = #{issoldout},
 	        filename = #{filename},
-	        filesize = #{filesize}
+	        filesize = #{filesize},
+	        regdate = #{regdate},
+	        caution = #{caution},
+	        deliveryreturnsexchangesinfo = #{deliveryreturnsexchangesinfo}
 	    WHERE goodsid = #{goodsid}
 	</update>
 	
@@ -53,13 +56,12 @@
 	<!-- 굿즈 ID에 해당하는 파일명 조회 -->
 	    SELECT filename
 	    FROM goods
-	    ORDER BY productname
 	    WHERE goodsid = #{goodsid}
 	</select>
 	
 	<!-- 전체 게시물 목록 조회 추가 코드 시작-->
     <select id="listWithPaging" resultType="kr.co.matchday.goods.GoodsDTO" parameterType="map">
-        SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+        SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo
         FROM goods
         ORDER BY productname
         LIMIT #{limit} OFFSET #{offset}
