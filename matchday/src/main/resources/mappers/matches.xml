@@ -17,22 +17,7 @@
         FROM matches
     </select>
 
-	<web-app>
-    <!-- 서블릿 등록 -->
-    <servlet>
-        <servlet-name>SaveMatchServlet</servlet-name>
-        <servlet-class>kr.co.matchday.matches.SaveMatchServlet</servlet-class>
-    </servlet>
-
-    <!-- 서블릿 매핑 -->
-    <servlet-mapping>
-        <servlet-name>SaveMatchServlet</servlet-name>
-        <url-pattern>/saveMatch</url-pattern>
-    </servlet-mapping>
-
-    <!-- 기타 설정 -->
-</web-app>
-
+	
 
 
 
