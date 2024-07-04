@@ -84,30 +84,29 @@
     </div>
 
     <!-- 페이징 -->
-	<nav aria-label="Page navigation example" class="my-4">
-	    <ul>
-	        <c:if test="${currentPage > 1}">
-	            <li class="page-item">
-	                <a class="page-link" href="?category=${category}&page=${currentPage - 1}&col=${col}&word=${word}" aria-label="Previous">
-	                    <span aria-hidden="true">&laquo; 이전</span>
-	                </a>
-	            </li>
-	        </c:if>
-	        <c:forEach begin="1" end="${totalPages}" var="i">
-	            <li class="page-item ${i == currentPage ? 'active' : ''}">
-	                <a class="page-link" href="?category=${category}&page=${i}&col=${col}&word=${word}">${i}</a>
-	            </li>
-	        </c:forEach>
-	        <c:if test="${currentPage < totalPages}">
-	            <li class="page-item">
-	                <a class="page-link" href="?category=${category}&page=${currentPage + 1}&col=${col}&word=${word}" aria-label="Next">
-	                    <span aria-hidden="true">다음 &raquo;</span>
-	                </a>
-	            </li>
-	        </c:if>
-	    </ul>
-	</nav>
-
+    <nav aria-label="Page navigation example" class="my-4">
+        <ul>
+            <c:if test="${currentPage > 1}">
+                <li class="page-item">
+                    <a class="page-link" href="?category=${category}&page=${currentPage - 1}&col=${col}&word=${word}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; 이전</span>
+                    </a>
+                </li>
+            </c:if>
+            <c:forEach begin="1" end="${totalPages}" var="i">
+                <li class="page-item ${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" href="?category=${category}&page=${i}&col=${col}&word=${word}">${i}</a>
+                </li>
+            </c:forEach>
+            <c:if test="${currentPage < totalPages}">
+                <li class="page-item">
+                    <a class="page-link" href="?category=${category}&page=${currentPage + 1}&col=${col}&word=${word}" aria-label="Next">
+                        <span aria-hidden="true">다음 &raquo;</span>
+                    </a>
+                </li>
+            </c:if>
+        </ul>
+    </nav>
 
     <!-- 검색폼 시작 -->
     <form class="row g-3 justify-content-center mb-4" action="customerPage" method="get" onsubmit="return searchCheck()">
@@ -129,7 +128,7 @@
         </div>
         <div class="col-auto">
             <!-- 글쓰기 버튼, 클릭 시 customerForm.jsp로 이동 -->
-            <button type="button" class="btn btn-primary" onclick="location.href='customerForm'">
+            <button type="button" class="btn btn-primary" id="writeButton">
                 <i class="bi bi-pencil-square me-2"></i> 글쓰기
             </button>
         </div>
@@ -174,6 +173,9 @@ $(document).ready(function() {
 
     // 세션에서 회원 등급을 가져옵니다.
     const userGrade = "${sessionScope.grade}";
+    
+    // 세션에서 로그인 여부를 가져옵니다.
+    const isLoggedIn = "${sessionScope.userID != null}"; // 로그인 여부를 확인
 
     // categoryTabs의 각 탭에 클릭 이벤트를 추가합니다.
     categoryTabs.on('click', 'a', function(e) {
@@ -256,6 +258,18 @@ $(document).ready(function() {
                 alert('비밀번호 검증에 실패하였습니다.');
             }
         });
+    });
+
+    // 글쓰기 버튼 클릭 이벤트 핸들러
+    $('#writeButton').on('click', function() {
+        // 로그인 여부를 확인합니다.
+        if (isLoggedIn !== 'true') {
+            // 로그인되지 않은 경우 경고 메시지를 표시합니다.
+            alert('로그인 후 이용해주세요.');
+        } else {
+            // 로그인된 경우 글쓰기 페이지로 이동합니다.
+            window.location.href = 'customerForm';
+        }
     });
 });
 
