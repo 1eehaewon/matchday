@@ -122,7 +122,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="EX2.html">예매</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/matches/list">예매</a></li>
                     <li class="nav-item"><a class="nav-link" href="/video/list">하이라이트</a></li>
                     <li class="nav-item"><a class="nav-link" href="/goods/list">쇼핑몰</a></li>
                     <li class="nav-item dropdown">
