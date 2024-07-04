@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
- PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
- "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
- 
-<!-- video.xml -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="matches">
+<mapper namespace="kr.co.matchday.matches.MatchesDAO">
 
     <insert id="insert" parameterType="kr.co.matchday.matches.MatchesDTO">
         INSERT INTO matches (matchid, hometeamid, awayteamid, stadiumid, matchdate, matchtime, referee, bookingstartdate, bookingenddate)
@@ -17,10 +13,16 @@
         FROM matches
     </select>
 
-	
+    <select id="getAllTeams" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT teamname FROM teams
+    </select>
 
+    <select id="getAllStadiums" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT stadiumid FROM stadiums
+    </select>
 
-
-
+    <select id="getMaxMatchIdForDate" parameterType="String" resultType="String">
+        SELECT MAX(matchid) FROM matches WHERE matchdate = #{matchdate}
+    </select>
 
 </mapper>

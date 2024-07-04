@@ -8,10 +8,9 @@
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h1>예매하기</h1>
             <!-- 세션 등급이 'M'일 때만 경기 일정 등록 버튼 보이기 -->
-            <c:if test="${sessionScope.grade == 'M'}">
-                <button type="button" class="btn btn-success" onclick="location.href='write'">경기 일정 등록</button>
+                <!-- <button type="button" class="btn btn-success" onclick="location.href='/write'">경기 일정 등록</button> -->
+                <a href="/matches/write" class="btn btn-success">경기 일정 등록</a>
                 <button type="button" class="btn btn-primary" onclick="openReservationPopup()">예매하기</button>
-            </c:if>
         </div>
     </div>
 
