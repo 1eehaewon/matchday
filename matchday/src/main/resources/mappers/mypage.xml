@@ -58,6 +58,7 @@
                cm.coupontypename, cm.startdate, cm.enddate, cm.applicationcategory
         FROM coupon c
         JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
+        where c.userid = #{userid}
     </select>
 </mapper>
 

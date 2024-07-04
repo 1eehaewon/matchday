@@ -31,7 +31,7 @@ public class MypageCont {
 			return "/member/login"; // 경고 메시지와 함께 로그인페이지로 이동
 		}
 		MypageDTO user = mypageDao.getUserById(userID);
-		model.addAttribute("user", user);
+		model.addAttribute("user", user); //"user" = mypage.jsp 에서 ${user}
 		return "member/mypage"; // 마이페이지로 이동
 	}
 	/*

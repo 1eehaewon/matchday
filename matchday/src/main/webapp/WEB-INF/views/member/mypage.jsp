@@ -70,6 +70,15 @@
     .input-group button {
         margin-left: 10px;
     }
+    input[readonly] {
+        background-color: #f0f0f0; /* 회색 배경 적용 */
+    }
+    input[readonly]:focus {
+    background-color: #f0f0f0; /* 포커스 상태에서도 회색 배경 유지 */
+    outline: none; /* 포커스 아웃라인 제거 */
+    cursor: default; /* 기본 커서 유지 */
+    pointer-events: none; /* 클릭 이벤트 비활성화 */
+}
 </style>
 <div class="mypage-container">
     <table class="table table-bordered">
@@ -77,8 +86,16 @@
             <td class="mypage-sidebar" style="border-right: none;">
                 <ul class="list-group">
                     <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
-                    <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
-                    <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
+                    <c:choose>
+                        <c:when test="${user.grade == 'M'}">
+                            <li class="list-group-item"><a href="/member/mypage/point">포인트 관리</a></li>
+                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰 관리</a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
+                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
+                        </c:otherwise>
+                    </c:choose>
                 </ul>
             </td>
             <td width="15" style="border: none;"></td>
