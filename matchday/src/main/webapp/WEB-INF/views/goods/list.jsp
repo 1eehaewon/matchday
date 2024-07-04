@@ -29,7 +29,7 @@
 		display: none;
 	}
 	
-	/* 왼쪽 카테고리 + 오른쪽 상품들 */
+	/* 왼쪽 카테고리 + 오른쪽 상품들 */  
 	.shop-container {
 		display: flex;
 		/* height: calc(100vh - 400px); /* 최대 높이 설정 */ */
