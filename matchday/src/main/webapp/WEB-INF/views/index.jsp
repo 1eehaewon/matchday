@@ -311,47 +311,7 @@
 		</div><!-- div id="matchCarousel" end -->
 		
 		
-		<!-- 뉴스 카드 섹션 -->
-		<div class="container mt-5">
-		    <div class="row row-cols-1 row-cols-md-3 g-4">
-		        <div class="col">
-			         <a href="https://www.spotvnews.co.kr/news/articleView.html?idxno=687186" class="text-decoration-none text-dark">
-			            <div class="card">
-			                <img src="https://imgnews.pstatic.net/image/477/2024/06/24/0000497679_001_20240624154112694.jpg?type=w647" class="card-img-top" alt="...">
-			                <div class="card-body">
-			                    <h5 class="card-title">이것이 바로 '벤탄쿠르 효과'...토트넘, 눈치 좀 챙겨 제발! '손흥민 인종차별' 벤탄쿠르가 골 넣은 것도 아닌데...</h5>
-			                    <p class="card-text">우루과이 축구대표팀은 24일(한국시간) 미국 하드록 스타디움에서 열린 2024 코파 아메리카 C조 1차전에서 파나마에 3-1 승리를 거뒀다...</p>
-			                    <p class="text-muted">2024-06-24 09:52</p>
-			                </div>
-			            </div>
-		            </a>
-		        </div><!-- div class="col" end -->
-		        <div class="col">
-			         <a href="https://www.spotvnews.co.kr/news/articleView.html?idxno=687186" class="text-decoration-none text-dark">
-			            <div class="card">
-			                <img src="https://imgnews.pstatic.net/image/477/2024/06/24/0000497679_001_20240624154112694.jpg?type=w647" class="card-img-top" alt="...">
-			                <div class="card-body">
-			                    <h5 class="card-title">이것이 바로 '벤탄쿠르 효과'...토트넘, 눈치 좀 챙겨 제발! '손흥민 인종차별' 벤탄쿠르가 골 넣은 것도 아닌데...</h5>
-			                    <p class="card-text">우루과이 축구대표팀은 24일(한국시간) 미국 하드록 스타디움에서 열린 2024 코파 아메리카 C조 1차전에서 파나마에 3-1 승리를 거뒀다...</p>
-			                    <p class="text-muted">2024-06-24 09:52</p>
-			                </div>
-			            </div>
-		            </a>
-		        </div><!-- div class="col" end -->
-		        <div class="col">
-			         <a href="https://www.spotvnews.co.kr/news/articleView.html?idxno=687186" class="text-decoration-none text-dark">
-			            <div class="card">
-			                <img src="https://imgnews.pstatic.net/image/477/2024/06/24/0000497679_001_20240624154112694.jpg?type=w647" class="card-img-top" alt="...">
-			                <div class="card-body">
-			                    <h5 class="card-title">이것이 바로 '벤탄쿠르 효과'...토트넘, 눈치 좀 챙겨 제발! '손흥민 인종차별' 벤탄쿠르가 골 넣은 것도 아닌데...</h5>
-			                    <p class="card-text">우루과이 축구대표팀은 24일(한국시간) 미국 하드록 스타디움에서 열린 2024 코파 아메리카 C조 1차전에서 파나마에 3-1 승리를 거뒀다...</p>
-			                    <p class="text-muted">2024-06-24 09:52</p>
-			                </div>
-			            </div>
-		            </a>
-		        </div><!-- div class="col" end -->
-		    </div>
-		</div><!-- div class="container mt-5" end -->
+		  <a href="/cardnews/list"class="btn btn-primary">카드뉴스 등록</a>
     </main><!-- main end -->
 
     <footer>
