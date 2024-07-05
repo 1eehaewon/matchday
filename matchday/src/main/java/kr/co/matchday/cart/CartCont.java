@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -37,7 +37,7 @@ public class CartCont {
         // 장바구니에 상품 추가
         cartDao.insert(cartDto);
         return "redirect:/cart/list";
-    }
+    }//insert end
 
     @GetMapping("/list")
     public String showCartList(Model model, HttpSession session) {
@@ -49,8 +49,12 @@ public class CartCont {
         List<CartDTO> cartList = cartDao.getCartList(userid);
         model.addAttribute("cartList", cartList);
         return "cart/list";
+    }//list end
 	
-    }
-	
+    @GetMapping("/delete")
+    public String deleteItem(@RequestParam("cartid") int cartid) {
+        cartDao.delete(cartid);
+        return "redirect:/cart/list";
+    }//delete end
 	
 }//class end

@@ -107,7 +107,7 @@
 	    }
 		
 		
-		/* 구매하기 장바구니 */
+		/* 구매하기 */
         .product-action {
             margin-top: 20px;
         }
@@ -125,6 +125,22 @@
         .product-action button:hover {
             background-color: #0056b3; /* Darker blue on hover */
         }
+        
+        /* 장바구니에 추가 버튼 */
+        .product-action-btn {
+		    padding: 10px 20px;
+		    font-size: 16px;
+		    background-color: #007bff; /* Blue color for button */
+		    color: #fff;
+		    border: none;
+		    cursor: pointer;
+		    border-radius: 4px;
+		    margin-left: 10px; /* Optional: Add margin to separate buttons */
+		}
+		
+		.product-action-btn:hover {
+		    background-color: #0056b3; /* Darker blue on hover */
+		}
         
         /* 상세보기 */
         .info-container {
@@ -288,15 +304,15 @@
                     <div class="product-description">
                     	<dl>
 	                    	<dt>총 주문 수량</dt>
-	                    	<dd><span id="order-quantity">1</span>개</dd>
+	                    	<dd><span id="order-quantity">1</span></dd>
 	                    	<dt>총 상품 금액</dt>
-	                    	<dd><span id="total-price"></span>원</dd>
+	                    	<dd><span id="total-price"></span></dd>
                     	</dl>
                     </div>
                     
                     <div class="product-action">
 					    <button onclick="purchase()">구매하기</button>
-					    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+					    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="product-action-btn">
 					</div>
 					<!-- 장바구니 모달창 -->
 					<div id="cartModal" class="modal">
@@ -309,30 +325,15 @@
 					            <button onclick="goToCart()">장바구니로 이동</button>
 					        </div>
 					    </div>
-					</div><form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
-    <p>현재 로그인된 사용자: ${sessionScope.userID}</p>
-    <input  name="userid" value="${sessionScope.userID}">
-    <input name="goodsid" value="${goodsDto.goodsid}">
-    <input  name="quantity" id="form-quantity" value="">
-    <input  name="unitprice" id="form-unitprice">
-    <input  name="totalprice" id="form-totalprice">
-</form>
-					
-                    
-                    <%-- <div class="product-action">
-					    <button onclick="addToCart()">구매하기</button>
-					    <!--
-					    <form action="/carts/list" method="get" style="display: inline;">
-					        <button type="submit">장바구니에 추가</button>
-					    </form>
-					    -->
-					    <form onsubmit="${pageContext.request.contextPath}/cart/list/insert" method="get" style="display: inline;">
-						    <input type="hidden" name="userID" value="${userID}">
-						    <button type="submit">장바구니에 추가</button>
-						</form>
-					    <input type="button" value="장바구니에 추가" onclick="goToCart()" class="btn btn-info">
 					</div>
- --%>
+					<form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
+						<input type="hidden" name="userid" value="${sessionScope.userID}">
+						<input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+						<input type="hidden" name="quantity" id="form-quantity" value="">
+						<input type="hidden" name="unitprice" id="form-unitprice">
+						<input type="hidden" name="totalprice" id="form-totalprice">
+					</form>
+
                     <!-- 관리자용 상품 수정, 상품 삭제 -->
                     <br>
                     <form name="goodsfrm" method="post">
@@ -445,7 +446,6 @@
         alert('상품을 구매합니다.');
     }
 
-    
  	// 장바구니 모달 가져오기
     var modal = document.getElementById("cartModal");
     // <span> 요소를 가져와서 모달을 닫기
@@ -471,63 +471,59 @@
     }
     // 장바구니로 이동 버튼 클릭 시 동작
     function goToCart() {
-        window.location.href = '/cart/list'; // 장바구니 목록 페이지 URL로 이동
+    	document.getElementById('addToCartForm').submit(); // 폼 제출 후 장바구니 목록 페이지 URL로 이동
     }
     // 장바구니에 추가 버튼 클릭 시 모달 열기
     function addToCart() {
-    	showCartModal();
-    // 수량 입력 요소 확인
-    var quantityInput = document.getElementById('quantity-input');
-    if (!quantityInput) {
-        console.error('수량 입력 요소를 찾을 수 없습니다');
-        return;
-    }
+	    // 수량 입력 요소 확인
+	    var quantityInput = document.getElementById('quantity-input');
+	    if (!quantityInput) {
+	        console.error('수량 입력 요소를 찾을 수 없습니다');
+	        return;
+	    }
+	
+	    var quantity = parseInt(quantityInput.value); // 수량을 정수로 변환
+	
+	    // 총 가격 요소 확인
+	    var totalPriceElement = document.getElementById('total-price');
+	    if (!totalPriceElement) {
+	        console.error('총 가격 요소를 찾을 수 없습니다');
+	        return;
+	    }
+	
+	    var totalPriceText = totalPriceElement.innerText;
+	    var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // 쉼표 제거 후 정수로 변환
+	
+	    // formQuantity 입력 요소 확인
+	    var formQuantity = document.getElementById('form-quantity');
+	    if (!formQuantity) {
+	        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
+	        return;
+	    }
+	
+	    // formTotalPrice 입력 요소 확인
+	    var formTotalPrice = document.getElementById('form-totalprice');
+	    if (!formTotalPrice) {
+	        console.error('장바구니 총 가격 입력 필드를 찾을 수 없습니다');
+	        return;
+	    }
+	
+		// 세션 스코프에서 userid 가져오기
+	    var userId = '${sessionScope.userID}';
+	    console.log('사용자 아이디:', userId);
+	    
+	    // 폼 필드에 값 설정
+	    formQuantity.value = quantity;
+	    formTotalPrice.value = totalPrice;
+	
+	    // 디버깅을 위한 콘솔 출력
+	    console.log('수량:', quantity);
+	    console.log('총 가격:', totalPrice);
 
-    var quantity = parseInt(quantityInput.value); // 수량을 정수로 변환
+	 	// 모달 창 띄우기
+	    showCartModal();
+	}
 
-    // 총 가격 요소 확인
-    var totalPriceElement = document.getElementById('total-price');
-    if (!totalPriceElement) {
-        console.error('총 가격 요소를 찾을 수 없습니다');
-        return;
-    }
-
-    var totalPriceText = totalPriceElement.innerText;
-    var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // 쉼표 제거 후 정수로 변환
-
-    // formQuantity 입력 요소 확인
-    var formQuantity = document.getElementById('form-quantity');
-    if (!formQuantity) {
-        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
-        return;
-    }
-
-    // formTotalPrice 입력 요소 확인
-    var formTotalPrice = document.getElementById('form-totalprice');
-    if (!formTotalPrice) {
-        console.error('장바구니 총 가격 입력 필드를 찾을 수 없습니다');
-        return;
-    }
-
-	// 세션 스코프에서 userid 가져오기
-    var userId = '${sessionScope.userID}';
-    console.log('사용자 아이디:', userId);
-    
-    // 폼 필드에 값 설정
-    formQuantity.value = quantity;
-    formTotalPrice.value = totalPrice;
-
-    // 디버깅을 위한 콘솔 출력
-    console.log('수량:', quantity);
-    console.log('총 가격:', totalPrice);
-
-    // 폼 제출
-    document.getElementById('addToCartForm').submit();
-}
-
-
-    
-    
  	// 상품 수정 함수
     function goods_update(){
         document.goodsfrm.action = "/goods/updateform";
@@ -541,13 +537,6 @@
             document.goodsfrm.submit();
         } // if end
     } // goods_delete() end
-
-    
- 
-
-   
-
-
 
 </script>
 

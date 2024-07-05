@@ -13,5 +13,9 @@
     <select id="getCartList" parameterType="String" resultType="kr.co.matchday.cart.CartDTO">
         SELECT * FROM cart WHERE userid = #{userid}
     </select>
+    
+    <delete id="delete" parameterType="int">
+        DELETE FROM cart WHERE cartid = #{cartid}
+    </delete>
 
 </mapper>

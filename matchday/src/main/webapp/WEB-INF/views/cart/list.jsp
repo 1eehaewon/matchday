@@ -164,17 +164,29 @@
 									<th>수량</th>
 									<th>가격</th>
 									<th>총 가격</th>	
-									<th></th>
+									<th>삭제</th>
 								</tr>					
 							</thead>
 							<tbody>
 							    <c:forEach items="${cartList}" var="cart">
 							        <tr>
 							            <td><input type="checkbox" name="selectedItems" value="${cart.cartid}" onchange="calculateTotal()"></td>
-							            <td>${cart.goodsid}</td>
+							            <td>
+                                            <c:set var="goodsItem" value="${goodsMap[cart.goodsid]}" />
+                                            <c:choose>
+                                                <c:when test="${goodsItem ne null}">
+                                                    <img src="/storage/goods/${cart.goodsid}.jpg" alt="${goodsItem.productname}" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <span>${goodsItem.productname}</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span>상품 정보 없음</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
 							            <td>${cart.quantity}</td>
 							            <td>${cart.unitprice}</td>
 							            <td>${cart.totalprice}</td>
+							            <td><button type="button" onclick="deleteItem(${cart.cartid})">삭제하기</button></td>
 							        </tr>
 							    </c:forEach>
 							</tbody>
@@ -186,10 +198,6 @@
 	
 	                <p class="no_data" id="noDataMessage" style="display: none;">장바구니에 담겨있는 상품이 없습니다.</p>
 	            </form>
-	
-	            <div class="btn_left_box">
-	                <a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>
-	            </div>
 	        </div>
 	        <!-- //cart_cont -->
 	        
@@ -211,11 +219,14 @@
                             <dd><strong id="totalSettlePrice">0</strong>원</dd>
                         </dl>
 		            </div>
-	            <em id="deliveryChargeText" class="tobe_mileage"></em>
+	            	<em id="deliveryChargeText" class="tobe_mileage"></em>
 		        </div>
 		        <!-- price_sum_cont end-->
 	    	</div>
 	        <!-- price_sum end -->
+	        <div class="btn_left_box">
+	        	<a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>
+	        </div>
 	    </div>
 	    <!-- order_wrap end-->
 	</div>
@@ -249,9 +260,43 @@
             }
         }
 
+     	// 상품금액 표시
         document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
         document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString(); // 콤마(,) 표시 추가
+
+        // 배송비 계산
+        var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
+        
+        // 합계 계산
+        var totalSettlePrice = totalSelectedPrice + deliveryCharge;
+        document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
     }
+    
+ 	// 문서 로드 시 장바구니에 상품이 없는 경우 메시지 표시
+    document.addEventListener("DOMContentLoaded", function() {
+        var cartItems = document.getElementsByName('selectedItems');
+        if (cartItems.length === 0) {
+            document.getElementById('noDataMessage').style.display = 'block';
+        }
+    });
+ 	
+    function deleteItem(cartid){
+		if(confirm("장바구니에서 해당 상품을 삭제할까요?")){
+			location.href='/cart/delete?cartid=' + cartid; 
+		}//if end
+	}//deleteItem() end
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+
+ 	
 </script>
 
 <%@ include file="../footer.jsp" %>
