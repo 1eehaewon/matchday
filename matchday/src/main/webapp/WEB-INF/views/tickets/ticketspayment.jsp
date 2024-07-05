@@ -1,4 +1,3 @@
-<!-- ticketspayment.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -12,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/seatSelection.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,9 +76,29 @@
             color: black;
             cursor: pointer;
         }
+        .seat-map {
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .seat {
+            width: 30px;
+            height: 30px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .seat.selected {
+            background-color: #00f;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
+    <input type="hidden" id="matchid" value="${match.matchid}"/>
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-8">
@@ -105,9 +125,18 @@
                     <button type="button" class="btn btn-secondary" id="autoAssign">자동배정</button>
                     <button type="button" class="btn btn-primary" id="selectSeats">좌석선택</button>
                 </div>
+                <div class="seat-map mt-3"></div> <!-- 좌석 배치도 표시 영역 -->
             </div>
         </div>
     </div>
-    <script src="/js/seatSelection.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.section-link').click(function() {
+                var section = $(this).data('section');
+                var matchId = $('#matchid').val();
+                window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + section;
+            });
+        });
+    </script>
 </body>
 </html>

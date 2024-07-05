@@ -1,5 +1,7 @@
 package kr.co.matchday.tickets;
 
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,5 +24,7 @@ public class TicketsDAO {
         }
         return match;
     }
+	
+	private List<TicketsDTO> seats; // 좌석 정보를 포함하는 리스트
 	
 }

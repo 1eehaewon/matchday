@@ -22,6 +22,7 @@ public class MatchesDTO {
     private Date bookingenddate;
     private String teamname;
     private String stadiumname;
+    private Date cancellationDeadline; // 새로운 속성 추가
     
 }//class end
 

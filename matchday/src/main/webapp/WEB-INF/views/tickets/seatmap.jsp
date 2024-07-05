@@ -1,0 +1,293 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>좌석 선택</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .seat {
+            width: 25px; /* 좌석 크기 조정 */
+            height: 25px; /* 좌석 크기 조정 */
+            background-color: #cccccc;
+            cursor: pointer;
+            border: 1px solid #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px; /* 글씨 크기 조정 */
+        }
+        .selected {
+            background-color: #007bff;
+        }
+        .seat-info {
+            margin-top: 20px;
+        }
+        #seat-map-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; /* 기본 방향은 세로 정렬 */
+        }
+        #seat-map {
+            display: grid;
+            grid-template-columns: repeat(20, 25px); /* 열 개수 및 크기 조정 */
+            gap: 2px; /* 좌석 사이 간격 */
+            position: relative;
+            margin: 20px 0; /* 상하 여백 추가 */
+        }
+        .ground {
+            background-color: #008000; /* 그라운드 색상 */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0; /* 그라운드가 줄어들지 않도록 */
+        }
+        .ground.north, .ground.south {
+            width: calc(20 * 25px + 19 * 2px); /* 좌석의 너비와 간격에 맞춤 */
+            height: 20px;
+        }
+        .ground.east, .ground.west {
+            width: 20px;
+            height: calc(20 * 25px + 19 * 2px); /* 좌석의 높이와 간격에 맞춤 */
+            writing-mode: vertical-rl; /* 글씨를 세로로 배치 */
+            text-align: center; /* 글씨 가운데 정렬 */
+            transform: rotate(180deg); /* 글씨 뒤집기 */
+        }
+        .spacing {
+            margin: 10px; /* 좌석과 그라운드 사이의 여백 */
+        }
+        .choice {
+            border: 1px solid black; /* 테두리 검정색 */
+            padding: 10px; /* 패딩 추가 */
+            height: 300px; /* 고정 높이 설정 */
+            overflow-y: auto; /* 내용이 넘칠 때 스크롤 */
+        }
+        .choice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .choice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .choice-table th, .choice-table td {
+            border: 1px solid black; /* 테두리 검정색 */
+            padding: 5px;
+            text-align: left;
+        }
+        .choice-table th {
+            background-color: #f2f2f2;
+        }
+        #total-price {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .btn-group .btn {
+            flex: 1;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 진행 바 표시 -->
+        <ul class="progress-bar">
+            <li class="active">가격/할인선택</li>
+            <li>배송선택/주문자확인</li>
+            <li>결제하기</li>
+        </ul>
+        <h1>좌석 선택</h1>
+        <div class="row">
+            <div class="col-md-8">
+                <!-- 좌석 배치도와 그라운드를 포함하는 컨테이너 -->
+                <div id="seat-map-container">
+                    <div id="ground" class="ground spacing"></div>
+                    <div id="seat-map" class="spacing"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- 선택된 좌석 정보 영역 -->
+                <div id="selected-seats-info" class="seat-info">
+                    <div class="choice">
+                        <div class="choice-header">
+                            <strong>선택좌석</strong>
+                            <span id="selected-seat-count">총 0석 선택되었습니다.</span>
+                        </div>
+                        <table class="choice-table">
+                            <colgroup>
+                                <col width="75px">
+                                <col width="*">
+                                <col width="75px"> <!-- 금액 칸 추가 -->
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>좌석등급</th>
+                                    <th>좌석번호</th>
+                                    <th>금액</th> <!-- 금액 칸 추가 -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 선택된 좌석 정보가 여기에 동적으로 추가됩니다 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 총 금액 표시 영역 -->
+                <div id="total-price">총 금액: 0원</div>
+                <!-- 버튼 그룹 -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" id="prev-step">이전단계</button>
+                    <button type="button" class="btn btn-secondary" id="reset-seats">좌석 다시 선택</button>
+                    <button type="button" class="btn btn-danger" id="complete-selection">좌석선택완료</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 구역별 가격 설정
+            var sectionPrices = {
+                'north': 15000,
+                'east': 14000,
+                'west': 16000,
+                'south': 17000
+            };
+
+            // 구역별 그라운드 위치 설정
+            var groundPositions = {
+                'north': 'south',
+                'south': 'north',
+                'east': 'west',
+                'west': 'east'
+            };
+
+            // 좌석 데이터 파싱
+            try {
+                var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
+            } catch (e) {
+                console.error('Failed to parse seatsJson:', e);
+                var seats = [];
+            }
+
+            var seatMap = document.getElementById('seat-map');
+            var ground = document.getElementById('ground');
+            var section = '<c:out value="${section}"/>';
+            var groundPosition = groundPositions[section.toLowerCase()];
+
+            // 좌석 배치도 생성
+            if (seatMap && seats.length > 0) {
+                for (var i = 0; i < seats.length; i++) {
+                    for (var j = 0; j < seats[i].length; j++) {
+                        var seat = document.createElement('div');
+                        seat.className = 'seat';
+                        seat.dataset.seatId = seats[i][j];
+                        seat.dataset.section = section;
+                        seat.dataset.price = sectionPrices[section.toLowerCase()];
+                        seat.textContent = seats[i][j];
+                        seat.addEventListener('click', function() {
+                            if (this.classList.contains('selected')) {
+                                this.classList.remove('selected');
+                            } else {
+                                if (document.querySelectorAll('.seat.selected').length < 5) {
+                                    this.classList.add('selected');
+                                } else {
+                                    alert('5개의 좌석까지 구매 가능합니다.');
+                                }
+                            }
+                            updateSelectedSeats();
+                        });
+                        seatMap.appendChild(seat);
+                    }
+                }
+                // 그라운드 위치 설정
+                ground.className = 'ground ' + groundPosition;
+                ground.textContent = 'GROUND';
+                var seatMapContainer = document.getElementById('seat-map-container');
+                if (groundPosition === 'north') {
+                    seatMapContainer.insertBefore(ground, seatMap);
+                } else if (groundPosition === 'south') {
+                    seatMapContainer.appendChild(ground);
+                } else if (groundPosition === 'east') {
+                    seatMapContainer.style.flexDirection = 'row';
+                    seatMapContainer.appendChild(ground);
+                } else if (groundPosition === 'west') {
+                    seatMapContainer.style.flexDirection = 'row';
+                    seatMapContainer.insertBefore(ground, seatMap);
+                }
+            }
+
+            // 선택된 좌석 정보 업데이트 함수
+            function updateSelectedSeats() {
+                var selectedSeats = document.querySelectorAll('.seat.selected');
+                var tbody = document.querySelector('.choice-table tbody');
+                var seatCount = document.getElementById('selected-seat-count');
+                var totalPriceElement = document.getElementById('total-price');
+                var totalPrice = 0;
+                tbody.innerHTML = '';
+                selectedSeats.forEach(function(seat) {
+                    var price = parseInt(seat.dataset.price, 10);
+                    totalPrice += price;
+                    var row = document.createElement('tr');
+                    var cell1 = document.createElement('th');
+                    cell1.innerHTML = '<span>일반석(S5~S10)</span>'; // 좌석 등급 예시
+                    var cell2 = document.createElement('td');
+                    cell2.textContent = seat.dataset.section + '구역 R열-' + seat.dataset.seatId;
+                    var cell3 = document.createElement('td'); // 금액 칸 추가
+                    cell3.textContent = price + '원';
+                    row.appendChild(cell1);
+                    row.appendChild(cell2);
+                    row.appendChild(cell3); // 금액 칸 추가
+                    tbody.appendChild(row);
+                });
+                seatCount.textContent = '총 ' + selectedSeats.length + '석 선택되었습니다.';
+                totalPriceElement.textContent = '총 금액: ' + totalPrice.toLocaleString() + '원';
+            }
+
+            // 이전 단계로 이동하는 버튼의 클릭 이벤트 핸들러
+            document.getElementById('prev-step').addEventListener('click', function() {
+                window.history.back();
+            });
+
+            // 선택한 좌석을 초기화하는 버튼의 클릭 이벤트 핸들러
+            document.getElementById('reset-seats').addEventListener('click', function() {
+                document.querySelectorAll('.seat.selected').forEach(function(seat) {
+                    seat.classList.remove('selected');
+                });
+                updateSelectedSeats();
+            });
+
+            // 좌석 선택 완료 버튼의 클릭 이벤트 핸들러
+            document.getElementById('complete-selection').addEventListener('click', function() {
+                var selectedSeats = document.querySelectorAll('.seat.selected');
+                if (selectedSeats.length === 0) {
+                    alert('좌석을 선택해 주세요.');
+                    return;
+                }
+                var seats = [];
+                var totalPrice = 0;
+                selectedSeats.forEach(function(seat) {
+                    seats.push(seat.dataset.section + '구역 R열-' + seat.dataset.seatId);
+                    totalPrice += parseInt(seat.dataset.price, 10);
+                });
+                var matchId = '<c:out value="${match.matchid}"/>';
+                var seatsParam = encodeURIComponent(seats.join(','));
+                window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + seatsParam + '&totalPrice=' + totalPrice;
+            });
+        });
+    </script>
+</body>
+</html>
