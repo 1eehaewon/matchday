@@ -3,41 +3,18 @@
 
 <%@ include file="../header.jsp"%>
 
-<style>
-	.carousel-control-prev, .carousel-control-next {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 5%;
-		z-index: 1; /* 제어 버튼이 이미지 위에 오도록 */
-	}
-	
-	.carousel-control-prev {
-		left: 200px; /* 버튼이 좌측에서 10px 떨어져 위치 */
-	}
-	
-	.carousel-control-next {
-		right: 200px; /* 버튼이 우측에서 10px 떨어져 위치 */
-	}
-	
-	.carousel-item img {
-		width: 100%;
-		height: auto;
-	}
-	
-	.carousel-indicators {
-		display: none;
-	}
-	
+<style>	
 	/* 왼쪽 카테고리 + 오른쪽 상품들 */
 	.shop-container {
 		display: flex;
-		/* height: calc(100vh - 400px); /* 최대 높이 설정 */ */
-		overflow: hidden; /* 넘치는 부분 숨김 */
+		flex-wrap: wrap; /* 반응형을 위해 줄을 바꿔서 배치 */
+		/* height: calc(100vh - 400px); /* 최대 높이 설정 */ 
+		/*overflow: hidden; /* 넘치는 부분 숨김 */
 	}
 	
 	.left {
 		flex: 0.4; /* 왼쪽 섹션을 더 좁게 만듦 */
+		max-width: 30%; /* 최대 너비를 30%로 설정 */
 		border-right: 1px solid #ccc; /* 오른쪽에 1px 실선 추가 */
 		padding: 10px; /* 내부 여백 설정 */
 		overflow-y: auto; /* 세로로 넘치는 부분을 스크롤 가능하게 설정 */
@@ -52,7 +29,7 @@
 	}
 	
 	.category-header {
-	margin-left: 20px;
+		margin-left: 20px;
 	    cursor: pointer;
 	    display: flex;
 	    justify-content: center;
@@ -202,54 +179,38 @@
 	    margin: 0;
 	}
 	
+	/* 작은 화면(태블릿 이하)에서는 카테고리가 전체 너비를 차지 */
+	@media (max-width: 768px) {
+	    .left {
+	        flex: 1 0 100%; /* 100% 너비를 차지 */
+	        max-width: 100%; /* 최대 너비를 100%로 설정 */
+	        border-right: none; /* 경계선을 제거 */
+	        border-bottom: 1px solid #ccc; /* 아래쪽에 1px 실선 추가 */
+	    }
+	    
+	    .right {
+	        flex: 1 0 100%; /* 100% 너비를 차지 */
+	        max-width: 100%; /* 최대 너비를 100%로 설정 */
+	        padding: 15px; /* 패딩을 줄여서 공간을 더 확보 */
+	    }
+	}
+
+	/* 매우 작은 화면(모바일)에서는 더 조정 */
+	@media (max-width: 480px) {
+	    .right {
+	        padding: 10px; /* 패딩을 더 줄임 */
+	    }
 	
+	    .item-card {
+	        margin: 5px 0; /* 아이템 카드 간격을 줄임 */
+	    }
+	}
 
 	
 	
 </style>
 
 <!-- 본문 시작 main.jsp -->
-<div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-	<!-- Indicators -->
-	<ol class="carousel-indicators">
-		<li data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"></li>
-		<li data-bs-target="#myCarousel" data-bs-slide-to="1"></li>
-		<li data-bs-target="#myCarousel" data-bs-slide-to="2"></li>
-	</ol>
-
-	<!-- Wrapper for slides -->
-	<div class="carousel-inner">
-		<div class="carousel-item active">
-			<img
-				src="https://www.completesports.com/wp-content/uploads/2019/02/UEFA-Champions-League-1200x676.jpg?ezimgfmt=ngcb6/notWebP"
-				class="d-block w-100" alt="New York"
-				style="width: 1200px; height: 400px;">
-		</div>
-
-		<div class="carousel-item">
-			<img
-				src="https://dimg.donga.com/wps/SPORTS/IMAGE/2023/12/19/122685296.1.jpg"
-				class="d-block w-100" alt="" style="width: 1200px; height: 400px;">
-			<div class="carousel-caption d-none d-md-block"></div>
-		</div>
-
-		<div class="carousel-item">
-			<img
-				src="https://www.10wallpaper.com/wallpaper/1366x768/1412/Champions_League-2014_High_quality_HD_Wallpaper_1366x768.jpg"
-				class="d-block w-100" alt="" style="width: 1200px; height: 400px;">
-		</div>
-	</div>
-
-	<!-- Left and right controls -->
-	<a class="carousel-control-prev" href="#myCarousel" role="button"
-		data-bs-slide="prev"> <span class="carousel-control-prev-icon"
-		aria-hidden="true"></span> <span class="visually-hidden">Previous</span>
-	</a> <a class="carousel-control-next" href="#myCarousel" role="button"
-		data-bs-slide="next"> <span class="carousel-control-next-icon"
-		aria-hidden="true"></span> <span class="visually-hidden">Next</span>
-	</a>
-</div>
-
 <!-- 검색 -->
 <div class="container texte-center search-container">
 	<div class="col-l-20">
@@ -324,7 +285,7 @@
 							<c:when test="${not empty row.filename && row.filename != '-'}">
 								<%--<a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}"> --%>
 								<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
-									<img src="${pageContext.request.contextPath}/storage/${row.filename}" class="img-responsive margin" style="width: 1200px"> 
+									<img src="${pageContext.request.contextPath}/storage/goods/${row.filename}" class="img-responsive margin" style="width: 1200px"> 
 								</a>
 							</c:when>
 							<c:otherwise>
@@ -486,10 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }//showAllItems()end
     
-    
-    
-    
-    
+      
 }); //document.addEventListener('DOMContentLoaded', function() end
 
 /* left 멤버쉽 */

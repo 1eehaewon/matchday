@@ -153,22 +153,14 @@
 	
 	        <div class="cart_cont">
 	            <form id="Cartfrm" name="Cartfrm" method="post">
-	                <input type="hidden" name="mode" value=""/>
-	                <input type="hidden" name="cart[cartSno]" value=""/>
-	                <input type="hidden" name="cart[goodsNo]" value=""/>
-	                <input type="hidden" name="cart[goodsCnt]" value=""/>
-	                <input type="hidden" name="cart[addGoodsNo]" value=""/>
-	                <input type="hidden" name="cart[addGoodsCnt]" value=""/>
-	                <input type="hidden" name="useBundleGoods" value="1" />
-	                <!-- 장바구니 상품리스트 시작 -->
+	            <!-- 장바구니 상품리스트 시작 -->
 				<div class="row">
 					<div class="col-sm-12">
 						<table class="table table-hover">
 							<thead class="table-active">
 								<tr>
-									<th>전체 체크박스</th>
-									<th>상품 정보</th>
-									<!-- <th>상품코드</th> -->
+									<th><input type="checkbox" id="selectAllCheckbox" onchange="toggleCheckboxes(this.checked)"></th>
+									<th>상품 정보</th>	
 									<th>수량</th>
 									<th>가격</th>
 									<th>총 가격</th>	
@@ -176,31 +168,15 @@
 								</tr>					
 							</thead>
 							<tbody>
-							<c:forEach items="${cartList}" var="cart">
-			                    <tr>
-			                        <td>${cart.cartid}</td>
-			                        <td>${cart.userID}</td>
-			                        <td>${cart.goodsid}</td>
-			                        <td>${cart.quantity}</td>
-			                        <td>${cart.unitprice}</td>
-			                        <td>${cart.totalprice}</td>
-			                        <!-- Add more columns as needed -->
-			                    </tr>
-			                </c:forEach>
-								<%-- <c:forEach items="${list}" var="row">
-									<tr>
-										<td>${userID}</td>
-										<td>체크박스</td>
-										<td>상품 이미지, 상품명, 사이즈</td>
-										<td>${row.product_code}</td>
-										<td>${row.quantity}</td>
-										<td>${row.unitprice}</td>
-										<td>${row.totalprice}</td>
-										<td>
-											<input type="button" value="삭제" onclick="cartDelete(${row.cartid})">
-										</td>
-									</tr>
-								</c:forEach> --%>
+							    <c:forEach items="${cartList}" var="cart">
+							        <tr>
+							            <td><input type="checkbox" name="selectedItems" value="${cart.cartid}" onchange="calculateTotal()"></td>
+							            <td>${cart.goodsid}</td>
+							            <td>${cart.quantity}</td>
+							            <td>${cart.unitprice}</td>
+							            <td>${cart.totalprice}</td>
+							        </tr>
+							    </c:forEach>
 							</tbody>
 						</table>
 					</div><!-- col end -->
@@ -208,7 +184,7 @@
 	                <!-- cart_cont_list -->
 	                <!-- 장바구니 상품리스트 끝 -->
 	
-	                <p class="no_data">장바구니에 담겨있는 상품이 없습니다.</p>
+	                <p class="no_data" id="noDataMessage" style="display: none;">장바구니에 담겨있는 상품이 없습니다.</p>
 	            </form>
 	
 	            <div class="btn_left_box">
@@ -221,19 +197,19 @@
 	        	<div class="price_sum_cont">
 		            <div class="price_sum_list">
 		            	<dl>
-				            <dt>총 <strong id="totalGoodsCnt">0</strong> 개의 상품금액 </dt>
-				            <dd><strong id="totalGoodsPrice">0</strong>원</dd>
-			            </dl>
-			                <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_plus.png" alt="더하기" /></span>
-			            <dl>
-					        <dt>배송비</dt>
-					        <dd><strong id="totalDeliveryCharge">0</strong>원</dd>
-			            </dl>
-			            	<span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_total.png" alt="합계" /></span>
-			            <dl class="price_total">
-			            	<dt>합계</dt>
-				            <dd><strong id="totalSettlePrice">0</strong>원</dd>
-		            	</dl>
+                            <dt>총 <strong id="totalSelectedCount">0</strong> 개의 상품금액 </dt>
+                            <dd><strong id="totalSelectedPrice">0</strong>원</dd>
+                        </dl>
+                        <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_plus.png" alt="더하기" /></span>
+                        <dl>
+                            <dt>배송비</dt>
+                            <dd><strong id="totalDeliveryCharge">0</strong>원</dd>
+                        </dl>
+                        <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_total.png" alt="합계" /></span>
+                        <dl class="price_total">
+                            <dt>합계</dt>
+                            <dd><strong id="totalSettlePrice">0</strong>원</dd>
+                        </dl>
 		            </div>
 	            <em id="deliveryChargeText" class="tobe_mileage"></em>
 		        </div>
@@ -247,5 +223,35 @@
 </div> <!-- carts-container end -->
 
 <!-- 본문 끝 -->
+
+<script>
+    // 전체 선택 체크박스 클릭 시 모든 체크박스를 선택 또는 해제하는 함수
+    function toggleCheckboxes(checked) {
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = checked;
+        }
+        calculateTotal();
+    }
+
+    // 선택된 상품의 개수와 총 가격을 계산하여 표시하는 함수
+    function calculateTotal() {
+        var totalSelectedCount = 0;
+        var totalSelectedPrice = 0;
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                totalSelectedCount++;
+                var row = checkbox.parentNode.parentNode;
+                var totalPriceCell = row.cells[4];
+                totalSelectedPrice += parseInt(totalPriceCell.textContent);
+            }
+        }
+
+        document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+        document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString(); // 콤마(,) 표시 추가
+    }
+</script>
 
 <%@ include file="../footer.jsp" %>

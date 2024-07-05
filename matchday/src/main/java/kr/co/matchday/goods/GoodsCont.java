@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import net.utility.Utility;
 
 @Controller
@@ -46,24 +47,29 @@ public class GoodsCont {
 
 	@RequestMapping("/list")
 	/* @GetMapping("/list") */
-    public ModelAndView list(@RequestParam(defaultValue = "1") int page) {
-        int pageSize = 16;
-        int offset = (page - 1) * pageSize;
+	public ModelAndView list(@RequestParam(defaultValue = "1") int page, HttpSession session) {
+	    int pageSize = 16;
+	    int offset = (page - 1) * pageSize;
 
-        int totalRecords = goodsDao.countGoods();
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+	    int totalRecords = goodsDao.countGoods();
+	    int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
-        Map<String, Integer> params = new HashMap<>();
-        params.put("limit", pageSize);
-        params.put("offset", offset);
+	    Map<String, Integer> params = new HashMap<>();
+	    params.put("limit", pageSize);
+	    params.put("offset", offset);
 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("goods/list");
-        mav.addObject("list", goodsDao.listWithPaging(params));
-        mav.addObject("currentPage", page);
-        mav.addObject("totalPages", totalPages);
-        return mav;
-    }//list end
+	    ModelAndView mav = new ModelAndView();
+	    mav.setViewName("goods/list");
+	    mav.addObject("list", goodsDao.listWithPaging(params));
+	    mav.addObject("currentPage", page);
+	    mav.addObject("totalPages", totalPages);
+
+	    // 세션에서 userID를 가져와서 사용자가 로그인한 상태인지 확인
+	    String userID = (String) session.getAttribute("userID");
+	    mav.addObject("userID", userID);
+
+	    return mav;
+	}//list end
 	
     @GetMapping("/write")
     public String write(@ModelAttribute("goodsDto") GoodsDTO goodsDto) {
@@ -79,7 +85,7 @@ public class GoodsCont {
         // -> 실제 파일 /storage 폴더에 저장
         // -> 저장된 파일 관련 정보는 media 테이블에 저장
         ServletContext application = req.getServletContext();
-        String basePath = application.getRealPath("/storage");
+        String basePath = application.getRealPath("/storage/goods");
         
         // 업로드 파일은 /storage폴더에 저장
         String filename = "-";
@@ -188,7 +194,7 @@ public class GoodsCont {
         if (img != null && !img.isEmpty()) {
 			/* if (img.getSize() > 0 && img!=null && !img.isEmpty()) { //첨부된 파일이 존재한다면 */            
         	ServletContext application = req.getServletContext();
-            String basePath = application.getRealPath("/storage");
+            String basePath = application.getRealPath("/storage/goods");
 
             try {
                 filesize = img.getSize();
@@ -231,7 +237,7 @@ public class GoodsCont {
 
         if (filename != null && !filename.equals("-")) { // 첨부된 파일 삭제하기
             ServletContext application = req.getSession().getServletContext();
-            String path = application.getRealPath("/storage");
+            String path = application.getRealPath("/storage/goods");
             File file = new File(path + "\\" + filename);
             if (file.exists()) {
                 file.delete();
@@ -256,13 +262,13 @@ public class GoodsCont {
         String imageUrl = "";
         try {
             ServletContext application = req.getServletContext();
-            String basePath = application.getRealPath("/storage");
+            String basePath = application.getRealPath("/storage/goods");
 
             String fileName = file.getOriginalFilename();
             File dest = new File(basePath + File.separator + fileName);
             file.transferTo(dest);
 
-            imageUrl = "/storage/" + fileName;
+            imageUrl = "/storage/goods/" + fileName;
         } catch (IOException e) {
             e.printStackTrace();
         }

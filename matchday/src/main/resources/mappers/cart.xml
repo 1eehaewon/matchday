@@ -10,5 +10,8 @@
         VALUES (#{userid}, #{goodsid}, #{quantity}, #{unitprice}, #{totalprice})
     </insert>
 
+    <select id="getCartList" parameterType="String" resultType="kr.co.matchday.cart.CartDTO">
+        SELECT * FROM cart WHERE userid = #{userid}
+    </select>
 
 </mapper>

@@ -79,7 +79,7 @@
                     <tr>
                         <th>상품 사진</th>
                         <td>
-                            <img src="../storage/${goodsDto.filename}">
+                            <img src="../storage/goods/${goodsDto.filename}">
                             <input type="file" name="img" id="img" class="form-control">
                             <span id="imgMsg" style="color: red;"></span>
                         </td>

@@ -6,9 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.co.matchday.coupon.CouponDTO;
-import kr.co.matchday.point.PointHistoryDTO;
-
 @Repository
 public class CartDAO {
 
@@ -19,14 +16,14 @@ public class CartDAO {
 	@Autowired
 	SqlSession sqlSession;
 	
-	// Insert into cart
+	// 장바구니에 상품 추가
     public int insert(CartDTO cartDto) {
-        return sqlSession.insert("Cart.insert", cartDto);
+        return sqlSession.insert("cart.insert", cartDto);
     }
-    
-	/*
-	 * // Retrieve cart list by userid public List<CartDTO> getCartList(String
-	 * userid) { return sqlSession.selectList("Cart.getCartList", userid); }
-	 */
+
+	// 사용자의 장바구니 목록 조회 
+    public List<CartDTO> getCartList(String userid) {
+        return sqlSession.selectList("cart.getCartList", userid);
+    }
 		
 }//class end

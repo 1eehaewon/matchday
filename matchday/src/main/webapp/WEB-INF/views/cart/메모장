@@ -1,0 +1,2062 @@
+<!-- Modal HTML -->
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>쇼핑을 계속 하시겠습니까?</p>
+        <div class="modal-actions">
+            <button onclick="continueShopping()">쇼핑 계속하기</button>
+            <button onclick="goToCart()">장바구니로 이동</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: 4px;
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #007bff; /* Blue color for button */
+    color: #fff;
+}
+
+.modal-actions button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+
+
+
+// Get the modal
+var modal = document.getElementById("cartModal");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+function showCartModal() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+function continueShopping() {
+    modal.style.display = "none";
+    alert('쇼핑을 계속합니다.');
+}
+
+function goToCart() {
+    window.location.href = '/cart/list'; // 장바구니 목록 페이지 URL로 이동
+}
+
+function addToCart() {
+    showCartModal();
+}
+
+
+
+<input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+
+
+
+
+
+<!-- Modal HTML -->
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>쇼핑을 계속 하시겠습니까?</p>
+        <div class="modal-actions">
+            <button onclick="continueShopping()">쇼핑 계속하기</button>
+            <button onclick="goToCart()">장바구니로 이동</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Get the modal
+var modal = document.getElementById("cartModal");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal
+function showCartModal() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+function continueShopping() {
+    modal.style.display = "none";
+    window.location.href = '/goods/list'; // 쇼핑 계속하기 페이지 URL로 이동
+}
+
+function goToCart() {
+    window.location.href = '/cart/list'; // 장바구니 목록 페이지 URL로 이동
+}
+
+function addToCart() {
+    showCartModal();
+}
+
+// This function will only show an alert for purchasing
+function purchase() {
+    alert('상품을 구매합니다.');
+}
+<div class="product-action">
+    <button onclick="purchase()">구매하기</button>
+    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+</div>
+
+
+
+
+
+
+
+<!-- Modal HTML -->
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>쇼핑을 계속 하시겠습니까?</p>
+        <div class="modal-actions">
+            <button onclick="continueShopping()">쇼핑 계속하기</button>
+            <button onclick="goToCart()">장바구니로 이동</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 왼쪽 카테고리 + 오른쪽 상품들 */
+.shop-container {
+    display: flex;
+    flex-wrap: wrap; /* 반응형을 위해 줄을 바꿔서 배치 */
+    overflow: hidden; /* 넘치는 부분 숨김 */
+}
+
+.left {
+    flex: 1 0 30%; /* 기본적으로 30% 너비를 차지하지만 필요에 따라 줄어들 수 있음 */
+    max-width: 30%; /* 최대 너비를 30%로 설정 */
+    border-right: 1px solid #ccc; /* 오른쪽에 1px 실선 추가 */
+    padding: 10px; /* 내부 여백 설정 */
+    overflow-y: auto; /* 세로로 넘치는 부분을 스크롤 가능하게 설정 */
+    background-color: #f8f9fa; /* 연한 회색 배경색 설정 */
+}
+
+.right {
+    flex: 1 0 70%; /* 기본적으로 70% 너비를 차지하지만 필요에 따라 줄어들 수 있음 */
+    max-width: 70%; /* 최대 너비를 70%로 설정 */
+    padding: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 작은 화면(태블릿 이하)에서는 카테고리가 전체 너비를 차지 */
+@media (max-width: 768px) {
+    .left {
+        flex: 1 0 100%; /* 100% 너비를 차지 */
+        max-width: 100%; /* 최대 너비를 100%로 설정 */
+        border-right: none; /* 경계선을 제거 */
+        border-bottom: 1px solid #ccc; /* 아래쪽에 1px 실선 추가 */
+    }
+    
+    .right {
+        flex: 1 0 100%; /* 100% 너비를 차지 */
+        max-width: 100%; /* 최대 너비를 100%로 설정 */
+        padding: 15px; /* 패딩을 줄여서 공간을 더 확보 */
+    }
+}
+
+/* 매우 작은 화면(모바일)에서는 더 조정 */
+@media (max-width: 480px) {
+    .right {
+        padding: 10px; /* 패딩을 더 줄임 */
+    }
+
+    .item-card {
+        margin: 5px 0; /* 아이템 카드 간격을 줄임 */
+    }
+}
+
+
+
+
+
+
+
+
+
+<div class="product-action">
+    <button onclick="purchase()">구매하기</button>
+    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+</div>
+
+<script>
+    function addToCart() {
+        const productId = /* 해당 상품의 ID를 가져오는 로직 */;
+        const quantity = 1; // 기본 수량을 1로 설정
+
+        // Ajax 요청을 통해 서버로 상품 정보를 전송
+        fetch('/addToCart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId, quantity }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('상품이 장바구니에 추가되었습니다.');
+            } else {
+                alert('장바구니에 추가할 수 없습니다. 로그인이 필요합니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+
+
+
+@WebServlet("/addToCart")
+public class AddToCartServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 로그인 여부 확인
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"success\": false}");
+            return;
+        }
+
+        // 로그인된 사용자의 ID를 가져옵니다.
+        User user = (User) session.getAttribute("user");
+        int userId = user.getUserId();
+
+        // 클라이언트에서 전달된 상품 정보를 읽습니다.
+        BufferedReader reader = request.getReader();
+        StringBuilder jsonString = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            jsonString.append(line);
+        }
+
+        JSONObject jsonObject = new JSONObject(jsonString.toString());
+        int productId = jsonObject.getInt("productId");
+        int quantity = jsonObject.getInt("quantity");
+
+        // 데이터베이스에 상품을 장바구니에 추가하는 로직을 구현합니다.
+        CartDAO cartDAO = new CartDAO();
+        boolean success = cartDAO.addToCart(userId, productId, quantity);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        if (success) {
+            response.getWriter().write("{\"success\": true}");
+        } else {
+            response.getWriter().write("{\"success\": false}");
+        }
+    }
+}
+
+
+public class CartDAO {
+    private Connection getConnection() throws SQLException {
+        // 데이터베이스 연결을 반환하는 로직을 구현합니다.
+    }
+
+    public boolean addToCart(int userId, int productId, int quantity) {
+        String sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, productId);
+            pstmt.setInt(3, quantity);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.cart;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import jakarta.servlet.http.HttpSession;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/cart")
+public class CartCont {
+
+    public CartCont() {
+        System.out.println("-----CartCont() 객체 생성됨");
+    }
+
+    @Autowired
+    CartDAO cartDao;
+
+    // Handle request to insert into cart
+    @PostMapping("/insert")
+    public String insert(@ModelAttribute CartDTO cartDto, HttpSession session) {
+        // 로그인된 사용자 정보 가져오기
+        String userid = (String) session.getAttribute("userid");
+        if (userid == null) {
+            return "redirect:/login"; // 로그인 페이지로 리디렉션
+        }
+        cartDto.setUserid(userid);
+
+        // 장바구니에 상품 추가
+        cartDao.insert(cartDto);
+        return "redirect:/cart/list";
+    }
+
+    // Handle request to show cart list
+    @GetMapping("/list")
+    public String showCartList(Model model, HttpSession session) {
+        String userid = (String) session.getAttribute("userid");
+        if (userid == null) {
+            return "redirect:/login"; // 로그인 페이지로 리디렉션
+        }
+
+        List<CartDTO> cartList = cartDao.getCartList(userid);
+        model.addAttribute("cartList", cartList);
+        return "cart-list"; // Assuming you have a Thymeleaf template named "cart-list.html"
+    }
+}
+
+
+
+
+package kr.co.matchday.cart;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class CartDAO {
+
+    public CartDAO() {
+        System.out.println("-----CartDAO() 객체 생성됨");
+    }
+
+    @Autowired
+    SqlSession sqlSession;
+
+    // Insert into cart
+    public int insert(CartDTO cartDto) {
+        return sqlSession.insert("cart.insert", cartDto);
+    }
+
+    // Retrieve cart list by userid
+    public List<CartDTO> getCartList(String userid) {
+        return sqlSession.selectList("cart.getCartList", userid);
+    }
+}
+
+
+
+package kr.co.matchday.cart;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class CartDTO {
+
+    private int cartid;     // 장바구니 번호
+    private String userid;  // 회원 아이디
+    private String goodsid; // 굿즈 아이디
+    private int quantity;   // 수량
+    private int unitprice;  // 가격
+    private int totalprice; // 총 금액
+}
+
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cart">
+
+    <insert id="insert" parameterType="kr.co.matchday.cart.CartDTO">
+        INSERT INTO cart (userid, goodsid, quantity, unitprice, totalprice)
+        VALUES (#{userid}, #{goodsid}, #{quantity}, #{unitprice}, #{totalprice})
+    </insert>
+
+    <select id="getCartList" parameterType="String" resultType="kr.co.matchday.cart.CartDTO">
+        SELECT * FROM cart WHERE userid = #{userid}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cart List</title>
+</head>
+<body>
+    <h1>Cart List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Goods ID</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${cartList}">
+                <td th:text="${item.goodsid}">Goods ID</td>
+                <td th:text="${item.quantity}">Quantity</td>
+                <td th:text="${item.unitprice}">Unit Price</td>
+                <td th:text="${item.totalprice}">Total Price</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<%@ include file="../header.jsp" %>
+
+<style>
+    /* Your existing styles */
+</style>
+
+<div class="container">
+    <c:if test="${not empty goodsDto}">
+        <div class="product-section">
+            <div class="product-image">
+                <c:if test="${not empty goodsDto.filename}">
+                    <img src="${pageContext.request.contextPath}/storage/goods/${goodsDto.filename}" alt="${goodsDto.productname}" />
+                </c:if>
+            </div>
+            <div class="product-info">
+                <div class="product-title">${goodsDto.productname}</div>
+                <div class="product-price">
+                    <fmt:formatNumber value="${goodsDto.price}" pattern="#,###원"/>
+                </div>
+                <div class="product-description">
+                    <dl>
+                        <dt>사이즈</dt>
+                        <dd>
+                            <select name="size" id="size-select">
+                                <option value="">선택하세요.</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                            </select>
+                        </dd>
+                        <dt>배송비</dt>
+                        <dd>
+                            3,500원 (100,000원 이상 구매시 무료)
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;제주 및 도서 산간 3,000원 추가
+                        </dd>
+                        <dt>주문 수량</dt>
+                        <dd>
+                            <div class="quantity-control">
+                                <button type="button" onclick="updateQuantity(-1)">-</button>
+                                <input type="text" id="quantity-input" name="quantity" value="1" readonly/>
+                                <button type="button" onclick="updateQuantity(1)">+</button>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <hr>
+                <div class="product-description">
+                    <dl>
+                        <dt>총 주문 수량</dt>
+                        <dd><span id="order-quantity">1</span>개</dd>
+                        <dt>총 상품 금액</dt>
+                        <dd><span id="total-price"></span>원</dd>
+                    </dl>
+                </div>
+                <div class="product-action">
+                    <button onclick="purchase()">구매하기</button>
+                    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+                </div>
+                <!-- 장바구니 모달창 -->
+                <div id="cartModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p>장바구니에 추가 하였습니다.</p>
+                        <p>쇼핑을 계속 하시겠습니까?</p>
+                        <div class="modal-actions">
+                            <button onclick="continueShopping()">쇼핑 계속하기</button>
+                            <button onclick="goToCart()">장바구니로 이동</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 관리자용 상품 수정, 상품 삭제 -->
+                <br>
+                <form name="goodsfrm" method="post">
+                    <c:if test="${sessionScope.grade == 'M'}">
+                        <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+                        <input type="button" value="상품수정" onclick="goods_update()" class="btn btn-success">
+                        <input type="button" value="상품삭제" onclick="goods_delete()" class="btn btn-danger">
+                    </c:if>
+                </form>
+            </div>
+        </div>
+        <div class="info-container">
+            <ul class="info-tab">
+                <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
+                <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
+                <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
+                <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
+            </ul>
+            <div id="info-content">
+                <div id="info01" class="tabcont on">${goodsDto.description}</div>
+                <div id="info02" class="tabcont">${goodsDto.caution}</div>
+                <div id="info03" class="tabcont">${goodsDto.deliveryreturnsexchangesinfo}</div>
+                <div id="info04" class="tabcont">구매후기 내용</div>
+            </div>
+        </div>
+    </c:if>
+</div>
+
+<script>
+    function updateQuantity(change) {
+        var input = document.getElementById('quantity-input');
+        var currentValue = parseInt(input.value);
+        var newValue = currentValue + change;
+        if (newValue < 1) {
+            newValue = 1;
+        }
+        input.value = newValue;
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        var quantity = parseInt(document.getElementById('quantity-input').value);
+        var price = ${goodsDto.price};
+        var totalPrice = quantity * price;
+        document.getElementById('order-quantity').innerText = quantity;
+        document.getElementById('total-price').innerText = totalPrice.toLocaleString();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotalPrice();
+    });
+
+    function loadContent(tabId) {
+        try {
+            var tabContents = document.querySelectorAll('.tabcont');
+            tabContents.forEach(function(content) {
+                content.style.display = 'none';
+            });
+            var selectedTabContent = document.getElementById(tabId);
+            selectedTabContent.style.display = 'block';
+            var tabMenuItems = document.querySelectorAll('.info-tab li');
+            tabMenuItems.forEach(function(item) {
+                item.classList.remove('on');
+            });
+            var selectedTabMenuItem = document.querySelector('.info-tab li[data-tab="' + tabId + '"]');
+            selectedTabMenuItem.classList.add('on');
+        } catch (error) {
+            console.error('Error in loadContent function:', error);
+            alert('Failed to load content. Please try again later.');
+        }
+    }
+
+    function purchase() {
+        alert('상품을 구매합니다.');
+    }
+
+    var modal = document.getElementById("cartModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    function showCartModal() {
+        modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    function continueShopping() {
+        modal.style.display = "none";
+        window.location.href = '/goods/list';
+    }
+
+    function goToCart() {
+        window.location.href = '/cart/list';
+    }
+
+    function addToCart() {
+        var form = document.createElement('form');
+        form.method = 'post';
+        form.action = '${pageContext.request.contextPath}/cart/insert';
+
+        var goodsIdInput = document.createElement('input');
+        goodsIdInput.type = 'hidden';
+        goodsIdInput.name = 'goodsid';
+        goodsIdInput.value = '${goodsDto.goodsid}';
+        form.appendChild(goodsIdInput);
+
+        var quantityInput = document.createElement('input');
+        quantityInput.type = 'hidden';
+        quantityInput.name = 'quantity';
+        quantityInput.value = document.getElementById('quantity-input').value;
+        form.appendChild(quantityInput);
+
+        var unitPriceInput = document.createElement('input');
+        unit
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <script>
+    // 장바구니 모달 가져오기
+    var modal = document.getElementById("cartModal");
+    // <span> 요소를 가져와서 모달을 닫기
+    var span = document.getElementsByClassName("close")[0];
+
+    // 사용자가 모달 열기 버튼을 클릭할 때 실행될 함수
+    function showCartModal() {
+        modal.style.display = "block";
+    }
+
+    // 사용자가 <span> (x)을 클릭하면 모달 닫기
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // 사용자가 모달 밖을 클릭하면 모달 닫기
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // 상품을 장바구니에 추가하는 함수
+    function addToCart() {
+        // 상품 정보 가져오기
+        var productTitle = document.querySelector('.product-title').textContent.trim();
+        var productPrice = document.querySelector('.product-price').textContent.trim().replace('원', '').replace(',', ''); // 콤마 제거
+        var selectedSize = document.querySelector('select[name="size"]').value;
+        var quantity = parseInt(document.getElementById('quantity-input').value);
+        var totalPrice = parseInt(document.getElementById('total-price').innerText.replace(',', '')); // 콤마 제거
+
+        // 사용자 아이디는 세션에서 가져와야 함
+        var userid = "<%= session.getAttribute('userid') %>";
+
+        // 장바구니에 추가할 상품 데이터
+        var cartItem = {
+            userid: userid,
+            goodsid: "${goodsDto.goodsid}", // 상품 아이디
+            quantity: quantity,
+            unitprice: parseInt(productPrice), // 상품 단가
+            totalprice: totalPrice // 총 가격
+        };
+
+        // Ajax를 사용하여 서버에 상품 데이터를 전송
+        fetch('/cart/insert', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cartItem),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 서버에서 정상적으로 처리되었을 때 수행할 작업
+            console.log('장바구니에 상품 추가 완료:', data);
+            // 모달 열기
+            showCartModal();
+        })
+        .catch((error) => {
+            console.error('장바구니 추가 오류:', error);
+            // 오류 처리 혹은 사용자에게 오류 메시지 표시
+        });
+    }
+</script>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+       // 상품을 장바구니에 추가하는 함수
+function addToCart() {
+    // 상품 정보 가져오기
+    var productTitle = document.querySelector('.product-title').textContent.trim();
+    var productPriceText = document.querySelector('.product-price').textContent.trim();
+    var productPrice = parseInt(productPriceText.replace('원', '').replace(',', '')); // 콤마 제거 및 숫자 변환
+    var selectedSize = document.querySelector('select[name="size"]').value;
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var totalPriceText = document.getElementById('total-price').innerText;
+    var totalPrice = parseInt(totalPriceText.replace(',', '')); // 콤마 제거 및 숫자 변환
+
+    // 사용자 아이디는 세션에서 가져와야 함
+    var userid = "${sessionScope.userid}";
+
+    // 장바구니에 추가할 상품 데이터
+    var cartItem = {
+        userid: userid,
+        goodsid: "${goodsDto.goodsid}", // 상품 아이디 (동적 데이터 처리 필요)
+        quantity: quantity,
+        unitprice: productPrice, // 상품 단가
+        totalprice: totalPrice // 총 가격
+    };
+
+    // Ajax를 사용하여 서버에 상품 데이터를 전송
+    fetch('/cart/insert', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cartItem),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 서버에서 정상적으로 처리되었을 때 수행할 작업
+        console.log('장바구니에 상품 추가 완료:', data);
+        // 모달 열기
+        showCartModal();
+    })
+    .catch((error) => {
+        console.error('장바구니 추가 오류:', error);
+        // 오류 처리 혹은 사용자에게 오류 메시지 표시
+    });
+}
+
+
+
+
+
+// 상품을 장바구니에 추가하는 함수
+function addToCart() {
+    // 사용자 아이디는 세션에서 가져와야 함
+    var userid = "${sessionScope.userid}";
+
+    // 상품 정보 및 수량 가져오기
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var cartItem = {
+        userid: userid,
+        goodsid: "${goodsDto.goodsid}", // 동적 데이터 처리 필요
+        quantity: quantity,
+    };
+
+    // fetch 요청 수정
+    fetch('/cart/insert', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cartItem),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('장바구니 추가 실패');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // 서버에서 정상적으로 처리되었을 때 수행할 작업
+        console.log('장바구니에 상품 추가 완료:', data);
+        // 모달 열기 등 추가 작업 수행
+        showCartModal();
+    })
+    .catch((error) => {
+        console.error('장바구니 추가 오류:', error);
+        // 오류 처리 혹은 사용자에게 오류 메시지 표시
+    });
+}
+
+var productTitle = document.querySelector('.product-title').textContent.trim();
+var productPriceText = document.querySelector('.product-price').textContent.trim();
+var productPrice = parseInt(productPriceText.replace('원', '').replace(',', '')); // 콤마 제거 및 숫자 변환
+var selectedSize = document.querySelector('select[name="size"]').value;
+var quantity = parseInt(document.getElementById('quantity-input').value);
+var totalPriceText = document.getElementById('total-price').innerText;
+var totalPrice = parseInt(totalPriceText.replace(',', '')); // 콤마 제거 및 숫자 변환
+
+// 사용자 아이디는 세션에서 가져와야 함
+var userid = "${sessionScope.userid}";
+
+// 장바구니에 추가할 상품 데이터
+var cartItem = {
+    userid: userid,
+    goodsid: "${goodsDto.goodsid}", // 상품 아이디 (동적 데이터 처리 필요)
+    quantity: quantity,
+    unitprice: productPrice, // 상품 단가
+    totalprice: totalPrice // 총 가격
+};
+
+// Ajax를 사용하여 서버에 상품 데이터를 전송
+fetch('/cart/insert', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(cartItem),
+})
+.then(response => response.json())
+.then(data => {
+    // 서버에서 정상적으로 처리되었을 때 수행할 작업
+    console.log('장바구니에 상품 추가 완료:', data);
+    // 모달 열기
+    showCartModal();
+})
+.catch((error) => {
+    console.error('장바구니 추가 오류:', error);
+    // 오류 처리 혹은 사용자에게 오류 메시지 표시
+});
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cart">
+    
+    <insert id="insert" parameterType="kr.co.matchday.cart.CartDTO">
+        INSERT INTO cart (userid, goodsid, quantity, unitprice, totalprice)
+        VALUES (#{userid}, #{goodsid}, #{quantity}, #{unitprice}, #{totalprice})
+    </insert>
+    
+    <select id="getCartList" parameterType="String" resultType="kr.co.matchday.cart.CartDTO">
+        SELECT * FROM cart WHERE userid = #{userid}
+    </select>
+    
+</mapper>
+
+
+
+
+
+
+@RestController
+@RequestMapping("/cart")
+public class CartController {
+
+    @Autowired
+    private CartService cartService;
+
+    @PostMapping("/insert")
+    public ResponseEntity<String> insertCartItem(@RequestBody CartItem cartItem) {
+        // 클라이언트가 전송한 JSON 데이터가 CartItem 객체로 자동 변환됨
+        // 여기서 cartService를 사용하여 장바구니에 상품을 추가하거나 다른 작업을 수행할 수 있음
+        
+        // 예시로 성공적으로 추가되었다는 응답을 보내는 것
+        return ResponseEntity.ok("장바구니에 상품 추가 완료");
+    }
+
+    // 다른 메서드들 추가 가능
+}
+
+
+
+
+
+
+
+
+
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../header.jsp" %>
+
+<!-- CSS 스타일 -->
+<style>
+    /* ... (스타일 정의는 생략) ... */
+</style>
+
+<!-- 본문 시작 -->
+<div class="container">
+    <c:if test="${not empty goodsDto}">
+        <div class="product-section">
+            <div class="product-image">
+                <c:if test="${not empty goodsDto.filename}">
+                    <img src="${pageContext.request.contextPath}/storage/goods/${goodsDto.filename}" alt="${goodsDto.productname}" />
+                </c:if>                  
+            </div>
+            <div class="product-info">
+                <div class="product-title">${goodsDto.productname}</div>
+                <div class="product-price">
+                    <fmt:formatNumber value="${goodsDto.price}" pattern="#,###원"/>
+                </div>
+                <div class="product-description">
+                    <dl>
+                        <dt>사이즈</dt>
+                        <dd>
+                            <select name="size">
+                                <option value="">선택하세요.</option>
+                                <option value="S">S</option>
+                                <option value="M">M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                            </select>
+                        </dd>
+                        <dt>배송비</dt>
+                        <dd>3,500원 (100,000원 이상 구매시 무료) <br>제주 및 도서 산간 3,000원 추가</dd>
+                        <dt>주문 수량</dt>
+                        <dd>
+                            <div class="quantity-control">
+                                <button type="button" onclick="updateQuantity(-1)">-</button>
+                                <input type="text" id="quantity-input" name="quantity" value="1" readonly/>
+                                <button type="button" onclick="updateQuantity(1)">+</button>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <hr>
+                <div class="product-description">
+                    <dl>
+                        <dt>총 주문 수량</dt>
+                        <dd><span id="order-quantity">1</span>개</dd>
+                        <dt>총 상품 금액</dt>
+                        <dd><span id="total-price"></span>원</dd>
+                    </dl>
+                </div>
+                <div class="product-action">
+                    <button onclick="purchase()">구매하기</button>
+                    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+                </div>
+                <!-- 장바구니 모달창 -->
+                <div id="cartModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p>장바구니에 추가 하였습니다.</p>
+                        <p>쇼핑을 계속 하시겠습니까?</p>
+                        <div class="modal-actions">
+                            <button onclick="continueShopping()">쇼핑 계속하기</button>
+                            <button onclick="goToCart()">장바구니로 이동</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="info-container">
+            <ul class="info-tab">
+                <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
+                <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
+                <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
+                <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
+            </ul>
+            <div id="info-content">
+                <div id="info01" class="tabcont on">${goodsDto.description}</div>
+                <div id="info02" class="tabcont">${goodsDto.caution}</div>
+                <div id="info03" class="tabcont">${goodsDto.deliveryreturnsexchangesinfo}</div>
+                <div id="info04" class="tabcont">구매후기 내용</div>
+            </div>
+        </div>
+    </c:if>
+</div>
+
+<script>
+    function updateQuantity(change) {
+        var input = document.getElementById('quantity-input');
+        var currentValue = parseInt(input.value);
+        var newValue = currentValue + change;
+        if (newValue < 1) {
+            newValue = 1;
+        }
+        input.value = newValue;
+        updateTotalPrice();
+    }
+    
+    function updateTotalPrice() {
+        var quantity = parseInt(document.getElementById('quantity-input').value);
+        var price = ${goodsDto.price};
+        var totalPrice = quantity * price;
+        document.getElementById('order-quantity').innerText = quantity;
+        document.getElementById('total-price').innerText = totalPrice.toLocaleString();
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotalPrice();
+    });
+
+    function loadContent(tabId) {
+        try {
+            var tabContents = document.querySelectorAll('.tabcont');
+            tabContents.forEach(function(content) {
+                content.style.display = 'none';
+            });
+            var selectedTabContent = document.getElementById(tabId);
+            selectedTabContent.style.display = 'block';
+            var tabMenuItems = document.querySelectorAll('.info-tab li');
+            tabMenuItems.forEach(function(item) {
+                item.classList.remove('on');
+            });
+            var selectedTabMenuItem = document.querySelector('.info-tab li[data-tab="' + tabId + '"]');
+            selectedTabMenuItem.classList.add('on');
+        } catch (error) {
+            console.error('Error in loadContent function:', error);
+            alert('Failed to load content. Please try again later.');
+        }
+    }
+
+    function purchase() {
+        alert('상품을 구매합니다.');
+    }
+
+    var modal = document.getElementById("cartModal");
+    var span = document.getElementsByClassName("close")[0];
+    function showCartModal() {
+        modal.style.display = "block";
+    }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    function continueShopping() {
+        modal.style.display = "none";
+        window.location.href = '/goods/list';
+    }
+    function goToCart() {
+        window.location.href = '/cart/list';
+    }
+    function addToCart() {
+        var productTitle = document.querySelector('.product-title').textContent.trim();
+        var productPriceText = document.querySelector('.product-price').textContent.trim();
+        var productPrice = parseInt(productPriceText.replace('원', '').replace(',', ''));
+        var selectedSize = document.querySelector('select[name="size"]').value;
+        var quantity = parseInt(document.getElementById('quantity-input').value);
+        var totalPriceText = document.getElementById('total-price').innerText;
+        var totalPrice = parseInt(totalPriceText.replace(',', ''));
+        var userid = "${sessionScope.userid}";
+        var cartItem = {
+            userid: userid,
+            goodsid: "${goodsDto.goodsid}",
+            quantity: quantity,
+            unitprice: productPrice,
+            totalprice: totalPrice
+        };
+
+        fetch('/cart/insert', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cartItem),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('장바구니에 상품 추가 완료:', data);
+            showCartModal();
+        })
+        .catch((error) => {
+            console.error('장바구니 추가 오류:', error);
+        });
+    }
+
+    function goods_update(){
+        document.goodsfrm.action = "/goods/updateform";
+        document.goodsfrm.submit();
+    }
+
+    function goods_delete(){
+        if(confirm("상품은 영구히 삭제됩니다\n진행할까요?")){
+            document.goods
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 총 가격 업데이트 함수
+function updateTotalPrice() {
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var price = ${goodsDto.price};
+    var totalPrice = quantity * price;
+
+    document.getElementById('order-quantity').innerText = quantity;
+    document.getElementById('total-price').innerText = totalPrice; // toLocaleString() 제거
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
+    <input type="hidden" name="userid" value="${sessionScope.userid}">
+    <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+    <input type="hidden" name="quantity" id="form-quantity">
+    <input type="hidden" name="unitprice" id="form-unitprice">
+    <input type="hidden" name="totalprice" id="form-totalprice">
+</form>
+
+
+
+
+
+
+function addToCart() {
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var productPriceText = document.querySelector('.product-price').textContent.trim();
+    var productPrice = parseInt(productPriceText.replace('원', '').replace(',', '')); // 콤마 제거 및 숫자 변환
+    var totalPriceText = document.getElementById('total-price').innerText;
+    var totalPrice = parseInt(totalPriceText.replace(',', '')); // 콤마 제거 및 숫자 변환
+
+    // form의 hidden input에 값 설정
+    document.getElementById('form-quantity').value = quantity;
+    document.getElementById('form-unitprice').value = productPrice;
+    document.getElementById('form-totalprice').value = totalPrice;
+
+    // form 제출
+    document.getElementById('addToCartForm').submit();
+}
+
+
+
+
+
+                
+                <div class="product-action">
+                    <button onclick="purchase()">구매하기</button>
+                    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="btn btn-info">
+                </div>
+                <!-- 장바구니 모달창 -->
+                <div id="cartModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p>장바구니에 추가 하였습니다.</p>
+                        <p>쇼핑을 계속 하시겠습니까?</p>
+                        <div class="modal-actions">
+                            <button onclick="continueShopping()">쇼핑 계속하기</button>
+                            <button onclick="goToCart()">장바구니로 이동</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <form name="goodsfrm" method="post">
+                    <c:if test="${sessionScope.grade == 'M'}">
+                         <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+                         <input type="button" value="상품수정" onclick="goods_update()" class="btn btn-success">
+                         <input type="button" value="상품삭제" onclick="goods_delete()" class="btn btn-danger">
+                    </c:if>
+                </form>
+            </div>
+        </div>
+        
+        <div class="info-container">
+            <ul class="info-tab">
+                <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
+                <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
+                <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
+                <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
+            </ul>
+            
+            <div id="info-content">
+                <div id="info01" class="tabcont on">${goodsDto.description}</div>
+                <div id="info02" class="tabcont">${goodsDto.caution}</div>
+                <div id="info03" class="tabcont">${goodsDto.deliveryreturnsexchangesinfo}</div>
+                <div id="info04" class="tabcont">구매후기 내용</div>
+            </div>
+        </div>
+    </c:if>
+</div>
+
+<form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
+    <input type="hidden" name="userid" value="${sessionScope.userid}">
+    <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+    <input type="hidden" name="quantity" id="form-quantity">
+    <input type="hidden" name="unitprice" id="form-unitprice">
+    <input type="hidden" name="totalprice" id="form-totalprice">
+</form>
+
+<script>
+    function updateQuantity(change) {
+        var input = document.getElementById('quantity-input');
+        var currentValue = parseInt(input.value);
+        var newValue = currentValue + change;
+        
+        if (newValue < 1) {
+            newValue = 1;
+        }
+        
+        input.value = newValue;
+        updateTotalPrice();
+    }
+    
+    function updateTotalPrice() {
+        var quantity = parseInt(document.getElementById('quantity-input').value);
+        var price = ${goodsDto.price};
+        var totalPrice = quantity * price;
+
+        document.getElementById('order-quantity').innerText = quantity;
+        document.getElementById('total-price').innerText = totalPrice.toLocaleString();
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotalPrice();
+    });
+
+    function loadContent(tabId) {
+        try {
+            var tabContents = document.querySelectorAll('.tabcont');
+            tabContents.forEach(function(content) {
+                content.style.display = 'none';
+            });
+
+            var selectedTabContent = document.getElementById(tabId);
+            selectedTabContent.style.display = 'block';
+
+            var tabMenuItems = document.querySelectorAll('.info-tab li');
+            tabMenuItems.forEach(function(item) {
+                item.classList.remove('on');
+            });
+
+            var selectedTabMenuItem = document.querySelector('.info-tab li[data-tab="' + tabId + '"]');
+            selectedTabMenuItem.classList.add('on');
+        } catch (error) {
+            console.error('Error in loadContent function:', error);
+            alert('Failed to load content. Please try again later.');
+        }
+    }
+
+    function purchase() {
+        alert('상품을 구매합니다.');
+    }
+
+    var modal = document.getElementById("cartModal");
+    var span = document.getElementsByClass
+
+function addToCart() {
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var totalPriceText = document.getElementById('total-price').innerText;
+    var totalPrice = parseInt(totalPriceText.replace(',', ''));
+
+    // Form에 값 설정
+    document.getElementById('formQuantity').value = quantity;
+    document.getElementById('formTotalPrice').value = totalPrice;
+
+    // Form 제출
+    document.getElementById('addToCartForm').submit();
+}
+
+
+function addToCart() {
+    var quantity = parseInt(document.getElementById('quantity-input').value); // Convert quantity to integer
+    var totalPriceText = document.getElementById('total-price').innerText;
+    var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // Remove commas and convert to integer
+
+    // Set values in form fields
+    document.getElementById('formQuantity').value = quantity;
+    document.getElementById('formTotalPrice').value = totalPrice;
+
+    // Submit the form
+    document.getElementById('addToCartForm').submit();
+}
+
+
+
+
+
+document.getElementById('form-unitprice').value = totalPrice; // 수정 필요한 부분
+
+<input type="hidden" name="unitprice" id="form-unitprice">
+document.getElementById('form-unitprice').value = parseInt(totalPrice.replace(',', '')); // ',' 제거 후 정수로 변환
+
+
+var totalPriceText = document.getElementById('total-price').innerText;
+var totalPrice = parseInt(totalPriceText.replace(',', ''));
+document.getElementById('form-unitprice').value = totalPrice;
+
+
+
+
+
+
+
+
+
+function addToCart() {
+    // 수량 입력 요소 확인
+    var quantityInput = document.getElementById('quantity-input');
+    if (!quantityInput) {
+        console.error('수량 입력 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var quantity = parseInt(quantityInput.value); // 수량을 정수로 변환
+
+    // 총 가격 요소 확인
+    var totalPriceElement = document.getElementById('total-price');
+    if (!totalPriceElement) {
+        console.error('총 가격 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var totalPriceText = totalPriceElement.innerText;
+    var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // 쉼표 제거 후 정수로 변환
+
+    // formQuantity 입력 요소 확인
+    var formQuantity = document.getElementById('formQuantity');
+    if (!formQuantity) {
+        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    // formTotalPrice 입력 요소 확인
+    var formTotalPrice = document.getElementById('formTotalPrice');
+    if (!formTotalPrice) {
+        console.error('장바구니 총 가격 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    // 폼 필드에 값 설정
+    formQuantity.value = quantity;
+    formTotalPrice.value = totalPrice;
+
+    // 디버깅을 위한 콘솔 출력
+    console.log('수량:', quantity);
+    console.log('총 가격:', totalPrice);
+
+    // 폼 제출
+    document.getElementById('addToCartForm').submit();
+}
+
+
+
+
+function addToCart() {
+    var quantityInput = document.getElementById('quantity-input');
+    if (!quantityInput) {
+        console.error('수량 입력 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var quantity = parseInt(quantityInput.value);
+
+    var totalPriceElement = document.getElementById('total-price');
+    if (!totalPriceElement) {
+        console.error('총 가격 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var totalPriceText = totalPriceElement.innerText;
+    var totalPrice = parseInt(totalPriceText.replace(/,/g, ''));
+
+    var formQuantity = document.getElementById('formQuantity');
+    if (!formQuantity) {
+        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    var formTotalPrice = document.getElementById('formTotalPrice');
+    if (!formTotalPrice) {
+        console.error('장바구니 총 가격 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    // 세션 스코프에서 userid 가져오기
+    var userId = '${sessionScope.userid}';
+    console.log('사용자 아이디:', userId);
+
+    // 폼 필드에 값 설정
+    formQuantity.value = quantity;
+    formTotalPrice.value = totalPrice;
+
+    document.getElementById('addToCartForm').submit();
+}
+
+
+
+
+
+
+
+
+
+function updateQuantity(change) {
+    var quantityInput = document.getElementById('quantity-input');
+    var currentQuantity = parseInt(quantityInput.value);
+    var newQuantity = currentQuantity + change;
+
+    if (newQuantity < 1) {
+        newQuantity = 1; // prevent quantity from going below 1
+    }
+
+    quantityInput.value = newQuantity; // update displayed quantity
+
+    updateTotalPrice(); // update total price based on new quantity
+}
+
+function updateTotalPrice() {
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var price = ${goodsDto.price}; // Replace with actual price retrieval logic
+    var totalPrice = quantity * price;
+
+    // Display updated values
+    document.getElementById('order-quantity').innerText = quantity + '개';
+    document.getElementById('total-price').innerText = totalPrice.toLocaleString() + '원';
+
+    // Update hidden input fields
+    document.getElementById('form-quantity').value = quantity;
+    document.getElementById('form-unitprice').value = price;
+    document.getElementById('form-totalprice').value = totalPrice;
+}
+
+// Initialize total price on page load
+updateTotalPrice();
+
+
+
+
+
+
+
+
+
+
+
+
+
+function addToCart() {
+    showCartModal();
+
+    var quantityInput = document.getElementById('quantity-input');
+    if (!quantityInput) {
+        console.error('수량 입력 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var quantity = parseInt(quantityInput.value); // 수량을 정수로 변환
+
+    var totalPriceElement = document.getElementById('total-price');
+    if (!totalPriceElement) {
+        console.error('총 가격 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var totalPriceText = totalPriceElement.innerText;
+    var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // 쉼표 제거 후 정수로 변환
+
+    var formQuantity = document.getElementById('form-quantity');
+    if (!formQuantity) {
+        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    var formTotalPrice = document.getElementById('form-totalprice');
+    if (!formTotalPrice) {
+        console.error('장바구니 총 가격 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    formQuantity.value = quantity;
+    formTotalPrice.value = totalPrice;
+
+    // 폼 제출
+    document.getElementById('addToCartForm').submit();
+}
+
+
+
+
+
+
+
+import org.springframework.web.bind.annotation.PostMapping;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/goods")
+public class GoodsCont {
+
+    // 이하 생략...
+
+    @GetMapping("/list")
+    public ModelAndView list(@RequestParam(defaultValue = "1") int page, HttpSession session) {
+        // 세션에서 userID를 가져와서 로그인 여부 확인
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return new ModelAndView("redirect:/member/login"); // 로그인 페이지로 리다이렉트
+        }
+
+        int pageSize = 16;
+        int offset = (page - 1) * pageSize;
+
+        int totalRecords = goodsDao.countGoods();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        Map<String, Integer> params = new HashMap<>();
+        params.put("limit", pageSize);
+        params.put("offset", offset);
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("goods/list");
+        mav.addObject("list", goodsDao.listWithPaging(params));
+        mav.addObject("currentPage", page);
+        mav.addObject("totalPages", totalPages);
+        return mav;
+    }
+
+    @GetMapping("/write")
+    public String write(@ModelAttribute("goodsDto") GoodsDTO goodsDto, HttpSession session) {
+        // 세션에서 userID를 가져와서 로그인 여부 확인
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리다이렉트
+        }
+
+        return "goods/write";
+    }
+
+    @PostMapping("/insert")
+    public String insert(@RequestParam Map<String, Object> map,
+                         @RequestParam("img") MultipartFile img,
+                         HttpServletRequest req,
+                         HttpSession session) {
+        // 세션에서 userID를 가져와서 로그인 여부 확인
+        String userID = (String) session.getAttribute("userID");
+        if (userID == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리다이렉트
+        }
+
+        // 이하 생략...
+    }
+
+    // 이하 생략...
+}
+
+
+
+
+
+
+
+
+
+
+
+@RequestMapping("/list")
+public ModelAndView list(@RequestParam(defaultValue = "1") int page, HttpSession session) {
+    int pageSize = 16;
+    int offset = (page - 1) * pageSize;
+
+    int totalRecords = goodsDao.countGoods();
+    int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+    Map<String, Integer> params = new HashMap<>();
+    params.put("limit", pageSize);
+    params.put("offset", offset);
+
+    ModelAndView mav = new ModelAndView();
+    mav.setViewName("goods/list");
+    mav.addObject("list", goodsDao.listWithPaging(params));
+    mav.addObject("currentPage", page);
+    mav.addObject("totalPages", totalPages);
+
+    // 세션에서 userID를 가져와서 사용자가 로그인한 상태인지 확인
+    String userID = (String) session.getAttribute("userID");
+    mav.addObject("userID", userID);
+
+    return mav;
+}//list end
+
+
+
+
+
+@PostMapping("/insert")
+public String insert(@ModelAttribute CartDTO cartDto, HttpSession session) {
+    // 로그인된 사용자 정보 가져오기
+    String userid = (String) session.getAttribute("userID"); // 수정된 부분
+    if (userid == null) {
+        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+    }
+    cartDto.setUserid(userid);
+
+    // 장바구니에 상품 추가
+    cartDao.insert(cartDto);
+    return "redirect:/cart/list";
+}
+
+
+<!-- resources/mapper/cart.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.matchday.cart.CartMapper">
+
+    <select id="getCartList" resultType="kr.co.matchday.cart.CartDTO">
+        SELECT * FROM cart_table WHERE userid = #{userid}
+    </select>
+
+</mapper>
+
+// kr.co.matchday.cart.CartDAOImpl
+@Repository
+public class CartDAOImpl implements CartDAO {
+
+    private final SqlSession sqlSession;
+
+    @Autowired
+    public CartDAOImpl(SqlSession sqlSession) {
+        this.sqlSession = sqlSession;
+    }
+
+    @Override
+    public List<CartDTO> getCartList(String userid) {
+        return sqlSession.selectList("cart.getCartList", userid);
+    }
+
+    @Override
+    public void insert(CartDTO cartDto) {
+        sqlSession.insert("cart.insert", cartDto);
+    }
+
+    // 기타 DAO 메소드들...
+}
+
+
+
+
+
+
+
+
+@GetMapping("/list")
+public String showCartList(Model model, HttpSession session) {
+    String userid = (String) session.getAttribute("userID"); // 세션 키 이름 수정 확인
+    if (userid == null) {
+        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+    }
+
+    List<CartDTO> cartList = cartDao.getCartList(userid);
+    model.addAttribute("cartList", cartList);
+    return "cart/list";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@ include file="../header.jsp" %>
+
+<style>
+    /* 스타일 부분은 여기에 그대로 복사해서 사용 */
+</style>
+
+<div class="cart-container">
+    <div class="content_box">
+        <div class="order_wrap">
+        
+            <div class="order_tit">
+                <h2>장바구니</h2>
+                <ol>
+                    <li class="page_on"><span>01</span> 장바구니 <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/member/icon_join_step_on.png" alt="장바구니진행 중"></span></li>
+                    <li><span>02</span> 주문서작성/결제<span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/member/icon_join_step_off.png" alt="주문서작성/결제대기"></span></li>
+                    <li><span>03</span> 주문완료</li>
+                </ol>
+            </div>
+            <!-- //order_tit -->
+
+            <div class="cart_cont">
+                <form id="Cartfrm" name="Cartfrm" method="post">
+                    <!-- 장바구니 상품리스트 시작 -->
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-hover">
+                                <thead class="table-active">
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleCheckboxes(this.checked)"></th>
+                                        <th>상품 정보</th>    
+                                        <th>수량</th>
+                                        <th>가격</th>
+                                        <th>총 가격</th>    
+                                        <th></th>
+                                    </tr>                   
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${cartList}" var="cart">
+                                        <tr>
+                                            <td><input type="checkbox" name="selectedItems" value="${cart.cartId}" onchange="calculateTotal()"></td>
+                                            <td>${cart.productName}</td>
+                                            <td>${cart.quantity}</td>
+                                            <td>${cart.unitPrice}</td>
+                                            <td>${cart.totalPrice}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div><!-- col end -->
+                    </div><!-- row end -->
+                    <!-- 장바구니 상품리스트 끝 -->
+
+                    <p class="no_data" id="noDataMessage" style="display: none;">장바구니에 담겨있는 상품이 없습니다.</p>
+
+                    <div class="btn_left_box">
+                        <a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>
+                    </div>
+                </form>
+            </div>
+            <!-- //cart_cont -->
+            
+            <div class="price_sum">
+                <div class="price_sum_cont">
+                    <div class="price_sum_list">
+                        <dl>
+                            <dt>총 <strong id="totalSelectedCount">0</strong> 개의 상품금액 </dt>
+                            <dd><strong id="totalSelectedPrice">0</strong>원</dd>
+                        </dl>
+                        <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_plus.png" alt="더하기" /></span>
+                        <dl>
+                            <dt>배송비</dt>
+                            <dd><strong id="totalDeliveryCharge">0</strong>원</dd>
+                        </dl>
+                        <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_total.png" alt="합계" /></span>
+                        <dl class="price_total">
+                            <dt>합계</dt>
+                            <dd><strong id="totalSettlePrice">0</strong>원</dd>
+                        </dl>
+                    </div>
+                    <em id="deliveryChargeText" class="tobe_mileage"></em>
+                </div>
+                <!-- price_sum_cont end-->
+            </div>
+            <!-- price_sum end -->
+        </div>
+        <!-- order_wrap end-->
+    </div>
+    <!-- content_box end-->
+</div> <!-- carts-container end -->
+
+<script>
+    // 전체 선택 체크박스 클릭 시 모든 체크박스를 선택 또는 해제하는 함수
+    function toggleCheckboxes(checked) {
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = checked;
+        }
+        calculateTotal();
+    }
+
+    // 선택된 상품의 개수와 총 가격을 계산하여 표시하는 함수
+    function calculateTotal() {
+        var totalSelectedCount = 0;
+        var totalSelectedPrice = 0;
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                totalSelectedCount++;
+                var row = checkbox.parentNode.parentNode;
+                var totalPriceCell = row.cells[4];
+                totalSelectedPrice += parseInt(totalPriceCell.textContent);
+            }
+        }
+
+        document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+        document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString(); // 콤마(,) 표시 추가
+    }
+</script>
+
+<%@ include file="../footer.jsp" %>
+
+<td><input type="checkbox" name="selectedItems" value="${cart.cartId}" onchange="calculateTotal()"></td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<tbody>
+    <c:forEach items="${cartList}" var="cart">
+        <tr>
+            <td><input type="checkbox" name="selectedItems" value="${cart.cartid}" onchange="calculateTotal()"></td>
+            <td>${cart.goodsid}</td> <!-- Use the appropriate property -->
+            <td>${cart.quantity}</td>
+            <td>${cart.unitprice}</td>
+            <td>${cart.totalprice}</td>
+        </tr>
+    </c:forEach>
+</tbody>
