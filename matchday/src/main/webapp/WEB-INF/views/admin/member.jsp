@@ -23,10 +23,11 @@
 					</tr>
 				</thead>
 				<tbody>
+				<!-- var.아이템에서가져온값 -->
 					<c:forEach var="user" items="${users}">
 						<tr>
 							<td>${user.userid}</td>
-							<td>${user.username}</td>
+							<td>${user.name}</td>
 							<td>${user.email}</td>
 							<td>${user.grade}</td>
 							<td>${user.joinDate}</td>

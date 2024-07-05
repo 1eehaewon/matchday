@@ -13,6 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class AdminDTO {
 	private String userid;
+	private String name;
 	private String password;
 	private String email;
 	private String address;

@@ -36,7 +36,7 @@ public class CouponCont {
 		MypageDTO user = mypageDao.getUserById(userID);
 		model.addAttribute("user", user);
 
-		// 쿠폰목록 조회
+		// 쿠폰목록 조회 couponList : coupon.jsp의 items명
 		List<CouponDTO> couponList = couponDao.selectCouponList(userID);
 		model.addAttribute("couponList", couponList);
 		return "/member/coupon"; // 마이페이지의 쿠폰으로 이동

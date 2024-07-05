@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <!-- admin.xml -->
+ 
+ <mapper namespace="admin">
+    
+    <!-- 회원전체목록가져오기 -->
+    <select id="selectAllUsers" resultType="kr.co.matchday.admin.AdminDTO">
+        SELECT userid, name, email, grade, joinDate 
+        FROM users
+    </select>
+    
+    <!-- 쿠폰등록하기 -->
+    <insert id="insertCoupon" parameterType="kr.co.matchday.admin.CouponMasterDTO">
+        INSERT INTO couponmaster (coupontypeid, couponname, discountrate, issuecount, startdate, enddate, applicableproduct)
+        VALUES (#{coupontypeid}, #{couponname}, #{discountrate}, #{issuecount}, #{startdate}, #{enddate}, #{applicableproduct})
+    </insert>
+    
+    
+    <!-- 쿠폰 전체 목록 가져오기 -->
+    <select id="selectAllCoupons" resultType="kr.co.matchday.admin.CouponMasterDTO">
+        SELECT coupontypeid, couponname, discountrate, issuecount, startdate, enddate, applicableproduct
+        FROM couponmaster
+    </select>
+</mapper>
+

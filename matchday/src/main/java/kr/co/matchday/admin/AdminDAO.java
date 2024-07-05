@@ -17,6 +17,16 @@ public class AdminDAO {
 	
 	//회원정보 전체 불러오기
 	public List<AdminDTO> selectAllUsers() {
-        return sqlSession.selectList("mypage.selectAllUsers"); //mypage.xml의 메서드
+        return sqlSession.selectList("admin.selectAllUsers"); 
     }
+	
+	//쿠폰등록하기
+	public void insertCoupon(CouponMasterDTO couponMasterDto) {
+        sqlSession.insert("admin.insertCoupon", couponMasterDto);
+    }
+	
+	//관리자모드 쿠폰 목록 불러오기
+	public List<CouponMasterDTO> selectAllCoupons(){
+		return sqlSession.selectList("admin.selectAllCoupons");
+	}
 }//class end
