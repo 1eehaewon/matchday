@@ -8,6 +8,11 @@
  
  <mapper namespace="mypage">
     
+    <!-- 전체회원불러오기 -->
+    <select id="selectAllUsers" resultType="kr.co.matchday.mypage.MypageDTO">
+        SELECT * FROM users
+    </select>
+    
     <!-- 마이페이지 항목 불러오기 -->
     <select id="getUserById" parameterType="String" resultType="kr.co.matchday.mypage.MypageDTO">
         SELECT * FROM users WHERE UserID = #{userID}

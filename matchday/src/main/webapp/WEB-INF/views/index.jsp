@@ -102,16 +102,23 @@
                 </h1>
             </div>
             <div class="col-6 col-md-9 text-end">
-                <c:choose>
-                    <c:when test="${not empty sessionScope.userID}">
-                        <a class="btn btn-outline-light btn-sm" href="/member/logout">LOGOUT</a>
-                        <a class="btn btn-outline-light btn-sm" href="/member/mypage">MYPAGE</a>
-                    </c:when>
-                    <c:otherwise>
-                        <a class="btn btn-outline-light btn-sm" href="/member/login">LOGIN</a>
-                        <a class="btn btn-outline-light btn-sm" href="/member/join">JOIN</a>
-                    </c:otherwise>
-                </c:choose>
+                 <c:choose>
+        <c:when test="${not empty sessionScope.userID}">
+            <a class="btn btn-outline-light btn-sm" href="/member/logout">LOGOUT</a>
+            <c:choose>
+                <c:when test="${sessionScope.grade == 'M'}">
+                    <a class="btn btn-outline-light btn-sm" href="/admin/dashboard">관리자 페이지</a>
+                </c:when>
+                <c:otherwise>
+                    <a class="btn btn-outline-light btn-sm" href="/member/mypage">MYPAGE</a>
+                </c:otherwise>
+            </c:choose>
+        </c:when>
+        <c:otherwise>
+            <a class="btn btn-outline-light btn-sm" href="/member/login">LOGIN</a>
+            <a class="btn btn-outline-light btn-sm" href="/member/join">JOIN</a>
+        </c:otherwise>
+    </c:choose>
             </div>
         </div>
     </div>

@@ -94,6 +94,7 @@
                         <c:otherwise>
                             <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
                             <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
+                            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
                         </c:otherwise>
                     </c:choose>
                 </ul>
