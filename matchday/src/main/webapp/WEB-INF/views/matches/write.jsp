@@ -2,8 +2,31 @@
     pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<!-- 본문 시작 write.jsp -->
-<div class="container mt-4">
+<!-- Custom CSS for additional styling -->
+<style>
+    .match-form-container {
+        max-width: 600px;
+        margin-top: 50px;
+    }
+
+    .match-form-container .form-group label {
+        font-weight: bold;
+    }
+
+    .match-form-container .btn-success {
+        width: 100%;
+        padding: 10px;
+        font-size: 18px;
+    }
+
+    .match-form-container h1 {
+        margin-bottom: 20px;
+        color: #007bff;
+        text-align: center;
+    }
+</style>
+
+<div class="match-form-container container mt-4">
     <h1>경기 일정 등록</h1>
     <form action="saveMatch" method="post">
         <div class="form-group">
@@ -39,6 +62,10 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="referee">심판 이름</label>
+            <input type="text" class="form-control" id="referee" name="referee">
+        </div>
+        <div class="form-group">
             <label for="bookingstartdate">판매 시작일</label>
             <input type="datetime-local" class="form-control" id="bookingstartdate" name="bookingstartdate" required>
         </div>
@@ -49,6 +76,5 @@
         <button type="submit" class="btn btn-success">저장하기</button>
     </form>
 </div>
-<!-- 본문 끝 -->
 
 <%@ include file="../footer.jsp" %>

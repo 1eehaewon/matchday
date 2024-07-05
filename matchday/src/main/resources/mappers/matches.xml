@@ -9,7 +9,7 @@
     </select>
 
     <select id="getAllStadiums" resultType="map">
-        SELECT stadiumname FROM stadiums
+        SELECT stadiumid FROM stadiums
     </select>
 
     <select id="getMaxMatchIdForDate" resultType="string" parameterType="string">

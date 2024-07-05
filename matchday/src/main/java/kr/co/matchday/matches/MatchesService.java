@@ -23,9 +23,10 @@ public class MatchesService {
 
     public List<String> getAllStadiums() {
         return matchesDAO.getAllStadiums().stream()
-                         .map(stadium -> (String) stadium.get("stadiumname"))
+                         .map(stadium -> (String) stadium.get("stadiumid"))
                          .collect(Collectors.toList());
     }
+
 
     public void insertMatch(MatchesDTO matchesDTO) {
         String maxMatchId = matchesDAO.getMaxMatchIdForDate(new SimpleDateFormat("yyyy-MM-dd").format(matchesDTO.getMatchdate()));
