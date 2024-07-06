@@ -1,6 +1,6 @@
 package kr.co.matchday.tickets;
 
-import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +11,12 @@ import kr.co.matchday.matches.MatchesDTO;
 @Repository
 public class TicketsDAO {
 
-	@Autowired
-	private SqlSession sqlSession;
-	
-	public MatchesDTO getMatchById(String matchid) {
+    @Autowired
+    private SqlSession sqlSession;
+
+    public MatchesDTO getMatchById(String matchid) {
         System.out.println("Fetching match with matchid: " + matchid);
-        MatchesDTO match = sqlSession.selectOne("tickets.getMatchById", matchid);
+        MatchesDTO match = sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getMatchById", matchid);
         if (match == null) {
             System.out.println("No match found with matchid: " + matchid);
         } else {
@@ -24,7 +24,8 @@ public class TicketsDAO {
         }
         return match;
     }
-	
-	private List<TicketsDTO> seats; // 좌석 정보를 포함하는 리스트
-	
+
+    public Map<String, Object> getUserInfo(String userID) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getUserInfo", userID);
+    }
 }

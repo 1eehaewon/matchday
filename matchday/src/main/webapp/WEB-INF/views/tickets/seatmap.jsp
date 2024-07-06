@@ -104,12 +104,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- 진행 바 표시 -->
-        <ul class="progress-bar">
-            <li class="active">가격/할인선택</li>
-            <li>배송선택/주문자확인</li>
-            <li>결제하기</li>
-        </ul>
         <h1>좌석 선택</h1>
         <div class="row">
             <div class="col-md-8">
@@ -243,9 +237,9 @@
                     totalPrice += price;
                     var row = document.createElement('tr');
                     var cell1 = document.createElement('th');
-                    cell1.innerHTML = '<span>일반석(S5~S10)</span>'; // 좌석 등급 예시
+                    cell1.innerHTML = '<span>일반석</span>'; // 좌석 등급 예시
                     var cell2 = document.createElement('td');
-                    cell2.textContent = seat.dataset.section + '구역 R열-' + seat.dataset.seatId;
+                    cell2.textContent = seat.dataset.section + '구역-' + seat.dataset.seatId;
                     var cell3 = document.createElement('td'); // 금액 칸 추가
                     cell3.textContent = price + '원';
                     row.appendChild(cell1);
@@ -280,7 +274,7 @@
                 var seats = [];
                 var totalPrice = 0;
                 selectedSeats.forEach(function(seat) {
-                    seats.push(seat.dataset.section + '구역 R열-' + seat.dataset.seatId);
+                    seats.push(seat.dataset.section + '구역-' + seat.dataset.seatId);
                     totalPrice += parseInt(seat.dataset.price, 10);
                 });
                 var matchId = '<c:out value="${match.matchid}"/>';
