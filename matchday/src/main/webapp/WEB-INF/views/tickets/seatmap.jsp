@@ -10,18 +10,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .seat {
-            width: 25px; /* 좌석 크기 조정 */
-            height: 25px; /* 좌석 크기 조정 */
+            width: 25px;
+            height: 25px;
             background-color: #cccccc;
             cursor: pointer;
             border: 1px solid #888;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px; /* 글씨 크기 조정 */
+            font-size: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .seat:hover {
+            background-color: #6c757d;
         }
         .selected {
             background-color: #007bff;
+            color: white;
         }
         .seat-info {
             margin-top: 20px;
@@ -31,43 +36,44 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column; /* 기본 방향은 세로 정렬 */
+            flex-direction: column;
         }
         #seat-map {
             display: grid;
-            grid-template-columns: repeat(20, 25px); /* 열 개수 및 크기 조정 */
-            gap: 2px; /* 좌석 사이 간격 */
+            grid-template-columns: repeat(20, 25px);
+            gap: 2px;
             position: relative;
-            margin: 20px 0; /* 상하 여백 추가 */
+            margin: 20px 0;
         }
         .ground {
-            background-color: #008000; /* 그라운드 색상 */
+            background-color: #008000;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            flex-shrink: 0; /* 그라운드가 줄어들지 않도록 */
+            flex-shrink: 0;
         }
         .ground.north, .ground.south {
-            width: calc(20 * 25px + 19 * 2px); /* 좌석의 너비와 간격에 맞춤 */
+            width: calc(20 * 25px + 19 * 2px);
             height: 20px;
         }
         .ground.east, .ground.west {
             width: 20px;
-            height: calc(20 * 25px + 19 * 2px); /* 좌석의 높이와 간격에 맞춤 */
-            writing-mode: vertical-rl; /* 글씨를 세로로 배치 */
-            text-align: center; /* 글씨 가운데 정렬 */
-            transform: rotate(180deg); /* 글씨 뒤집기 */
+            height: calc(20 * 25px + 19 * 2px);
+            writing-mode: vertical-rl;
+            text-align: center;
+            transform: rotate(180deg);
         }
         .spacing {
-            margin: 10px; /* 좌석과 그라운드 사이의 여백 */
+            margin: 10px;
         }
         .choice {
-            border: 1px solid black; /* 테두리 검정색 */
-            padding: 10px; /* 패딩 추가 */
-            height: 300px; /* 고정 높이 설정 */
-            overflow-y: auto; /* 내용이 넘칠 때 스크롤 */
+            border: 1px solid black;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
         }
         .choice-header {
             display: flex;
@@ -79,7 +85,7 @@
             border-collapse: collapse;
         }
         .choice-table th, .choice-table td {
-            border: 1px solid black; /* 테두리 검정색 */
+            border: 1px solid black;
             padding: 5px;
             text-align: left;
         }
@@ -103,18 +109,16 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>좌석 선택</h1>
+    <div class="container mt-4">
+        <h1 class="mb-4">좌석 선택</h1>
         <div class="row">
             <div class="col-md-8">
-                <!-- 좌석 배치도와 그라운드를 포함하는 컨테이너 -->
                 <div id="seat-map-container">
                     <div id="ground" class="ground spacing"></div>
                     <div id="seat-map" class="spacing"></div>
                 </div>
             </div>
             <div class="col-md-4">
-                <!-- 선택된 좌석 정보 영역 -->
                 <div id="selected-seats-info" class="seat-info">
                     <div class="choice">
                         <div class="choice-header">
@@ -125,25 +129,22 @@
                             <colgroup>
                                 <col width="75px">
                                 <col width="*">
-                                <col width="75px"> <!-- 금액 칸 추가 -->
+                                <col width="75px">
                             </colgroup>
                             <thead>
                                 <tr>
                                     <th>좌석등급</th>
                                     <th>좌석번호</th>
-                                    <th>금액</th> <!-- 금액 칸 추가 -->
+                                    <th>금액</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- 선택된 좌석 정보가 여기에 동적으로 추가됩니다 -->
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <!-- 총 금액 표시 영역 -->
                 <div id="total-price">총 금액: 0원</div>
-                <!-- 버튼 그룹 -->
-                <div class="btn-group">
+                <div class="btn-group mt-3">
                     <button type="button" class="btn btn-secondary" id="prev-step">이전단계</button>
                     <button type="button" class="btn btn-secondary" id="reset-seats">좌석 다시 선택</button>
                     <button type="button" class="btn btn-danger" id="complete-selection">좌석선택완료</button>
@@ -237,14 +238,14 @@
                     totalPrice += price;
                     var row = document.createElement('tr');
                     var cell1 = document.createElement('th');
-                    cell1.innerHTML = '<span>일반석</span>'; // 좌석 등급 예시
+                    cell1.innerHTML = '<span>일반석</span>';
                     var cell2 = document.createElement('td');
                     cell2.textContent = seat.dataset.section + '구역-' + seat.dataset.seatId;
-                    var cell3 = document.createElement('td'); // 금액 칸 추가
+                    var cell3 = document.createElement('td');
                     cell3.textContent = price + '원';
                     row.appendChild(cell1);
                     row.appendChild(cell2);
-                    row.appendChild(cell3); // 금액 칸 추가
+                    row.appendChild(cell3);
                     tbody.appendChild(row);
                 });
                 seatCount.textContent = '총 ' + selectedSeats.length + '석 선택되었습니다.';

@@ -1,7 +1,10 @@
 package kr.co.matchday.tickets;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import kr.co.matchday.matches.MatchesDTO;
@@ -271,6 +275,42 @@ public class TicketsCont {
         seatMap.put("seats", seats);
         return seatMap;
     }
+    
+    @GetMapping("/payments/recent")
+    @ResponseBody
+    public List<String> getRecentPayments() {
+        String token = getToken();
+        if (token == null) {
+            return Collections.emptyList();
+        }
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(
+            "https://api.iamport.kr/payments/status/paid",
+            HttpMethod.GET,
+            entity,
+            String.class
+        );
+
+        List<String> impUids = new ArrayList<>();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            JSONObject json = new JSONObject(response.getBody());
+            JSONArray payments = json.getJSONObject("response").getJSONArray("list");
+            for (int i = 0; i < payments.length(); i++) {
+                String impUid = payments.getJSONObject(i).getString("imp_uid");
+                impUids.add(impUid);
+                System.out.println("imp_uid: " + impUid); // 콘솔에 출력
+            }
+        }
+
+        return impUids;
+    }
+
 }
 
 

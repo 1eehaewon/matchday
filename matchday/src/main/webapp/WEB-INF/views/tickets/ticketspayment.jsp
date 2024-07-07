@@ -131,10 +131,23 @@
     </div>
     <script>
         $(document).ready(function() {
+            let selectedSection = null; // 선택된 구역을 저장할 변수
+
             $('.section-link').click(function() {
-                var section = $(this).data('section');
-                var matchId = $('#matchid').val();
-                window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + section;
+                // 구역을 클릭했을 때 selectedSection 변수에 저장
+                selectedSection = $(this).data('section');
+                $('.section-link').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            $('#selectSeats').click(function() {
+                // '좌석선택' 버튼을 눌렀을 때 페이지를 이동
+                if (selectedSection) {
+                    var matchId = $('#matchid').val();
+                    window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + selectedSection;
+                } else {
+                    alert('구역을 선택하세요.');
+                }
             });
         });
     </script>

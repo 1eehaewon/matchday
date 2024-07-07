@@ -39,7 +39,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container mt-4">
         <h1>예매 확인</h1>
         <div class="row">
             <div class="col-md-6">
@@ -135,12 +135,6 @@
             <button type="button" class="btn btn-primary" id="pay-button">결제하기</button>
         </div>
     </div>
-    <!-- 예매 확인 페이지 하단에 결제 취소 버튼 추가 -->
-	<div class="d-flex justify-content-end">
-	    <button type="button" class="btn btn-secondary me-2" id="prev-step">이전단계</button>
-	    <button type="button" class="btn btn-primary" id="pay-button">결제하기</button>
-	    <button type="button" class="btn btn-danger" id="cancel-button">결제 취소</button>
-	</div>
     <script>
         $(document).ready(function() {
             var totalPrice = ${totalPrice}; // 전달받은 총 티켓 금액
@@ -192,18 +186,17 @@
                 }
 
                 IMP.request_pay({
-                    pg: 'html5_inicis', // PG사
-                    pay_method: 'card', // 결제 수단
-                    merchant_uid: 'merchant_' + new Date().getTime(), // 주문 번호
-                    name: '티켓 결제', // 주문명
-                    amount: totalPrice, // 결제 금액
+                    pg: 'html5_inicis',
+                    pay_method: 'card',
+                    merchant_uid: 'merchant_' + new Date().getTime(),
+                    name: '티켓 결제',
+                    amount: totalPrice,
                     buyer_email: userEmail,
                     buyer_name: userName,
                     buyer_tel: userPhone,
-                    m_redirect_url: 'http://yourdomain.com/complete' // 모바일 결제 완료 후 리다이렉트 될 URL
+                    m_redirect_url: 'http://yourdomain.com/complete'
                 }, function(rsp) {
                     if (rsp.success) {
-                        // 결제 성공 시
                         var msg = '결제가 완료되었습니다.';
                         msg += '\n고유ID : ' + rsp.imp_uid;
                         msg += '\n상점 거래ID : ' + rsp.merchant_uid;
@@ -211,26 +204,22 @@
                         msg += '\n카드 승인번호 : ' + rsp.apply_num;
 
                         alert(msg);
-                        // 결제 완료 후 서버에 결제 정보 전송
                         $.post('/tickets/verifyPayment', {
                             imp_uid: rsp.imp_uid,
                             merchant_uid: rsp.merchant_uid,
                             paid_amount: rsp.paid_amount,
                             matchid: '${match.matchid}',
-                            seats: selectedSeats.join(','), // 선택한 좌석 정보
+                            seats: selectedSeats.join(','),
                             totalPrice: totalPrice
                         }, function(data) {
                             if (data.success) {
-                                // 결제 검증 성공 시
                                 alert('결제 검증에 성공했습니다.');
                                 window.location.href = '/tickets/confirmation?reservationid=' + data.reservationid;
                             } else {
-                                // 결제 검증 실패 시
                                 alert('결제 검증에 실패했습니다.');
                             }
                         });
                     } else {
-                        // 결제 실패 시
                         var msg = '결제에 실패하였습니다.';
                         msg += '\n에러내용 : ' + rsp.error_msg;
 
@@ -239,7 +228,7 @@
                 });
             });
             
-         // 결제 취소 버튼 클릭 이벤트 핸들러
+            // 결제 취소 버튼 클릭 이벤트 핸들러
             $('#cancel-button').click(function() {
                 var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
                 if (impUid) {
