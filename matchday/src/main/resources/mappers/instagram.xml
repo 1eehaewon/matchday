@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="instagram">
+
+    <insert id="insert" parameterType="kr.co.matchday.instagram.InstagramDTO">
+        INSERT INTO instagram (instagram_url, instagram_name)
+        VALUES (#{instagram_url}, #{instagram_name})
+    </insert>
+
+    <select id="list" resultType="kr.co.matchday.instagram.InstagramDTO">
+        SELECT instagram_code, instagram_url, instagram_name
+        FROM instagram
+    </select>
+
+	<select id="detail" parameterType="int" resultType="kr.co.matchday.instagram.InstagramDTO">
+        SELECT instagram_code, instagram_url, instagram_name
+        FROM instagram
+        WHERE instagram_code = #{instagram_code}
+    </select>
+
+	 <update id="update" parameterType="kr.co.matchday.instagram.InstagramDTO">
+        UPDATE instagram
+        SET instagram_name=#{instagram_name},
+            instagram_url=#{instagram_url}           
+       	WHERE instagram_code=#{instagram_code}
+    </update>
+
+	<delete id="delete" parameterType="Integer">
+	    DELETE FROM instagram
+	    WHERE instagram_code = #{instagram_code}
+	</delete> 
+
+
+</mapper>

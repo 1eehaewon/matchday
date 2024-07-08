@@ -1,15 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<script>
-    function video_delete() {
-        if(confirm("하이라이트를 삭제합니다. 진행할까요?")){
-            document.videofrm.action = "/video/delete";
-            document.videofrm.submit();
-        }
-    }
-</script>
-
 <div class="row">
     <div class="col-sm-12 text-center">
         <p><h1>상세페이지</h1></p>
@@ -21,7 +12,7 @@
 
 <div class="row">
     <div class="col-sm-12 text-center">
-        <form name="videofrm" id="videofrm" method="post" action="/video/update">
+        <form name="videofrm" id="videofrm" method="post" action="/video/updateproc">
             <table class="table table-hover">
                 <tbody style="text-align: left;">
                     <tr>
@@ -45,8 +36,7 @@
                     <tr>
                         <td colspan="2" align="center">
                             <input type="hidden" name="video_code" value="${detail.video_code}">
-                            <button type="submit" class="btn btn-primary">수정완료</button>
-                            <input type="button" value="하이라이트 삭제" onclick="video_delete()" class="btn btn-danger">  
+                            <button type="submit" class="btn btn-primary">수정완료</button>  
                         </td>
                     </tr>   
                 </tbody> 
