@@ -102,6 +102,16 @@ public class PlayerCont {
     }
     
     
+    @GetMapping("/update")
+    public ModelAndView showUpdateForm(@RequestParam("playerid") String playerid) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("player/update");
+        Map<String, Object> player = playerDao.detail(playerid);
+        mav.addObject("player", player);
+        return mav;
+    }
+    
+    
     @PostMapping("/update")
     public String update(@RequestParam Map<String, Object> map
                         ,@RequestParam("img") MultipartFile img

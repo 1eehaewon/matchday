@@ -1,5 +1,7 @@
 package kr.co.matchday.notice;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -176,6 +180,26 @@ public class NoticeCont {
     public String update(@ModelAttribute NoticeDTO notice) {
         noticeDao.update(notice);
         return "redirect:/notice/list";
+    }
+    
+    
+    @PostMapping("/uploadImage")
+    @ResponseBody
+    public String uploadImage(@RequestParam("file") MultipartFile file) {
+        String imageUrl = "";
+        try {
+            // 프로젝트 경로를 기반으로 저장 경로 설정
+            String uploadDir = new File("src/main/webapp/storage").getAbsolutePath();
+            String fileName = file.getOriginalFilename();
+            File dest = new File(uploadDir + File.separator + fileName);
+            file.transferTo(dest);
+
+            // 이미지 URL 설정 (웹 서버의 경로로 맞춰야 함)
+            imageUrl = "/storage/" + fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageUrl;
     }
 
 }

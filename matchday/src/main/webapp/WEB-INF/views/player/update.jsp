@@ -11,7 +11,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <form name="playerfrm" id="playerfrm" method="post" action="update" enctype="multipart/form-data">
+            <form name="updatefrm" id="updatefrm" method="post" action="/player/update" enctype="multipart/form-data">
                <input type="hidden" name="playerid" value="${player.playerid}">    
                  <table class="table table-striped">
                     <tbody>

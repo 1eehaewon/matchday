@@ -1,99 +1,94 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-    
 <%@ include file="../header.jsp" %>
 
-   <script>
- 	
-   function noticeDelete(noticeid) {
- 		
- 		//alert(noticeid);
- 		
-		if(confirm("공지사항/이벤트를 삭제할까요?")) {
-            location.href = "/notice/delete?noticeid=" + noticeid;
-		}//if end
-	}//noticeDelete() end 
+<script>
+   function playerDelete(playerid) { 
+	   //alert(playerid);
+      if (confirm("선수를 삭제할까요?")) {
+         location.href = "/player/delete?playerid=" + playerid;
+      }
+   } 
+</script>
 
-	
-   </script>
-
-
-<!-- 본문 시작 detail.jsp -->
+<!-- detail.jsp -->
 <main>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-            <div id="menu">
-            <ul>
-               <li><a href="list">공지사항</a></li>
-               <li><a href="evl">이벤트</a></li>
-            </ul>
+   <div class="spacing"></div>
+   
+   <div style="margin-left: 3%">
+      <h2>선수 상세 정보</h2>
+   </div>
+   <hr>
+
+   <div class="container">
+      <div class="row">
+         <div class="col-md-4">
+            <!-- 선수 사진 -->
+            <div class="player-photo">
+               <img src="/storage/players/${player.filename}" class="img-responsive" style="width: 325px; height: 325px;">
             </div>
-                <h3 class="text-center mb-4">공지사항</h3>
-            <hr style="width: 100%; margin-left: auto; margin-right: auto;">
-                   <h5 style="text-align: left; color: blue;">${notice.title}</h5>
-            <hr style="width: 100%; margin-left: auto; margin-right: auto;">
-                   <h5 style="text-align: left;">작성자: ${notice.userid}</h5>
-            <hr style="width: 100%; margin-left: auto; margin-right: auto;">
-                <div class="card">
-                    <div class="card-body">
-                        <form name="noticefrm" id="noticefrm" method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <textarea class="form-control" id="content" rows="5" readonly>${notice.content}</textarea>
-                            </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="spacing"></div>
-                    <div class="text-center">
-                       <input type="hidden" name="noticeid" value="${notice.noticeid}">
-                       <button type="submit" class="btn btn-success mr-2" onclick="location.href='update?noticeid=${notice.noticeid}'">공지사항 수정</button>
-                       <button type="button" class="btn btn-danger" onclick="noticeDelete(${notice.noticeid})">공지사항 삭제</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="spacing"></div>
-    
+         </div>
+         <div class="col-md-8">
+            <!-- 선수 정보 테이블 -->
+            <table class="table table-bordered">
+               <tbody>
+                  <tr>
+                     <th scope="row">한글 이름</th>
+                     <td>${player.playername}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">영어 이름</th>
+                     <td>${player.playerid}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">포지션</th>
+                     <td>${player.position}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">등번호</th>
+                     <td>${player.backnumber}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">출생일</th>
+                     <td>${player.birthdate}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">키</th>
+                     <td>${player.height}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">몸무게</th>
+                     <td>${player.weight}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">입단일</th>
+                     <td>${player.joiningyear}</td>
+                  </tr>
+                  <tr>
+                     <th scope="row">태어난곳</th>
+                     <td>${player.birthplace}</td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+   
+   
+   <div class="spacing"></div>
+      <div class="text-center">
+         <input type="hidden" name="playerid" value="${player.playerid}">
+            <button type="button" class="btn btn-success mr-2" onclick="location.href='/player/update?playerid=${player.playerid}'">선수정보 수정</button>
+            <button type="button" class="btn btn-danger" onclick="playerDelete('${player.playerid}')">선수삭제</button>
+      </div>
+   
+   
 </main>
 
 
 <style>
-    .spacing {
-               height: 20px; /* 원하는 높이로 조정 가능 */
-             }
-    li {
-       list-style: none;
-    }
-    #menu {
-       width: 250px;
-       height: 50px;
-       outline: 1px dotted white;
-    }
-    #menu ul li {
-    float: left;
-    width: 50%;
-    height: 100%;
-    line-height: 50px;
-    text-align: center;
-    background: orange;
-    }
-    #menu ul li a {
-       display: block;
-    }
-    #menu ul li a:hover {
-       background: #ff7f00;
-       color: white;
-    }
-    a {
-       text-decoration-line: none;
-       color: black;
-    }
-    
-   </style>
-   
-   
-<!-- 본문 끝 -->
-
+   .spacing {
+      height: 15px;
+   }
+</style>
 
 <%@ include file="../footer.jsp" %>

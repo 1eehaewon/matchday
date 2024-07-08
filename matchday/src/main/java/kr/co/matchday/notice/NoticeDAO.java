@@ -84,5 +84,6 @@ public class NoticeDAO {
         return sqlSession.selectOne("notice.totalRowCount2");
     }
 
+    
 
 }
