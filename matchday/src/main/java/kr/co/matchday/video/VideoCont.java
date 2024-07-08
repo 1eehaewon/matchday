@@ -69,15 +69,15 @@ public class VideoCont {
     }//detail() end
     
     
-    @GetMapping("/update/{video_code}")
-    public ModelAndView updatedetail(@PathVariable int video_code) {
+    @GetMapping("/update")
+    public ModelAndView updatedetail(@RequestParam("video_code") int video_code) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("video/update");
         mav.addObject("detail", videoDao.detail(video_code));
         return mav;
     }//updatedetail() end
 
-    @PostMapping("/update")
+    @PostMapping("/updateproc")
     public String update(@ModelAttribute VideoDTO videoDTO) {
         videoDao.update(videoDTO);
         return "redirect:/video/list";
@@ -93,6 +93,8 @@ public class VideoCont {
         videoDao.delete(video_code);
         return "redirect:/video/list";
     }//delete() end
+    
+    
     
     @GetMapping("/search")
     public ModelAndView search(@RequestParam(defaultValue = "") String video_name) {

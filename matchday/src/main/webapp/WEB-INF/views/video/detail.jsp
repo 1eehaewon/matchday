@@ -10,7 +10,8 @@
     }
 
     function video_update(video_code) {
-        location.href = "/video/update/" + video_code;
+        //alert(video_code);
+        location.href = "/video/update?video_code=" + video_code;
     }
 </script>
 
