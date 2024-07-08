@@ -6,12 +6,14 @@ import lombok.Setter;
 import lombok.ToString;
 import java.util.Date;
 
+/**
+ * 경기 정보를 담고 있는 데이터 전송 객체 (DTO)
+ */
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString 
 public class MatchesDTO {
-	
     private String matchid;
     private String hometeamid;
     private String awayteamid;
@@ -23,6 +25,4 @@ public class MatchesDTO {
     private String teamname;
     private String stadiumname;
     private Date cancellationDeadline; // 새로운 속성 추가
-    
-}//class end
-
+}

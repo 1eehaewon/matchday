@@ -36,7 +36,7 @@
 
 <script>
     function openPopup(url) {
-        window.open(url, "popupWindow", "width=800,height=600,scrollbars=yes");
+        window.open(url, "popupWindow", "width=1200,height=800,scrollbars=yes");
     }
 </script>
 

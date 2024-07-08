@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script type="text/javascript">
         IMP.init('imp05021463'); // 아임포트 관리자 콘솔에서 발급받은 가맹점 식별코드
     </script>
@@ -36,6 +37,10 @@
         .d-flex {
             margin-top: 20px;
         }
+        #delivery-address {
+            display: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -46,24 +51,48 @@
                 <h2>티켓수령방법</h2>
                 <form>
                     <div class="form-check">
-                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="pickup" value="pickup" checked>
+                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="pickup" value="receiving01" checked>
                         <label class="form-check-label" for="pickup">
                             현장수령
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="shipping" value="shipping">
+                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="shipping" value="receiving02">
                         <label class="form-check-label" for="shipping">
                             배송 (3,200원)
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="mobile" value="mobile">
+                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="mobile" value="receiving03">
                         <label class="form-check-label" for="mobile">
                             모바일 티켓
                         </label>
                     </div>
                 </form>
+
+                <div id="delivery-address">
+                    <h2>배송지 주소</h2>
+                    <form>
+                        <div class="mb-3">
+                            <label for="postcode" class="form-label">우편번호</label>
+                            <input type="text" class="form-control" id="postcode" readonly>
+                            <button type="button" class="btn btn-primary mt-2" id="find-postcode">우편번호 찾기</button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">주소</label>
+                            <input type="text" class="form-control" id="address" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="detailAddress" class="form-label">상세주소</label>
+                            <input type="text" class="form-control" id="detailAddress">
+                        </div>
+                        <div class="mb-3">
+                            <label for="extraAddress" class="form-label">참고항목</label>
+                            <input type="text" class="form-control" id="extraAddress" readonly>
+                        </div>
+                    </form>
+                </div>
+
                 <h2>예매자 확인</h2>
                 <form>
                     <div class="mb-3">
@@ -105,7 +134,7 @@
                     </tr>
                     <tr>
                         <th>배송료</th>
-                        <td id="delivery-fee">0원</td>
+                        <td id="delivery-fee">0원</th>
                     </tr>
                     <tr>
                         <th>할인</th>
@@ -142,8 +171,13 @@
             // 배송 방법에 따른 배송료 설정
             function updateDeliveryFee() {
                 var deliveryOption = $('input[name="deliveryOption"]:checked').val();
-                var deliveryFee = deliveryOption === 'shipping' ? 3200 : 0;
+                var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
                 $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
+                if (deliveryOption === 'receiving02') {
+                    $('#delivery-address').show();
+                } else {
+                    $('#delivery-address').hide();
+                }
                 updateTotalAmount();
             }
 
@@ -151,11 +185,46 @@
             function updateTotalAmount() {
                 var serviceFee = 2000;
                 var deliveryOption = $('input[name="deliveryOption"]:checked').val();
-                var deliveryFee = deliveryOption === 'shipping' ? 3200 : 0;
+                var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
                 var discount = 0;
                 var totalAmount = totalPrice + serviceFee + deliveryFee - discount;
                 $('#total-amount').text(totalAmount.toLocaleString() + '원');
             }
+
+            // 주소 찾기 API 호출
+            $('#find-postcode').click(function() {
+                new daum.Postcode({
+                    oncomplete: function(data) {
+                        var addr = ''; // 주소 변수
+                        var extraAddr = ''; // 참고항목 변수
+
+                        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                            addr = data.roadAddress;
+                        } else { // 사용자가 지번 주소를 선택했을 경우
+                            addr = data.jibunAddress;
+                        }
+
+                        if (data.userSelectedType === 'R') {
+                            if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                                extraAddr += data.bname;
+                            }
+                            if (data.buildingName !== '' && data.apartment === 'Y') {
+                                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                            }
+                            if (extraAddr !== '') {
+                                extraAddr = ' (' + extraAddr + ')';
+                            }
+                            $('#extraAddress').val(extraAddr);
+                        } else {
+                            $('#extraAddress').val('');
+                        }
+
+                        $('#postcode').val(data.zonecode);
+                        $('#address').val(addr);
+                        $('#detailAddress').focus();
+                    }
+                }).open();
+            });
 
             // 배송 방법 변경 시 이벤트
             $('.delivery-option').change(function() {
@@ -172,62 +241,49 @@
 
             // 결제 버튼 클릭 이벤트 핸들러
             $('#pay-button').click(function() {
-                var userName = $('#name').val();
-                var userEmail = $('#email').val();
-                var userPhone = $('#phone').val();
+                var totalPrice = ${totalPrice}; // 전달받은 총 티켓 금액
                 var selectedSeats = [];
                 $('.seat.selected').each(function() {
                     selectedSeats.push($(this).data('seatId'));
                 });
 
-                if (!validateEmail(userEmail)) {
-                    alert("유효한 이메일 주소를 입력해주세요.");
-                    return;
-                }
-
+                // 결제 요청
                 IMP.request_pay({
                     pg: 'html5_inicis',
                     pay_method: 'card',
                     merchant_uid: 'merchant_' + new Date().getTime(),
                     name: '티켓 결제',
                     amount: totalPrice,
-                    buyer_email: userEmail,
-                    buyer_name: userName,
-                    buyer_tel: userPhone,
+                    buyer_email: $('#email').val(),
+                    buyer_name: $('#name').val(),
+                    buyer_tel: $('#phone').val(),
                     m_redirect_url: 'http://yourdomain.com/complete'
                 }, function(rsp) {
                     if (rsp.success) {
-                        var msg = '결제가 완료되었습니다.';
-                        msg += '\n고유ID : ' + rsp.imp_uid;
-                        msg += '\n상점 거래ID : ' + rsp.merchant_uid;
-                        msg += '\n결제 금액 : ' + rsp.paid_amount;
-                        msg += '\n카드 승인번호 : ' + rsp.apply_num;
-
-                        alert(msg);
                         $.post('/tickets/verifyPayment', {
                             imp_uid: rsp.imp_uid,
                             merchant_uid: rsp.merchant_uid,
                             paid_amount: rsp.paid_amount,
                             matchid: '${match.matchid}',
                             seats: selectedSeats.join(','),
-                            totalPrice: totalPrice
+                            totalPrice: totalPrice,
+                            collectionmethodcode: $('input[name="deliveryOption"]:checked').val(), // 수정된 부분
+                            recipientName: $('#name').val(),
+                            shippingAddress: $('#address').val() + ' ' + $('#detailAddress').val(),
+                            shippingRequest: $('#extraAddress').val()
                         }, function(data) {
                             if (data.success) {
-                                alert('결제 검증에 성공했습니다.');
                                 window.location.href = '/tickets/confirmation?reservationid=' + data.reservationid;
                             } else {
                                 alert('결제 검증에 실패했습니다.');
                             }
                         });
                     } else {
-                        var msg = '결제에 실패하였습니다.';
-                        msg += '\n에러내용 : ' + rsp.error_msg;
-
-                        alert(msg);
+                        alert('결제에 실패하였습니다.');
                     }
                 });
             });
-            
+
             // 결제 취소 버튼 클릭 이벤트 핸들러
             $('#cancel-button').click(function() {
                 var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");

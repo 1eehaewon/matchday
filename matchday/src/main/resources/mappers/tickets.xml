@@ -4,15 +4,35 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.matchday.tickets.TicketsDAO">
+    <!-- 주어진 matchid에 해당하는 경기 정보를 가져오는 SQL 쿼리 -->
     <select id="getMatchById" resultType="kr.co.matchday.matches.MatchesDTO">
         SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate
         FROM matches
         WHERE matchid = #{matchid}
     </select>
 
+    <!-- 주어진 userID에 해당하는 사용자 정보를 가져오는 SQL 쿼리 -->
     <select id="getUserInfo" resultType="map">
         SELECT userID, name, email, number 
         FROM users 
         WHERE userID = #{userID}
     </select>
+    
+    <select id="getNextReservationIdSuffix" resultType="String">
+        SELECT LPAD(IFNULL(MAX(SUBSTRING(reservationid, 12)), 0) + 1, 5, '0')
+        FROM tickets
+        WHERE reservationid LIKE CONCAT('reservation', #{date}, '%')
+    </select>
+    
+    <!-- 티켓 예약 정보를 삽입하는 SQL 쿼리 -->
+    <insert id="insertTicket" parameterType="kr.co.matchday.tickets.TicketsDTO">
+        INSERT INTO tickets (reservationid, matchid, quantity, price, userid, reservationdate, paymentmethodcode, reservationstatus, collectionmethodcode, membermembershipid, methodcode, couponid, usedpoints, finalpaymentamount, shippingstartdate, shippingenddate, shippingstatus, recipientname, shippingaddress, shippingrequest)
+        VALUES (#{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate}, #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode}, #{membermembershipid}, #{methodcode}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest})
+    </insert>
+    
+    <!-- 티켓 상세 정보를 삽입하는 SQL 쿼리 -->
+    <insert id="insertTicketDetail" parameterType="kr.co.matchday.tickets.TicketsDetailDTO">
+        INSERT INTO ticketdetails (reservationid, matchid, seatid, price, membershipdiscountamount, coupondiscountamount, totalamount, iscanceled, canceldate, isrefunded)
+        VALUES (#{reservationid}, #{matchid}, #{seatid}, #{price}, #{membershipdiscountamount}, #{coupondiscountamount}, #{totalamount}, #{iscanceled}, #{canceldate}, #{isrefunded})
+    </insert>
 </mapper>

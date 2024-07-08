@@ -13,6 +13,7 @@
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/seatSelection.js"></script>
     <style>
+        /* 기본적인 스타일 설정 */
         body {
             font-family: Arial, sans-serif;
         }
@@ -122,7 +123,6 @@
                     <a href="#" data-section="south" class="section-link">S 구역</a>
                 </div>
                 <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-secondary" id="autoAssign">자동배정</button>
                     <button type="button" class="btn btn-primary" id="selectSeats">좌석선택</button>
                 </div>
                 <div class="seat-map mt-3"></div> <!-- 좌석 배치도 표시 영역 -->

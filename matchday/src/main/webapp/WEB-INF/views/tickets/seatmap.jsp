@@ -156,10 +156,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 구역별 가격 설정
             var sectionPrices = {
-                'north': 15000,
+                /* 'north': 15000,
                 'east': 14000,
                 'west': 16000,
-                'south': 17000
+                'south': 17000 */
+                'north': 150,
+                'east': 140,
+                'west': 160,
+                'south': 170
             };
 
             // 구역별 그라운드 위치 설정

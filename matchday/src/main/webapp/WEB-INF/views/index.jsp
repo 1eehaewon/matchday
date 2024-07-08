@@ -140,6 +140,7 @@
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">소개</a></li>
                 </ul>
             </div>
         </div>
@@ -318,7 +319,7 @@
 		</div><!-- div id="matchCarousel" end -->
 		
 		
-		  <a href="/cardnews/list"class="btn btn-primary">카드뉴스 등록</a>
+		  <a href="/instagram/list"class="btn btn-primary">인스타그램 등록</a>
     </main><!-- main end -->
 
     <footer>

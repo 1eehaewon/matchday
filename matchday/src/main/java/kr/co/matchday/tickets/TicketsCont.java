@@ -1,11 +1,14 @@
 package kr.co.matchday.tickets;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -24,17 +27,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.servlet.http.HttpSession;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import kr.co.matchday.matches.MatchesDTO;
-import kr.co.matchday.join.JoinDTO;
 
 @Controller
 @RequestMapping("/tickets")
@@ -50,6 +48,11 @@ public class TicketsCont {
         System.out.println("----TicketsCont() 객체");
     }
 
+    /**
+     * 주어진 matchid에 해당하는 경기의 티켓 예매 페이지를 반환하는 메서드.
+     * @param matchid 경기 ID
+     * @return ModelAndView 티켓 예매 페이지와 경기 정보
+     */
     @GetMapping("/ticketspayment")
     public ModelAndView ticketspayment(@RequestParam String matchid) {
         System.out.println("Received matchid: " + matchid);
@@ -62,6 +65,12 @@ public class TicketsCont {
         return mav;
     }
 
+    /**
+     * 주어진 matchid와 section에 해당하는 좌석 배치도 페이지를 반환하는 메서드.
+     * @param matchid 경기 ID
+     * @param section 구역
+     * @return ModelAndView 좌석 배치도 페이지와 좌석 정보
+     */
     @GetMapping("/seatmap")
     public ModelAndView seatmap(@RequestParam String matchid, @RequestParam String section) {
         MatchesDTO matchesDto = ticketsDao.getMatchById(matchid);
@@ -82,6 +91,14 @@ public class TicketsCont {
         return mav;
     }
 
+    /**
+     * 주어진 matchid, seats, totalPrice로 예매 확인 페이지를 반환하는 메서드.
+     * @param matchid 경기 ID
+     * @param seats 선택한 좌석들
+     * @param totalPrice 총 금액
+     * @param session 사용자 세션
+     * @return ModelAndView 예매 확인 페이지와 예매 정보
+     */
     @GetMapping("/reservation")
     public ModelAndView reservation(@RequestParam String matchid, @RequestParam String seats, @RequestParam int totalPrice, HttpSession session) {
         MatchesDTO matchesDto = ticketsDao.getMatchById(matchid);
@@ -110,9 +127,24 @@ public class TicketsCont {
         return mav;
     }
 
+    /**
+     * 아임포트 결제 검증 및 티켓 예약 처리 메서드.
+     * @param imp_uid 아임포트 결제 UID
+     * @param merchant_uid 상점 거래 UID
+     * @param paid_amount 결제 금액
+     * @param matchid 경기 ID
+     * @param seats 선택한 좌석들
+     * @param totalPrice 총 금액
+     * @param deliveryOption 배송 방법
+     * @param recipientName 수령인 이름
+     * @param shippingAddress 배송 주소
+     * @param shippingRequest 배송 요청사항
+     * @param session 사용자 세션
+     * @return Map<String, Object> 결제 검증 결과
+     */
     @PostMapping("/verifyPayment")
     @ResponseBody
-    public Map<String, Object> verifyPayment(@RequestParam String imp_uid, @RequestParam String merchant_uid, @RequestParam int paid_amount, @RequestParam String matchid, @RequestParam String seats, @RequestParam int totalPrice) {
+    public Map<String, Object> verifyPayment(@RequestParam String imp_uid, @RequestParam String merchant_uid, @RequestParam int paid_amount, @RequestParam String matchid, @RequestParam String seats, @RequestParam int totalPrice, @RequestParam(required = false) String recipientname, @RequestParam(required = false) String shippingaddress, @RequestParam(required = false) String shippingrequest, @RequestParam String collectionmethodcode, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
 
         // 아임포트 인증 토큰 발급
@@ -138,11 +170,52 @@ public class TicketsCont {
 
                 if (amount == paid_amount) {
                     // 결제 금액이 일치하면 결제 완료 처리
-                    // 티켓 예약 정보 저장 로직 구현...
-                    // 예: ticketsDao.saveReservation(...);
+                    String reservationid = generateReservationId();
+
+                    // 세션에서 사용자 ID를 가져옵니다.
+                    String userId = (String) session.getAttribute("userID");
+                    if (userId == null) {
+                        response.put("success", false);
+                        response.put("message", "User ID not found in session");
+                        return response;
+                    }
+
+                    // 티켓 예약 정보 저장
+                    TicketsDTO ticketsDto = new TicketsDTO();
+                    ticketsDto.setReservationid(reservationid);
+                    ticketsDto.setMatchid(matchid);
+                    ticketsDto.setQuantity(seats.split(",").length);
+                    ticketsDto.setPrice(totalPrice);
+                    ticketsDto.setUserid(userId); // 실제 사용자 ID로 교체
+                    ticketsDto.setPaymentmethodcode("pay01"); // 결제 방법 설정
+                    ticketsDto.setReservationstatus("Confirmed");
+                    ticketsDto.setCollectionmethodcode(collectionmethodcode);
+                    ticketsDto.setRecipientname(recipientname);
+                    ticketsDto.setShippingaddress(shippingaddress);
+                    ticketsDto.setShippingrequest(shippingrequest);
+                    ticketsDto.setFinalpaymentamount(totalPrice);
+
+                    if ("receiving02".equals(collectionmethodcode)) {
+                        ticketsDto.setShippingstatus("배송준비중");
+                    }
+
+                    ticketsDao.insertTicket(ticketsDto);
+
+                    for (String seat : seats.split(",")) {
+                        TicketsDetailDTO ticketDetailsDto = new TicketsDetailDTO();
+                        ticketDetailsDto.setReservationid(reservationid);
+                        ticketDetailsDto.setMatchid(matchid);
+                        ticketDetailsDto.setSeatid(seat);
+                        ticketDetailsDto.setPrice(totalPrice / seats.split(",").length);
+                        ticketDetailsDto.setTotalamount(totalPrice / seats.split(",").length);
+                        ticketDetailsDto.setIscanceled(false);
+                        ticketDetailsDto.setIsrefunded(false);
+
+                        ticketsDao.insertTicketDetail(ticketDetailsDto);
+                    }
 
                     response.put("success", true);
-                    response.put("reservationid", "generated_reservation_id"); // 실제 예약 ID 반환
+                    response.put("reservationid", reservationid); // 실제 예약 ID 반환
                 } else {
                     response.put("success", false);
                 }
@@ -156,7 +229,21 @@ public class TicketsCont {
 
         return response;
     }
+
     
+    private String generateReservationId() {
+        String prefix = "reservation";
+        String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        int randomNumber = (int) (Math.random() * 100000);
+        return String.format("%s%s%05d", prefix, date, randomNumber);
+    }
+
+
+    /**
+     * 아임포트 결제 취소 처리 메서드.
+     * @param imp_uid 아임포트 결제 UID
+     * @return Map<String, Object> 결제 취소 결과
+     */
     @DeleteMapping("/cancelPayment")
     @ResponseBody
     public Map<String, Object> cancelPayment(@RequestParam String imp_uid) {
@@ -211,6 +298,10 @@ public class TicketsCont {
         return response;
     }
 
+    /**
+     * 아임포트 인증 토큰을 발급받는 메서드.
+     * @return String 아임포트 인증 토큰
+     */
     private String getToken() {
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -221,12 +312,21 @@ public class TicketsCont {
             request.put("imp_key", env.getProperty("iamport.api_key"));
             request.put("imp_secret", env.getProperty("iamport.api_secret"));
 
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
+            // 요청 바디를 JSON 형식으로 직렬화
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestBody = objectMapper.writeValueAsString(request);
+
+            // 디버깅 로그 추가
+            System.out.println("Request Body: " + requestBody);
+
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
             ResponseEntity<String> response = restTemplate.postForEntity("https://api.iamport.kr/users/getToken", entity, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
                 return json.getJSONObject("response").getString("access_token");
+            } else {
+                System.out.println("Failed to get token, response: " + response.getBody());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,11 +335,18 @@ public class TicketsCont {
         return null;
     }
 
+
+    /**
+     * 주어진 section에 해당하는 좌석 배치도를 생성하는 메서드.
+     * @param section 구역
+     * @return Map<String, Object> 좌석 배치도 정보
+     */
     private Map<String, Object> generateSeats(String section) {
         int rows = 20;
         int cols = 20;
         String[][] seats = new String[rows][cols];
 
+        // 각 섹션에 대한 좌석 번호 할당
         switch (section.toLowerCase()) {
             case "north":
                 for (int i = rows - 1; i >= 0; i--) {
@@ -276,6 +383,10 @@ public class TicketsCont {
         return seatMap;
     }
     
+    /**
+     * 최근 결제 정보를 가져오는 메서드.
+     * @return List<String> 결제 정보 리스트
+     */
     @GetMapping("/payments/recent")
     @ResponseBody
     public List<String> getRecentPayments() {
@@ -310,7 +421,4 @@ public class TicketsCont {
 
         return impUids;
     }
-
 }
-
-
