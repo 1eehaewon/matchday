@@ -1,6 +1,7 @@
 package kr.co.matchday.tickets;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -120,11 +122,9 @@ public class TicketsCont {
         return "tickets/reservation";
     }
 
-
-
-
     @PostMapping("/verifyPayment")
     @ResponseBody
+    @Transactional
     public Map<String, Object> verifyPayment(
             @RequestParam String imp_uid,
             @RequestParam String merchant_uid,
@@ -139,11 +139,16 @@ public class TicketsCont {
             HttpSession session) {
         Map<String, Object> response = new HashMap<>();
 
+        System.out.println("Starting verifyPayment method...");
+        
         String token = getToken();
         if (token == null) {
             response.put("success", false);
+            System.out.println("Failed to get token");
             return response;
         }
+
+        System.out.println("Token received: " + token);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -160,20 +165,26 @@ public class TicketsCont {
                 int amount = paymentJson.getJSONObject("response").getInt("amount");
 
                 if (amount == paid_amount) {
+                    System.out.println("Paid amount matches the expected amount.");
+
                     String reservationid = generateReservationId();
 
                     String userId = (String) session.getAttribute("userID");
                     if (userId == null) {
                         response.put("success", false);
                         response.put("message", "User ID not found in session");
+                        System.out.println("User ID not found in session");
                         return response;
                     }
+
+                    // 현재 날짜 및 시간 가져오기
+                    String currentTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
                     TicketsDTO ticketsDto = new TicketsDTO();
                     ticketsDto.setReservationid(reservationid);
                     ticketsDto.setMatchid(matchid);
                     ticketsDto.setQuantity(seats.split(",").length);
-                    ticketsDto.setPrice(totalPrice);
+                    ticketsDto.setPrice(totalPrice); // 총 결제 금액 설정
                     ticketsDto.setUserid(userId);
                     ticketsDto.setPaymentmethodcode("pay01");
                     ticketsDto.setReservationstatus("Confirmed");
@@ -182,13 +193,22 @@ public class TicketsCont {
                     ticketsDto.setShippingaddress(shippingaddress);
                     ticketsDto.setShippingrequest(shippingrequest);
                     ticketsDto.setFinalpaymentamount(totalPrice);
+                    ticketsDto.setReservationdate(currentTimestamp); // 현재 날짜 및 시간 설정
 
                     if ("receiving02".equals(collectionmethodcode)) {
                         ticketsDto.setShippingstatus("배송준비중");
                     }
 
-                    ticketsDao.insertTicket(ticketsDto);
+                    // 데이터베이스 삽입 시도
+                    try {
+                        ticketsDao.insertTicket(ticketsDto);
+                        System.out.println("Ticket inserted successfully.");
+                    } catch (Exception e) {
+                        System.err.println("Error inserting ticket: " + e.getMessage());
+                        e.printStackTrace();
+                    }
 
+                    List<TicketsDetailDTO> ticketDetails = new ArrayList<>();
                     for (String seat : seats.split(",")) {
                         TicketsDetailDTO ticketDetailsDto = new TicketsDetailDTO();
                         ticketDetailsDto.setReservationid(reservationid);
@@ -199,12 +219,23 @@ public class TicketsCont {
                         ticketDetailsDto.setIscanceled(false);
                         ticketDetailsDto.setIsrefunded(false);
 
-                        ticketsDao.insertTicketDetail(ticketDetailsDto);
+                        ticketDetails.add(ticketDetailsDto);
+                    }
+
+                    for (TicketsDetailDTO detail : ticketDetails) {
+                        try {
+                            ticketsDao.insertTicketDetail(detail);
+                            System.out.println("Ticket detail inserted successfully: " + detail.getSeatid());
+                        } catch (Exception e) {
+                            System.err.println("Error inserting ticket detail: " + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
 
                     response.put("success", true);
                     response.put("reservationid", reservationid);
                 } else {
+                    System.out.println("Paid amount does not match the expected amount.");
                     response.put("success", false);
                 }
             } catch (Exception e) {
@@ -212,11 +243,15 @@ public class TicketsCont {
                 response.put("success", false);
             }
         } else {
+            System.out.println("Failed to get payment response from Iamport.");
             response.put("success", false);
         }
 
+        System.out.println("Ending verifyPayment method...");
         return response;
     }
+
+
 
     private String generateReservationId() {
         String prefix = "reservation";
