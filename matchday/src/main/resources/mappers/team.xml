@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="team">
+
+    <insert id="insert" parameterType="java.util.Map">
+		INSERT INTO teams(teamname, koreanname, stadiumid, foundingyear, coach, city, introduction, leaguecategory, filename, filesize)
+		VALUES(#{teamname}, #{koreanname}, #{stadiumid}, #{foundingyear}, #{coach}, #{city}, #{introduction}, #{leaguecategory}, #{filename}, #{filesize})
+	</insert>
+	
+	
+	<select id="list" resultType="java.util.Map">
+        SELECT teamname, koreanname, stadiumid, foundingyear, coach, city, introduction, leaguecategory, filename, filesize
+        FROM teams
+        ORDER BY teamname
+    </select>
+    
+    
+    <select id="detail" resultType="java.util.Map" parameterType="String">
+        SELECT teamname, koreanname, stadiumid, foundingyear, coach, city, introduction, leaguecategory, filename, filesize
+        FROM teams
+        WHERE teamname = #{teamname}
+    </select>
+
+
+
+</mapper>
