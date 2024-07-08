@@ -168,7 +168,7 @@
         $(document).ready(function() {
             var totalPrice = ${totalPrice}; // 전달받은 총 티켓 금액
 
-            // 배송 방법에 따른 배송료 설정
+         // 배송 방법에 따른 배송료 설정
             function updateDeliveryFee() {
                 var deliveryOption = $('input[name="deliveryOption"]:checked').val();
                 var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
@@ -181,7 +181,7 @@
                 updateTotalAmount();
             }
 
-            // 총 결제 금액 계산
+         // 총 결제 금액 계산
             function updateTotalAmount() {
                 var serviceFee = 2000;
                 var deliveryOption = $('input[name="deliveryOption"]:checked').val();
@@ -189,6 +189,7 @@
                 var discount = 0;
                 var totalAmount = totalPrice + serviceFee + deliveryFee - discount;
                 $('#total-amount').text(totalAmount.toLocaleString() + '원');
+                return totalAmount; // 총 결제 금액 반환
             }
 
             // 주소 찾기 API 호출
@@ -239,21 +240,17 @@
                 window.history.back();
             });
 
-            // 결제 버튼 클릭 이벤트 핸들러
+         // 결제 버튼 클릭 이벤트 핸들러
             $('#pay-button').click(function() {
-                var totalPrice = ${totalPrice}; // 전달받은 총 티켓 금액
-                var selectedSeats = [];
-                $('.seat.selected').each(function() {
-                    selectedSeats.push($(this).data('seatId'));
-                });
+                var totalAmount = updateTotalAmount(); // 총 결제 금액 가져오기
 
-                // 결제 요청
+             // 결제 요청
                 IMP.request_pay({
                     pg: 'html5_inicis',
                     pay_method: 'card',
                     merchant_uid: 'merchant_' + new Date().getTime(),
                     name: '티켓 결제',
-                    amount: totalPrice,
+                    amount: totalAmount, // 총 결제 금액으로 설정
                     buyer_email: $('#email').val(),
                     buyer_name: $('#name').val(),
                     buyer_tel: $('#phone').val(),
@@ -266,8 +263,8 @@
                             paid_amount: rsp.paid_amount,
                             matchid: '${match.matchid}',
                             seats: selectedSeats.join(','),
-                            totalPrice: totalPrice,
-                            collectionmethodcode: $('input[name="deliveryOption"]:checked').val(), // 수정된 부분
+                            totalPrice: totalAmount, // 총 결제 금액으로 설정
+                            collectionmethodcode: $('input[name="deliveryOption"]:checked').val(),
                             recipientName: $('#name').val(),
                             shippingAddress: $('#address').val() + ' ' + $('#detailAddress').val(),
                             shippingRequest: $('#extraAddress').val()

@@ -6,7 +6,6 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>좌석 예매</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -100,6 +99,7 @@
 </head>
 <body>
     <input type="hidden" id="matchid" value="${match.matchid}"/>
+    <input type="hidden" id="stadiumid" value="${match.stadiumid}"/> <!-- stadiumid 추가 -->
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-8">
@@ -117,10 +117,10 @@
                 <h1><c:out value="${match.hometeamid}"/> vs <c:out value="${match.awayteamid}"/></h1>
                 <p>경기일정: <fmt:formatDate value="${match.matchdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></p>
                 <div class="list-group mb-3">
-                    <a href="#" data-section="north" class="section-link">N 구역</a>
-                    <a href="#" data-section="west" class="section-link">W 구역</a>
-                    <a href="#" data-section="east" class="section-link">E 구역</a>
-                    <a href="#" data-section="south" class="section-link">S 구역</a>
+                    <a href="#" data-section="N" class="section-link">N 구역</a>
+                    <a href="#" data-section="W" class="section-link">W 구역</a>
+                    <a href="#" data-section="E" class="section-link">E 구역</a>
+                    <a href="#" data-section="S" class="section-link">S 구역</a>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="button" class="btn btn-primary" id="selectSeats">좌석선택</button>
@@ -144,7 +144,8 @@
                 // '좌석선택' 버튼을 눌렀을 때 페이지를 이동
                 if (selectedSection) {
                     var matchId = $('#matchid').val();
-                    window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + selectedSection;
+                    var stadiumId = $('#stadiumid').val(); // stadiumId 추가
+                    window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + selectedSection + '&stadiumid=' + stadiumId; // stadiumId 포함
                 } else {
                     alert('구역을 선택하세요.');
                 }

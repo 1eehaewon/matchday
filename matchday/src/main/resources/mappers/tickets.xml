@@ -10,6 +10,13 @@
         FROM matches
         WHERE matchid = #{matchid}
     </select>
+    
+    <!-- 주어진 경기 ID와 구역에 해당하는 좌석 정보를 가져오는 SQL 쿼리 -->
+    <select id="getSeatsByStadiumIdAndSection" resultType="map">
+        SELECT seatid, stadiumid, section, seatnumber, price, seatstatus
+        FROM seats
+        WHERE stadiumid = #{stadiumid} AND section = #{section}
+    </select>
 
     <!-- 주어진 userID에 해당하는 사용자 정보를 가져오는 SQL 쿼리 -->
     <select id="getUserInfo" resultType="map">
