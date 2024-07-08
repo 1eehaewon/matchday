@@ -133,7 +133,7 @@
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">소개</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">소개</a></li><!--  -->
                 </ul>
             </div>
         </div>
