@@ -135,12 +135,12 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">알림마당</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">공지사항</a></li>
-                            <li><a class="dropdown-item" href="#">이벤트</a></li>
+                            <li><a class="dropdown-item" href="/notice/list">공지사항</a></li>
+                            <li><a class="dropdown-item" href="/notice/evl">이벤트</a></li>
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">소개</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/team/list">소개</a></li>
                 </ul>
             </div>
         </div>
