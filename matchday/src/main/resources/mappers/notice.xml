@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="notice">
+
+
+    <insert id="insert" parameterType="kr.co.matchday.notice.NoticeDTO">
+        INSERT INTO notices (title, content, userid, createddate, category)
+        VALUES (#{title}, #{content}, #{userid}, NOW(), #{category});
+    </insert>
+
+
+    <select id="list" resultType="kr.co.matchday.notice.NoticeDTO">
+        SELECT noticeid, title, userid, createddate
+        FROM notices
+        WHERE category = 'notice'
+        ORDER BY noticeid
+    </select>
+
+
+    <select id="evl" resultType="kr.co.matchday.notice.NoticeDTO">
+        SELECT noticeid, title, userid, createddate
+        FROM notices
+        WHERE category = 'event'
+        ORDER BY noticeid
+    </select>
+
+
+    <select id="search" resultType="kr.co.matchday.notice.NoticeDTO" parameterType="String">
+        SELECT noticeid, title, userid, createddate
+        FROM notices
+        WHERE title LIKE #{keyword} AND category = 'notice'
+        ORDER BY noticeid
+    </select>
+
+
+    <select id="searching" resultType="kr.co.matchday.notice.NoticeDTO" parameterType="String">
+        SELECT noticeid, title, userid, createddate
+        FROM notices
+        WHERE title LIKE #{keyword} AND category = 'event'
+        ORDER BY noticeid
+    </select>
+
+
+    <select id="detail" resultType="kr.co.matchday.notice.NoticeDTO">
+        SELECT title, content, noticeid, userid, createddate, modifieddate, category
+        FROM notices
+        WHERE noticeid = #{noticeid}
+    </select>
+
+
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM notices
+        WHERE noticeid = #{noticeid}
+    </delete>
+
+
+    <update id="update" parameterType="kr.co.matchday.notice.NoticeDTO">
+        UPDATE notices
+        SET title = #{title}, content = #{content}, category = #{category}
+        WHERE noticeid = #{noticeid}
+    </update>
+
+
+    <select id="totalRowCount" resultType="Integer">
+        SELECT COUNT(*)
+        FROM notices
+        where category = 'notice'
+    </select>
+    
+    
+    <select id="totalRowCount2" resultType="Integer">
+        SELECT COUNT(*)
+        FROM notices
+        where category = 'event'
+    </select>
+
+
+    <select id="list2" parameterType="map" resultType="kr.co.matchday.notice.NoticeDTO">
+        SELECT noticeid, title, userid, createddate
+        FROM notices
+        WHERE category = 'notice'
+        ORDER BY noticeid
+        LIMIT #{startRow}, #{endRow}
+    </select>
+    
+    
+    <select id="evl2" parameterType="map" resultType="kr.co.matchday.notice.NoticeDTO">
+        SELECT noticeid, title, userid, createddate
+        FROM notices
+        WHERE category = 'event'
+        ORDER BY noticeid
+        LIMIT #{startRow}, #{endRow}
+    </select>
+
+
+</mapper>
