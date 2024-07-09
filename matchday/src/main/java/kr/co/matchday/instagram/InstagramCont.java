@@ -70,4 +70,5 @@ public class InstagramCont {
         return "redirect:/instagram/list";
     }//delete() end
     
+    
 }//class end

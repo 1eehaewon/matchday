@@ -32,12 +32,12 @@
             </c:choose>
         </div>
         <!-- 한 줄에 3칸씩 -->
-        <c:if test="${vs.index % 3 == 2 || vs.last}">
+        <c:if test="${vs.index % 3 == 2}">
             </div><!-- row end -->
             <div style="height: 50px;"></div>
             <div class="row">
         </c:if>
     </c:forEach>
-</div><!-- row end -->
+</div><!-- row end --> 
 
 <%@ include file="../footer.jsp" %>

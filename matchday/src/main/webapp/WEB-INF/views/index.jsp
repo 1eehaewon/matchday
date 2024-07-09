@@ -183,6 +183,12 @@
 		    </a>
 		</div><!-- div id="myCarousel" end -->
 		
+		<div class="container-fluid py-5" style="height: 200px;">
+		<h2 class="text-center font-weight-bold">Matches</h2>
+		</div>
+		
+		
+		
 		<!-- 경기 일정 캐러셀 섹션 -->
 		<div id="matchCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
 		    <div class="carousel-inner">
@@ -317,6 +323,41 @@
 	            <span class="visually-hidden">Next</span>
 	        </a>
 		</div><!-- div id="matchCarousel" end -->
+		
+		<div class="container-fluid py-5" style="height: 200px;">
+		<h2 class="text-center">Instagram</h2>	
+		</div>
+		
+		<div class="container">
+    <div class="row justify-content-center">
+        <c:forEach items="${instagramList}" var="row" varStatus="vs">
+            <div class="col-sm-4 col-md-4 mb-4">
+                <c:choose>
+                    <c:when test="${not empty row.instagram_url}">
+                        <div>
+                            <a href="<c:url value='/instagram/detail' />?instagram_code=${row.instagram_code}">
+                            </a>
+                        </div>
+                        <div>
+                            <blockquote class="instagram-media" data-instgrm-permalink="${row.instagram_url}" data-instgrm-version="12"></blockquote>
+                            <script async src="//www.instagram.com/embed.js"></script>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>등록된 인스타그램 없음!!</p>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <!-- 한 줄에 3칸씩 -->
+            <c:if test="${vs.index % 3 == 2 || vs.last}">
+                </div><!-- row end -->
+                <div style="height: 50px;"></div>
+                <div class="row justify-content-center">
+            </c:if>
+        </c:forEach>
+    </div><!-- row end -->
+</div><!-- container end -->
+		
 		
 		
 		  <a href="/instagram/list"class="btn btn-primary">인스타그램 등록</a>
