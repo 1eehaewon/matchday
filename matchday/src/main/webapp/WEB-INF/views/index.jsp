@@ -184,7 +184,7 @@
 		</div><!-- div id="myCarousel" end -->
 		
 		<div class="container-fluid py-5" style="height: 200px;">
-		<h2 class="text-center font-weight-bold">Matches</h2>
+		<h2 class="text-center font-weight-bold">Matches🥅</h2>
 		</div>
 		
 		
@@ -325,7 +325,7 @@
 		</div><!-- div id="matchCarousel" end -->
 		
 		<div class="container-fluid py-5" style="height: 200px;">
-		<h2 class="text-center">Instagram</h2>	
+		<h2 class="text-center">Instagram📷</h2>	
 		</div>
 		
 			<div class="container">
@@ -359,7 +359,7 @@
 	</div><!-- container end -->
 			
 		<div class="container-fluid py-5" style="height: 200px;">
-		<h2 class="text-center">Highlight</h2>	
+		<h2 class="text-center">Highlight⚽</h2>	
 		</div>
 
 	<div class="container">
@@ -369,7 +369,7 @@
 		            <c:choose>
 		                <c:when test="${row.video_name != '-'}">
 		                    <a href="detail?video_code=${row.video_code}">
-		                        <iframe width="100%" height="200" src="${row.video_url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+		                        <iframe width="100%" height="230" src="${row.video_url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 		                    </a> 
 		                </c:when>
 		                <c:otherwise>
