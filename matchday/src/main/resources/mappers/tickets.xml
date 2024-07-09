@@ -21,10 +21,11 @@
 
     <!-- 좌석 ID로 좌석 정보 가져오기 -->
     <select id="getSeatInfoByJson" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        SELECT seatid, price
-        FROM seats
-        WHERE seatid = #{seatId}
-    </select>
+	    SELECT seatid, price
+	    FROM seats
+	    WHERE seatid = #{seatId}
+	</select>
+
 
     <!-- 사용자 ID로 사용자 정보 가져오기 -->
     <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">

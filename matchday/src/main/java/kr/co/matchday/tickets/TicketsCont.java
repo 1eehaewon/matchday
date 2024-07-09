@@ -100,6 +100,8 @@ public class TicketsCont {
         return mav;
     }
 
+
+
     /**
      * 예약 확인 페이지로 이동
      * @param matchId 경기 ID
@@ -114,7 +116,7 @@ public class TicketsCont {
     @GetMapping("/reservation")
     public String showReservationPage(
             @RequestParam("matchid") String matchId,
-            @RequestParam("seats") String seats,
+            @RequestParam("seats") String seatsJson,
             @RequestParam("totalPrice") int totalPrice,
             @RequestParam("section") String section,
             @RequestParam("stadiumid") String stadiumId,
@@ -122,7 +124,7 @@ public class TicketsCont {
             Model model) {
 
         System.out.println("matchId: " + matchId);
-        System.out.println("seats: " + seats);
+        System.out.println("seats: " + seatsJson);
         System.out.println("totalPrice: " + totalPrice);
         System.out.println("section: " + section);
         System.out.println("stadiumId: " + stadiumId);
@@ -134,7 +136,14 @@ public class TicketsCont {
             return "error";
         }
 
-        String[] seatArray = seats.split(",");
+        List<String> seatList = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            seatList = objectMapper.readValue(seatsJson, new TypeReference<List<String>>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "error";
+        }
 
         // 사용자 ID를 세션에서 가져옴
         String userId = (String) session.getAttribute("userID");
@@ -143,7 +152,7 @@ public class TicketsCont {
 
         // 모델에 정보를 추가
         model.addAttribute("match", match);
-        model.addAttribute("seats", seatArray);
+        model.addAttribute("seats", seatList);
         model.addAttribute("totalPrice", totalPrice);
         model.addAttribute("section", section);
         model.addAttribute("stadiumid", stadiumId);
@@ -152,6 +161,7 @@ public class TicketsCont {
         System.out.println("Returning view: reservation");
         return "tickets/reservation";
     }
+
 
     /**
      * 결제 검증 메서드
@@ -167,6 +177,7 @@ public class TicketsCont {
             @RequestParam Map<String, String> requestParams,
             @RequestParam("seats") String seatsJson,
             HttpSession session) {
+
         Map<String, Object> response = new HashMap<>();
         System.out.println("verifyPayment 시작");
 

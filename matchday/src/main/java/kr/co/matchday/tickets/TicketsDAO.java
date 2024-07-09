@@ -112,6 +112,10 @@ public class TicketsDAO {
      * @return 좌석 정보 맵
      */
     public Map<String, Object> getSeatInfo(String seatId) {
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", seatId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("seatId", seatId);
+        System.out.println("Fetching seat info for seatId: " + seatId);
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", params);
     }
+
 }

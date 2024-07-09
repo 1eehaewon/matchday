@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -286,9 +286,9 @@
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
 
-                window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(seats.join(',')) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
+                window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
             });
         });
     </script> <!-- 스크립트 끝 -->
 </body>
-</html> <!-- html 끝 -->
+</html>
