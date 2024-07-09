@@ -14,12 +14,6 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8 mx-auto">
-                <div id="menu">
-                    <ul>
-                        <li><a href="list">공지사항</a></li>
-                        <li><a href="evl">이벤트</a></li>
-                    </ul>
-                </div>
                 <h3 class="text-center mb-4">공지사항</h3>
                 <hr style="width: 100%; margin-left: auto; margin-right: auto;">
                 <h5 style="text-align: left; color: blue;">${notice.title}</h5>
@@ -32,7 +26,7 @@
                    </c:if>
                 </div>
                 <hr style="width: 100%; margin-left: auto; margin-right: auto;">
-                <div class="card">
+                <div class="card" style="height: 500px">
                     <div class="card-body">
                         <form name="noticefrm" id="noticefrm" method="post" enctype="multipart/form-data">
                             <div class="form-group">
@@ -60,33 +54,6 @@
 <style>
     .spacing {
         height: 20px;
-    }
-    li {
-        list-style: none;
-    }
-    #menu {
-        width: 250px;
-        height: 50px;
-        outline: 1px dotted white;
-    }
-    #menu ul li {
-        float: left;
-        width: 50%;
-        height: 100%;
-        line-height: 50px;
-        text-align: center;
-        background: orange;
-    }
-    #menu ul li a {
-        display: block;
-    }
-    #menu ul li a:hover {
-        background: #ff7f00;
-        color: white;
-    }
-    a {
-        text-decoration-line: none;
-        color: black;
     }
 </style>
 
