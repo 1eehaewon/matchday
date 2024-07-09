@@ -10,8 +10,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 @SpringBootApplication
+@EnableTransactionManagement
 public class MatchdayApplication {
 
 	public static void main(String[] args) {
@@ -35,5 +40,11 @@ public class MatchdayApplication {
  		System.out.println("-----sqlSession() 호출됨");
  		return new SqlSessionTemplate(factory);
  	}//sqlSession() end
+ 	
+ 	// 트랜잭션 매니저 설정
+ 	@Bean
+ 	public PlatformTransactionManager transactionManager(DataSource dataSource) {
+ 		return new DataSourceTransactionManager(dataSource);
+ 	}//transactionManager end
  	
 }//class end

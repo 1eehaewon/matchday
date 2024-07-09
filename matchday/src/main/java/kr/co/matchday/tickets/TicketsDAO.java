@@ -40,11 +40,20 @@ public class TicketsDAO {
     }
     
     public void insertTicket(TicketsDTO ticket) {
+        System.out.println("Inserting ticket: " + ticket);
         sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertTicket", ticket);
+        System.out.println("Ticket inserted: " + ticket.getReservationid());
     }
 
     public void insertTicketDetail(TicketsDetailDTO ticketsDetail) {
+        System.out.println("Inserting ticket detail: " + ticketsDetail);
         sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertTicketDetail", ticketsDetail);
+        System.out.println("Ticket detail inserted: " + ticketsDetail.getTicketdetailid());
+    }
+    
+    public boolean checkSeatId(String seatId) {
+        Integer count = sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.checkSeatId", seatId);
+        return count != null && count > 0;
     }
     
     public String getNextReservationIdSuffix(String date) {

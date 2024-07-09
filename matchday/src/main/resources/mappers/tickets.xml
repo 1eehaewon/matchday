@@ -10,7 +10,7 @@
         FROM matches
         WHERE matchid = #{matchid}
     </select>
-    
+
     <!-- 주어진 경기 ID와 구역에 해당하는 좌석 정보를 가져오는 SQL 쿼리 -->
     <select id="getSeatsByStadiumIdAndSection" resultType="map">
         SELECT seatid, stadiumid, section, seatnumber, price, seatstatus
@@ -20,42 +20,44 @@
 
     <!-- 주어진 userID에 해당하는 사용자 정보를 가져오는 SQL 쿼리 -->
     <select id="getUserInfo" resultType="map">
-        SELECT userID, name, email, number 
-        FROM users 
+        SELECT userID, name, email, number
+        FROM users
         WHERE userID = #{userID}
     </select>
-    
+
     <select id="getNextReservationIdSuffix" resultType="String">
         SELECT LPAD(IFNULL(MAX(SUBSTRING(reservationid, 12)), 0) + 1, 5, '0')
         FROM tickets
         WHERE reservationid LIKE CONCAT('reservation', #{date}, '%')
     </select>
-    
+
     <!-- 티켓 예약 정보를 삽입하는 SQL 쿼리 -->
     <insert id="insertTicket" parameterType="kr.co.matchday.tickets.TicketsDTO">
         INSERT INTO tickets (
-            reservationid, matchid, quantity, price, userid, reservationdate, 
-            paymentmethodcode, reservationstatus, collectionmethodcode, 
-            membermembershipid, methodcode, couponid, usedpoints, 
-            finalpaymentamount, shippingstartdate, shippingenddate, 
+            reservationid, matchid, quantity, price, userid, reservationdate,
+            paymentmethodcode, reservationstatus, collectionmethodcode,
+            membermembershipid, methodcode, couponid, usedpoints,
+            finalpaymentamount, shippingstartdate, shippingenddate,
             shippingstatus, recipientname, shippingaddress, shippingrequest
         ) VALUES (
-            #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate}, 
-            #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode}, 
-            #{membermembershipid}, #{methodcode}, #{couponid}, #{usedpoints}, 
-            #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate}, 
+            #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate},
+            #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode},
+            #{membermembershipid}, #{methodcode}, #{couponid}, #{usedpoints},
+            #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate},
             #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}
         )
     </insert>
-    
-    <!-- 티켓 상세 정보를 삽입하는 SQL 쿼리 -->
+
+    <!-- ticketdetails 테이블에 티켓 상세 정보 삽입 -->
     <insert id="insertTicketDetail" parameterType="kr.co.matchday.tickets.TicketsDetailDTO">
-        INSERT INTO ticketdetails (
-            reservationid, matchid, seatid, price, membershipdiscountamount, 
-            coupondiscountamount, totalamount, iscanceled, canceldate, isrefunded
-        ) VALUES (
-            #{reservationid}, #{matchid}, #{seatid}, #{price}, #{membershipdiscountamount}, 
-            #{coupondiscountamount}, #{totalamount}, #{iscanceled}, #{canceldate}, #{isrefunded}
-        )
+        INSERT INTO ticketdetails (reservationid, matchid, seatid, price, totalamount, iscanceled, isrefunded)
+        VALUES (#{reservationid}, #{matchid}, #{seatid}, #{price}, #{totalamount}, #{iscanceled}, #{isrefunded})
     </insert>
+
+    <!-- 주어진 seatid에 해당하는 좌석 정보를 가져오는 SQL 쿼리 -->
+    <select id="getSeatInfo" resultType="map">
+        SELECT seatid, price
+        FROM seats
+        WHERE seatid = #{seatid}
+    </select>
 </mapper>

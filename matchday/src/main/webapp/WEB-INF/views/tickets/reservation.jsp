@@ -165,149 +165,169 @@
         </div>
     </div>
     <script>
-        $(document).ready(function() {
-            var totalPrice = ${totalPrice}; // 전달받은 총 티켓 금액
+    $(document).ready(function() {
+        var totalPrice = ${totalPrice}; // 전달받은 총 티켓 금액
+        var seats = "${seats}".split(","); // seats 파라미터를 배열로 변환
 
-         // 배송 방법에 따른 배송료 설정
-            function updateDeliveryFee() {
-                var deliveryOption = $('input[name="deliveryOption"]:checked').val();
-                var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
-                $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
-                if (deliveryOption === 'receiving02') {
-                    $('#delivery-address').show();
-                } else {
-                    $('#delivery-address').hide();
-                }
-                updateTotalAmount();
+        // 배송 방법에 따른 배송료 설정
+        function updateDeliveryFee() {
+            var deliveryOption = $('input[name="deliveryOption"]:checked').val();
+            var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
+            $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
+            if (deliveryOption === 'receiving02') {
+                $('#delivery-address').show();
+            } else {
+                $('#delivery-address').hide();
             }
+            updateTotalAmount();
+        }
 
-         // 총 결제 금액 계산
-            function updateTotalAmount() {
-                var serviceFee = 2000;
-                var deliveryOption = $('input[name="deliveryOption"]:checked').val();
-                var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
-                var discount = 0;
-                var totalAmount = totalPrice + serviceFee + deliveryFee - discount;
-                $('#total-amount').text(totalAmount.toLocaleString() + '원');
-                return totalAmount; // 총 결제 금액 반환
-            }
+        // 총 결제 금액 계산
+        function updateTotalAmount() {
+            var serviceFee = 2000;
+            var deliveryOption = $('input[name="deliveryOption"]:checked').val();
+            var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
+            var discount = 0;
+            var totalAmount = totalPrice + serviceFee + deliveryFee - discount;
+            $('#total-amount').text(totalAmount.toLocaleString() + '원');
+            return totalAmount; // 총 결제 금액 반환
+        }
 
-            // 주소 찾기 API 호출
-            $('#find-postcode').click(function() {
-                new daum.Postcode({
-                    oncomplete: function(data) {
-                        var addr = ''; // 주소 변수
-                        var extraAddr = ''; // 참고항목 변수
+        // 주소 찾기 API 호출
+        $('#find-postcode').click(function() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    var addr = ''; // 주소 변수
+                    var extraAddr = ''; // 참고항목 변수
 
-                        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
-                            addr = data.roadAddress;
-                        } else { // 사용자가 지번 주소를 선택했을 경우
-                            addr = data.jibunAddress;
-                        }
-
-                        if (data.userSelectedType === 'R') {
-                            if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                                extraAddr += data.bname;
-                            }
-                            if (data.buildingName !== '' && data.apartment === 'Y') {
-                                extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                            }
-                            if (extraAddr !== '') {
-                                extraAddr = ' (' + extraAddr + ')';
-                            }
-                            $('#extraAddress').val(extraAddr);
-                        } else {
-                            $('#extraAddress').val('');
-                        }
-
-                        $('#postcode').val(data.zonecode);
-                        $('#address').val(addr);
-                        $('#detailAddress').focus();
+                    if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                        addr = data.roadAddress;
+                    } else { // 사용자가 지번 주소를 선택했을 경우
+                        addr = data.jibunAddress;
                     }
-                }).open();
-            });
 
-            // 배송 방법 변경 시 이벤트
-            $('.delivery-option').change(function() {
-                updateDeliveryFee();
-            });
-
-            // 초기 계산
-            updateDeliveryFee();
-
-            // 이전 단계로 이동하는 버튼의 클릭 이벤트 핸들러
-            $('#prev-step').click(function() {
-                window.history.back();
-            });
-
-         // 결제 버튼 클릭 이벤트 핸들러
-            $('#pay-button').click(function() {
-                var totalAmount = updateTotalAmount(); // 총 결제 금액 가져오기
-
-             // 결제 요청
-                IMP.request_pay({
-                    pg: 'html5_inicis',
-                    pay_method: 'card',
-                    merchant_uid: 'merchant_' + new Date().getTime(),
-                    name: '티켓 결제',
-                    amount: totalAmount, // 총 결제 금액으로 설정
-                    buyer_email: $('#email').val(),
-                    buyer_name: $('#name').val(),
-                    buyer_tel: $('#phone').val(),
-                    m_redirect_url: 'http://yourdomain.com/complete'
-                }, function(rsp) {
-                    if (rsp.success) {
-                        $.post('/tickets/verifyPayment', {
-                            imp_uid: rsp.imp_uid,
-                            merchant_uid: rsp.merchant_uid,
-                            paid_amount: rsp.paid_amount,
-                            matchid: '${match.matchid}',
-                            seats: selectedSeats.join(','),
-                            totalPrice: totalAmount, // 총 결제 금액으로 설정
-                            collectionmethodcode: $('input[name="deliveryOption"]:checked').val(),
-                            recipientName: $('#name').val(),
-                            shippingAddress: $('#address').val() + ' ' + $('#detailAddress').val(),
-                            shippingRequest: $('#extraAddress').val()
-                        }, function(data) {
-                            if (data.success) {
-                                window.location.href = '/tickets/confirmation?reservationid=' + data.reservationid;
-                            } else {
-                                alert('결제 검증에 실패했습니다.');
-                            }
-                        });
+                    if (data.userSelectedType === 'R') {
+                        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                            extraAddr += data.bname;
+                        }
+                        if (data.buildingName !== '' && data.apartment === 'Y') {
+                            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                        }
+                        if (extraAddr !== '') {
+                            extraAddr = ' (' + extraAddr + ')';
+                        }
+                        $('#extraAddress').val(extraAddr);
                     } else {
-                        alert('결제에 실패하였습니다.');
+                        $('#extraAddress').val('');
+                    }
+
+                    $('#postcode').val(data.zonecode);
+                    $('#address').val(addr);
+                    $('#detailAddress').focus();
+                }
+            }).open();
+        });
+
+        // 배송 방법 변경 시 이벤트
+        $('.delivery-option').change(function() {
+            updateDeliveryFee();
+        });
+
+        // 초기 계산
+        updateDeliveryFee();
+
+        // 이전 단계로 이동하는 버튼의 클릭 이벤트 핸들러
+        $('#prev-step').click(function() {
+            window.history.back();
+        });
+
+        // 결제 버튼 클릭 이벤트 핸들러
+        // 결제 버튼 클릭 이벤트 핸들러
+$('#pay-button').click(function() {
+    var totalAmount = updateTotalAmount(); // 총 결제 금액 가져오기
+
+    // 결제 요청
+    IMP.request_pay({
+        pg: 'html5_inicis',
+        pay_method: 'card',
+        merchant_uid: 'merchant_' + new Date().getTime(),
+        name: '티켓 결제',
+        amount: totalAmount, // 총 결제 금액으로 설정
+        buyer_email: $('#email').val(),
+        buyer_name: $('#name').val(),
+        buyer_tel: $('#phone').val(),
+        m_redirect_url: 'http://yourdomain.com/complete'
+    }, function(rsp) {
+        if (rsp.success) {
+            var seatsStr = seats.join(','); // 좌석 정보를 쉼표로 구분된 문자열로 변환
+            var formData = {
+                imp_uid: rsp.imp_uid,
+                merchant_uid: rsp.merchant_uid,
+                paid_amount: rsp.paid_amount,
+                matchid: '${match.matchid}',
+                totalPrice: totalPrice,
+                collectionmethodcode: $('input[name="deliveryOption"]:checked').val(),
+                recipientname: $('#name').val(),
+                shippingaddress: $('#address').val() + ' ' + $('#detailAddress').val(),
+                shippingrequest: $('#extraAddress').val(),
+                seats: seatsStr // 좌석 정보를 추가
+            };
+
+            seats.forEach(function(seat, index) {
+                formData['seat' + index] = seat; // 각 좌석 ID를 seat 파라미터로 추가
+            });
+
+            console.log('FormData before sending:', formData); // 로그 추가
+
+            $.ajax({
+                type: 'POST',
+                url: '/tickets/verifyPayment',
+                data: formData,
+                traditional: true,
+                success: function(data) {
+                    if (data.success) {
+                        window.location.href = '/tickets/confirmation?reservationid=' + data.reservationid;
+                    } else {
+                        alert('결제 검증에 실패했습니다.');
+                    }
+                }
+            });
+        } else {
+            alert('결제에 실패하였습니다.');
+        }
+    });
+});
+
+
+
+
+        // 결제 취소 버튼 클릭 이벤트 핸들러
+        $('#cancel-button').click(function() {
+            var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
+            if (impUid) {
+                $.ajax({
+                    url: '/tickets/cancelPayment',
+                    type: 'DELETE',
+                    data: { imp_uid: impUid },
+                    success: function(response) {
+                        if (response.success) {
+                            alert("결제가 취소되었습니다.");
+                        } else {
+                            alert("결제 취소에 실패했습니다: " + response.message);
+                        }
+                    },
+                    error: function(error) {
+                        alert("결제 취소 요청 중 오류가 발생했습니다.");
                     }
                 });
-            });
-
-            // 결제 취소 버튼 클릭 이벤트 핸들러
-            $('#cancel-button').click(function() {
-                var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
-                if (impUid) {
-                    $.ajax({
-                        url: '/tickets/cancelPayment',
-                        type: 'DELETE',
-                        data: { imp_uid: impUid },
-                        success: function(response) {
-                            if (response.success) {
-                                alert("결제가 취소되었습니다.");
-                            } else {
-                                alert("결제 취소에 실패했습니다: " + response.message);
-                            }
-                        },
-                        error: function(error) {
-                            alert("결제 취소 요청 중 오류가 발생했습니다.");
-                        }
-                    });
-                }
-            });
-
-            function validateEmail(email) {
-                var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return re.test(email);
             }
         });
+
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    });
     </script>
 </body>
 </html>

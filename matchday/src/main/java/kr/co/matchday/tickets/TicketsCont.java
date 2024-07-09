@@ -1,7 +1,6 @@
 package kr.co.matchday.tickets;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +25,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.json.JSONArray;
+
+import org.apache.ibatis.session.SqlSession;
 import org.json.JSONObject;
+import org.mybatis.spring.SqlSessionTemplate;
+
 import kr.co.matchday.matches.MatchesDTO;
 
 @Controller
@@ -41,10 +46,13 @@ public class TicketsCont {
     private Environment env;
 
     @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
+
+    @Autowired
     private TicketsDAO ticketsDao;
 
     public TicketsCont() {
-        System.out.println("----TicketsCont() 객체");
+        System.out.println("----TicketsCont() 객체 생성됨");
     }
 
     @GetMapping("/ticketspayment")
@@ -105,10 +113,6 @@ public class TicketsCont {
 
         String userId = (String) session.getAttribute("userID");
         System.out.println("userID: " + userId);
-        // if (userId == null) {
-        //     System.out.println("User ID not found in session");
-        //     return "error";
-        // }
         Map<String, Object> userInfo = userId != null ? ticketsDao.getUserInfo(userId) : new HashMap<>();
 
         model.addAttribute("match", match);
@@ -126,29 +130,27 @@ public class TicketsCont {
     @ResponseBody
     @Transactional
     public Map<String, Object> verifyPayment(
+            HttpServletRequest request,
             @RequestParam String imp_uid,
             @RequestParam String merchant_uid,
             @RequestParam int paid_amount,
             @RequestParam String matchid,
-            @RequestParam String seats,
             @RequestParam int totalPrice,
             @RequestParam(required = false) String recipientname,
             @RequestParam(required = false) String shippingaddress,
             @RequestParam(required = false) String shippingrequest,
             @RequestParam String collectionmethodcode,
+            @RequestParam String[] seats,
             HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+        System.out.println("verifyPayment 시작");
 
-        System.out.println("Starting verifyPayment method...");
-        
         String token = getToken();
         if (token == null) {
             response.put("success", false);
-            System.out.println("Failed to get token");
+            System.out.println("토큰을 가져오지 못했습니다.");
             return response;
         }
-
-        System.out.println("Token received: " + token);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -165,26 +167,25 @@ public class TicketsCont {
                 int amount = paymentJson.getJSONObject("response").getInt("amount");
 
                 if (amount == paid_amount) {
-                    System.out.println("Paid amount matches the expected amount.");
+                    System.out.println("결제 금액이 일치합니다.");
 
                     String reservationid = generateReservationId();
 
                     String userId = (String) session.getAttribute("userID");
                     if (userId == null) {
                         response.put("success", false);
-                        response.put("message", "User ID not found in session");
-                        System.out.println("User ID not found in session");
+                        response.put("message", "세션에서 사용자 ID를 찾을 수 없습니다.");
+                        System.out.println("세션에서 사용자 ID를 찾을 수 없습니다.");
                         return response;
                     }
 
-                    // 현재 날짜 및 시간 가져오기
                     String currentTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
                     TicketsDTO ticketsDto = new TicketsDTO();
                     ticketsDto.setReservationid(reservationid);
                     ticketsDto.setMatchid(matchid);
-                    ticketsDto.setQuantity(seats.split(",").length);
-                    ticketsDto.setPrice(totalPrice); // 총 결제 금액 설정
+                    ticketsDto.setQuantity(seats.length);
+                    ticketsDto.setPrice(totalPrice);
                     ticketsDto.setUserid(userId);
                     ticketsDto.setPaymentmethodcode("pay01");
                     ticketsDto.setReservationstatus("Confirmed");
@@ -193,65 +194,90 @@ public class TicketsCont {
                     ticketsDto.setShippingaddress(shippingaddress);
                     ticketsDto.setShippingrequest(shippingrequest);
                     ticketsDto.setFinalpaymentamount(totalPrice);
-                    ticketsDto.setReservationdate(currentTimestamp); // 현재 날짜 및 시간 설정
+                    ticketsDto.setReservationdate(currentTimestamp);
 
                     if ("receiving02".equals(collectionmethodcode)) {
                         ticketsDto.setShippingstatus("배송준비중");
                     }
 
-                    // 데이터베이스 삽입 시도
-                    try {
-                        ticketsDao.insertTicket(ticketsDto);
-                        System.out.println("Ticket inserted successfully.");
-                    } catch (Exception e) {
-                        System.err.println("Error inserting ticket: " + e.getMessage());
-                        e.printStackTrace();
-                    }
+                    int ticketInsertResult = sqlSessionTemplate.insert("kr.co.matchday.tickets.TicketsDAO.insertTicket", ticketsDto);
+                    System.out.println("티켓 삽입 결과: " + ticketInsertResult);
 
-                    List<TicketsDetailDTO> ticketDetails = new ArrayList<>();
-                    for (String seat : seats.split(",")) {
-                        TicketsDetailDTO ticketDetailsDto = new TicketsDetailDTO();
-                        ticketDetailsDto.setReservationid(reservationid);
-                        ticketDetailsDto.setMatchid(matchid);
-                        ticketDetailsDto.setSeatid(seat);
-                        ticketDetailsDto.setPrice(totalPrice / seats.split(",").length);
-                        ticketDetailsDto.setTotalamount(totalPrice / seats.split(",").length);
-                        ticketDetailsDto.setIscanceled(false);
-                        ticketDetailsDto.setIsrefunded(false);
-
-                        ticketDetails.add(ticketDetailsDto);
-                    }
-
-                    for (TicketsDetailDTO detail : ticketDetails) {
-                        try {
-                            ticketsDao.insertTicketDetail(detail);
-                            System.out.println("Ticket detail inserted successfully: " + detail.getSeatid());
-                        } catch (Exception e) {
-                            System.err.println("Error inserting ticket detail: " + e.getMessage());
-                            e.printStackTrace();
+                    for (String seat : seats) {
+                        System.out.println("좌석 정보 조회: " + seat);
+                        Map<String, Object> seatInfo = sqlSessionTemplate.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfo", seat);
+                        System.out.println("좌석 정보: " + seatInfo);
+                        if (seatInfo == null) {
+                            response.put("success", false);
+                            response.put("message", "좌석 정보를 찾을 수 없습니다: " + seat);
+                            System.out.println("좌석 정보를 찾을 수 없습니다: " + seat);
+                            return response;
                         }
+
+                        TicketsDetailDTO detailDto = new TicketsDetailDTO();
+                        detailDto.setReservationid(reservationid);
+                        detailDto.setMatchid(matchid);
+                        detailDto.setSeatid((String) seatInfo.get("seatid"));
+                        detailDto.setPrice((Integer) seatInfo.get("price"));
+                        detailDto.setTotalamount((Integer) seatInfo.get("price"));
+                        detailDto.setIscanceled(false);
+                        detailDto.setIsrefunded(false);
+
+                        int ticketDetailInsertResult = sqlSessionTemplate.insert("kr.co.matchday.tickets.TicketsDAO.insertTicketDetail", detailDto);
+                        System.out.println("티켓 상세 정보 삽입 결과: " + ticketDetailInsertResult);
                     }
 
                     response.put("success", true);
                     response.put("reservationid", reservationid);
+                    System.out.println("티켓 상세 정보 삽입 성공: " + reservationid);
                 } else {
-                    System.out.println("Paid amount does not match the expected amount.");
                     response.put("success", false);
+                    System.out.println("결제 금액이 일치하지 않습니다.");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 response.put("success", false);
+                response.put("message", e.getMessage());
+                System.out.println("예외 발생: " + e.getMessage());
             }
         } else {
-            System.out.println("Failed to get payment response from Iamport.");
             response.put("success", false);
+            System.out.println("아임포트 API 호출 실패");
         }
 
-        System.out.println("Ending verifyPayment method...");
         return response;
     }
 
+    private String getToken() {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
+            Map<String, String> request = new HashMap<>();
+            request.put("imp_key", env.getProperty("iamport.api_key"));
+            request.put("imp_secret", env.getProperty("iamport.api_secret"));
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestBody = objectMapper.writeValueAsString(request);
+
+            System.out.println("Request Body: " + requestBody);
+
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity("https://api.iamport.kr/users/getToken", entity, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JSONObject json = new JSONObject(response.getBody());
+                return json.getJSONObject("response").getString("access_token");
+            } else {
+                System.out.println("Failed to get token, response: " + response.getBody());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     private String generateReservationId() {
         String prefix = "reservation";
@@ -309,36 +335,5 @@ public class TicketsCont {
         }
 
         return response;
-    }
-
-    private String getToken() {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            Map<String, String> request = new HashMap<>();
-            request.put("imp_key", env.getProperty("iamport.api_key"));
-            request.put("imp_secret", env.getProperty("iamport.api_secret"));
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String requestBody = objectMapper.writeValueAsString(request);
-
-            System.out.println("Request Body: " + requestBody);
-
-            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-            ResponseEntity<String> response = restTemplate.postForEntity("https://api.iamport.kr/users/getToken", entity, String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                JSONObject json = new JSONObject(response.getBody());
-                return json.getJSONObject("response").getString("access_token");
-            } else {
-                System.out.println("Failed to get token, response: " + response.getBody());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 }
