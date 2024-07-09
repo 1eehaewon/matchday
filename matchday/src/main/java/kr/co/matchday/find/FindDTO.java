@@ -14,4 +14,5 @@ public class FindDTO {
 	private String password;
 	private String email;
 	private String name;
+	private String token;
 }//class end

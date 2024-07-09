@@ -19,4 +19,5 @@ public class CouponDAO {
 	public List<CouponDTO> selectCouponList(String userid){
 		return sqlSession.selectList("mypage.selectCouponList", userid);
 	}
+	
 }//class end

@@ -29,4 +29,6 @@ public class AdminDAO {
 	public List<CouponMasterDTO> selectAllCoupons(){
 		return sqlSession.selectList("admin.selectAllCoupons");
 	}
+	
+	 
 }//class end

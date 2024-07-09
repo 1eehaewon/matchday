@@ -8,14 +8,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.mypage.MypageDAO;
 import kr.co.matchday.mypage.MypageDTO;
-import kr.co.matchday.point.PointHistoryDTO;
 
 @Controller
 @RequestMapping("/member/mypage")
-public class CouponCont {
+public class CouponCont extends HttpServlet {
 	public CouponCont() {
 		System.out.println("CouponCont() 객체 생성됨");
 	}//end
@@ -41,4 +41,6 @@ public class CouponCont {
 		model.addAttribute("couponList", couponList);
 		return "/member/coupon"; // 마이페이지의 쿠폰으로 이동
 	}
+	
+	
 }//class end

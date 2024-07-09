@@ -56,10 +56,12 @@
     <!-- 쿠폰목록 조회 쿠폰마스터의 정보를 가져오기위해 조인 -->
     <select id="selectCouponList" resultType="kr.co.matchday.coupon.CouponDTO">
         SELECT c.couponid, c.coupontypeid, c.userid, c.usage, 
-               cm.coupontypename, cm.startdate, cm.enddate, cm.applicationcategory
+               cm.couponname, cm.startdate, cm.enddate, cm.applicableproduct
         FROM coupon c
         JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
         where c.userid = #{userid}
     </select>
+    
+   
 </mapper>
 

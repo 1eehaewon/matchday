@@ -16,9 +16,9 @@ public class CouponDTO {
 	private String coupontypeid;
 	private String userid;
 	private String usage;
-	private String coupontypename;
+	private String couponname;
 	private Date startdate;
 	private Date enddate;
-	private String applicationcategory;
+	private String applicableproduct;
 	
 }//class end

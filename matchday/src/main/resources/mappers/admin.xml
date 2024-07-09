@@ -26,5 +26,7 @@
         SELECT coupontypeid, couponname, discountrate, issuecount, startdate, enddate, applicableproduct
         FROM couponmaster
     </select>
+    
+    
 </mapper>
 
