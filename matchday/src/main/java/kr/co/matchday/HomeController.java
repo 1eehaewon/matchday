@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.matchday.instagram.InstagramDAO;
 import kr.co.matchday.instagram.InstagramDTO;
+import kr.co.matchday.video.VideoDAO;
+import kr.co.matchday.video.VideoDTO;
 
 @Controller
 public class HomeController {
@@ -21,12 +23,19 @@ public class HomeController {
    @Autowired
    private InstagramDAO instagramDao;
    
+   @Autowired
+   private VideoDAO videoDao;
+   
    //matchday 프로젝트의 첫페이지 호출 명령어 등록
    //http://localhost:9095/home.do
     @RequestMapping("/home.do")
        public String home(Model model) {
            List<InstagramDTO> instagramList = instagramDao.list();
-           model.addAttribute("instagramList", instagramList);
+           model.addAttribute("instagramList", instagramList);    
+           
+           List<VideoDTO> videoList = videoDao.list();
+           model.addAttribute("videoList", videoList);
+           
            return "index";
        }//home() end
    

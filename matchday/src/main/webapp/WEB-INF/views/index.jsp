@@ -328,38 +328,69 @@
 		<h2 class="text-center">Instagram</h2>	
 		</div>
 		
-		<div class="container">
-    <div class="row justify-content-center">
-        <c:forEach items="${instagramList}" var="row" varStatus="vs">
-            <div class="col-sm-4 col-md-4 mb-4">
-                <c:choose>
-                    <c:when test="${not empty row.instagram_url}">
-                        <div>
-                            <a href="<c:url value='/instagram/detail' />?instagram_code=${row.instagram_code}">
-                            </a>
-                        </div>
-                        <div>
-                            <blockquote class="instagram-media" data-instgrm-permalink="${row.instagram_url}" data-instgrm-version="12"></blockquote>
-                            <script async src="//www.instagram.com/embed.js"></script>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <p>등록된 인스타그램 없음!!</p>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-            <!-- 한 줄에 3칸씩 -->
-            <c:if test="${vs.index % 3 == 2 || vs.last}">
-                </div><!-- row end -->
-                <div style="height: 50px;"></div>
-                <div class="row justify-content-center">
-            </c:if>
-        </c:forEach>
-    </div><!-- row end -->
-</div><!-- container end -->
-		
-		
-		
+			<div class="container">
+			    <div class="row justify-content-center">
+			        <c:forEach items="${instagramList}" var="row" varStatus="vs">
+			            <div class="col-sm-4 col-md-4 mb-4">
+			                <c:choose>
+			                    <c:when test="${not empty row.instagram_url}">
+			                        <div>
+			                            <a href="<c:url value='/instagram/detail' />?instagram_code=${row.instagram_code}">
+			                            </a>
+			                        </div>
+			                        <div>
+			                            <blockquote class="instagram-media" data-instgrm-permalink="${row.instagram_url}" data-instgrm-version="12"></blockquote>
+			                            <script async src="//www.instagram.com/embed.js"></script>
+			                        </div>
+			                    </c:when>
+			                    <c:otherwise>
+			                        <p>등록된 인스타그램 없음!!</p>
+			                    </c:otherwise>
+			                </c:choose>
+			            </div>
+			            <!-- 한 줄에 3칸씩 -->
+			            <c:if test="${vs.index % 3 == 2 || vs.last}">
+			                </div><!-- row end -->
+			                <div style="height: 50px;"></div>
+			                <div class="row justify-content-center">
+			            </c:if>
+			        </c:forEach>
+	    </div><!-- row end -->
+	</div><!-- container end -->
+			
+		<div class="container-fluid py-5" style="height: 200px;">
+		<h2 class="text-center">Highlight</h2>	
+		</div>
+
+	<div class="container">
+			    <div class="row justify-content-center">
+		    <c:forEach items="${videoList}" var="row" varStatus="vs">
+		        <div class="col-sm-4 col-md-4 mb-4">
+		            <c:choose>
+		                <c:when test="${row.video_name != '-'}">
+		                    <a href="detail?video_code=${row.video_code}">
+		                        <iframe width="100%" height="200" src="${row.video_url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+		                    </a> 
+		                </c:when>
+		                <c:otherwise>
+		                    등록된 영상 없음!!<br>
+		                </c:otherwise>
+		            </c:choose>
+		            <br>        
+		            경기 : 
+		            <a href="detail?video_code=${row.video_code}">${row.video_name}</a>              
+		        </div>
+		                               
+		        <!-- 한줄에 3칸씩 -->
+		        <c:if test="${vs.count mod 3 == 0}">
+		            </div><!-- row end -->
+		            <div style="height: 50px;"></div>
+		            <div class="row">
+		        </c:if>
+		    </c:forEach> 
+	  </div><!-- row end -->
+	</div><!-- container end -->
+
 		  <a href="/instagram/list"class="btn btn-primary">인스타그램 등록</a>
     </main><!-- main end -->
 
