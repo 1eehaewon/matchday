@@ -363,35 +363,73 @@
 		</div>
 
 	<div class="container">
-			    <div class="row justify-content-center">
-		    <c:forEach items="${videoList}" var="row" varStatus="vs">
-		        <div class="col-sm-4 col-md-4 mb-4">
-		            <c:choose>
-		                <c:when test="${row.video_name != '-'}">
-		                    <a href="detail?video_code=${row.video_code}">
-		                        <iframe width="100%" height="230" src="${row.video_url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-		                    </a> 
-		                </c:when>
-		                <c:otherwise>
-		                    등록된 영상 없음!!<br>
-		                </c:otherwise>
-		            </c:choose>
-		            <br>        
-		            경기 : 
-		            <a href="detail?video_code=${row.video_code}">${row.video_name}</a>              
-		        </div>
-		                               
-		        <!-- 한줄에 3칸씩 -->
-		        <c:if test="${vs.count mod 3 == 0}">
-		            </div><!-- row end -->
-		            <div style="height: 50px;"></div>
-		            <div class="row">
-		        </c:if>
-		    </c:forEach> 
-	  </div><!-- row end -->
-	</div><!-- container end -->
+    <div class="row justify-content-center">
+        <c:forEach items="${videoList}" var="row" varStatus="vs">
+            <div class="col-sm-4 col-md-4 mb-4">
+                <c:choose>
+                    <c:when test="${row.video_name != '-'}">
+                        <a href="detail?video_code=${row.video_code}">
+                            <iframe width="100%" height="230" src="${row.video_url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        등록된 영상 없음!!<br>
+                    </c:otherwise>
+                </c:choose>
+                <br>
+                경기 :
+                <a href="detail?video_code=${row.video_code}">${row.video_name}</a>
+            </div>
 
+            <!-- 한 줄에 3칸씩 -->
+            <c:if test="${vs.count % 3 == 0}">
+                </div><!-- row end -->
+                <div style="height: 20px;"></div> <!-- 간격을 줄 div 추가 -->
+                <div class="row justify-content-center">
+            </c:if>
+        </c:forEach>
+    </div><!-- row end -->
+</div><!-- container end -->
+
+<hr style="border-top: 4px solid #ccc; width: 100%; margin: 20px 0;">
+
+<div class="container-fluid py-5" style="height: 10px;">
+    <h2 class="text-center">챔피언스리그의 더 많은 소식을 SNS를 통해 만나보세요 </h2>
+</div>
+		
+	<div class="container">
+    <div class="row g-0">
+        <div class="col-md-6 px-1">
+            <section class="instagram-section mt-5 p-4 text-center">
+                <h2>Instagram</h2>
+                <a href="https://www.instagram.com/championsleague/" target="_blank">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <img src="https://img.freepik.com/premium-psd/instagram-application-logo_23-2151544088.jpg?w=826" class="img-fluid" alt="Instagram Image" style="max-width: 200px;">
+                        </div>
+                    </div>
+                </a>
+            </section>
+        </div>
+        <div class="col-md-6 px-1">
+            <section class="youtube-section mt-5 p-1 text-center">
+                <h2>Youtube</h2>
+                <a href="https://www.youtube.com/user/UEFA" target="_blank">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <img src="https://img.freepik.com/premium-vector/social-media-icon-illustration-youtube-youtube-icon-vector-illustration_561158-2132.jpg?w=826" class="img-fluid" alt="YouTube Image" style="max-width: 230px;">
+                        </div>
+                    </div>
+                </a>
+            </section>
+        </div>
+    </div>
+</div>
+
+	
+		  <c:if test="${sessionScope.grade == 'M'}">
 		  <a href="/instagram/list"class="btn btn-primary">인스타그램 등록</a>
+		  </c:if>
     </main><!-- main end -->
 
     <footer>
