@@ -13,15 +13,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class TicketsDetailDTO {
-    private int ticketdetailid;
-    private String reservationid;
-    private String matchid;
-    private String seatid;
-    private int price;
-    private int membershipdiscountamount;
-    private int coupondiscountamount;
-    private int totalamount;
-    private boolean iscanceled;
-    private boolean isrefunded;
-    private String canceldate;
+    private int ticketdetailid; // 티켓 상세 ID
+    private String reservationid; // 예약 ID
+    private String matchid; // 경기 ID
+    private String seatid; // 좌석 ID
+    private int price; // 가격
+    private int membershipdiscountamount; // 회원 할인 금액
+    private int coupondiscountamount; // 쿠폰 할인 금액
+    private int totalamount; // 총 금액
+    private boolean iscanceled; // 취소 여부
+    private boolean isrefunded; // 환불 여부
+    private String canceldate; // 취소 날짜
 }

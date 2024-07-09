@@ -4,25 +4,28 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.matchday.tickets.TicketsDAO">
-    <!-- 주어진 matchid에 해당하는 경기 정보를 가져오는 SQL 쿼리 -->
     <select id="getMatchById" resultType="kr.co.matchday.matches.MatchesDTO">
         SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate
         FROM matches
         WHERE matchid = #{matchid}
     </select>
 
-    <!-- 주어진 경기 ID와 구역에 해당하는 좌석 정보를 가져오는 SQL 쿼리 -->
     <select id="getSeatsByStadiumIdAndSection" resultType="map">
         SELECT seatid, stadiumid, section, seatnumber, price, seatstatus
         FROM seats
         WHERE stadiumid = #{stadiumid} AND section = #{section}
     </select>
 
-    <!-- 주어진 userID에 해당하는 사용자 정보를 가져오는 SQL 쿼리 -->
-    <select id="getUserInfo" resultType="map">
-        SELECT userID, name, email, number
+    <select id="getSeatInfoByJson" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT seatid, price
+        FROM seats
+        WHERE seatid = #{seatId}
+    </select>
+
+    <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">
+        SELECT userid, name, email, number
         FROM users
-        WHERE userID = #{userID}
+        WHERE userid = #{userId}
     </select>
 
     <select id="getNextReservationIdSuffix" resultType="String">
@@ -31,7 +34,6 @@
         WHERE reservationid LIKE CONCAT('reservation', #{date}, '%')
     </select>
 
-    <!-- 티켓 예약 정보를 삽입하는 SQL 쿼리 -->
     <insert id="insertTicket" parameterType="kr.co.matchday.tickets.TicketsDTO">
         INSERT INTO tickets (
             reservationid, matchid, quantity, price, userid, reservationdate,
@@ -48,16 +50,14 @@
         )
     </insert>
 
-    <!-- ticketdetails 테이블에 티켓 상세 정보 삽입 -->
     <insert id="insertTicketDetail" parameterType="kr.co.matchday.tickets.TicketsDetailDTO">
         INSERT INTO ticketdetails (reservationid, matchid, seatid, price, totalamount, iscanceled, isrefunded)
         VALUES (#{reservationid}, #{matchid}, #{seatid}, #{price}, #{totalamount}, #{iscanceled}, #{isrefunded})
     </insert>
 
-    <!-- 주어진 seatid에 해당하는 좌석 정보를 가져오는 SQL 쿼리 -->
-    <select id="getSeatInfo" resultType="map">
-        SELECT seatid, price
+    <select id="checkSeatId" parameterType="String" resultType="Integer">
+        SELECT COUNT(*)
         FROM seats
-        WHERE seatid = #{seatid}
+        WHERE seatid = #{seatId}
     </select>
 </mapper>

@@ -259,12 +259,12 @@
                     seats.push(seat.dataset.seatId);
                     totalPrice += parseInt(seat.dataset.price, 10);
                 });
-                var seatsParam = encodeURIComponent(seats.join(','));
-                var matchId = encodeURIComponent(document.getElementById('matchid').value); // matchId를 가져오는 부분 추가
-                var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value); // stadiumId를 가져오는 부분 추가
-                var section = encodeURIComponent(document.getElementById('section').value); // section을 가져오는 부분 추가
 
-                window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + seatsParam + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
+                var matchId = encodeURIComponent(document.getElementById('matchid').value);
+                var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
+                var section = encodeURIComponent(document.getElementById('section').value);
+
+                window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(seats.join(',')) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
             });
         });
     </script>

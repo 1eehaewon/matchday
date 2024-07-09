@@ -13,24 +13,24 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class TicketsDTO {
-    private String reservationid;
-    private String matchid;
-    private int quantity;
-    private int price;
-    private String userid;
-    private String reservationdate;
-    private String paymentmethodcode;
-    private String reservationstatus;
-    private String collectionmethodcode;
-    private String membermembershipid;
-    private String methodcode;
-    private String couponid;
-    private int usedpoints;
-    private int finalpaymentamount;
-    private String shippingstartdate;
-    private String shippingenddate;
-    private String shippingstatus;
-    private String recipientname;
-    private String shippingaddress;
-    private String shippingrequest;
+    private String reservationid; // 예약 ID
+    private String matchid; // 경기 ID
+    private int quantity; // 수량
+    private int price; // 가격
+    private String userid; // 사용자 ID
+    private String reservationdate; // 예약 날짜
+    private String paymentmethodcode; // 결제 방법 코드
+    private String reservationstatus; // 예약 상태
+    private String collectionmethodcode; // 수령 방법 코드
+    private String membermembershipid; // 회원 ID
+    private String methodcode; // 방법 코드
+    private String couponid; // 쿠폰 ID
+    private int usedpoints; // 사용된 포인트
+    private int finalpaymentamount; // 최종 결제 금액
+    private String shippingstartdate; // 배송 시작 날짜
+    private String shippingenddate; // 배송 종료 날짜
+    private String shippingstatus; // 배송 상태
+    private String recipientname; // 수령인 이름
+    private String shippingaddress; // 배송 주소
+    private String shippingrequest; // 배송 요청 사항
 }

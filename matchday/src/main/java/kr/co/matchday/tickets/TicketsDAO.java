@@ -50,15 +50,24 @@ public class TicketsDAO {
         sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertTicketDetail", ticketsDetail);
         System.out.println("Ticket detail inserted: " + ticketsDetail.getTicketdetailid());
     }
-    
-    public boolean checkSeatId(String seatId) {
-        Integer count = sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.checkSeatId", seatId);
-        return count != null && count > 0;
+
+    public int checkSeatId(String seatId) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.checkSeatId", seatId);
     }
-    
+
     public String getNextReservationIdSuffix(String date) {
         Map<String, Object> params = new HashMap<>();
         params.put("date", date);
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getNextReservationIdSuffix", params);
+    }
+
+    public Map<String, Object> getSeatInfoByJson(String seatId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("seatId", seatId);
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", params);
+    }
+    
+    public Map<String, Object> getSeatInfo(String seatId) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", seatId);
     }
 }
