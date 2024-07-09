@@ -98,7 +98,13 @@
 		align-items: center;
 	}
 	
+	.goodsItem {
+		flex: 0 0 auto;
+        width: 380px;
+     }
+	
 	.item-card {
+		position: relative;
 		margin: 5px;
 		margin-bottom: 20px;
 		text-align: center;
@@ -207,15 +213,7 @@
 	    }
 	}
 
-	.goodsItem {
-		flex: 0 0 auto;
-        width: 400px;
-     }
 	
-	
-	.item-card {
-    position: relative;
-}
 
 
 	

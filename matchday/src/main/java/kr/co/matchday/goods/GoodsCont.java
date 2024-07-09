@@ -22,6 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.review.ReviewDAO;
+import kr.co.matchday.review.ReviewDTO;
 import net.utility.Utility;
 
 @Controller
@@ -35,6 +37,9 @@ public class GoodsCont {
 	@Autowired
     private GoodsDAO goodsDao;
 
+	@Autowired
+	private ReviewDAO reviewDao;
+	
 	/* @RequestMapping("/list") 
 	@GetMapping("/list")
     public ModelAndView list() {
@@ -175,6 +180,11 @@ public class GoodsCont {
     	mav.setViewName("goods/updateform");
     	GoodsDTO goodsDto = goodsDao.detail(goodsid);
     	mav.addObject("goodsDto", goodsDto);
+    	
+    	// Retrieve related reviews for the goods
+        List<ReviewDTO> reviews = reviewDao.getReviewsByGoodsId(goodsid);
+        mav.addObject("reviews", reviews);
+        
     	return mav;
     }//updateform() end
     
