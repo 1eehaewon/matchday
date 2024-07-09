@@ -30,7 +30,7 @@
                             <td><input type="text" name="stadiumid" class="form-control"></td>
                         </tr>
                         <tr>
-                            <td>설립 연도</td>
+                            <td>창단일</td>
                             <td><input type="text" name="foundingyear" class="form-control"></td>
                         </tr>
                         <tr>

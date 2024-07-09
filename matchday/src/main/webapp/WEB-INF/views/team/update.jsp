@@ -16,10 +16,6 @@
                  <table class="table table-striped">
                     <tbody>
                         <tr>
-                            <td>팀 이름</td>
-                            <td><input type="text" name="teamname" value="${team.teamname}" class="form-control"></td>
-                        </tr>
-                        <tr>
                             <td>팀 한글 이름</td>
                             <td><input type="text" name="koreanname" value="${team.koreanname}" class="form-control"></td>
                         </tr>
@@ -28,7 +24,7 @@
                             <td><input type="text" name="stadiumid" value="${team.stadiumid}" class="form-control"></td>
                         </tr>
                         <tr>
-                            <td>설립 연도</td>
+                            <td>창단일</td>
                             <td><input type="text" name="foundingyear" value="${team.foundingyear}" class="form-control"></td>
                         </tr>
                         <tr>

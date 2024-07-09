@@ -10,7 +10,7 @@
       <a style="font-size: 25px"><img src="/storage/teams/${team.filename}" class="img-responsive margin team-img" style="width:5%">${team.teamname}</a>
    </div>
    <div style="background-color: #E8F5FF">
-   <h5 style="margin-left: 4%; color: #9932CC">설립 연도: ${team.foundingyear}</h5>
+   <h5 style="margin-left: 4%; color: #9932CC">창단일: ${team.foundingyear}</h5>
    <h5 style="margin-left: 4%; color: #9932CC">감독: ${team.coach}</h5>
    <h5 style="margin-left: 4%; color: #9932CC">연고지: ${team.city}</h5>
    <h5 style="margin-left: 4%; color: #9932CC">소속리그: ${team.leaguecategory}</h5>
