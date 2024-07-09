@@ -17,43 +17,43 @@
                     <tbody>
                         <tr>
                             <td>선수ID</td>
-                            <td><input type="text" name="playerid" class="form-control"></td>
+                            <td><input type="text" name="playerid" value="${player.playerid}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>소속 팀</td>
-                            <td><input type="text" name="teamname" class="form-control"></td>
+                            <td><input type="text" name="teamname" value="${player.teamname}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>선수 이름</td>
-                            <td><input type="text" name="playername" class="form-control"></td>
+                            <td><input type="text" name="playername" value="${player.playername}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>포지션</td>
-                            <td><input type="text" name="position" class="form-control"></td>
+                            <td><input type="text" name="position" value="${player.position}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>등 번호</td>
-                            <td><input type="text" name="backnumber" class="form-control"></td>
+                            <td><input type="text" name="backnumber" value="${player.backnumber}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>생년월일</td>
-                            <td><input type="date" name="birthdate" class="form-control"></td>
+                            <td><input type="date" name="birthdate" value="${player.birthdate}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>신장</td>
-                            <td><input type="text" name="height" class="form-control"></td>
+                            <td><input type="text" name="height" value="${player.height}" class="form-control"></td>
                         </tr>
                         <tr>
                             <td>체중</td>
-                            <td><input type="text" name="weight" class="form-control"></td>
+                            <td><input type="text" name="weight" value="${player.weight}" class="form-control"></td>
                         </tr>
                         <tr>
 					        <td>입단년도</td>
-					        <td><input type="date" name="joiningyear" class="form-control"></td>
+					        <td><input type="date" name="joiningyear" value="${player.joiningyear}" class="form-control"></td>
 			            </tr>
 			            <tr>
 					        <td>출생지</td>
-					        <td><input type="text" name="birthplace" class="form-control"></td>
+					        <td><input type="text" name="birthplace" value="${player.birthplace}" class="form-control"></td>
 			            </tr>
 			            <tr>
 					        <td>선수 사진</td>

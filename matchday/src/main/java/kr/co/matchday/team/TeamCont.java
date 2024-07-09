@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.matchday.player.PlayerDAO;
+import net.utility.Utility;
 
 @Controller
 @RequestMapping("/team")
@@ -109,7 +110,66 @@ public class TeamCont {
 
         return mav;
     }
-
+    
+    
+    @GetMapping("/update")
+    public ModelAndView showUpdateForm(@RequestParam("teamname") String teamname) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("team/update");
+        Map<String, Object> team = teamDao.detail(teamname);
+        mav.addObject("team", team);
+        return mav;
+    }
+    
+    
+    @PostMapping("/update")
+    public String update(@RequestParam Map<String, Object> map
+                        ,@RequestParam("img") MultipartFile img
+                        ,HttpServletRequest req) {
+        
+    	String teamname = map.get("teamname").toString();
+        Map<String, Object> oldteam = teamDao.detail(teamname); 
+        
+        String filename = "-";
+        long filesize = 0;
+        
+        if(img.getSize()>0 && img!=null && !img.isEmpty()) {
+            //첨부된 파일이 존재한다면
+            ServletContext application = req.getServletContext();
+            String basePath=application.getRealPath("/storage/teams");
+            
+            try {
+                filesize = img.getSize();
+                String o_poster = img.getOriginalFilename();
+                filename = o_poster;                
+                File file = new File(basePath, o_poster); //파일클래스에 해당파일 담기
+                int i = 1;
+                while(file.exists()) { //파일이 존재한다면
+                    int lastDot = o_poster.lastIndexOf(".");
+                    filename = o_poster.substring(0, lastDot) + "_" + i + o_poster.substring(lastDot);
+                    file = new File(basePath, filename);
+                    i++;
+                }//while end
+                
+                img.transferTo(file); //신규 파일 저장
+                Utility.deleteFile(basePath, oldteam.get("FILENAME").toString()); //기존 파일 삭제        
+                
+            }catch (Exception e) {
+                System.out.println(e);
+            }//try end
+            
+        } else {
+            //첨부된 파일이 없다면
+            filename = oldteam.get("FILENAME").toString();
+            filesize = Long.parseLong(oldteam.get("FILESIZE").toString());
+        }//if end
+        
+        map.put("filename", filename);
+        map.put("filesize", filesize);
+        teamDao.update(map); 
+        return "redirect:/team/list";
+        
+    }//update() end
     
 
 }//class end

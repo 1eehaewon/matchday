@@ -59,6 +59,7 @@
    <div class="spacing"></div>
    <div class="text-right" style="margin-right: 10%; text-align: right">
       <button class="btn btn-primary" onclick="location.href='/player/write'">선수등록</button>
+      <button class="btn btn-primary" onclick="location.href='/team/update?teamname=${team.teamname}'">팀 정보 수정</button>
    </div>
 </main>
 

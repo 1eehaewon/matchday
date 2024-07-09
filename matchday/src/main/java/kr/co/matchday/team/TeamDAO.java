@@ -35,5 +35,10 @@ public class TeamDAO {
     }//detail() end
     
     
+    public void update(Map<String, Object> map) {
+        sqlSession.update("team.update", map);
+    }
+    
+    
     
 }
