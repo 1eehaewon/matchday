@@ -95,7 +95,7 @@
             background-color: #00f;
             color: #fff;
         }
-    </style>
+    </style> <!-- CSS 스타일 끝 -->
 </head>
 <body>
     <input type="hidden" id="matchid" value="${match.matchid}"/>
@@ -111,7 +111,7 @@
                         <div class="east"></div>
                         <div class="south"></div>
                     </div>
-                </div>
+                </div> <!-- map-container 끝 -->
             </div>
             <div class="col-md-4">
                 <h1><c:out value="${match.hometeamid}"/> vs <c:out value="${match.awayteamid}"/></h1>
@@ -125,10 +125,10 @@
                 <div class="d-grid gap-2">
                     <button type="button" class="btn btn-primary" id="selectSeats">좌석선택</button>
                 </div>
-                <div class="seat-map mt-3"></div> <!-- 좌석 배치도 표시 영역 -->
-            </div>
-        </div>
-    </div>
+                <div class="seat-map mt-3"></div> <!-- 좌석 배치도 표시 영역 끝 -->
+            </div> <!-- col-md-4 끝 -->
+        </div> <!-- row 끝 -->
+    </div> <!-- container 끝 -->
     <script>
         $(document).ready(function() {
             let selectedSection = null; // 선택된 구역을 저장할 변수
@@ -151,6 +151,6 @@
                 }
             });
         });
-    </script>
+    </script> <!-- 스크립트 끝 -->
 </body>
-</html>
+</html> <!-- html 끝 -->

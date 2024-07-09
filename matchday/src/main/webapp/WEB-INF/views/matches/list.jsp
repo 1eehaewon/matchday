@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ include file="../header.jsp" %>
+<%@ include file="../header.jsp" %> <!-- header.jsp include 시작 -->
 
 <style>
     .match-card {
@@ -32,13 +32,13 @@
     .match-card .btn-book {
         margin-top: 15px;
     }
-</style>
+</style> <!-- CSS 스타일 끝 -->
 
 <script>
     function openPopup(url) {
         window.open(url, "popupWindow", "width=1200,height=800,scrollbars=yes");
     }
-</script>
+</script> <!-- JavaScript 끝 -->
 
 <div class="container mt-4">
     <div class="row">
@@ -46,7 +46,7 @@
             <h1>예매하기</h1>
             <a href="/matches/write" class="btn btn-success">경기 일정 등록</a>
         </div>
-    </div>
+    </div> <!-- 행(row) 끝 -->
 
     <div class="mt-4">
         <c:forEach var="match" items="${matchList}">
@@ -64,7 +64,7 @@
                     <div class="col text-start">
                         <div class="teams">${match.awayteamid}</div>
                     </div>
-                </div>
+                </div> <!-- 행(row) 끝 -->
                 <div class="text-center stadium">
                     경기장: ${match.stadiumid}
                 </div>
@@ -73,9 +73,9 @@
                         예매하기
                     </button>
                 </div>
-            </div>
-        </c:forEach>
-    </div>
-</div>
+            </div> <!-- 경기 카드 끝 -->
+        </c:forEach> <!-- 경기 목록 반복 끝 -->
+    </div> <!-- 예매하기 목록 끝 -->
+</div> <!-- 전체 컨테이너 끝 -->
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer.jsp" %> <!-- footer.jsp include 끝 -->

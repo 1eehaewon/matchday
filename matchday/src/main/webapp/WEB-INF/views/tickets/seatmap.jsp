@@ -105,7 +105,7 @@
             flex: 1;
             margin: 0 5px;
         }
-    </style>
+    </style> <!-- CSS 스타일 끝 -->
 </head>
 <body>
     <div class="container mt-4">
@@ -118,7 +118,7 @@
                 <div id="seat-map-container">
                     <div id="ground" class="ground spacing"></div>
                     <div id="seat-map" class="spacing"></div>
-                </div>
+                </div> <!-- seat-map-container 끝 -->
             </div>
             <div class="col-md-4">
                 <div id="selected-seats-info" class="seat-info">
@@ -143,17 +143,17 @@
                             <tbody>
                             </tbody>
                         </table>
-                    </div>
-                </div>
+                    </div> <!-- choice 끝 -->
+                </div> <!-- selected-seats-info 끝 -->
                 <div id="total-price">총 금액: 0원</div>
                 <div class="btn-group mt-3">
                     <button type="button" class="btn btn-secondary" id="prev-step">이전단계</button>
                     <button type="button" class="btn btn-secondary" id="reset-seats">좌석 다시 선택</button>
                     <button type="button" class="btn btn-danger" id="complete-selection">좌석선택완료</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                </div> <!-- btn-group 끝 -->
+            </div> <!-- col-md-4 끝 -->
+        </div> <!-- row 끝 -->
+    </div> <!-- container 끝 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 경기장 바닥 위치를 지정하는 객체
@@ -289,7 +289,6 @@
                 window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(seats.join(',')) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
             });
         });
-    </script>
+    </script> <!-- 스크립트 끝 -->
 </body>
-</html>
-
+</html> <!-- html 끝 -->

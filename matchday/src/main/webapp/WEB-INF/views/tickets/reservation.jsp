@@ -41,7 +41,7 @@
             display: none;
             margin-top: 20px;
         }
-    </style>
+    </style> <!-- CSS 스타일 끝 -->
 </head>
 <body>
     <div class="container mt-4">
@@ -57,22 +57,22 @@
                         <label class="form-check-label" for="pickup">
                             현장수령
                         </label>
-                    </div>
+                    </div> <!-- 현장 수령 옵션 끝 -->
                     <!-- 배송 옵션 -->
                     <div class="form-check">
                         <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="shipping" value="receiving02">
                         <label class="form-check-label" for="shipping">
                             배송 (3,200원)
                         </label>
-                    </div>
+                    </div> <!-- 배송 옵션 끝 -->
                     <!-- 모바일 티켓 옵션 -->
                     <div class="form-check">
                         <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="mobile" value="receiving03">
                         <label class="form-check-label" for="mobile">
                             모바일 티켓
                         </label>
-                    </div>
-                </form>
+                    </div> <!-- 모바일 티켓 옵션 끝 -->
+                </form> <!-- 티켓 수령 방법 선택 폼 끝 -->
 
                 <!-- 배송지 주소 입력 폼 (배송 옵션 선택 시만 표시) -->
                 <div id="delivery-address">
@@ -83,24 +83,24 @@
                             <label for="postcode" class="form-label">우편번호</label>
                             <input type="text" class="form-control" id="postcode" readonly>
                             <button type="button" class="btn btn-primary mt-2" id="find-postcode">우편번호 찾기</button>
-                        </div>
+                        </div> <!-- 우편번호 입력 끝 -->
                         <!-- 주소 입력 -->
                         <div class="mb-3">
                             <label for="address" class="form-label">주소</label>
                             <input type="text" class="form-control" id="address" readonly>
-                        </div>
+                        </div> <!-- 주소 입력 끝 -->
                         <!-- 상세 주소 입력 -->
                         <div class="mb-3">
                             <label for="detailAddress" class="form-label">상세주소</label>
                             <input type="text" class="form-control" id="detailAddress">
-                        </div>
+                        </div> <!-- 상세 주소 입력 끝 -->
                         <!-- 참고 항목 입력 -->
                         <div class="mb-3">
                             <label for="extraAddress" class="form-label">참고항목</label>
                             <input type="text" class="form-control" id="extraAddress" readonly>
-                        </div>
-                    </form>
-                </div>
+                        </div> <!-- 참고 항목 입력 끝 -->
+                    </form> <!-- 배송지 주소 입력 폼 끝 -->
+                </div> <!-- delivery-address 끝 -->
 
                 <h2>예매자 확인</h2>
                 <!-- 예매자 정보 입력 폼 -->
@@ -109,19 +109,19 @@
                     <div class="mb-3">
                         <label for="name" class="form-label">이름</label>
                         <input type="text" class="form-control" id="name" value="${userInfo.name}" readonly>
-                    </div>
+                    </div> <!-- 이름 입력 끝 -->
                     <!-- 이메일 입력 -->
                     <div class="mb-3">
                         <label for="email" class="form-label">이메일</label>
                         <input type="email" class="form-control" id="email" value="${userInfo.email}" readonly>
-                    </div>
+                    </div> <!-- 이메일 입력 끝 -->
                     <!-- 연락처 입력 -->
                     <div class="mb-3">
                         <label for="phone" class="form-label">연락처</label>
                         <input type="text" class="form-control" id="phone" value="${userInfo.number}" readonly>
-                    </div>
-                </form>
-            </div>
+                    </div> <!-- 연락처 입력 끝 -->
+                </form> <!-- 예매자 정보 입력 폼 끝 -->
+            </div> <!-- col-md-6 끝 -->
             <div class="col-md-6">
                 <h2>My예매정보</h2>
                 <!-- 예매 정보 테이블 -->
@@ -130,7 +130,7 @@
                     <tr>
                         <th>일시</th>
                         <td><fmt:formatDate value="${match.matchdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></td>
-                    </tr>
+                    </tr> <!-- 경기 일시 끝 -->
                     <!-- 선택 좌석 -->
                     <tr>
                         <th>선택좌석</th>
@@ -139,57 +139,57 @@
                                 <div>${seat}</div>
                             </c:forEach>
                         </td>
-                    </tr>
+                    </tr> <!-- 선택 좌석 끝 -->
                     <!-- 티켓 금액 -->
                     <tr>
                         <th>티켓금액</th>
                         <td id="ticket-price">${totalPrice}원</td>
-                    </tr>
+                    </tr> <!-- 티켓 금액 끝 -->
                     <!-- 수수료 -->
                     <tr>
                         <th>수수료</th>
                         <td id="service-fee">2,000원</td>
-                    </tr>
+                    </tr> <!-- 수수료 끝 -->
                     <!-- 배송료 -->
                     <tr>
                         <th>배송료</th>
                         <td id="delivery-fee">0원</td>
-                    </tr>
+                    </tr> <!-- 배송료 끝 -->
                     <!-- 할인 -->
                     <tr>
                         <th>할인</th>
                         <td id="discount">0원</td>
-                    </tr>
+                    </tr> <!-- 할인 끝 -->
                     <!-- 할인 쿠폰 -->
                     <tr>
                         <th>할인쿠폰</th>
                         <td>적용 안함</td>
-                    </tr>
+                    </tr> <!-- 할인 쿠폰 끝 -->
                     <!-- 취소 기간 -->
                     <tr>
                         <th>취소기간</th>
                         <td><fmt:formatDate value="${match.cancellationDeadline}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></td>
-                    </tr>
+                    </tr> <!-- 취소 기간 끝 -->
                     <!-- 취소 수수료 -->
                     <tr>
                         <th>취소수수료</th>
                         <td>티켓금액의 0~10%</td>
-                    </tr>
+                    </tr> <!-- 취소 수수료 끝 -->
                     <!-- 총 결제 금액 -->
                     <tr>
                         <th>총 결제금액</th>
                         <td id="total-amount"></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+                    </tr> <!-- 총 결제 금액 끝 -->
+                </table> <!-- 예매 정보 테이블 끝 -->
+            </div> <!-- col-md-6 끝 -->
+        </div> <!-- row 끝 -->
         <div class="d-flex justify-content-end">
             <!-- 이전 단계 버튼 -->
             <button type="button" class="btn btn-secondary me-2" id="prev-step">이전단계</button>
             <!-- 결제 버튼 -->
             <button type="button" class="btn btn-primary" id="pay-button">결제하기</button>
-        </div>
-    </div>
+        </div> <!-- d-flex 끝 -->
+    </div> <!-- container 끝 -->
     <script>
         $(document).ready(function() {
             // 초기 총 티켓 금액 설정
@@ -353,6 +353,6 @@
                 return re;
             }
         });
-    </script>
+    </script> <!-- 스크립트 끝 -->
 </body>
-</html>
+</html> <!-- html 끝 -->
