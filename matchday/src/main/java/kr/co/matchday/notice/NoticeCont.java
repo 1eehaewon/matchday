@@ -37,7 +37,7 @@ public class NoticeCont {
 
     @PostMapping("/insert")
     public String insert(@ModelAttribute NoticeDTO noticeDto) {
-        noticeDto.setUserid("itwill");
+        noticeDto.setUserid("webmaster");
         noticeDao.insert(noticeDto);
         return "redirect:/notice/list";
     }
