@@ -18,4 +18,11 @@
         DELETE FROM cart WHERE cartid = #{cartid}
     </delete>
 
+	<delete id="deleteMultiple" parameterType="list">
+        DELETE FROM cart WHERE cartid IN
+        <foreach item="cartid" collection="list" open="(" separator="," close=")">
+            #{cartid}
+        </foreach>
+    </delete>
+
 </mapper>

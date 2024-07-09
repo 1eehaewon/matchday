@@ -245,10 +245,94 @@
 	.modal-actions button:hover {
 	    background-color: #0056b3; /* 호버 시 어두운 파란색 */
 	}
+.review {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    padding: 20px;
+}
 
+.review-tabs {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-right: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.tab-button.active {
+    background-color: #fff;
+    border-bottom: 2px solid #007bff;
+    color: #007bff;
+}
+
+.tab-content {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-list {
+    margin-top: 20px;
+}
+
+.review-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.review-summary:hover {
+    background-color: #e1e1e1;
+}
+
+.review-rating, .review-title, .review-author, .review-date {
+    flex: 1;
+    text-align: center;
+}
+
+.review-details {
+    display: none;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+
+.review-content {
+    margin-bottom: 10px;
+}
+
+.review-image {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.review-comments {
+    margin-top: 10px;
+}
+
+.comment {
+    background-color: #f9f9f9;
     
   </style>
-<!-- 본문 시작 detail.jsp -->
+<!-- 본문 시작 goods/detail.jsp -->
 
     <div class="container">
         <c:if test="${not empty goodsDto}">
@@ -268,16 +352,16 @@
                     
                     <div class="product-description">
                         <dl>
-                            
                             <dt>사이즈</dt>
                             <dd>
                                 <select name="size">
                                     <option value="">선택하세요.</option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                    <option value="XL">XL</option>
-						    </select>
+                                    <option value="FREE">FREE ${goodsDto.stockquantity}개</option>
+                                    <option value="S">S ${goodsDto.stockquantity}개</option>
+                                    <option value="M">M ${goodsDto.stockquantity}개</option>
+                                    <option value="L">L ${goodsDto.stockquantity}개</option>
+                                    <option value="XL">XL ${goodsDto.stockquantity}개</option>
+						    	</select>
                             </dd>
 
                             <dt>배송비</dt>
@@ -352,7 +436,7 @@
 			        <li class="on" data-tab="info01" onclick="loadContent('info01')">상세정보</li>
 			        <li data-tab="info02" onclick="loadContent('info02')">상품 주의사항</li>
 			        <li data-tab="info03" onclick="loadContent('info03')">배송/반품/교환</li>
-			        <li data-tab="info04" onclick="loadContent('info04')">구매후기</li>
+			        <li data-tab="info04" onclick="loadContent('info04')"><!-- <a class="nav-link" href="/review/list"> -->리뷰</a></li>
 			    </ul> <!-- 상세보기 탭 -->
 	            
 	            <div id="info-content"> <!-- 상세보기 내용 -->
@@ -365,9 +449,75 @@
 				    	<div id="info03" class="tabcont"> <!-- 배송/반품/교환 내용 -->
 				   			${goodsDto.deliveryreturnsexchangesinfo}	    	
 				   		</div>
-				    	<div id="info04" class="tabcont"> <!-- 구매후기 내용 -->
-				    	구매후기 내용
-				    	</div>
+				    	<div id="info04" class="tabcont"> <!-- 리뷰 내용 -->
+				    		<!-- <div class="reviews_cont">
+					            <h3>상품후기</h3>
+					            
+					            <div class="btn_reviews_box">
+					                <a href="../board/list.php?bdId=goodsreview" class="btn_reviews_more">상품후기 전체보기</a>
+					                <a href="javascript:gd_open_write_popup('goodsreview', '1000000296')" class="btn_reviews_write">상품후기 글쓰기</a>
+					            </div>
+					            btn_reviews_box
+					            <div>
+					            	리뷰리스트
+					            </div> -->
+					            
+					            <div class="review">
+    <div class="review-tabs">
+        <button class="tab-button active" onclick="showTab('review')">상품후기</button>
+        <button class="tab-button" onclick="showTab('all-reviews')">상품전체보기(리뷰리스트로 이동?)</button>
+        <button class="tab-button" onclick="openPopup('/review/write?goodsid=${goodsDto.goodsid}')">상품 글쓰기</button>
+    </div>
+
+    <div id="review" class="tab-content">
+        <div class="review-list">
+            <div class="review-summary" onclick="toggleReviewDetails('review1')">
+                <div class="review-rating">★★★★☆</div>
+                <div class="review-title">좋은 상품입니다</div>
+                <div class="review-author">사용자 이름</div>
+                <div class="review-date">2024-07-09</div>
+            </div>
+            <div id="review1" class="review-details">
+                <div class="review-content">
+                    여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                </div>
+                <img src="path_to_image.jpg" alt="Review Image" class="review-image">
+                <div class="review-comments">
+                    <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                    <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                </div>
+            </div>
+
+            <div class="review-summary" onclick="toggleReviewDetails('review2')">
+                <div class="review-rating">★★★☆☆</div>
+                <div class="review-title">보통입니다</div>
+                <div class="review-author">다른 사용자</div>
+                <div class="review-date">2024-07-08</div>
+            </div>
+            <div id="review2" class="review-details">
+                <div class="review-content">
+                    상품이 보통입니다.
+                </div>
+                <img src="path_to_image2.jpg" alt="Review Image" class="review-image">
+                <div class="review-comments">
+                    <div class="comment">댓글 1: 동의합니다.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="all-reviews" class="tab-content" style="display: none;">
+        상품 전체 보기 내용
+    </div>
+
+    <div id="write-review" class="tab-content" style="display: none;">
+        상품 글쓰기 내용
+    </div>
+    </div>
+					            
+					        </div> <!-- 리뷰 내용 -->
+				    	</div> <!-- 상세보기 내용 -->
+				
 				</div> <!-- 상세보기 내용 -->
 				
             </div> <!-- 상세보기 -->
@@ -389,7 +539,7 @@
 	    }
 	    
 	    input.value = newValue;
-	    updateTotalPrice();
+	    updateTotalPrice(); // 총 가격 업데이트
 	}
 	
 	// 총 가격 업데이트 함수
@@ -398,11 +548,11 @@
         var price = ${goodsDto.price};
         var totalPrice = quantity * price;
 
-     // Display updated values
+     	// 업데이트된 값들을 화면에 표시합니다
         document.getElementById('order-quantity').innerText = quantity + '개';
         document.getElementById('total-price').innerText = totalPrice.toLocaleString() + '원';
 
-        // Update hidden input fields
+        // 숨겨진 입력 필드를 업데이트합니다
         document.getElementById('form-quantity').value = quantity;
         document.getElementById('form-unitprice').value = price;
         document.getElementById('form-totalprice').value = totalPrice;
@@ -435,8 +585,8 @@
             var selectedTabMenuItem = document.querySelector('.info-tab li[data-tab="' + tabId + '"]');
             selectedTabMenuItem.classList.add('on');
         } catch (error) {
-            console.error('Error in loadContent function:', error);
-            alert('Failed to load content. Please try again later.');
+            console.error('loadContent 함수에서 오류 발생:', error);
+            alert('콘텐츠를 로드하는 데 실패했습니다. 나중에 다시 시도해주세요.');
         }
     }
 
@@ -446,33 +596,6 @@
         alert('상품을 구매합니다.');
     }
 
- 	// 장바구니 모달 가져오기
-    var modal = document.getElementById("cartModal");
-    // <span> 요소를 가져와서 모달을 닫기
-    var span = document.getElementsByClassName("close")[0];
-    // 사용자가 버튼을 클릭하면 모달 열기
-    function showCartModal() {
-        modal.style.display = "block";
-    }
-    // 사용자가 <span> (x)을 클릭하면 모달 닫기
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-    // 사용자가 모달 밖을 클릭하면 모달 닫기
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-    // 쇼핑 계속하기 버튼 클릭 시 동작
-    function continueShopping() {
-        modal.style.display = "none";
-        window.location.href = '/goods/list'; // 쇼핑 계속하기 페이지 URL로 이동
-    }
-    // 장바구니로 이동 버튼 클릭 시 동작
-    function goToCart() {
-    	document.getElementById('addToCartForm').submit(); // 폼 제출 후 장바구니 목록 페이지 URL로 이동
-    }
     // 장바구니에 추가 버튼 클릭 시 모달 열기
     function addToCart() {
 	    // 수량 입력 요소 확인
@@ -481,7 +604,7 @@
 	        console.error('수량 입력 요소를 찾을 수 없습니다');
 	        return;
 	    }
-	
+	 	// 수량 값 가져오기
 	    var quantity = parseInt(quantityInput.value); // 수량을 정수로 변환
 	
 	    // 총 가격 요소 확인
@@ -492,7 +615,8 @@
 	    }
 	
 	    var totalPriceText = totalPriceElement.innerText;
-	    var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // 쉼표 제거 후 정수로 변환
+	    var totalPrice = parseInt(totalPriceText.replace(/[^0-9]/g, '')); // 숫자 이외의 문자 제거 후 정수로 변환
+	    /* var totalPrice = parseInt(totalPriceText.replace(/,/g, '')); // 쉼표 제거 후 정수로 변환 */
 	
 	    // formQuantity 입력 요소 확인
 	    var formQuantity = document.getElementById('form-quantity');
@@ -522,7 +646,36 @@
 
 	 	// 모달 창 띄우기
 	    showCartModal();
-	}
+	}// addToCart() end
+    
+ 	// 장바구니 모달 가져오기
+    var modal = document.getElementById("cartModal");
+    // <span> 요소를 가져와서 모달을 닫기
+    var span = document.getElementsByClassName("close")[0];
+    // 사용자가 버튼을 클릭하면 모달 열기
+    function showCartModal() {
+        modal.style.display = "block";
+    }
+    // 사용자가 <span> (x)을 클릭하면 모달 닫기
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+    // 사용자가 모달 밖을 클릭하면 모달 닫기
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    // 쇼핑 계속하기 버튼 클릭 시 동작
+    function continueShopping() {
+        modal.style.display = "none";
+        window.location.href = '/goods/list'; // 쇼핑 계속하기 페이지 URL로 이동
+    }
+    // 장바구니로 이동 버튼 클릭 시 동작
+    function goToCart() {
+    	document.getElementById('addToCartForm').submit(); // 폼 제출 후 장바구니 목록 페이지 URL로 이동
+    }
+    
 
  	// 상품 수정 함수
     function goods_update(){
@@ -538,6 +691,45 @@
         } // if end
     } // goods_delete() end
 
+    //상품 리뷰
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    function toggleReviewDetails(reviewId) {
+        var details = document.getElementById(reviewId);
+        if (details.style.display === 'none' || details.style.display === '') {
+            details.style.display = 'block';
+        } else {
+            details.style.display = 'none';
+        }
+    }
+    
+    function openPopup(url) { // 상품 글쓰기
+    	var width = 1000;
+        var height = 900;
+
+        // 화면의 중앙에 위치시키기 위한 좌표 계산
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+
+        // 창을 중앙에 띄우기
+        window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    }// openPopup(url) end
+    
+    
+    
+    
 </script>
 
 <%@ include file="../footer.jsp" %>

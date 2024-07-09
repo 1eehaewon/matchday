@@ -15,7 +15,7 @@ public class GoodsDAO {
 	}//end
 	
 	@Autowired
-	private SqlSession sqlSession;
+	SqlSession sqlSession;
 	
 	public void insert(GoodsDTO goodsDto) {
 	    sqlSession.insert("goods.insert", goodsDto);

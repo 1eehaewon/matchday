@@ -56,6 +56,7 @@
                                 <option value="Lightstick">Lightstick</option>
                                 <option value="Muffler">Muffler</option>
                                 <option value="Keyring">Keyring</option>
+                                <option value="Soccerball">Soccerball</option>
                             </select>
                             <span id="categoryMsg" style="color: red;"></span>
                         </td>
@@ -103,6 +104,13 @@
                                 <option value="M">Medium</option>
                                 <option value="L">Large</option>
                                 <option value="XL">XLarge</option>
+                                
+                                <option value="">사이즈 선택</option>
+                                <option value="FREE" <c:if test="${goodsDto.size == 'FREE'}">selected</c:if>>FREE</option>
+                                <option value="S" <c:if test="${goodsDto.size == 'S'}">selected</c:if>>Small</option>
+                                <option value="M" <c:if test="${goodsDto.size == 'M'}">selected</c:if>>Medium</option>
+                                <option value="L" <c:if test="${goodsDto.size == 'L'}">selected</c:if>>Large</option>
+                                <option value="XL" <c:if test="${goodsDto.size == 'XL'}">selected</c:if>>XLarge</option>
                             </select>
                             <span id="sizeMsg" style="color: red;"></span>
                         </td>

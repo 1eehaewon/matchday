@@ -58,6 +58,7 @@
                                 <option value="Lightstick" <c:if test="${goodsDto.category == 'Lightstick'}">selected</c:if>>Lightstick</option>
                                 <option value="Muffler" <c:if test="${goodsDto.category == 'Muffler'}">selected</c:if>>Muffler</option>
                                 <option value="Keyring" <c:if test="${goodsDto.category == 'Keyring'}">selected</c:if>>Keyring</option>
+                                <option value="Soccerball" <c:if test="${goodsDto.category == 'Soccerball'}">selected</c:if>>Soccerball</option>
                             </select>
                             <span id="categoryMsg" style="color: red;"></span>
                         </td>

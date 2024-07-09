@@ -26,11 +26,14 @@ public class CartDAO {
         return sqlSession.selectList("cart.getCartList", userid);
     }//list end
 	
-    // 장바구니에서 상품 삭제
+    // 장바구니에서 상품 삭제 (단일 항목)
     public int delete(int cartid) {
         return sqlSession.delete("cart.delete", cartid);
     }//delete end
     
-    
+ // 장바구니에서 상품 삭제 (여러 항목)
+    public int deleteMultiple(List<Integer> cartidList) {
+        return sqlSession.delete("cart.deleteMultiple", cartidList);
+    }
     
 }//class end

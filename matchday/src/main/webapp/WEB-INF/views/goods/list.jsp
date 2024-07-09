@@ -94,12 +94,13 @@
 		padding: 30px;
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
+		justify-content: left;
 		align-items: center;
 	}
 	
 	.item-card {
 		margin: 5px;
+		margin-bottom: 20px;
 		text-align: center;
 		padding: 10px;
 		border: 1px solid #ccc;
@@ -206,6 +207,19 @@
 	    }
 	}
 
+	.goodsItem {
+		flex: 0 0 auto;
+        width: 400px;
+     }
+	
+	
+	.item-card {
+    position: relative;
+}
+
+
+	
+	
 	
 	
 </style>
@@ -263,6 +277,7 @@
 			<li data-name="헤어밴드" data-category="Hairband">헤어밴드</li>
 			<li data-name="머플러" data-category="Muffler">머플러</li>
 			<li data-name="응원봉" data-category="Lightstick">응원봉</li>
+			<li data-name="축구공" data-category="Soccerball">축구공</li>
 		</ul>
 		<br>
 		
@@ -279,33 +294,108 @@
 		<div class="row">
 			<!-- 상품 정보 -->
 			<c:forEach items="${list}" var="row" varStatus="vs">
-				<div class="col-sm-3 col-md-3">
+					<div class="goodsItem">
 					<div class="item-card" data-category="${row.category}">
 						<c:choose>
 							<c:when test="${not empty row.filename && row.filename != '-'}">
-								<%--<a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}"> --%>
+								<%-- <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}"> --%>
 								<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
-									<img src="${pageContext.request.contextPath}/storage/goods/${row.filename}" class="img-responsive margin" style="width: 1200px"> 
+									<img src="${pageContext.request.contextPath}/storage/goods/${row.filename}" class="img-responsive margin">  <!-- style="width: 1200px" -->
 								</a>
 							</c:when>
 							<c:otherwise>
-								<%--<a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}"> --%>
+								<%-- <a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}"> --%>
 								<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
 									<img src="${pageContext.request.contextPath}/images/default_product_image.jpg" alt="등록된 사진 없음" class="small-image">
 								</a>
 							</c:otherwise>
 						</c:choose>
-						<%--<p><a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">${row.productname}</a></p>--%>
-						<p>
+						<%-- <p><a href="${pageContext.request.contextPath}/goods/detail/${row.goodsid}">${row.productname}</a></p> --%>
+						<p style="height: 53px; align-content: center;">
 							<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">${row.productname}</a>
 						</p>
-						<p> <fmt:formatNumber value="${row.price}" pattern="#,###원" /> </p>
+						
+						<c:choose>
+							<c:when test="${'Y' eq row.issoldout }">
+							
+								<p> 품절 </p>
+								
+							</c:when>
+							<c:otherwise>
+							
+								<p> <fmt:formatNumber value="${row.price}" pattern="#,###원" /> </p>
+								
+							</c:otherwise>
+						</c:choose>
 					</div>
 				</div>
+				
+<%-- <div class="goodsItem"> 품절시 상품 전체 비활성화
+
+.sold-out {
+    opacity: 0.7; /* 품절 상품의 투명도를 줄입니다. */
+    pointer-events: none; /* 클릭 이벤트 비활성화 */
+    filter: grayscale(100%); /* 회색으로 만듭니다. */
+    /* 추가적으로 품절 상품의 스타일을 지정할 수 있습니다. */
+}
+
+.sold-out-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* 투명 회색 배경 */
+}
+
+.sold-out-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 0, 0, 0.7); /* 반투명 빨간 배경 */
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+    <div class="item-card ${'Y' eq row.issoldout ? 'sold-out' : ''}" data-category="${row.category}">
+        <c:choose>
+            <c:when test="${not empty row.filename && row.filename != '-'}">
+                <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
+                    <img src="${pageContext.request.contextPath}/storage/goods/${row.filename}"
+                         class="img-responsive margin">
+                </a>
+            </c:when>
+            <c:otherwise>
+                <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
+                    <img src="${pageContext.request.contextPath}/images/default_product_image.jpg"
+                         alt="등록된 사진 없음" class="small-image">
+                </a>
+            </c:otherwise>
+        </c:choose>
+        <p>
+            <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">${row.productname}</a>
+        	<p><fmt:formatNumber value="${row.price}" pattern="#,###원" /></p>
+        </p>
+
+        <c:choose>
+            <c:when test="${'Y' eq row.issoldout}">
+                <div class="sold-out-overlay"></div>
+                <p class="sold-out-text">품절</p>
+            </c:when>
+            <c:otherwise>
+                <p><fmt:formatNumber value="${row.price}" pattern="#,###원" /></p>
+            </c:otherwise>
+        </c:choose>
+    </div>
+</div> --%>
+
 				<!-- 행의 4번째 항목인지 확인하여 닫고 새 행을 시작하세요 -->
 				<c:if test="${vs.count % 4 == 0}">
 					<!-- </div>이전 행 닫기 -->
-					<div style="height: 50px;"></div>
+					<!-- <div style="height: 50px;"></div> -->
 					<!-- 행 사이의 공백 -->
 					<!-- <div class="row">새 행 시작 -->
 				</c:if>
@@ -353,21 +443,33 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 	
-	
-    
+	 /* 카테고리 변수 */
     const categoryItems = document.querySelectorAll('.left li');  // 왼쪽 카테고리 메뉴의 각 항목들을 선택합니다.
-    const shopItems = document.querySelectorAll('.item-card');  // 오른쪽 상품 카드들을 선택합니다.
-
+    const shopItems = document.querySelectorAll('.goodsItem');  // 오른쪽 상품 카드들을 선택합니다.
+    
+    /* 드롭다운 변수 */
+    const dropdownItems = document.querySelectorAll('.dropdown-item'); // 드롭다운 메뉴의 각 항목을 선택합니다.
+    const shopContainer = document.querySelector('.right'); // 오른쪽 상품 목록을 감싸는 컨테이너를 선택합니다.
+    const dropdownButton = document.getElementById('dropdownMenuButton'); // 드롭다운 버튼을 선택합니다.
+    
     // 선택된 카테고리에 따라 상품을 필터링하는 함수입니다.
     function filterItems(category) {
-        shopItems.forEach(item => {  // 모든 상품 카드에 대해 반복합니다.
-            const itemCategory = item.getAttribute('data-category');  // 각 상품 카드의 data-category 속성 값을 가져옵니다.
-            if (category === 'All' || itemCategory === category) {  // 선택된 카테고리가 '전체'이거나 상품의 카테고리와 일치하는 경우,
-                item.style.display = 'block';  // 해당 상품을 화면에 보이게 설정합니다.
-            } else {  // 그렇지 않으면,
-                item.style.display = 'none';  // 해당 상품을 화면에서 숨깁니다.
-            }
+        const filterItems = Array.from(shopItems);
+		const filterList = [];
+		
+		const nowShopItems = document.querySelectorAll('.goodsItem')
+		
+        filterItems.forEach((item, idx) => {
+        	const itemCategory = item.firstElementChild.getAttribute('data-category'); // 각 상품 카드의 data-category 속성 값을 가져옵니다.
+	   		 
+        	 if (category === 'All' || itemCategory === category) {  // 선택된 카테고리가 '전체'이거나 상품의 카테고리와 일치하는 경우,
+        		 filterList.push(filterItems[idx]);
+             }
         });
+		
+        // 정렬된 상품을 다시 컨테이너에 추가합니다.
+        nowShopItems.forEach(item => item.parentNode.removeChild(item));
+        filterList.forEach(item => shopContainer.firstElementChild.appendChild(item));
     }//filterItems(category) end
 
     // 카테고리 메뉴의 각 항목에 클릭 이벤트 리스너를 추가합니다.
@@ -384,13 +486,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     /* 드롭다운 기본상품순 */
-    const dropdownItems = document.querySelectorAll('.dropdown-item'); // 드롭다운 메뉴의 각 항목을 선택합니다.
-    const shopContainer = document.querySelector('.right'); // 오른쪽 상품 목록을 감싸는 컨테이너를 선택합니다.
 
     dropdownItems.forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault(); // 기본 이벤트 동작을 막습니다.
             const sortType = this.textContent.trim(); // 클릭된 항목의 텍스트 콘텐츠를 가져옵니다.
+            const selectedText = this.textContent.trim(); // 클릭된 항목의 텍스트 콘텐츠를 가져옵니다.
             
             if (sortType === '최신등록순') {
                 sortItemsByRegistration(); // 최신 등록순으로 상품을 정렬합니다.
@@ -400,7 +501,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 sortItemsByPrice('asc'); // 낮은 가격순으로 상품을 정렬합니다.
             } else {
                 showAllItems(); // 기본 상품순일 경우 모든 상품을 보여줍니다.
-            }
+            } //if(sortType) end
+            
+            dropdownButton.textContent = selectedText; // 드롭다운 버튼의 텍스트를 클릭된 항목의 텍스트로 변경합니다.
+         	// 여기에 각 항목별로 추가적인 동작을 구현할 수 있습니다.
+            // 예를 들어, 최신 등록순을 눌렀을 때의 동작 등을 추가할 수 있습니다.
+            if (selectedText === '최신등록순') {
+                // 최신 등록순을 선택했을 때의 추가 동작
+                // 예: 상품 리스트를 최신 등록 순으로 정렬하거나 필터링하는 코드를 여기에 추가합니다.
+            } else if (selectedText === '높은가격순') {
+                // 높은 가격순을 선택했을 때의 추가 동작
+                // 예: 상품 리스트를 가격이 높은 순서대로 정렬하거나 필터링하는 코드를 여기에 추가합니다.
+            } else if (selectedText === '낮은가격순') {
+                // 낮은 가격순을 선택했을 때의 추가 동작
+                // 예: 상품 리스트를 가격이 낮은 순서대로 정렬하거나 필터링하는 코드를 여기에 추가합니다.
+            } else {
+                // 기본상품순을 선택했을 때의 추가 동작
+                // 예: 기본 상품 순서로 다시 정렬하거나 필터링하는 코드를 여기에 추가합니다.
+            }//if(selectedText) end
         });
     });
 
@@ -418,10 +536,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return priceA - priceB; // 낮은 가격순으로 정렬
             }
         });
-
+		
         // 정렬된 상품을 다시 컨테이너에 추가합니다.
         shopItems.forEach(item => item.parentNode.removeChild(item));
-        items.forEach(item => shopContainer.appendChild(item));
+        items.forEach(item => shopContainer.firstElementChild.appendChild(item));
     }
 
     // 최신 등록일에 따라 상품을 정렬하는 함수
@@ -437,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 정렬된 상품을 다시 컨테이너에 추가합니다.
         shopItems.forEach(item => item.parentNode.removeChild(item));
-        items.forEach(item => shopContainer.appendChild(item));
+        items.forEach(item => shopContainer.firstElementChild.appendChild(item));
     }
 
     // 모든 상품을 보여주는 함수
@@ -462,29 +580,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });/* left 멤버쉽 end */
 
-
-
-/* document.addEventListener('DOMContentLoaded', function() {
-    const categoryItems = document.querySelectorAll('.left ul li');
-    const productItems = document.querySelectorAll('.item-card');
-
-    categoryItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const category = this.getAttribute('data-category');
-            filterProducts(category);
-        });
-    });
-
-    function filterProducts(category) {
-        productItems.forEach(product => {
-            if (category === 'All' || product.getAttribute('data-category') === category) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    }
-}); */
 
 </script>
 

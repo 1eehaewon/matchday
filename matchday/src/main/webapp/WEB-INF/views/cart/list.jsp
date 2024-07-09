@@ -15,6 +15,21 @@
         margin: 0 auto;
     }
 	
+	/* 테이블 헤더와 바디의 내용 가운데 정렬 */
+    .table-active, .table-hover tbody {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    /* 체크박스 및 텍스트 크기 */
+    .table-active th, .table-hover tbody td {
+        font-size: 18px;
+    }
+    .table-active th input[type="checkbox"], .table-hover tbody td input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+    
 	/* 장바구니 라인 */
     .order_tit {
     	border-bottom: 0.5px solid #000; /* 아래쪽 선 */
@@ -68,24 +83,67 @@
         color: #666;
         margin-top: 20px;
     }
-
-	/* 쇼핑계속하기 */
-    .btn_left_box {
-        text-align: left;
-        margin-top: 20px;
-    }
-
-    .shop_go_link {
-        font-size: 20px;
-        color: #333;
-        text-decoration: none;
-    }
-
-    .shop_go_link em {
-        font-style: normal;
-        font-weight: bold;
-    }
-	/* 쇼핑계속하기 end */
+    
+    /* 수량 입력 텍스트 박스 및 버튼 스타일 */
+	.quantity-input {
+	    width: 50px; /* 텍스트 박스 너비 */
+	    height: 40px; /* 텍스트 박스 높이 */
+	    text-align: center; /* 텍스트 가운데 정렬 */
+	    font-size: 18px; /* 텍스트 크기 */
+	    margin: 0 5px; /* 텍스트 박스 좌우 여백 */
+	    border: 1px solid #ccc; /* 테두리 */
+	    border-radius: 4px; /* 모서리 둥글게 */
+	}
+	
+	.quantity-input:focus {
+	    outline: none; /* 포커스 시 외곽선 제거 */
+	    border-color: #666; /* 포커스 시 테두리 색상 */
+	}
+	
+	.수량-button {
+	    width: 40px; /* 버튼 너비 */
+	    height: 40px; /* 버튼 높이 */
+	    font-size: 18px; /* 버튼 텍스트 크기 */
+	    background-color: #f1f1f1; /* 버튼 배경 색상 */
+	    border: 1px solid #ccc; /* 버튼 테두리 */
+	    border-radius: 4px; /* 모서리 둥글게 */
+	    cursor: pointer; /* 마우스 커서 변경 */
+	    margin: 0 5px; /* 버튼 좌우 여백 */
+	}
+	
+	.수량-button:hover {
+	    background-color: #e1e1e1; /* 버튼 호버 시 배경 색상 */
+	}
+	
+	.수량-button:active {
+	    background-color: #d1d1d1; /* 버튼 클릭 시 배경 색상 */
+	    border-color: #999; /* 버튼 클릭 시 테두리 색상 */
+	}
+	
+    /* 삭제 버튼 크기 */
+    .delete-button-container {
+	    display: flex;
+		justify-content: flex-end; /* 항목을 오른쪽으로 정렬 */
+		margin-top: 0; /* 필요에 따라 마진 조정 */
+	}
+	.delete-button {
+	    font-size: 18px;
+	    padding: 10px 20px; /* padding으로 크기 조정 */
+	    background-color: #f1f1f1; /* 버튼 배경 색상 */
+	    border: 1px solid #ccc; /* 버튼 테두리 */
+	    border-radius: 4px; /* 모서리 둥글게 */
+	    cursor: pointer; /* 마우스 커서 변경 */
+	    margin: 0 5px; /* 버튼 좌우 여백 */
+	}
+	
+	.delete-button:hover {
+	    background-color: #e1e1e1; /* 버튼 호버 시 배경 색상 */
+	}
+	
+	.delete-button:active {
+	    background-color: #d1d1d1; /* 버튼 클릭 시 배경 색상 */
+	    border-color: #999; /* 버튼 클릭 시 테두리 색상 */
+	}
 
 	/* 총 금액 계산하는 곳 */
     .price_sum {
@@ -97,7 +155,8 @@
     .price_sum_list {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
+        gap: 30px; /* 요소들 사이의 간격 */
     }
 
     .price_sum_list dl {
@@ -105,13 +164,13 @@
     }
 
     .price_sum_list dl dt {
-        font-size: 16px;
+        font-size: 20px;
         font-weight: bold;
         color: #333;
     }
 
     .price_sum_list dl dd {
-        font-size: 16px;
+        font-size: 20px;
         color: #333;
     }
 
@@ -120,7 +179,7 @@
     }
 
     .price_sum_list dl.price_total {
-        font-size: 18px;
+        font-size: 20px;
     }
 
     .price_sum_list dl.price_total dt {
@@ -135,8 +194,47 @@
     }
     /* 총 금액 계산하는 곳 end */
     
+    /* 쇼핑계속하기/구매하기 */
+    .shopping-buy {
+        text-align: right;
+        margin-top: 20px;
+    }
+    
+	/* 쇼핑 계속하기 */
+    .shop_go_link {
+        font-size: 20px;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .shop_go_link em {
+        font-style: normal;
+        font-weight: bold;
+    }
+	
+	/* 구매하기 */
+  	.buy-button {
+    padding: 12px 24px;
+    font-size: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+	}
+	
+	.buy-button:hover {
+	    background-color: #45a049;
+	}
+	
+	.buy-button:active {
+	    background-color: #3e8e41;
+	}
+
+  
 </style>
-<!-- 본문 시작 list.jsp -->
+<!-- 본문 시작 cart/list.jsp -->
 <div class="cart-container">
 	<div class="content_box">
 	    <div class="order_wrap">
@@ -160,33 +258,47 @@
 							<thead class="table-active">
 								<tr>
 									<th><input type="checkbox" id="selectAllCheckbox" onchange="toggleCheckboxes(this.checked)"></th>
-									<th>상품 정보</th>	
+									<th>상품 정보</th>
+									<th>사이즈</th>	
 									<th>수량</th>
 									<th>가격</th>
 									<th>총 가격</th>	
-									<th>삭제</th>
+									<!-- <th>삭제</th> -->
 								</tr>					
 							</thead>
-							<tbody>
+							<tbody style="text-align: center;">
 							    <c:forEach items="${cartList}" var="cart">
 							        <tr>
 							            <td><input type="checkbox" name="selectedItems" value="${cart.cartid}" onchange="calculateTotal()"></td>
 							            <td>
-                                            <c:set var="goodsItem" value="${goodsMap[cart.goodsid]}" />
-                                            <c:choose>
-                                                <c:when test="${goodsItem ne null}">
-                                                    <img src="/storage/goods/${cart.goodsid}.jpg" alt="${goodsItem.productname}" style="width: 50px; height: 50px; object-fit: cover;">
-                                                    <span>${goodsItem.productname}</span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span>상품 정보 없음</span>
-                                                </c:otherwise>
-                                            </c:choose>
+                                        <c:forEach items="${goodsList}" var="goods">
+	                                        <c:if test="${cart.goodsid eq goods.goodsid}">
+		                                        <div class="product-image">
+			                                        <c:if test="${not empty goods.filename}">
+			                                        	<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
+			                                        	<img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
+			                                        </c:if>
+		                                        </div>
+		                                        <br>
+	                                        	<span>${goods.productname}</span>
+	                                        </c:if>
+                                        </c:forEach>
                                         </td>
-							            <td>${cart.quantity}</td>
-							            <td>${cart.unitprice}</td>
-							            <td>${cart.totalprice}</td>
-							            <td><button type="button" onclick="deleteItem(${cart.cartid})">삭제하기</button></td>
+                                        <td>
+                                        	<c:forEach items="${goodsList}" var="goods">
+                                        	<c:if test="${cart.goodsid eq goods.goodsid}">
+                                        	${goods.size}
+                                        	</c:if>
+                                        	</c:forEach>
+                                        </td>
+							            <td>
+										    <button type="button" onclick="decrementQuantity(this)" class="수량-button">-</button>
+										    <input type="text" class="quantity-input" value="${cart.quantity}" readonly>
+										    <button type="button" onclick="incrementQuantity(this)" class="수량-button">+</button>
+										</td>
+							            <td><fmt:formatNumber value="${cart.unitprice}" pattern="#,###원" /></td>
+							            <td><fmt:formatNumber value="${cart.totalprice}" pattern="#,###원" /></td>
+							            <%-- <td><button type="button" onclick="deleteItem(${cart.cartid})" class="delete-button">삭제하기</button></td> --%>
 							        </tr>
 							    </c:forEach>
 							</tbody>
@@ -198,6 +310,12 @@
 	
 	                <p class="no_data" id="noDataMessage" style="display: none;">장바구니에 담겨있는 상품이 없습니다.</p>
 	            </form>
+	            <div class="delete-button-container">
+			        <!-- 선택한 상품 삭제 버튼 -->
+					<button type="button" id="deleteSelectedButton" class="delete-button">선택한 상품만 삭제하기</button>
+					<!-- 전체 삭제 버튼 -->
+					<button type="button" id="deleteAllButton" class="delete-button">전체 삭제하기</button>
+	        	</div>
 	        </div>
 	        <!-- //cart_cont -->
 	        
@@ -224,8 +342,9 @@
 		        <!-- price_sum_cont end-->
 	    	</div>
 	        <!-- price_sum end -->
-	        <div class="btn_left_box">
-	        	<a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>
+	        <div class="shopping-buy">
+	        	<a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	<button type="button" class="buy-button">구매하기</button>
 	        </div>
 	    </div>
 	    <!-- order_wrap end-->
@@ -245,6 +364,62 @@
         calculateTotal();
     }
 
+ 	// 수량 증가 함수
+    function incrementQuantity(button) {
+        var input = button.parentNode.querySelector('.quantity-input');
+        var newValue = parseInt(input.value) + 1;
+        input.value = newValue;
+        updateTotalPrice();
+    }
+
+    // 수량 감소 함수
+    function decrementQuantity(button) {
+        var input = button.parentNode.querySelector('.quantity-input');
+        var newValue = parseInt(input.value) - 1;
+        if (newValue >= 0) {
+            input.value = newValue;
+            updateTotalPrice();
+        }
+    }
+
+    // 수량 변경에 따른 총 가격 업데이트 함수
+    function updateTotalPrice() {
+        var totalSelectedCount = 0;
+        var totalSelectedPrice = 0;
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                totalSelectedCount++;
+                var row = checkbox.parentNode.parentNode;
+                var quantity = parseInt(row.querySelector('.quantity-input').value);
+                var unitPrice = parseInt(row.cells[4].textContent.replace('원', '').replace(',', '')); // 단가가 표시된 셀 인덱스를 가정
+                var totalPrice = quantity * unitPrice;
+                totalSelectedPrice += totalPrice;
+                row.cells[5].textContent = totalPrice.toLocaleString() + ("원"); // 총 가격 열 업데이트
+            }
+        }
+
+        // 화면에 표시되는 총합 업데이트
+        document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+        document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString();
+        
+        // 배송비 계산 및 총 결제 가격 업데이트
+        var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
+        
+        var totalSettlePrice = totalSelectedPrice + deliveryCharge;
+        document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
+    }// updateTotalPrice() end
+
+    // 수량 입력 변경 이벤트 리스너
+    document.addEventListener("DOMContentLoaded", function() {
+        var quantityInputs = document.querySelectorAll('.quantity-input');
+        for (var input of quantityInputs) {
+            input.addEventListener('change', updateTotalPrice);
+        }
+    });
+ 
     // 선택된 상품의 개수와 총 가격을 계산하여 표시하는 함수
     function calculateTotal() {
         var totalSelectedCount = 0;
@@ -255,8 +430,8 @@
             if (checkbox.checked) {
                 totalSelectedCount++;
                 var row = checkbox.parentNode.parentNode;
-                var totalPriceCell = row.cells[4];
-                totalSelectedPrice += parseInt(totalPriceCell.textContent);
+                var totalPriceCell = row.cells[5];
+                totalSelectedPrice += parseInt(totalPriceCell.textContent.replace('원', '').replace(',', ''));
             }
         }
 
@@ -271,7 +446,7 @@
         // 합계 계산
         var totalSettlePrice = totalSelectedPrice + deliveryCharge;
         document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
-    }
+    }//calculateTotal() end
     
  	// 문서 로드 시 장바구니에 상품이 없는 경우 메시지 표시
     document.addEventListener("DOMContentLoaded", function() {
@@ -281,11 +456,50 @@
         }
     });
  	
-    function deleteItem(cartid){
-		if(confirm("장바구니에서 해당 상품을 삭제할까요?")){
-			location.href='/cart/delete?cartid=' + cartid; 
-		}//if end
-	}//deleteItem() end
+ 	// 선택된 상품 삭제 함수
+    function deleteSelectedItems() {
+        var selectedItems = [];
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value);
+            }
+        }
+
+        if (selectedItems.length === 0) {
+            alert("삭제할 상품을 선택해주세요.");
+            return;
+        }
+
+        if (confirm("선택한 상품을 삭제하시겠습니까?")) {
+            var url = '/cart/delete?cartid=' + selectedItems.join(',');
+            location.href = url;
+        }
+    }
+
+    // 전체 상품 삭제 함수
+    function deleteAllItems() {
+        if (confirm("전체 상품을 삭제하시겠습니까?")) {
+            var checkboxes = document.getElementsByName('selectedItems');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = true;
+            }
+            var selectedItems = [];
+            for (var checkbox of checkboxes) {
+                selectedItems.push(checkbox.value);
+            }
+            var url = '/cart/delete?cartid=' + selectedItems.join(',');
+            location.href = url;
+        }
+    }
+
+	 	// 버튼에 기능을 첨부합니다
+	    document.addEventListener("DOMContentLoaded", function() {
+	    document.getElementById('deleteSelectedButton').addEventListener('click', deleteSelectedItems);
+	    document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
+    }); //deleteSelectedItems() end
+
+
  	
  	
  	
