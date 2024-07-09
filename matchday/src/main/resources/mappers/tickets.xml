@@ -4,36 +4,43 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.matchday.tickets.TicketsDAO">
+
+    <!-- 경기 ID로 경기 정보 가져오기 -->
     <select id="getMatchById" resultType="kr.co.matchday.matches.MatchesDTO">
         SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate
         FROM matches
         WHERE matchid = #{matchid}
     </select>
 
+    <!-- 경기장 ID와 구역으로 좌석 정보 가져오기 -->
     <select id="getSeatsByStadiumIdAndSection" resultType="map">
         SELECT seatid, stadiumid, section, seatnumber, price, seatstatus
         FROM seats
         WHERE stadiumid = #{stadiumid} AND section = #{section}
     </select>
 
+    <!-- 좌석 ID로 좌석 정보 가져오기 -->
     <select id="getSeatInfoByJson" parameterType="java.util.HashMap" resultType="java.util.HashMap">
         SELECT seatid, price
         FROM seats
         WHERE seatid = #{seatId}
     </select>
 
+    <!-- 사용자 ID로 사용자 정보 가져오기 -->
     <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">
         SELECT userid, name, email, number
         FROM users
         WHERE userid = #{userId}
     </select>
 
+    <!-- 다음 예약 ID 접미사 가져오기 -->
     <select id="getNextReservationIdSuffix" resultType="String">
         SELECT LPAD(IFNULL(MAX(SUBSTRING(reservationid, 12)), 0) + 1, 5, '0')
         FROM tickets
         WHERE reservationid LIKE CONCAT('reservation', #{date}, '%')
     </select>
 
+    <!-- 티켓 정보 삽입 -->
     <insert id="insertTicket" parameterType="kr.co.matchday.tickets.TicketsDTO">
         INSERT INTO tickets (
             reservationid, matchid, quantity, price, userid, reservationdate,
@@ -50,11 +57,13 @@
         )
     </insert>
 
+    <!-- 티켓 상세 정보 삽입 -->
     <insert id="insertTicketDetail" parameterType="kr.co.matchday.tickets.TicketsDetailDTO">
         INSERT INTO ticketdetails (reservationid, matchid, seatid, price, totalamount, iscanceled, isrefunded)
         VALUES (#{reservationid}, #{matchid}, #{seatid}, #{price}, #{totalamount}, #{iscanceled}, #{isrefunded})
     </insert>
 
+    <!-- 좌석 ID 존재 여부 확인 -->
     <select id="checkSeatId" parameterType="String" resultType="Integer">
         SELECT COUNT(*)
         FROM seats

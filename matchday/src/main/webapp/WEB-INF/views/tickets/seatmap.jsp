@@ -156,53 +156,64 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 경기장 바닥 위치를 지정하는 객체
             var groundPositions = {
-                'N': 'south',
-                'S': 'north',
-                'E': 'west',
-                'W': 'east'
+                'N': 'south', // 북쪽은 남쪽에 위치
+                'S': 'north', // 남쪽은 북쪽에 위치
+                'E': 'west',  // 동쪽은 서쪽에 위치
+                'W': 'east'   // 서쪽은 동쪽에 위치
             };
 
+            // JSP에서 전달된 좌석 JSON 데이터를 파싱하여 자바스크립트 객체로 변환
             var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
             var section = document.getElementById('section').value;
             var matchId = document.getElementById('matchid').value;
             var stadiumId = document.getElementById('stadiumid').value;
             var groundPosition = groundPositions[section];
 
-            console.log("matchId:", matchId); // 디버깅을 위한 로그
+            // 디버깅을 위한 콘솔 로그
+            console.log("matchId:", matchId);
             console.log("stadiumId:", stadiumId);
             console.log("section:", section);
 
             var seatMap = document.getElementById('seat-map');
             var ground = document.getElementById('ground');
 
+            // 좌석 배치도를 생성
             if (seatMap && seats.length > 0) {
+                // 각 좌석에 대해 div 요소를 생성하고 배치
                 seats.forEach(function(seat) {
                     var seatElement = document.createElement('div');
                     seatElement.className = 'seat';
-                    seatElement.dataset.seatId = seat.seatid;
-                    seatElement.dataset.price = seat.price;
-                    seatElement.textContent = seat.seatnumber;
+                    seatElement.dataset.seatId = seat.seatid;  // 좌석 ID 설정
+                    seatElement.dataset.price = seat.price;    // 좌석 가격 설정
+                    seatElement.textContent = seat.seatnumber; // 좌석 번호 설정
+
+                    // 좌석 클릭 이벤트 리스너 추가
                     seatElement.addEventListener('click', function() {
+                        // 선택된 좌석의 클래스를 토글
                         if (this.classList.contains('selected')) {
                             this.classList.remove('selected');
                         } else {
+                            // 선택된 좌석이 5개 이하인 경우에만 선택 가능
                             if (document.querySelectorAll('.seat.selected').length < 5) {
                                 this.classList.add('selected');
                             } else {
                                 alert('5개의 좌석까지 구매 가능합니다.');
                             }
                         }
-                        updateSelectedSeats();
+                        updateSelectedSeats(); // 선택된 좌석 정보 업데이트
                     });
-                    seatMap.appendChild(seatElement);
+                    seatMap.appendChild(seatElement); // 좌석 요소를 좌석 배치도에 추가
                 });
 
+                // 경기장 바닥의 위치와 방향을 설정
                 ground.className = 'ground ' + groundPosition;
                 ground.textContent = 'GROUND';
                 var seatMapContainer = document.getElementById('seat-map-container');
                 seatMapContainer.style.flexDirection = (groundPosition === 'south' || groundPosition === 'north') ? 'column' : 'row';
-                
+
+                // 경기장 바닥을 좌석 배치도의 적절한 위치에 추가
                 if (groundPosition === 'south' || groundPosition === 'west') {
                     seatMapContainer.insertBefore(ground, seatMap);
                 } else {
@@ -210,6 +221,9 @@
                 }
             }
 
+            /**
+             * 선택된 좌석 정보를 업데이트하는 함수
+             */
             function updateSelectedSeats() {
                 var selectedSeats = document.querySelectorAll('.seat.selected');
                 var tbody = document.querySelector('.choice-table tbody');
@@ -217,49 +231,57 @@
                 var totalPriceElement = document.getElementById('total-price');
                 var totalPrice = 0;
                 tbody.innerHTML = '';
+
+                // 선택된 각 좌석에 대해 테이블에 정보를 추가
                 selectedSeats.forEach(function(seat) {
-                    var price = parseInt(seat.dataset.price, 10);
-                    totalPrice += price;
+                    var price = parseInt(seat.dataset.price, 10); // 좌석 가격
+                    totalPrice += price; // 총 가격에 추가
                     var row = document.createElement('tr');
                     var cell1 = document.createElement('th');
-                    cell1.innerHTML = '<span>일반석</span>';
+                    cell1.innerHTML = '<span>일반석</span>'; // 좌석 등급 정보
                     var cell2 = document.createElement('td');
-                    cell2.textContent = seat.dataset.seatId;
+                    cell2.textContent = seat.dataset.seatId; // 좌석 ID 정보
                     var cell3 = document.createElement('td');
-                    cell3.textContent = price.toLocaleString() + '원';
+                    cell3.textContent = price.toLocaleString() + '원'; // 좌석 가격 정보
                     row.appendChild(cell1);
                     row.appendChild(cell2);
                     row.appendChild(cell3);
-                    tbody.appendChild(row);
+                    tbody.appendChild(row); // 테이블에 행 추가
                 });
+
+                // 선택된 좌석 수와 총 금액을 업데이트
                 seatCount.textContent = '총 ' + selectedSeats.length + '석 선택되었습니다.';
                 totalPriceElement.textContent = '총 금액: ' + totalPrice.toLocaleString() + '원';
             }
 
+            // 이전 단계 버튼 클릭 이벤트 리스너 추가
             document.getElementById('prev-step').addEventListener('click', function() {
-                window.history.back();
+                window.history.back(); // 이전 페이지로 이동
             });
 
+            // 좌석 다시 선택 버튼 클릭 이벤트 리스너 추가
             document.getElementById('reset-seats').addEventListener('click', function() {
                 document.querySelectorAll('.seat.selected').forEach(function(seat) {
-                    seat.classList.remove('selected');
+                    seat.classList.remove('selected'); // 선택된 좌석 해제
                 });
-                updateSelectedSeats();
+                updateSelectedSeats(); // 선택된 좌석 정보 업데이트
             });
 
+            // 좌석 선택 완료 버튼 클릭 이벤트 리스너 추가
             document.getElementById('complete-selection').addEventListener('click', function() {
                 var selectedSeats = document.querySelectorAll('.seat.selected');
                 if (selectedSeats.length === 0) {
-                    alert('좌석을 선택해 주세요.');
+                    alert('좌석을 선택해 주세요.'); // 좌석이 선택되지 않았을 경우 경고
                     return;
                 }
                 var seats = [];
                 var totalPrice = 0;
                 selectedSeats.forEach(function(seat) {
-                    seats.push(seat.dataset.seatId);
-                    totalPrice += parseInt(seat.dataset.price, 10);
+                    seats.push(seat.dataset.seatId); // 선택된 좌석 ID 저장
+                    totalPrice += parseInt(seat.dataset.price, 10); // 총 가격 계산
                 });
 
+                // 매치 ID, 경기장 ID, 구역 정보를 인코딩하여 URL로 이동
                 var matchId = encodeURIComponent(document.getElementById('matchid').value);
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
@@ -270,3 +292,4 @@
     </script>
 </body>
 </html>
+

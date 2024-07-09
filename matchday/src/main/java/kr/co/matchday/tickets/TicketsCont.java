@@ -2,8 +2,6 @@ package kr.co.matchday.tickets;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,21 +21,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.matches.MatchesDTO;
-
 import org.mybatis.spring.SqlSessionTemplate;
 
 @Controller
@@ -45,32 +38,49 @@ import org.mybatis.spring.SqlSessionTemplate;
 public class TicketsCont {
 
     @Autowired
-    private Environment env;
+    private Environment env; // 환경 변수에 접근하기 위한 변수
 
     @Autowired
-    private TicketsDAO ticketsDao;
+    private TicketsDAO ticketsDao; // TicketsDAO 객체
 
     @Autowired
-    private SqlSessionTemplate sqlSessionTemplate;
+    private SqlSessionTemplate sqlSessionTemplate; // MyBatis의 SqlSessionTemplate 객체
 
     public TicketsCont() {
-        System.out.println("----TicketsCont() 객체");
+        System.out.println("----TicketsCont() 객체 생성");
     }
 
+    /**
+     * 티켓 결제 페이지로 이동
+     * @param matchid 경기 ID
+     * @return ModelAndView 객체
+     */
     @GetMapping("/ticketspayment")
     public ModelAndView ticketspayment(@RequestParam String matchid) {
         System.out.println("Received matchid: " + matchid);
+
+        // 경기 정보를 가져옴
         MatchesDTO matchesDto = ticketsDao.getMatchById(matchid);
         if (matchesDto == null) {
             return new ModelAndView("errorPage").addObject("message", "Match not found for ID: " + matchid);
         }
+
+        // ModelAndView 객체를 생성하여 반환
         ModelAndView mav = new ModelAndView("tickets/ticketspayment");
         mav.addObject("match", matchesDto);
         return mav;
     }
 
+    /**
+     * 좌석 배치도를 보여주는 페이지로 이동
+     * @param stadiumid 경기장 ID
+     * @param section 구역
+     * @param matchid 경기 ID
+     * @return ModelAndView 객체
+     */
     @GetMapping("/seatmap")
     public ModelAndView seatmap(@RequestParam String stadiumid, @RequestParam String section, @RequestParam String matchid) {
+        // 경기장 ID와 구역에 따른 좌석 정보를 가져옴
         List<Map<String, Object>> seats = ticketsDao.getSeatsByStadiumIdAndSection(stadiumid, section);
         ModelAndView mav = new ModelAndView("tickets/seatmap");
         mav.addObject("section", section);
@@ -78,6 +88,7 @@ public class TicketsCont {
         mav.addObject("matchid", matchid);
 
         try {
+            // 좌석 정보를 JSON 형태로 변환하여 추가
             ObjectMapper objectMapper = new ObjectMapper();
             String seatsJson = objectMapper.writeValueAsString(seats);
             mav.addObject("seatsJson", seatsJson);
@@ -89,6 +100,17 @@ public class TicketsCont {
         return mav;
     }
 
+    /**
+     * 예약 확인 페이지로 이동
+     * @param matchId 경기 ID
+     * @param seats 좌석 목록
+     * @param totalPrice 총 가격
+     * @param section 구역
+     * @param stadiumId 경기장 ID
+     * @param session 세션 객체
+     * @param model 모델 객체
+     * @return 예약 확인 페이지 뷰 이름
+     */
     @GetMapping("/reservation")
     public String showReservationPage(
             @RequestParam("matchid") String matchId,
@@ -105,6 +127,7 @@ public class TicketsCont {
         System.out.println("section: " + section);
         System.out.println("stadiumId: " + stadiumId);
 
+        // 경기 정보를 가져옴
         MatchesDTO match = ticketsDao.getMatchById(matchId);
         if (match == null) {
             System.out.println("Match not found for ID: " + matchId);
@@ -113,10 +136,12 @@ public class TicketsCont {
 
         String[] seatArray = seats.split(",");
 
+        // 사용자 ID를 세션에서 가져옴
         String userId = (String) session.getAttribute("userID");
         System.out.println("userID: " + userId);
         Map<String, Object> userInfo = userId != null ? ticketsDao.getUserInfo(userId) : new HashMap<>();
 
+        // 모델에 정보를 추가
         model.addAttribute("match", match);
         model.addAttribute("seats", seatArray);
         model.addAttribute("totalPrice", totalPrice);
@@ -128,6 +153,13 @@ public class TicketsCont {
         return "tickets/reservation";
     }
 
+    /**
+     * 결제 검증 메서드
+     * @param requestParams 요청 파라미터 맵
+     * @param seatsJson 좌석 목록 JSON 문자열
+     * @param session 세션 객체
+     * @return 검증 결과 맵
+     */
     @PostMapping("/verifyPayment")
     @ResponseBody
     @Transactional
@@ -138,7 +170,7 @@ public class TicketsCont {
         Map<String, Object> response = new HashMap<>();
         System.out.println("verifyPayment 시작");
 
-        // Request parameters
+        // 요청 파라미터
         String imp_uid = requestParams.get("imp_uid");
         String merchant_uid = requestParams.get("merchant_uid");
         int paid_amount = Integer.parseInt(requestParams.get("paid_amount"));
@@ -149,7 +181,7 @@ public class TicketsCont {
         String shippingrequest = requestParams.get("shippingrequest");
         String collectionmethodcode = requestParams.get("collectionmethodcode");
 
-        // JSON 파싱
+        // 좌석 정보 JSON 파싱
         System.out.println("seatsJson: " + seatsJson);
         ObjectMapper objectMapper = new ObjectMapper();
         List<String> seats;
@@ -267,6 +299,10 @@ public class TicketsCont {
         return response;
     }
 
+    /**
+     * 예약 ID 생성 메서드
+     * @return 예약 ID 문자열
+     */
     private String generateReservationId() {
         String prefix = "reservation";
         String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -274,6 +310,11 @@ public class TicketsCont {
         return String.format("%s%s%05d", prefix, date, randomNumber);
     }
 
+    /**
+     * 결제 취소 메서드
+     * @param imp_uid 아임포트 UID
+     * @return 취소 결과 맵
+     */
     @DeleteMapping("/cancelPayment")
     @ResponseBody
     public Map<String, Object> cancelPayment(@RequestParam String imp_uid) {
@@ -325,6 +366,10 @@ public class TicketsCont {
         return response;
     }
 
+    /**
+     * 아임포트 API 토큰 획득 메서드
+     * @return API 토큰 문자열
+     */
     private String getToken() {
         try {
             RestTemplate restTemplate = new RestTemplate();
