@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="goods">
+ 
+ 
+ <insert id="insert" parameterType="kr.co.matchday.goods.GoodsDTO">
+	    INSERT INTO goods(goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize)
+	    VALUES(#{goodsid}, #{category}, #{productname}, #{description}, #{size}, #{price}, #{stockquantity}, #{issoldout}, #{filename}, #{filesize})
+	</insert>
+	
+	<select id="list" resultType="kr.co.matchday.goods.GoodsDTO">
+	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+	    FROM goods
+	    ORDER BY productname
+	</select>
+	
+	<select id="search" resultType="kr.co.matchday.goods.GoodsDTO" parameterType="String">
+	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+	    FROM goods
+	    WHERE productname LIKE #{keyword}
+	    ORDER BY productname
+	</select>
+	
+	<select id="detail" resultType="kr.co.matchday.goods.GoodsDTO" parameterType="String">
+	    SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize
+	    FROM goods
+	    WHERE goodsid = #{goodsid}
+	</select>
+	
+	<update id="update" parameterType="kr.co.matchday.goods.GoodsDTO">
+	    UPDATE goods
+	    SET category = #{category},
+	        productname = #{productname},
+	        description = #{description},
+	        size = #{size},
+	        price = #{price},
+	        stockquantity = #{stockquantity},
+	        issoldout = #{issoldout},
+	        filename = #{filename},
+	        filesize = #{filesize}
+	    WHERE goodsid = #{goodsid}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+	    DELETE FROM goods
+	    WHERE goodsid = #{goodsid}
+	</delete>
+	
+	<select id="filename" resultType="java.lang.String">
+	<!-- 굿즈 ID에 해당하는 파일명 조회 -->
+	    SELECT filename
+	    FROM goods
+	    WHERE goodsid = #{goodsid}
+	</select>
+	
+	
+	
+
+
+	
+	
+	
+	
+	
+ </mapper>

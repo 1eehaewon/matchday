@@ -1,0 +1,139 @@
+@charset "UTF-8";
+
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #003366;
+    color: white;
+    padding: 20px 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.logo {
+    font-size: 24px;
+    margin: 0;
+    color: white;
+}
+
+.user-options {
+    display: flex;
+    align-items: center;
+    margin-left: 100%;
+}
+
+.user-options a {
+    color: white !important;
+    text-decoration: none;
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+nav {
+    background-color: #003366;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a,
+nav ul li a:visited,
+nav ul li a:active,
+nav ul li a:focus {
+    color: white !important;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    color: #cccccc !important;
+}
+
+
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    padding-bottom: 2rem;
+}
+
+.main-container {
+    margin-top: 5rem;
+    flex: 1;
+}
+
+.shadow-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reply-section {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-top: 2rem;
+}
+
+.reply-header {
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.reply-content {
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.reply-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: right;
+}
+
+#summernote {
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-radius: 0.25rem;
+}

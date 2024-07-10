@@ -14,4 +14,6 @@ public class LoginDTO {
     private String password;
     private char grade; //등급
     private String email; 
+    
+    
 }//class end

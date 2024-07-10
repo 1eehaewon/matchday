@@ -21,4 +21,5 @@ public class CouponDTO {
 	private Date enddate;
 	private String applicableproduct;
 	
+	
 }//class end

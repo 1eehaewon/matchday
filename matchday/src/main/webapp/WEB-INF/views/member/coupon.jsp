@@ -125,12 +125,12 @@
                 <tbody>
                     <c:forEach var="coupon" items="${availableCoupons}">
                         <tr>
-                            <td>${coupon.couponid}</td>
+                            <td>${coupon.coupontypeid}</td>
                             <td>${coupon.couponname}</td>
                             <td>${coupon.startdate}</td>
                             <td>${coupon.enddate}</td>
                             <td>${coupon.applicableproduct}</td>
-                            <td><button onclick="downloadCoupon('${coupon.couponId}')">다운로드</button></td>
+                            <td><button onclick="downloadCoupon('${coupon.coupontypeid}')">다운로드</button></td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -149,13 +149,13 @@
     }
 
     // 쿠폰 다운로드 함수
-    function downloadCoupon(couponId) {
-        fetch('/CouponController', {
+    function downloadCoupon(couponid) {
+        fetch('/member/mypage/coupon/download', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ action: 'download', couponId: couponId })
+            body: JSON.stringify({ action: 'download', couponid: couponid })
         })
         .then(response => response.json())
         .then(data => {
