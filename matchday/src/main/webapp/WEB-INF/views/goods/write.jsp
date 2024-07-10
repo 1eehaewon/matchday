@@ -98,13 +98,13 @@
                         <th>사이즈</th>
                         <td>
                             <select name="size" id="size" class="form-control">
-                                <option value="">사이즈 선택</option>
+<!--                                 <option value="">사이즈 선택</option>
                                 <option value="FREE">FREE</option>
                                 <option value="S">Small</option>
                                 <option value="M">Medium</option>
                                 <option value="L">Large</option>
                                 <option value="XL">XLarge</option>
-                                
+                                 -->
                                 <option value="">사이즈 선택</option>
                                 <option value="FREE" <c:if test="${goodsDto.size == 'FREE'}">selected</c:if>>FREE</option>
                                 <option value="S" <c:if test="${goodsDto.size == 'S'}">selected</c:if>>Small</option>
