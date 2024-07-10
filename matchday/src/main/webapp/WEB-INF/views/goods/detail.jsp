@@ -472,7 +472,7 @@
     <div id="review" class="tab-content">
         <div class="review-list">
             <div class="review-summary" onclick="toggleReviewDetails('review1')">
-                <div class="review-rating">★★★★☆</div>
+                <div class="review-rating">4점</div>
                 <div class="review-title">좋은 상품입니다</div>
                 <div class="review-author">사용자 이름</div>
                 <div class="review-date">2024-07-09</div>
@@ -488,7 +488,7 @@
                 </div>
             </div>
             <div class="review-summary" onclick="toggleReviewDetails('review2')">
-                <div class="review-rating">★★★★☆</div>
+                <div class="review-rating">5점</div>
                 <div class="review-title">좋은 상품입니다</div>
                 <div class="review-author">사용자 이름</div>
                 <div class="review-date">2024-07-09</div>

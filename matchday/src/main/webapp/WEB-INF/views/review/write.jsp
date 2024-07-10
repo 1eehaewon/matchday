@@ -138,8 +138,9 @@
                 <div class="scroll_box">
                     <div class="top_item_photo_info">
                         <div class="item_photo_box">
-                            <img src="<c:url value='/images/${param.goodsid}.jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
-                            <img src="${pageContext.request.contextPath}/storage/goods/${goodsDto.filename}" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                            <img src="<c:url value='/images/서울 홈 유니폼(앞).jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                            <!-- <img src="<c:url value='/images/${param.goodsid}.jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                            <img src="${pageContext.request.contextPath}/storage/goods/${goodsDto.filename}" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle"> -->
                         </div>
                         <br>
                         <c:forEach items="${goodsList}" var="goods">
@@ -201,30 +202,34 @@
                                     </td>
                                 </tr>
                                 <tr>
-    <th scope="row">평점</th>
-    <td>
-        <div class="rating-container">
-            <input type="radio" id="rating1" name="rating" value="1" class="rating-input visually-hidden" required>
-            <label for="rating1" class="rating-label" onclick="handleRatingClick(1)"><i class="bi bi-circle"></i> 1</label>
-            
-            <input type="radio" id="rating2" name="rating" value="2" class="rating-input visually-hidden">
-            <label for="rating2" class="rating-label" onclick="handleRatingClick(2)"><i class="bi bi-circle"></i> 2</label>
-            
-            <input type="radio" id="rating3" name="rating" value="3" class="rating-input visually-hidden">
-            <label for="rating3" class="rating-label" onclick="handleRatingClick(3)"><i class="bi bi-circle"></i> 3</label>
-            
-            <input type="radio" id="rating4" name="rating" value="4" class="rating-input visually-hidden">
-            <label for="rating4" class="rating-label" onclick="handleRatingClick(4)"><i class="bi bi-circle"></i> 4</label>
-            
-            <input type="radio" id="rating5" name="rating" value="5" class="rating-input visually-hidden">
-            <label for="rating5" class="rating-label" onclick="handleRatingClick(5)"><i class="bi bi-circle"></i> 5</label>
-        </div>
-        <small class="text-muted">1부터 5까지의 숫자 중 하나를 선택해주세요.</small>
-    </td>
-</tr>
-
-
-
+								    <th scope="row">평점</th>
+								    <td>
+								        <form>
+								    <label>
+								        <input type="radio" name="rating" value="1">
+								        1
+								    </label>
+								    <label>
+								        <input type="radio" name="rating" value="2">
+								        2
+								    </label>
+								    <label>
+								        <input type="radio" name="rating" value="3">
+								        3
+								    </label>
+								    <label>
+								        <input type="radio" name="rating" value="4">
+								        4
+								    </label>
+								    <label>
+								        <input type="radio" name="rating" value="5">
+								        5
+								    </label>
+								</form>
+								<br>
+								        <small class="text-muted">1부터 5까지의 숫자 중 하나를 선택해주세요.</small>
+								    </td>
+								</tr>
 
 
                             </tbody>

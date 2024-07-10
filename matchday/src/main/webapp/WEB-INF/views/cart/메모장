@@ -4541,3 +4541,99 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>평점 선택하기</title>
+<style>
+    .rating {
+        margin-bottom: 20px;
+    }
+    .rating input[type="radio"] {
+        display: none;
+    }
+    .rating label {
+        display: inline-block;
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 50px;
+        margin-right: 10px;
+    }
+    .rating label:hover,
+    .rating input[type="radio"]:checked + label {
+        background-color: #ffd700; /* 선택된 체크박스의 배경색을 변경 */
+    }
+</style>
+</head>
+<body>
+
+<form>
+    <div class="rating">
+        <input type="radio" id="star5" name="rating" value="5">
+        <label for="star5">★★★★★</label>
+        
+        <input type="radio" id="star4" name="rating" value="4">
+        <label for="star4">★★★★</label>
+        
+        <input type="radio" id="star3" name="rating" value="3">
+        <label for="star3">★★★</label>
+        
+        <input type="radio" id="star2" name="rating" value="2">
+        <label for="star2">★★</label>
+        
+        <input type="radio" id="star1" name="rating" value="1">
+        <label for="star1">★</label>
+    </div>
+</form>
+
+<script>
+    // JavaScript 예제가 필요하시면 추가로 작성해드리겠습니다.
+</script>
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>동그란 체크박스 예제</title>
+</head>
+<body>
+
+<form>
+    <label>
+        <input type="radio" name="option" value="option1">
+        옵션 1
+    </label>
+    <br>
+    <label>
+        <input type="radio" name="option" value="option2">
+        옵션 2
+    </label>
+    <br>
+    <label>
+        <input type="radio" name="option" value="option3">
+        옵션 3
+    </label>
+</form>
+
+</body>
+</html>
+
+
+
+
+
+
