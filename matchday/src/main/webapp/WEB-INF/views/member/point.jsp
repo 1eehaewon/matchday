@@ -76,17 +76,10 @@
         <tr>
             <td class="mypage-sidebar" style="border-right: none;">
                 <ul class="list-group">
-                	<li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
-                    <c:choose>
-                        <c:when test="${user.grade == 'M'}">
-                            <li class="list-group-item"><a href="/member/mypage/point">포인트 관리</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰 관리</a></li>
-                        </c:when>
-                        <c:otherwise>
+                    <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
                             <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
                             <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
-                        </c:otherwise>
-                    </c:choose>
+                            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
                 </ul>
             </td>
             <td width="15" style="border: none;"></td>

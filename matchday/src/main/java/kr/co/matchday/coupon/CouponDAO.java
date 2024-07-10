@@ -34,12 +34,12 @@ public class CouponDAO {
 
 	// 쿠폰 다운로드 시 CouponDTO 삽입
     public void insertUserCoupon(CouponDTO couponDTO) {
-        sqlSession.insert("insertUserCoupon", couponDTO);
+        sqlSession.insert("mypage.insertUserCoupon", couponDTO);
     }
 
     // coupontypeid로 CouponMasterDTO 조회
     public CouponMasterDTO selectCouponByType(String coupontypeid) {
-        return sqlSession.selectOne("selectCouponByType", coupontypeid);
+        return sqlSession.selectOne("mypage.selectCouponByType", coupontypeid);
     }
 	
 }// class end

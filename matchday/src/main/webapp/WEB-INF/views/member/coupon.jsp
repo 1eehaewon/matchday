@@ -62,18 +62,11 @@
 <div class="mypage-container">
     <div class="mypage-sidebar">
         <ul class="list-group">
-            <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
-            <c:choose>
-                <c:when test="${user.grade == 'M'}">
-                    <li class="list-group-item"><a href="/member/mypage/point">포인트 관리</a></li>
-                    <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰 관리</a></li>
-                </c:when>
-                <c:otherwise>
-                    <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
-                    <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
-                </c:otherwise>
-            </c:choose>
-        </ul>
+                    <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
+                            <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
+                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
+                            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
+                </ul>
     </div>
     <div class="mypage-form">
         <h2 class="mypage-title">쿠폰함</h2>
@@ -149,13 +142,13 @@
     }
 
     // 쿠폰 다운로드 함수
-    function downloadCoupon(couponid) {
+    function downloadCoupon(coupontypeid) {
         fetch('/member/mypage/coupon/download', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ action: 'download', couponid: couponid })
+            body: JSON.stringify({ action: 'download', coupontypeid: coupontypeid })
         })
         .then(response => response.json())
         .then(data => {

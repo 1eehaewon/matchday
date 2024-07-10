@@ -50,7 +50,7 @@ public class CouponCont {
 			return "/member/login"; // 경고 메시지와 함께 로그인페이지로 이동
 		}
 		// 사용자가 보유한 쿠폰 및 받을 수 있는 쿠폰 목록을 불러옴
-		List<CouponDTO> receivedCoupons = couponDao.selectReceivedCoupons("userid");
+		List<CouponDTO> receivedCoupons = couponDao.selectReceivedCoupons(userID);
 		List<CouponMasterDTO> availableCoupons = couponDao.selectAvailableCoupons();
 
 		model.addAttribute("receivedCoupons", receivedCoupons);
@@ -89,16 +89,7 @@ public class CouponCont {
     }
 
 	static class DownloadRequest {
-		private String couponid;
 		private String coupontypeid;
-
-		public String getCouponid() {
-			return couponid;
-		}
-
-		public void setCouponid(String couponid) {
-			this.couponid = couponid;
-		}
 
 		public String getCoupontypeid() {
 			return coupontypeid;
