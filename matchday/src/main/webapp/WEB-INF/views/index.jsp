@@ -131,7 +131,7 @@
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="/matches/list">예매</a></li>
                     <li class="nav-item"><a class="nav-link" href="/video/list">하이라이트</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/goods/list">쇼핑몰</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/goods/list">SHOP</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">알림마당</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -141,6 +141,7 @@
                     </li>
                     <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
                     <li class="nav-item"><a class="nav-link" href="/team/list">소개</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/membership/list">멤버쉽</a></li>
                 </ul>
             </div>
         </div>
