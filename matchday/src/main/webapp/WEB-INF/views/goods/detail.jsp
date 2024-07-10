@@ -498,7 +498,7 @@
                 <div class="review-content">
                     여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
                 </div>
-                    <div class="review-comments">
+                   <div class="review-comments">
                     <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
                     <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
                 </div>

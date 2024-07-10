@@ -4268,7 +4268,6 @@ public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session) {
 
 
 
-
 <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
     <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
     <input type="hidden" name="reviewid" id="reviewid" value="">
@@ -4305,3 +4304,240 @@ function generateRandomNumber() {
     return Math.floor(Math.random() * 999) + 1;
 }
 </script>
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 후기 쓰기</title>
+  <!-- 부트스트랩 CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons CDN 추가 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <link href="/css/styles.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        .board_write_popup {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .ly_tit {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .ly_cont {
+            margin-bottom: 20px;
+        }
+        
+        /* 이미지 및 상품명 센터 정렬 */
+	    .top_item_photo_info {
+	        text-align: center;
+	        margin-bottom: 20px;
+	    }
+	    
+	    .item_photo_box {
+	        display: inline-block;
+	    }
+	    
+	    .item_photo_box img {
+	        max-width: 100%;
+	        height: auto;
+	    }
+	    
+	    /* 상품명 스타일 */
+	    .productname {
+	        font-size: 24px; /* 원하는 크기로 조정 */
+	        font-weight: bold; /* 굵게 설정 */
+	        margin-top: 10px; /* 필요에 따라 조정 */
+	        margin-bottom: 10px; /* 필요에 따라 조정 */
+	    } 
+    
+        .board_write_box {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .board_write_table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .board_write_table th {
+            width: 15%;
+            text-align: right;
+            vertical-align: top;
+        }
+        .board_write_table td {
+            width: 85%;
+            padding-left: 10px;
+        }
+        .write_editor textarea {
+            width: 100%;
+            min-width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .btn_center_box {
+            text-align: center;
+        }
+        .btn_ly_cancel, .btn_ly_write_ok {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn_ly_cancel:hover, .btn_ly_write_ok:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body class="body-board body-popup-goods-board-write pc">
+    <div class="board_write_popup">
+        <div class="ly_tit">
+            <h2>상품 후기 쓰기</h2>
+        </div>
+        
+        <div class="ly_cont">
+            <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
+                <input type="hidden" name="reviewid" id="reviewid" value="">
+                <div class="scroll_box">
+                    <div class="top_item_photo_info">
+                        <div class="item_photo_box">
+                            <img src="<c:url value='/images/${param.goodsid}.jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                        </div>
+                        <br>
+                        <c:forEach items="${goodsList}" var="goods">
+				            <c:if test="${goods.goodsid eq param.goodsid}">
+				                <h5 class="productname">${goods.productname}</h5>
+				            </c:if>
+				        </c:forEach>    
+                    </div>
+                    <!-- //top_item_photo_info -->
+
+                    <div class="board_write_box">
+                        <table class="board_write_table">
+                            <colgroup>
+                                <col style="width:15%">
+                                <col style="width:85%">
+                            </colgroup>
+                            <tbody>
+                                <!-- 나머지 폼 요소들은 그대로 유지 -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- //board_write_box -->
+                </div>
+                <!-- //scroll_box -->
+                <div class="btn_center_box">
+                    <a href="javascript:window.close()" class="btn btn-secondary btn_ly_cancel"><strong>취소</strong></a>
+                    <a href="" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a>
+                    <input type="submit" value="등록" class="btn btn-success">
+                </div>
+            </form>  
+        </div>
+        <!-- //ly_cont -->
+    </div>
+    <!-- //board_write_popup -->
+</body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
+    document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
+});
+
+function generateUniqueReviewId() {
+    var prefix = 'review';
+    var num;
+    var existingIds = []; // 기존 리뷰 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+    // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+    <c:forEach items="${reviewList}" var="review">
+        existingIds.push('${review.reviewid}');
+    </c:forEach>
+
+    // 중복되지 않는 아이디 생성
+    do {
+        num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+        var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+    } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+    return newId;
+}
+
+function generateRandomNumber() {
+    return Math.floor(Math.random() * 999) + 1;
+}
+</script>
+</html>
+
+
+
+<script>
+function handleRatingClick(rating) {
+    var radios = document.getElementsByName('rating');
+    for (var i = 0; i < radios.length; i++) {
+        if (radios[i].value == rating) {
+            radios[i].checked = true;
+        } else {
+            radios[i].checked = false;
+        }
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 기본 상품순 토글 버튼 클릭 이벤트 리스너 추가
+    document.getElementById('defaultSort').addEventListener('click', function(e) {
+        e.preventDefault(); // 기본 이벤트 동작을 막습니다.
+        showAllItems(); // 모든 상품을 기본 순서대로 보여줍니다.
+        dropdownButton.textContent = '기본상품순'; // 드롭다운 버튼의 텍스트를 변경합니다.
+    });
+
+    // 기타 초기화 코드 등
+
+});
+
+
+
