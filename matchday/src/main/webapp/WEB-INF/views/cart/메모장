@@ -2031,3 +2031,2277 @@ body {
 </body>
 </html>
     
+    
+    function openPopup(url) { // 상품 글쓰기
+        window.open(url, "popupWindow", "width=1200,height=800,scrollbars=yes");
+    }
+    
+    function openPopup(url) {
+    var width = 1200;
+    var height = 800;
+
+    // 화면의 중앙에 위치시키기 위한 좌표 계산
+    var left = (screen.width - width) / 2;
+    var top = (screen.height - height) / 2;
+
+    // 창을 중앙에 띄우기
+    window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+}
+    
+    
+    
+    
+    
+
+    
+
+   
+   
+   
+   
+   
+   
+   <!-- review.xml -->
+
+<!-- Insert a new review -->
+<insert id="insertReview" parameterType="ReviewDTO">
+    INSERT INTO reviews (reviewid, userid, matchid, goodsid, reviewdate, title, content, rating, grantedpoints)
+    VALUES (#{reviewid}, #{userid}, #{matchid}, #{goodsid}, #{reviewdate}, #{title}, #{content}, #{rating}, #{grantedpoints})
+</insert>
+
+<!-- Select a review by reviewid -->
+<select id="selectReviewById" parameterType="String" resultType="ReviewDTO">
+    SELECT * FROM reviews WHERE reviewid = #{reviewid}
+</select>
+
+<!-- Update a review -->
+<update id="updateReview" parameterType="ReviewDTO">
+    UPDATE reviews
+    SET userid = #{userid}, matchid = #{matchid}, goodsid = #{goodsid}, reviewdate = #{reviewdate},
+        title = #{title}, content = #{content}, rating = #{rating}, grantedpoints = #{grantedpoints}
+    WHERE reviewid = #{reviewid}
+</update>
+
+<!-- Delete a review -->
+<delete id="deleteReview" parameterType="String">
+    DELETE FROM reviews WHERE reviewid = #{reviewid}
+</delete>
+
+<!-- Select all reviews -->
+<select id="selectAllReviews" resultType="ReviewDTO">
+    SELECT * FROM reviews
+</select>
+   
+   
+   
+   
+   
+   
+   
+   
+  package kr.co.matchday.review;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ReviewDAO {
+
+    @Autowired
+    private SqlSession sqlSession;
+
+    public void insertReview(ReviewDTO review) {
+        sqlSession.insert("insert", review);
+    }
+
+    public ReviewDTO selectReviewById(String reviewid) {
+        return sqlSession.selectOne("selectReviewById", reviewid);
+    }
+
+    public void updateReview(ReviewDTO review) {
+        sqlSession.update("update", review);
+    }
+
+    public void deleteReview(String reviewid) {
+        sqlSession.delete("delete", reviewid);
+    }
+
+    public List<ReviewDTO> selectAllReviews() {
+        return sqlSession.selectList("selectAll");
+    }
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  package kr.co.matchday.review;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@RequestMapping("/review")
+public class ReviewCont {
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    @GetMapping("/list")
+    public String list(Model model) {
+        // Fetch all reviews from DAO
+        model.addAttribute("reviews", reviewDao.selectAllReviews());
+        return "review/list"; // Assuming "review/list" is your view name
+    }
+
+    @GetMapping("/write")
+    public String writeForm(Model model) {
+        model.addAttribute("reviewDto", new ReviewDTO());
+        return "review/write"; // Assuming "review/write" is your view name
+    }
+
+    // Handle form submission
+    // Use POST method for submitting review data
+    // Example: @PostMapping("/save")
+    // @ModelAttribute binds form data to ReviewDTO object
+    // Redirect to list after saving or return to form with errors
+    // Adjust as per your actual form and submission needs
+  
+  
+  
+  
+  
+  
+  <form name="frmWrite" id="frmWrite" action="${pageContext.request.contextPath}/review/save" method="post" enctype="multipart/form-data">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  package kr.co.matchday.review;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/review")
+public class ReviewCont {
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    // Display form for writing a review
+    @GetMapping("/write")
+    public String writeForm(Model model) {
+        model.addAttribute("reviewDto", new ReviewDTO());
+        return "review/write"; // Assuming "review/write" is your view name
+    }
+
+    // Handle form submission to save a review
+    @PostMapping("/save")
+    public String saveReview(@ModelAttribute("reviewDto") ReviewDTO reviewDto) {
+        // Perform validation or additional logic if needed
+
+        // Save the review using ReviewDAO
+        reviewDao.insert(reviewDto);
+
+        // Redirect to list page or any other appropriate page
+        return "redirect:/review/list";
+    }
+
+    // List reviews
+    @GetMapping("/list")
+    public String list(Model model) {
+        // Fetch all reviews from DAO
+        model.addAttribute("reviews", reviewDao.selectAllReviews());
+        return "review/list"; // Assuming "review/list" is your view name
+    }
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  @PostMapping("/save")
+public String saveReview(@ModelAttribute("reviewDto") ReviewDTO reviewDto) {
+    // Perform validation or additional logic if needed
+    // For example, you can validate the rating field here
+
+    int rating = reviewDto.getRating();
+    if (rating < 1 || rating > 10) {
+        // Handle validation error, e.g., return to form with error message
+        return "review/write"; // Assuming "review/write" is your form view
+    }
+
+    // Save the review using ReviewDAO
+    reviewDao.insert(reviewDto);
+
+    // Redirect to list page or any other appropriate page
+    return "redirect:/review/list";
+}
+  
+  
+  
+  
+  
+  
+  
+  
+package kr.co.matchday.review;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ReviewDAO {
+
+    @Autowired
+    private SqlSession sqlSession;
+
+    public void insert(ReviewDTO reviewDto) {
+        sqlSession.insert("review.insert", reviewDto);
+    }
+
+    public ReviewDTO selectReviewById(String reviewid) {
+        return sqlSession.selectOne("review.selectReviewById", reviewid);
+    }
+
+    public void update(ReviewDTO reviewDto) {
+        sqlSession.update("review.update", reviewDto);
+    }
+
+    public void delete(String reviewid) {
+        sqlSession.delete("review.delete", reviewid);
+    }
+
+    public List<ReviewDTO> list() {
+        return sqlSession.selectList("review.selectAll");
+    }
+}
+  
+  
+  
+  
+  
+  
+  
+  <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="review">
+
+    <!-- Insert a new review -->
+    <insert id="insert" parameterType="kr.co.matchday.review.ReviewDTO">
+        INSERT INTO review (reviewid, userid, matchid, goodsid, reviewdate, title, content, rating, grantedpoints)
+        VALUES (#{reviewid}, #{userid}, #{matchid}, #{goodsid}, #{reviewdate}, #{title}, #{content}, #{rating}, #{grantedpoints})
+    </insert>
+    
+    <!-- Select a review by reviewid -->
+    <select id="selectReviewById" parameterType="String" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review WHERE reviewid = #{reviewid}
+    </select>
+    
+    <!-- Update a review -->
+    <update id="update" parameterType="kr.co.matchday.review.ReviewDTO">
+        UPDATE review
+        SET userid = #{userid}, matchid = #{matchid}, goodsid = #{goodsid}, reviewdate = #{reviewdate},
+            title = #{title}, content = #{content}, rating = #{rating}, grantedpoints = #{grantedpoints}
+        WHERE reviewid = #{reviewid}
+    </update>
+    
+    <!-- Delete a review -->
+    <delete id="delete" parameterType="String">
+        DELETE FROM review WHERE reviewid = #{reviewid}
+    </delete>
+    
+    <!-- Select all reviews -->
+    <select id="selectAll" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review
+    </select>
+</mapper>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  package kr.co.matchday.goods;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.review.ReviewDAO;
+import kr.co.matchday.review.ReviewDTO;
+
+@Controller
+@RequestMapping("/goods")
+public class GoodsCont {
+
+    public GoodsCont() {
+        System.out.println("-----GoodsCont() 객체 생성됨");
+    }
+
+    @Autowired
+    private GoodsDAO goodsDao;
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    @RequestMapping("/list")
+    public ModelAndView list(@RequestParam(defaultValue = "1") int page, HttpSession session) {
+        int pageSize = 16;
+        int offset = (page - 1) * pageSize;
+
+        int totalRecords = goodsDao.countGoods();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        Map<String, Integer> params = new HashMap<>();
+        params.put("limit", pageSize);
+        params.put("offset", offset);
+
+        List<GoodsDTO> goodsList = goodsDao.listWithPaging(params);
+
+        // Fetch reviews for each goods item
+        Map<String, List<ReviewDTO>> reviewsMap = new HashMap<>();
+        for (GoodsDTO goods : goodsList) {
+            List<ReviewDTO> reviews = reviewDao.(goods.getGoodsid());
+            reviewsMap.put(goods.getGoodsid(), reviews);
+        }
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("goods/list");
+        mav.addObject("list", goodsList);
+        mav.addObject("reviewsMap", reviewsMap);
+        mav.addObject("currentPage", page);
+        mav.addObject("totalPages", totalPages);
+
+        String userID = (String) session.getAttribute("userID");
+        mav.addObject("userID", userID);
+
+        return mav;
+    }
+
+    // Other methods remain unchanged
+
+}
+  
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  package kr.co.matchday.review;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ReviewDAO {
+
+    public ReviewDAO() {
+        System.out.println("-----ReviewDAO() 객체 생성됨");
+    }
+
+    @Autowired
+    SqlSession sqlSession;
+
+    public void insert(ReviewDTO reviewDto) {
+        sqlSession.insert("review.insert", reviewDto);
+    }
+
+    public ReviewDTO selectReviewById(String reviewid) {
+        return sqlSession.selectOne("selectReviewById", reviewid);
+    }
+
+    public void update(ReviewDTO reviewDto) {
+        sqlSession.update("review.update", reviewDto);
+    }
+
+    public void delete(String reviewid) {
+        sqlSession.delete("review.delete", reviewid);
+    }
+
+    public List<ReviewDTO> list() {
+        return sqlSession.selectList("review.list");
+    }
+
+    public List<ReviewDTO> (String goodsid) {
+        return sqlSession.selectList("review.", goodsid);
+    }
+
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- goods/list.jsp -->
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Goods List</title>
+</head>
+<body>
+    <h1>Goods List</h1>
+    <c:forEach var="goods" items="${list}">
+        <div>
+            <h2>${goods.productname}</h2>
+            <p>${goods.description}</p>
+            <p>Price: ${goods.price}</p>
+            <p>Category: ${goods.category}</p>
+            <c:if test="${!empty goods.filename}">
+                <img src="/storage/goods/${goods.filename}" alt="${goods.productname}" width="100" height="100">
+            </c:if>
+            <h3>Reviews:</h3>
+            <c:forEach var="review" items="${reviewsMap[goods.goodsid]}">
+                <div>
+                    <p>Title: ${review.title}</p>
+                    <p>Content: ${review.content}</p>
+                    <p>Rating: ${review.rating}</p>
+                </div>
+            </c:forEach>
+        </div>
+    </c:forEach>
+    <!-- Pagination controls -->
+    <c:if test="${totalPages > 1}">
+        <nav>
+            <ul>
+                <c:forEach begin="1" end="${totalPages}" var="pageNum">
+                    <li><a href="?page=${pageNum}">${pageNum}</a></li>
+                </c:forEach>
+            </ul>
+        </nav>
+    </c:if>
+</body>
+</html>
+  
+  <c:if test="${empty reviewList}">
+    <p>No reviews available.</p>
+</c:if>
+  
+  <script>
+    function toggleReviewDetails(reviewId) {
+        var reviewDetails = document.getElementById(reviewId);
+        if (reviewDetails.style.display === "none") {
+            reviewDetails.style.display = "block";
+        } else {
+            reviewDetails.style.display = "none";
+        }
+    }
+</script>
+  
+  
+  
+  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<html>
+<head>
+    <title>Review List</title>
+    <style>
+        .review-details {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleReviewDetails(reviewId) {
+            var reviewDetails = document.getElementById(reviewId);
+            if (reviewDetails.style.display === "none") {
+                reviewDetails.style.display = "block";
+            } else {
+                reviewDetails.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <c:if test="${empty reviewList}">
+        <p>No reviews available.</p>
+    </c:if>
+
+    <c:forEach var="review" items="${reviewList}">
+        <div class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+            <div class="review-rating">${review.rating} 평점</div>
+            <div class="review-title">${review.title}</div>
+            <div class="review-author">${review.userid}</div>
+            <div class="review-date">${review.reviewdate}</div>
+        </div>
+        <div id="review${review.reviewid}" class="review-details">
+            <div class="review-content">${review.content}</div>
+            <img src="${review.imagepath}" alt="Review Image" class="review-image">
+            <div class="review-comments">
+                <c:forEach var="comment" items="${review.comments}">
+                    <div class="comment">${comment}</div>
+                </c:forEach>
+            </div>
+        </div>
+    </c:forEach>
+</body>
+</html>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  @RequestMapping("/list")
+public ModelAndView list(@RequestParam(defaultValue = "1") int page, HttpSession session) {
+    int pageSize = 16;
+    int offset = (page - 1) * pageSize;
+
+    int totalRecords = goodsDao.countGoods();
+    int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+    Map<String, Integer> params = new HashMap<>();
+    params.put("limit", pageSize);
+    params.put("offset", offset);
+
+    List<GoodsDTO> goodsList = goodsDao.listWithPaging(params);
+
+    // Fetch reviews for each goods item
+    Map<String, List<ReviewDTO>> reviewMap = new HashMap<>();
+    for (GoodsDTO goods : goodsList) {
+        List<ReviewDTO> reviews = reviewDao.getReviewByGoodsId(goods.getGoodsid());
+        reviewMap.put(goods.getGoodsid(), reviews);
+    }
+    
+    ModelAndView mav = new ModelAndView();
+    mav.setViewName("goods/list");
+    mav.addObject("list", goodsList);
+    mav.addObject("currentPage", page);
+    mav.addObject("totalPages", totalPages);
+
+    // 세션에서 userID를 가져와서 사용자가 로그인한 상태인지 확인
+    String userID = (String) session.getAttribute("userID");
+    mav.addObject("userID", userID);
+
+    // reviewList 추가
+    mav.addObject("reviewList", reviewMap);
+
+    return mav;
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<c:forEach var="goods" items="${list}">
+    <div class="goods-item">
+        <h3>${goods.productname}</h3>
+        <!-- 상품의 다른 정보 표시 -->
+
+        <!-- 리뷰 표시 -->
+        <c:set var="reviewList" value="${reviewList[goods.goodsid]}"/>
+        <c:if test="${empty reviewList}">
+            <p>No reviews available.</p>
+        </c:if>
+
+        <c:forEach var="review" items="${reviewList}">
+            <div class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+                <div class="review-rating">${review.rating} 평점</div>
+                <div class="review-title">${review.title}</div>
+                <div class="review-author">${review.userid}</div>
+                <div class="review-date">${review.reviewdate}</div>
+            </div>
+            <div id="review${review.reviewid}" class="review-details">
+                <div class="review-content">${review.content}</div>
+                <img src="${review.imagepath}" alt="Review Image" class="review-image">
+                <div class="review-comments">
+                    <c:forEach var="comment" items="${review.comments}">
+                        <div class="comment">${comment}</div>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:forEach>
+    </div>
+</c:forEach>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script>
+    function toggleReviewDetails(reviewId) {
+        var reviewDetails = document.getElementById(reviewId);
+        if (reviewDetails.style.display === "none") {
+            reviewDetails.style.display = "block";
+        } else {
+            reviewDetails.style.display = "none";
+        }
+    }
+</script>
+
+<style>
+    .review-details {
+        display: none;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@Controller
+public class ReviewController {
+    @GetMapping("/review/write")
+    public String showReviewWriteForm(@RequestParam("goodsid") int goodsid, Model model) {
+        // Assuming you have a service method to get the GoodsDto by its ID
+        GoodsDto goodsDto = goodsService.getGoodsById(goodsid);
+        model.addAttribute("GoodsDto", goodsDto);
+        return "review/write"; // The name of your JSP/HTML file
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+public class ReviewController {
+    private GoodsDao goodsDao;
+
+    // GoodsDao를 생성자를 통해 주입받습니다.
+    public ReviewController(GoodsDao goodsDao) {
+        this.goodsDao = goodsDao;
+    }
+
+    @GetMapping("/review/write")
+    public String showReviewWriteForm(Model model) {
+        // 상품 목록을 데이터베이스에서 가져옵니다.
+        List<GoodsDto> goodsList = goodsDao.getAllGoods();
+        model.addAttribute("goodsList", goodsList);
+        return "review/write"; // review/write.jsp 또는 review/write.html 파일을 가리킵니다.
+    }
+
+    @PostMapping("/review/insert")
+    public String insertReview(@RequestParam("goodsid") int goodsid,
+                               @RequestParam("title") String title,
+                               @RequestParam("content") String content,
+                               RedirectAttributes redirectAttributes) {
+        // 리뷰 데이터를 처리하는 코드를 작성합니다.
+        // 여기서는 데이터베이스에 삽입하는 예시를 들었습니다.
+        ReviewDto reviewDto = new ReviewDto();
+        reviewDto.setGoodsid(goodsid);
+        reviewDto.setTitle(title);
+        reviewDto.setContent(content);
+
+        // 리뷰를 데이터베이스에 삽입하는 메서드를 호출합니다.
+        insertReviewIntoDatabase(reviewDto);
+
+        // 리다이렉트 할 경로를 지정합니다.
+        return "redirect:/review/list"; // 리뷰 목록 페이지로 리다이렉트합니다.
+    }
+
+    private void insertReviewIntoDatabase(ReviewDto reviewDto) {
+        try (SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession()) {
+            sqlSession.insert("review.insert", reviewDto);
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+public class ReviewController {
+    private GoodsDao goodsDao;
+
+    // GoodsDao를 생성자를 통해 주입받습니다.
+    public ReviewController(GoodsDao goodsDao) {
+        this.goodsDao = goodsDao;
+    }
+
+    @GetMapping("/review/write")
+    public String showReviewWriteForm(Model model) {
+        // 상품 목록을 데이터베이스에서 가져옵니다.
+        List<GoodsDto> goodsList = goodsDao.getAllGoods();
+        model.addAttribute("goodsList", goodsList);
+        return "review/write"; // review/write.jsp 또는 review/write.html 파일을 가리킵니다.
+    }
+
+    @PostMapping("/review/insert")
+    public String insertReview(@RequestParam("goodsid") int goodsid,
+                               @RequestParam("title") String title,
+                               @RequestParam("content") String content,
+                               RedirectAttributes redirectAttributes) {
+        // 리뷰 데이터를 처리하는 코드를 작성합니다.
+        // 여기서는 데이터베이스에 삽입하는 예시를 들었습니다.
+        ReviewDto reviewDto = new ReviewDto();
+        reviewDto.setGoodsid(goodsid);
+        reviewDto.setTitle(title);
+        reviewDto.setContent(content);
+
+        // 리뷰를 데이터베이스에 삽입하는 메서드를 호출합니다.
+        insertReviewIntoDatabase(reviewDto);
+
+        // 리다이렉트 할 경로를 지정합니다.
+        return "redirect:/review/list"; // 리뷰 목록 페이지로 리다이렉트합니다.
+    }
+
+    private void insertReviewIntoDatabase(ReviewDto reviewDto) {
+        try (SqlSession sqlSession = MyBatisUtil.getSqlSessionFactory().openSession()) {
+            sqlSession.insert("review.insert", reviewDto);
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+    <label for="goodsid">상품 선택:</label>
+    <select name="goodsid" id="goodsid">
+        <c:forEach items="${goodsList}" var="goods">
+            <option value="${goods.goodsid}">${goods.productname}</option>
+        </c:forEach>
+    </select>
+    <br/>
+    <label for="title">제목:</label>
+    <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
+    <br/>
+    <label for="content">내용:</label>
+    <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+    <br/>
+    <input type="submit" value="리뷰 작성"/>
+</form>
+  
+  
+  
+<!-- ReviewMapper.xml -->
+<mapper namespace="kr.co.matchday.review.ReviewMapper">
+    <select id="getReviewByGoodsId" parameterType="java.lang.Long" resultType="kr.co.matchday.review.Review">
+        SELECT * FROM review_table WHERE goods_id = #{goodsId}
+    </select>
+</mapper>
+
+  
+  
+  
+  
+  
+  import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public class GoodsDao {
+    private final SqlSession sqlSession;
+
+    public GoodsDao(SqlSession sqlSession) {
+        this.sqlSession = sqlSession;
+    }
+
+    public List<GoodsDto> getAllGoods() {
+        return sqlSession.selectList("goods.getAllGoods");
+    }
+}
+
+<mapper namespace="goods">
+    <select id="getAllGoods" resultType="GoodsDto">
+        SELECT goodsid, productname
+        FROM goods
+    </select>
+</mapper>
+
+  
+  
+  
+  
+  // ReviewDAO.java
+package kr.co.matchday.review;
+
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public class ReviewDAO {
+    private final ReviewMapper reviewMapper;
+
+    public ReviewDAO(ReviewMapper reviewMapper) {
+        this.reviewMapper = reviewMapper;
+    }
+
+    public List<Review> getReviewByGoodsId(Long goodsId) {
+        return reviewMapper.getReviewByGoodsId(goodsId);
+    }
+}
+  
+  
+  
+  
+  
+  
+  // ReviewMapper.java
+package kr.co.matchday.review;
+
+import java.util.List;
+
+public interface ReviewMapper {
+    List<Review> getReviewByGoodsId(Long goodsId);
+}
+  <!-- mybatis-config.xml -->
+<configuration>
+    <mappers>
+        <mapper resource="kr/co/matchday/review/ReviewMapper.xml"/>
+        <!-- Other mappers if any -->
+    </mappers>
+</configuration>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  @GetMapping("/detail")
+public ModelAndView detail(@RequestParam("goodsid") String goodsid) {
+    ModelAndView mav = new ModelAndView();
+    mav.setViewName("goods/detail");
+
+    // Retrieve goods details
+    GoodsDTO goodsDto = goodsDao.detail(goodsid);
+    mav.addObject("goodsDto", goodsDto);
+
+    // Retrieve related reviews for the goods
+    List<ReviewDTO> reviews = reviewDao.getReviewsByGoodsId(goodsid);
+    mav.addObject("reviews", reviews);
+
+    return mav;
+}
+  
+  
+  
+  <!-- goods/detail.jsp -->
+<h2>Goods Detail</h2>
+<p>Product Name: ${goodsDto.productname}</p>
+<p>Description: ${goodsDto.description}</p>
+<!-- Display reviews -->
+<h3>Reviews</h3>
+<ul>
+    <c:forEach items="${reviews}" var="review">
+        <li>
+            <p>Title: ${review.title}</p>
+            <p>Content: ${review.content}</p>
+            <p>Rating: ${review.rating}</p>
+            <!-- Add other review details as needed -->
+        </li>
+    </c:forEach>
+</ul>
+  
+  
+  
+  
+  
+  // In ReviewDAO.java
+public List<ReviewDTO> (String goodsid) {
+    return sqlSession.selectList("review.", goodsid);
+}
+  \
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <label for="goodsid">상품 선택:</label>
+<select name="goodsid" id="goodsid">
+    <c:forEach items="${goodsList}" var="goods">
+        <option value="${goods.goodsid}">${goods.productname}</option>
+    </c:forEach>
+</select>
+  
+  
+  
+  
+  
+  <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+    <!-- goodsid will be submitted here -->
+    <label for="goodsid">상품 선택:</label>
+    <select name="goodsid" id="goodsid">
+        <c:forEach items="${goodsList}" var="goods">
+            <option value="${goods.goodsid}">${goods.productname}</option>
+        </c:forEach>
+    </select>
+    <br/>
+    <label for="title">제목:</label>
+    <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
+    <br/>
+    <label for="content">내용:</label>
+    <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+    <br/>
+    <input type="submit" value="리뷰 작성"/>
+</form>
+  
+  
+  
+  
+  
+  @Controller
+@RequestMapping("/review")
+public class ReviewCont {
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    @Autowired
+    private GoodsDAO goodsDao;
+
+    @GetMapping("/write")
+    public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model) {
+        List<GoodsDTO> goodsList = goodsDao.list();
+        model.addAttribute("goodsList", goodsList);
+        return "review/write";
+    }
+
+    @PostMapping("/insert")
+    public String insert(@ModelAttribute ReviewDTO reviewDto) {
+        // Handle review insertion logic
+        reviewDao.insert(reviewDto);
+        return "redirect:/review/list";
+    }
+
+    @GetMapping("/list")
+    public String list(Model model, HttpSession session) {
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login"; // Redirect to login page if user is not logged in
+        }
+        
+        List<ReviewDTO> reviewList = reviewDao.list();
+        model.addAttribute("reviewList", reviewList);
+        return "review/list";
+    }
+}
+ 
+ 
+ 
+ 
+ 
+ <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.matchday.review.ReviewMapper">
+
+    <insert id="insert" parameterType="kr.co.matchday.review.ReviewDTO">
+        INSERT INTO review (reviewid, userid, matchid, goodsid, reviewdate, title, content, rating, grantedpoints)
+        VALUES (#{reviewid}, #{userid}, #{matchid}, #{goodsid}, #{reviewdate}, #{title}, #{content}, #{rating}, #{grantedpoints})
+    </insert>
+    
+    <select id="getReviewByGoodsId" parameterType="java.lang.Long" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review WHERE goodsid = #{goodsid}
+    </select>
+    
+    <!-- 기타 필요한 매핑들 -->
+    
+</mapper>
+ 
+ 
+ 
+ 
+ 
+ <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="kr.co.matchday.goods.GoodsMapper">
+ 
+     <insert id="insert" parameterType="kr.co.matchday.goods.GoodsDTO">
+        INSERT INTO goods(goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo)
+        VALUES(#{goodsid}, #{category}, #{productname}, #{description}, #{size}, #{price}, #{stockquantity}, #{issoldout}, #{filename}, #{filesize}, #{regdate}, #{caution}, #{deliveryreturnsexchangesinfo})
+    </insert>
+    
+    <select id="list" resultType="kr.co.matchday.goods.GoodsDTO">
+        SELECT goodsid, category, productname, description, size, price, stockquantity, issoldout, filename, filesize, regdate, caution, deliveryreturnsexchangesinfo
+        FROM goods
+        ORDER BY productname
+    </select>
+    
+    <!-- 기타 필요한 매핑들 -->
+    
+ </mapper>
+ 
+ 
+ 
+ package kr.co.matchday.review;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public class ReviewDAOImpl implements ReviewDAO {
+
+    @Autowired
+    private SqlSession sqlSession; // Make sure SqlSession is properly injected
+
+    @Override
+    public List<ReviewDTO> getReviewsByGoodsId(String goodsid) {
+        return sqlSession.selectList("review.getReviewByGoodsId", goodsid);
+    }
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ package kr.co.matchday.review;
+
+import java.util.List;
+
+public interface ReviewDAO {
+    List<ReviewDTO> getReviewsByGoodsId(String goodsid);
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <select id="getReviewByGoodsId" parameterType="java.lang.Long" resultType="kr.co.matchday.review.ReviewDTO">
+    SELECT * FROM review WHERE goodsid = #{goodsid}
+</select>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Page</title>
+    <style>
+        .review-summary {
+            cursor: pointer;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .review-details {
+            display: none;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        .review-image {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+    <script>
+        function toggleReviewDetails(id) {
+            const reviewDetails = document.getElementById(id);
+            if (reviewDetails.style.display === "none") {
+                reviewDetails.style.display = "block";
+            } else {
+                reviewDetails.style.display = "none";
+            }
+        }
+
+        function loadReviews() {
+            const reviews = [
+                {
+                    rating: 5,
+                    title: "Great product",
+                    author: "user1",
+                    reviewdate: "2023-07-01",
+                    content: "I loved this product! Highly recommend.",
+                    imagePath: "path_to_image1.jpg",
+                    comments: ["동의합니다."]
+                },
+                {
+                    rating: 4,
+                    title: "Very good",
+                    author: "user2",
+                    reviewdate: "2023-07-02",
+                    content: "This product is very good, but there's room for improvement.",
+                    imagePath: "path_to_image2.jpg",
+                    comments: ["좋아요!"]
+                }
+                // 더 많은 리뷰 데이터를 여기에 추가할 수 있습니다.
+            ];
+
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviews.forEach((review, index) => {
+                const reviewId = 'review' + index;
+                const reviewSummary = `
+                    <div class="review-summary" onclick="toggleReviewDetails('${reviewId}')">
+                        <div class="review-rating">${review.rating} 평점</div>
+                        <div class="review-title">${review.title}</div>
+                        <div class="review-author">${review.author}</div>
+                        <div class="review-date">${review.reviewdate}</div>
+                    </div>
+                    <div id="${reviewId}" class="review-details">
+                        <div class="review-content">${review.content}</div>
+                        <img src="${review.imagePath}" alt="Review Image" class="review-image">
+                        <div class="review-comments">
+                            ${review.comments.map(comment => `<div class="comment">댓글: ${comment}</div>`).join('')}
+                        </div>
+                    </div>
+                `;
+                reviewContainer.innerHTML += reviewSummary;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadReviews);
+    </script>
+</head>
+<body>
+    <div id="reviewContainer"></div>
+</body>
+</html>
+ 
+ 
+ 
+ 
+ 
+ 
+ <div class="review-summary" onclick="toggleReviewDetails('review3')">
+    <div class="review-rating">${review.rating}평점</div>
+    <div class="review-title">${review.title}</div>
+    <div class="review-author">${userid}</div>
+    <div class="review-date">${review.reviewdate}</div>
+</div>
+<div id="review3" class="review-details">
+    <div class="review-content">
+        ${review.content}
+    </div>
+    <img src="path_to_image2.jpg" alt="Review Image" class="review-image">
+    <div class="review-comments">
+        <div class="comment">댓글 1: 동의합니다.</div>
+    </div>
+</div>
+ 
+ <div class="review-rating">★★★★☆</div>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ function toggleReviewDetails(reviewId) {
+    var reviewDetails = document.getElementById(reviewId);
+    if (reviewDetails.style.display === 'none') {
+        reviewDetails.style.display = 'block';
+    } else {
+        reviewDetails.style.display = 'none';
+    }
+}
+ 
+ 
+ 
+ 
+ 
+ function toggleReviewDetails(reviewId) {
+    var reviewDetails = document.getElementById(reviewId);
+    if (reviewDetails.style.display === 'none') {
+        reviewDetails.style.display = 'block';
+        console.log("Rating: ★★★★☆"); // 예시로 하드코딩된 평점 출력
+    } else {
+        reviewDetails.style.display = 'none';
+    }
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="review">
+
+    <resultMap id="ReviewWithGoodsMap" type="kr.co.matchday.review.ReviewDTO">
+        <id property="reviewid" column="reviewid" />
+        <result property="userid" column="userid" />
+        <result property="matchid" column="matchid" />
+        <result property="goodsid" column="goodsid" />
+        <result property="reviewdate" column="reviewdate" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="rating" column="rating" />
+        <result property="grantedpoints" column="grantedpoints" />
+        <!-- Add additional fields from goods table if needed -->
+        <association property="goods" javaType="kr.co.matchday.goods.GoodsDTO">
+            <result property="productname" column="productname" />
+            <result property="price" column="price" />
+            <result property="category" column="category" />
+        </association>
+    </resultMap>
+
+    <select id="getReviewList" parameterType="String" resultMap="ReviewWithGoodsMap">
+        SELECT r.reviewid, r.userid, r.matchid, r.goodsid, r.reviewdate, r.title, r.content, r.rating, r.grantedpoints,
+               g.productname, g.price, g.category
+        FROM review r
+        JOIN goods g ON r.goodsid = g.goodsid
+        WHERE r.goodsid = #{goodsid}
+    </select>
+    
+    <!-- Additional SQL statements can be added as needed -->
+
+</mapper>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="review">
+
+    <insert id="insert" parameterType="kr.co.matchday.review.ReviewDTO">
+        INSERT INTO review (reviewid, userid, matchid, goodsid, reviewdate, title, content, rating, grantedpoints)
+        VALUES (#{reviewid}, #{userid}, #{matchid}, #{goodsid}, #{reviewdate}, #{title}, #{content}, #{rating}, #{grantedpoints})
+    </insert>
+    
+    <select id="getReviewList" parameterType="kr.co.matchday.review.ReviewDTO" resultMap="reviewListResultMap">
+        SELECT r.reviewid, r.userid, r.matchid, r.goodsid, r.reviewdate, r.title, r.content, r.rating, r.grantedpoints,
+               g.productname, g.price, g.category
+        FROM review r
+        JOIN goods g ON r.goodsid = g.goodsid
+        WHERE r.goodsid = #{goodsid}
+    </select>
+    
+    <select id="selectReviewById" parameterType="String" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review WHERE reviewid = #{reviewid}
+    </select>
+    
+    <select id="selectAll" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review
+    </select>
+
+    <!-- resultMap 정의 -->
+    <resultMap id="reviewListResultMap" type="kr.co.matchday.review.ReviewDTO">
+        <id property="reviewid" column="reviewid"/>
+        <result property="userid" column="userid"/>
+        <result property="matchid" column="matchid"/>
+        <result property="goodsid" column="goodsid"/>
+        <result property="reviewdate" column="reviewdate"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="rating" column="rating"/>
+        <result property="grantedpoints" column="grantedpoints"/>
+        <!-- goods 객체 매핑 -->
+        <association property="goods" javaType="kr.co.matchday.goods.Goods">
+            <result property="productname" column="productname"/>
+            <result property="price" column="price"/>
+            <result property="category" column="category"/>
+        </association>
+    </resultMap>
+
+</mapper>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 후기 쓰기</title>
+    <!-- 부트스트랩 CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN 추가 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        .board_write_popup {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .ly_tit {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .ly_cont {
+            margin-bottom: 20px;
+        }
+        .board_write_box {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .board_write_table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .board_write_table th {
+            width: 15%;
+            text-align: right;
+            vertical-align: top;
+        }
+        .board_write_table td {
+            width: 85%;
+            padding-left: 10px;
+        }
+        .write_editor textarea {
+            width: 100%;
+            min-width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .btn_center_box {
+            text-align: center;
+        }
+        .btn_ly_cancel, .btn_ly_write_ok {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn_ly_cancel:hover, .btn_ly_write_ok:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body class="body-board body-popup-goods-board-write pc">
+<div class="board_write_popup">
+    <div class="ly_tit">
+        <h4>상품 후기 쓰기</h4>
+    </div>
+
+    <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+        <label for="goodsid">상품 선택:</label>
+
+        <select name="goodsid" id="goodsid">
+            <c:forEach items="${goodsList}" var="goods">
+                <!-- 특정 goodsid에 해당하는 상품명만 출력 -->
+                <c:if test="${goods.goodsid eq 'goods5'}">
+                    <option value="${goods.goodsid}">${goods.productname}</option>
+                </c:if>
+            </c:forEach>
+        </select>
+        <br/>
+        <label for="title">제목:</label>
+        <input type="text" name="title" id="title" placeholder="제목을 입력하세요"/>
+        <br/>
+        <label for="content">내용:</label>
+        <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+        <br/>
+        <input type="submit" value="리뷰 작성"/>
+    </form>
+
+    <div class="ly_cont">
+        <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+            <input name="goodsid" id="goodsid" value="${goods.goodsid}">
+            <div class="scroll_box">
+                <div class="top_item_photo_info">
+                    <div class="item_photo_box">
+                        <img src="../images/서울 홈 유니폼(앞).jpg" width="300" alt="2024 스틸러스 원정 유니폼" title="2024 스틸러스 원정 유니폼" class="middle">
+                    </div>
+                    <br>
+
+                    <c:forEach items="${goodsList}" var="goods">
+                        <!-- 특정 goodsid에 해당하는 상품명만 출력 -->
+                        <c:if test="${goods.goodsid eq 'goods5'}">
+                            <div class="item_info_box">
+                                <h5>${goods.productname}</h5>
+                            </div>
+                        </c:if>
+                    </c:forEach>
+
+                </div>
+                <!-- //top_item_photo_info -->
+
+                <div class="board_write_box">
+                    <table class="board_write_table">
+                        <colgroup>
+                            <col style="width:15%">
+                            <col style="width:85%">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th scope="row">리뷰 ID</th>
+                            <td>
+                                <input type="text" name="reviewid" id="reviewid" class="form-control" placeholder="${goods.productname}리뷰 아이디 입력">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">작성자</th>
+                            <td>
+                                <input type="text" name="userid" id="userid" value="${userID}" class="form-control" readonly>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">비밀번호</th>
+                            <td>
+                                <input type="password" name="writerPw" class="form-control" placeholder="비밀번호 입력">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">제목</th>
+                            <td>
+                                <input type="text" name="title" id="title" class="form-control write_title" placeholder="제목 입력">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">내용</th>
+                            <td class="write_editor">
+                                <div class="form_element">
+                                    <input type="checkbox" name="isSecret" value="y" id="secret">
+                                    <label for="secret" class="check_s">비밀글</label>
+                                </div>
+                                <textarea title="내용 입력" id="editor" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">파일</th>
+                            <td id="uploadBox">
+                                <div class="file_upload_sec">
+                                    <label for="attach"><input type="text" class="file_text form-control" readonly="readonly" placeholder="파일 첨부하기"></label>
+                                    <div class="btn_upload_box">
+                                        <button type="button" class="btn btn-outline-secondary btn_upload" title="찾아보기"><em>찾아보기</em></button>
+                                        <input type="file" id="attach" name="upfiles[]" class="file" title="찾아보기">
+                                        <span class="btn_gray_list">
+                                                    <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
+                                                </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">평점</th>
+                            <td>
+                                <input type="
+ 
+ 
+ 
+ 
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 후기 쓰기</title>
+    <!-- 필요한 CSS 및 JavaScript 추가 -->
+</head>
+<body>
+    <div class="item_info_box">
+        <c:forEach items="${goodsList}" var="goods">
+            <c:if test="${goods.goodsid eq param.goodsid}">
+                <h5>${goods.productname}</h5>
+            </c:if>
+        </c:forEach>
+    </div>
+    <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+        <label for="goodsid">상품 선택:</label>
+        <select name="goodsid" id="goodsid">
+            <c:forEach items="${goodsList}" var="goods">
+                <option value="${goods.goodsid}" <c:if test="${goods.goodsid eq param.goodsid}">selected</c:if>>${goods.productname}</option>
+            </c:forEach>
+        </select>
+        <br/>
+        <label for="title">제목:</label>
+        <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
+        <br/>
+        <label for="content">내용:</label>
+        <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+        <br/>
+        <input type="submit" value="리뷰 작성"/>
+    </form>
+</body>
+</html>
+
+ 
+ 
+ <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 후기 쓰기</title>
+    <!-- 필요한 CSS 및 JavaScript 추가 -->
+</head>
+<body>
+    <div class="item_info_box">
+        <c:forEach items="${goodsList}" var="goods">
+            <c:if test="${goods.goodsid eq param.goodsid}">
+                <h5>${goods.productname}</h5>
+            </c:if>
+        </c:forEach>
+    </div>
+    <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="goodsid" value="${param.goodsid}" />
+        <label for="title">제목:</label>
+        <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
+        <br/>
+        <label for="content">내용:</label>
+        <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+        <br/>
+        <input type="submit" value="리뷰 작성"/>
+    </form>
+</body>
+</html>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 후기 쓰기</title>
+    <!-- 부트스트랩 CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN 추가 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <link href="/css/styles.css" rel="stylesheet" type="text/css">
+    <style>
+        /* 스타일 생략 */
+    </style>
+</head>
+<body class="body-board body-popup-goods-board-write pc">
+    <div class="board_write_popup">
+        <div class="ly_tit">
+            <h4>상품 후기 쓰기</h4>
+        </div>
+        
+        <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="goodsid" value="${param.goodsid}" />
+            <!-- 리뷰 아이디는 JavaScript로 자동 생성 -->
+            <input type="hidden" name="reviewid" id="reviewid" value="" />
+            <label for="title">제목:</label>
+            <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
+            <br/>
+            <label for="content">내용:</label>
+            <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+            <br/>
+            <input type="submit" value="리뷰 작성"/>
+        </form>
+
+        <div class="ly_cont">
+            <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
+                <!-- 리뷰 아이디는 JavaScript로 자동 생성 -->
+                <input type="hidden" name="reviewid" id="reviewid" value="" />
+
+                <div class="scroll_box">
+                    <div class="top_item_photo_info">
+                        <div class="item_photo_box">
+                            <img src="../images/서울 홈 유니폼(앞).jpg" width="300" alt="2024 스틸러스 원정 유니폼" title="2024 스틸러스 원정 유니폼" class="middle">
+                        </div>
+                        <br>
+                        <c:forEach items="${goodsList}" var="goods">
+                            <c:if test="${goods.goodsid eq param.goodsid}">
+                                <h5>${goods.productname}</h5>
+                            </c:if>
+                        </c:forEach>    
+                    </div>
+                    <!-- //top_item_photo_info -->
+
+                    <div class="board_write_box">
+                        <table class="board_write_table">
+                            <colgroup>
+                                <col style="width:15%">
+                                <col style="width:85%">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">리뷰 ID</th>
+                                    <td>
+                                        <!-- 리뷰 아이디 입력란은 사용자에게 보이지 않게 설정 -->
+                                        <input type="text" name="reviewid_visible" class="form-control" readonly>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">작성자</th>
+                                    <td>
+                                        <input type="text" name="userid" id="userid" value="${userID}" class="form-control" readonly>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">비밀번호</th>
+                                    <td>
+                                        <input type="password" name="writerPw" class="form-control" placeholder="비밀번호 입력">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">제목</th>
+                                    <td>
+                                        <input type="text" name="title" id="title" class="form-control write_title" placeholder="제목 입력">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">내용</th>
+                                    <td class="write_editor">
+                                        <div class="form_element">
+                                            <input type="checkbox" name="isSecret" value="y" id="secret">
+                                            <label for="secret" class="check_s">비밀글</label>
+                                        </div>
+                                        <textarea title="내용 입력" id="editor" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">파일</th>
+                                    <td id="uploadBox">
+                                        <div class="file_upload_sec">
+                                            <label for="attach"><input type="text" class="file_text form-control" readonly="readonly" placeholder="파일 첨부하기"></label>
+                                            <div class="btn_upload_box">
+                                                <button type="button" class="btn btn-outline-secondary btn_upload" title="찾아보기"><em>찾아보기</em></button>
+                                                <input type="file" id="attach" name="upfiles[]" class="file" title="찾아보기">
+                                                <span class="btn_gray_list">
+                                                    <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">평점</th>
+                                    <td>
+                                        <input type="number" name="rating" id="rating" class="form-control" min="1" max="10" required>
+                                        <small class="text-muted">1부터 10까지의 숫자로 입력해주세요.</small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- //board_write_box -->
+                </div>
+                <!-- //scroll_box -->
+                <div class="btn_center_box">
+                    <a href="javascript:window.close()" class="btn btn-secondary btn_ly_cancel"><strong>취소</strong></a>
+                    <a href="" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a>
+                    <input type="submit" value="등록" class="btn btn-success">
+                </div>
+            </form>
+        </div>
+        <!-- //ly_cont -->
+    </div>
+    <!-- //board_write_popup -->
+
+    <script>
+    // 페이지 로드 시 리뷰 아이디 생성 및 입력란에 자동 설정
+    document.addEventListener('DOMContentLoaded', function() {
+        var reviewId = generateReviewId(); // 리뷰 아이디 생성 함수 호출
+        document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
+    });
+
+    // 랜덤한 리뷰 아이디 생성 함수
+    function generateReviewId() {
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var length = 10;
+        var result = '';
+        for (var i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    // 페이지 로드 시 리뷰 아이디 생성 및 입력란에 자동 설정
+    document.addEventListener('DOMContentLoaded', function() {
+        var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
+        document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
+    });
+
+    // 랜덤한 리뷰 아이디 생성 함수 (review로 시작하는 숫자)
+    function generateUniqueReviewId() {
+        var prefix = 'review';
+        var num;
+        var existingIds = []; // 기존 리뷰 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+        // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+        existingIds.push('review001');
+        existingIds.push('review6165');
+        existingIds.push('review615');
+
+        // 중복되지 않는 아이디 생성
+        do {
+            num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+            var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+        } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+        return newId;
+    }
+
+    // 랜덤 숫자 생성 함수 (1 이상 999 이하)
+    function generateRandomNumber() {
+        return Math.floor(Math.random() * 999) + 1;
+    }
+</script>
+
+
+
+
+
+
+
+
+
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ReviewDAO {
+
+    @Autowired
+    private SqlSession sqlSession;
+
+    public void insert(ReviewDTO reviewDto) {
+        sqlSession.insert("review.insert", reviewDto);
+    }
+
+    public ReviewDTO selectReviewById(String reviewid) {
+        return sqlSession.selectOne("review.selectReviewById", reviewid);
+    }
+
+    public List<ReviewDTO> getReviewList(String goodsid) {
+        return sqlSession.selectList("review.getReviewList", goodsid);
+    }
+
+    public List<ReviewDTO> list() {
+        return sqlSession.selectList("review.selectAll");
+    }
+}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="review">
+
+    <insert id="insert" parameterType="kr.co.matchday.review.ReviewDTO">
+        INSERT INTO review (reviewid, userid, matchid, goodsid, reviewdate, title, content, rating, grantedpoints)
+        VALUES (#{reviewid}, #{userid}, #{matchid}, #{goodsid}, #{reviewdate}, #{title}, #{content}, #{rating}, #{grantedpoints})
+    </insert>
+    
+    <select id="getReviewList" parameterType="String" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review WHERE goodsid = #{goodsid}
+    </select>
+    
+    <select id="selectReviewById" parameterType="String" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review WHERE reviewid = #{reviewid}
+    </select>
+    
+    <!-- 
+    <update id="update" parameterType="kr.co.matchday.review.ReviewDTO">
+        UPDATE review
+        SET userid = #{userid}, matchid = #{matchid}, goodsid = #{goodsid}, reviewdate = #{reviewdate},
+            title = #{title}, content = #{content}, rating = #{rating}, grantedpoints = #{grantedpoints}
+        WHERE reviewid = #{reviewid}
+    </update>
+    
+    <delete id="delete" parameterType="String">
+        DELETE FROM review WHERE reviewid = #{reviewid}
+    </delete>  
+    -->
+    
+    <select id="selectAll" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+<form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
+    <input type="hidden" name="reviewid" id="reviewid" value="">
+    <!-- 기타 입력 항목들 ... -->
+    <input type="submit" value="등록" class="btn btn-success">
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
+    document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
+});
+
+function generateUniqueReviewId() {
+    var prefix = 'review';
+    var num;
+    var existingIds = []; // 기존 리뷰 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+    // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+    <c:forEach items="${reviewList}" var="review">
+        existingIds.push('${review.reviewid}');
+    </c:forEach>
+
+    // 중복되지 않는 아이디 생성
+    do {
+        num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+        var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+    } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+    return newId;
+}
+
+function generateRandomNumber() {
+    return Math.floor(Math.random() * 999) + 1;
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@PostMapping("/insert")
+public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session) {
+    String userid = (String) session.getAttribute("userID");
+    if (userid == null) {
+        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+    }
+    
+    // 리뷰 아이디 생성
+    String reviewId = generateUniqueReviewId();
+    reviewDto.setReviewid(reviewId);
+    
+    // 기타 필요한 정보 설정 (userid, matchid, goodsid)
+    reviewDto.setUserid(userid);
+    reviewDto.setMatchid(reviewDto.getMatchid()); // 매치 ID 설정 필요
+    reviewDto.setGoodsid(reviewDto.getGoodsid()); // 굿즈 ID 설정 필요
+    
+    // 리뷰 등록
+    reviewDao.insert(reviewDto);
+    
+    return "redirect:/review/list";
+}
+
+
+
+@PostMapping("/insert")
+public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session) {
+    String userid = (String) session.getAttribute("userID");
+    if (userid == null) {
+        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+    }
+    
+    // 리뷰 아이디 생성
+    String reviewId = generateUniqueReviewId();
+    reviewDto.setReviewid(reviewId);
+    
+    // 기타 필요한 정보 설정 (userid, matchid, goodsid)
+    reviewDto.setUserid(userid);
+    reviewDto.setMatchid(reviewDto.getMatchid()); // 매치 ID 설정 필요
+    reviewDto.setGoodsid(reviewDto.getGoodsid()); // 굿즈 ID 설정 필요
+    
+    // 리뷰 등록
+    reviewDao.insert(reviewDto);
+    
+    return "redirect:/review/list";
+}
+
+
+@PostMapping("/insert")
+public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session) {
+    String userid = (String) session.getAttribute("userID");
+    if (userid == null) {
+        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+    }
+    
+    // 기타 필요한 정보 설정 (userid, matchid, goodsid)
+    reviewDto.setUserid(userid);
+    reviewDto.setMatchid(reviewDto.getMatchid()); // 매치 ID 설정 필요
+    reviewDto.setGoodsid(reviewDto.getGoodsid()); // 굿즈 ID 설정 필요
+    
+    // 리뷰 등록
+    reviewDao.insert(reviewDto);
+    
+    return "redirect:/review/list";
+}
+
+
+
+
+
+<form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
+    <input type="hidden" name="reviewid" id="reviewid" value="">
+    <!-- 기타 입력 항목들 ... -->
+    <input type="submit" value="등록" class="btn btn-success">
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
+    document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
+});
+
+function generateUniqueReviewId() {
+    var prefix = 'review';
+    var num;
+    var existingIds = []; // 기존 리뷰 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+    // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+    <c:forEach items="${reviewList}" var="review">
+        existingIds.push('${review.reviewid}');
+    </c:forEach>
+
+    // 중복되지 않는 아이디 생성
+    do {
+        num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+        var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+    } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+    return newId;
+}
+
+function generateRandomNumber() {
+    return Math.floor(Math.random() * 999) + 1;
+}
+</script>

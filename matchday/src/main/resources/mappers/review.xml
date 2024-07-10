@@ -5,9 +5,33 @@
 
 <mapper namespace="review">
 
+	<insert id="insert" parameterType="kr.co.matchday.review.ReviewDTO">
+	    INSERT INTO review (reviewid, userid, matchid, goodsid, reviewdate, title, content, rating, grantedpoints)
+	    VALUES (#{reviewid}, #{userid}, #{matchid}, #{goodsid}, #{reviewdate}, #{title}, #{content}, #{rating}, #{grantedpoints})
+	</insert>
+	
+	<select id="getReviewList" parameterType="String" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review WHERE goodsid = #{goodsid}
+    </select>
+    
+	<select id="selectReviewById" parameterType="String" resultType="kr.co.matchday.review.ReviewDTO">
+	    SELECT * FROM review WHERE reviewid = #{reviewid}
+	</select>
+	
+	<!-- <update id="update" parameterType="kr.co.matchday.review.ReviewDTO">
+	    UPDATE review
+	    SET userid = #{userid}, matchid = #{matchid}, goodsid = #{goodsid}, reviewdate = #{reviewdate},
+	        title = #{title}, content = #{content}, rating = #{rating}, grantedpoints = #{grantedpoints}
+	    WHERE reviewid = #{reviewid}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+	    DELETE FROM review WHERE reviewid = #{reviewid}
+	</delete>  -->
 
-
-
+	<select id="selectAll" resultType="kr.co.matchday.review.ReviewDTO">
+        SELECT * FROM review
+    </select>
 
 
 

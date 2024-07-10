@@ -1,13 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>상품 후기 쓰기</title>
-    <!-- 부트스트랩 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>상품 후기 쓰기</title>
+  <!-- 부트스트랩 CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons CDN 추가 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <link href="/css/styles.css" rel="stylesheet" type="text/css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,6 +40,30 @@
         .ly_cont {
             margin-bottom: 20px;
         }
+        
+        /* 이미지 및 상품명 센터 정렬 */
+	    .top_item_photo_info {
+	        text-align: center;
+	        margin-bottom: 20px;
+	    }
+	    
+	    .item_photo_box {
+	        display: inline-block;
+	    }
+	    
+	    .item_photo_box img {
+	        max-width: 100%;
+	        height: auto;
+	    }
+	    
+	    /* 상품명 스타일 */
+	    .productname {
+	        font-size: 24px; /* 원하는 크기로 조정 */
+	        font-weight: bold; /* 굵게 설정 */
+	        margin-top: 10px; /* 필요에 따라 조정 */
+	        margin-bottom: 10px; /* 필요에 따라 조정 */
+	    } 
+    
         .board_write_box {
             padding: 20px;
             background-color: #f9f9f9;
@@ -83,27 +117,36 @@
 <body class="body-board body-popup-goods-board-write pc">
     <div class="board_write_popup">
         <div class="ly_tit">
-            <h4>상품 후기 쓰기</h4>
+            <h2>상품 후기 쓰기</h2>
         </div>
+        
+         <%-- <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+	        <input type="hidden" name="goodsid" value="${param.goodsid}" />
+	        <label for="title">제목:</label>
+	        <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
+	        <br/>
+	        <label for="content">내용:</label>
+	        <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
+	        <br/>
+	        <input type="submit" value="리뷰 작성"/>
+    	</form>
+ --%>
         <div class="ly_cont">
-            <form name="frmWrite" id="frmWrite" action="../board/board_ps.php" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="gboard" value="y"/>
-                <input type="hidden" name="windowType" value="popup"/>
-                <input type="hidden" name="bdId" value="goodsreview"/>
-                <input type="hidden" name="sno" value=""/>
-                <input type="hidden" name="mode" value="write"/>
-                <input type="hidden" name="goodsNo" value="1000000296"/>
-                <input type="hidden" name="returnUrl" value="bdId=goodsreview&goodsNo=1000000296&orderGoodsNo=0"/>
-
+            <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
+                <input type="hidden" name="reviewid" id="reviewid" value="">
                 <div class="scroll_box">
                     <div class="top_item_photo_info">
                         <div class="item_photo_box">
-                            <img src="https://godomall.speedycdn.net/3a69e4757b9ebccf29e8a5d1f2a70610/goods/1000000296/image/detail/1000000296_detail_080.png" width="500" alt="2024 스틸러스 원정 유니폼" title="2024 스틸러스 원정 유니폼" class="middle">
+                            <img src="<c:url value='/images/${param.goodsid}.jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                            <img src="${pageContext.request.contextPath}/storage/goods/${goodsDto.filename}" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
                         </div>
                         <br>
-                        <div class="item_info_box">
-                            <h5>2024 스틸러스 원정 유니폼</h5>
-                        </div>
+                        <c:forEach items="${goodsList}" var="goods">
+				            <c:if test="${goods.goodsid eq param.goodsid}">
+				                <h5 class="productname">${goods.productname}</h5>
+				            </c:if>
+				        </c:forEach>    
                     </div>
                     <!-- //top_item_photo_info -->
 
@@ -117,7 +160,7 @@
                                 <tr>
                                     <th scope="row">작성자</th>
                                     <td>
-                                        <input type="text" name="writerNm" class="form-control" placeholder="작성자 입력">
+                                        <input type="text" name="userid" id="userid" value="${userID}" class="form-control" readonly>
                                     </td>
                                 </tr>
                                 <tr>
@@ -129,17 +172,17 @@
                                 <tr>
                                     <th scope="row">제목</th>
                                     <td>
-                                        <input type="text" name="subject" class="form-control write_title" placeholder="제목 입력">
+                                        <input type="text" name="title" id="title" class="form-control write_title" placeholder="제목 입력">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">내용</th>
                                     <td class="write_editor">
-                                        <div class="form_element">
+                                        <!-- <div class="form_element">
                                             <input type="checkbox" name="isSecret" value="y" id="secret">
                                             <label for="secret" class="check_s">비밀글</label>
-                                        </div>
-                                        <textarea title="내용 입력" id="editor" class="form-control" name="contents" rows="5" placeholder="내용을 입력하세요"></textarea>
+                                        </div> -->
+                                        <textarea title="내용 입력" id="editor" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
                                     </td>
                                 </tr>
                                 <tr>
@@ -157,20 +200,102 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr>
+    <th scope="row">평점</th>
+    <td>
+        <div class="rating-container">
+            <input type="radio" id="rating1" name="rating" value="1" class="rating-input visually-hidden" required>
+            <label for="rating1" class="rating-label" onclick="handleRatingClick(1)"><i class="bi bi-circle"></i> 1</label>
+            
+            <input type="radio" id="rating2" name="rating" value="2" class="rating-input visually-hidden">
+            <label for="rating2" class="rating-label" onclick="handleRatingClick(2)"><i class="bi bi-circle"></i> 2</label>
+            
+            <input type="radio" id="rating3" name="rating" value="3" class="rating-input visually-hidden">
+            <label for="rating3" class="rating-label" onclick="handleRatingClick(3)"><i class="bi bi-circle"></i> 3</label>
+            
+            <input type="radio" id="rating4" name="rating" value="4" class="rating-input visually-hidden">
+            <label for="rating4" class="rating-label" onclick="handleRatingClick(4)"><i class="bi bi-circle"></i> 4</label>
+            
+            <input type="radio" id="rating5" name="rating" value="5" class="rating-input visually-hidden">
+            <label for="rating5" class="rating-label" onclick="handleRatingClick(5)"><i class="bi bi-circle"></i> 5</label>
+        </div>
+        <small class="text-muted">1부터 5까지의 숫자 중 하나를 선택해주세요.</small>
+    </td>
+</tr>
+
+
+
+
+
                             </tbody>
                         </table>
                     </div>
                     <!-- //board_write_box -->
                 </div>
                 <!-- //scroll_box -->
-            </form>
-            <div class="btn_center_box">
+                <div class="btn_center_box">
                 <a href="javascript:window.close()" class="btn btn-secondary btn_ly_cancel"><strong>취소</strong></a>
-                <a href="javascript:save()" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a>
-            </div>
+                <a href="" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a>
+               
+                <input type="submit" value="등록" class="btn btn-success">
+       
+ 	           </div>
+            </form>  
         </div>
         <!-- //ly_cont -->
     </div>
     <!-- //board_write_popup -->
 </body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
+    document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
+});
+
+function generateUniqueReviewId() {
+    var prefix = 'review';
+    var num;
+    var existingIds = []; // 기존 리뷰 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+    // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+    <c:forEach items="${reviewList}" var="review">
+        existingIds.push('${review.reviewid}');
+    </c:forEach>
+
+    // 중복되지 않는 아이디 생성
+    do {
+        num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+        var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+    } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+    return newId;
+}
+
+function generateRandomNumber() { //reviewid = review뒤 숫자들 랜덤으로 생성
+    return Math.floor(Math.random() * 999) + 1;
+}
+
+
+function handleRatingClick(rating) {
+    var radios = document.getElementsByName('rating');
+    for (var i = 0; i < radios.length; i++) {
+        if (radios[i].value == rating) {
+            radios[i].checked = true;
+        } else {
+            radios[i].checked = false;
+        }
+    }
+}
+
+
+
+
+
+
+
+</script>
+
+
+
 </html>

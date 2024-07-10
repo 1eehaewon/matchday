@@ -21,42 +21,6 @@
 		background-color: #f8f9fa; /* 연한 회색 배경색 설정 */
 	}
 	
-	/* left 멤버쉽 */
-	.category-item {
-	    list-style: none;
-	    padding: 20px;
-	    text-align: center;
-	}
-	
-	.category-header {
-		margin-left: 20px;
-	    cursor: pointer;
-	    display: flex;
-	    justify-content: center;
-	    align-items: center;
-	    font-size: 20px;
-	}
-	
-	.listBtn {
-	    margin-left: 10px;
-	    transition: transform 0.3s ease;
-	}
-	
-	.subcategory-list {
-	    display: none;
-	    list-style: none;
-	    padding-left: 20px;
-	}
-	
-	.subcategory-list li {
-	    margin: 5px 0;
-	}
-	
-	.subcategory-list.show {
-	    display: block;
-	}
-	/* left 멤버쉽 end */
-	
 	.left ul {
 	    list-style-type: none; /* 리스트 스타일 타입 없음 */
 	    padding: 0; /* 내부 여백 없음 */
@@ -255,20 +219,6 @@
 	<div class="left">
 		<!-- 왼쪽 카테고리 -->
 		<ul class="category-list">
-			<li class="category-item">
-		        <div class="category-header" data-category="Membership">
-		            멤버쉽
-		            <span class="listBtn">&#9662;</span>
-		        </div>
-		        <ul class="subcategory-list">
-		            <li class="subcategory-item" data-category="Membership-Sub1">첼시 멤버쉽</li>
-		            <li class="subcategory-item" data-category="Membership-Sub2">아스날 멤버쉽</li>
-		            <li class="subcategory-item" data-category="Membership-Sub3">리버풀 멤버쉽</li>
-		            <li class="subcategory-item" data-category="Membership-Sub4">맨체스터시티 멤버쉽</li>
-		            <li class="subcategory-item" data-category="Membership-Sub5">바이에른 뮌헨 멤버쉽</li>
-		            <li class="subcategory-item" data-category="Membership-Sub6">토트넘 멤버쉽</li>
-		        </ul>
-		    </li>
 			<li data-name="전체" data-category="All">전체</li>
 			<li data-name="키링" data-category="Keyring">키링</li>
 			<li data-name="유니폼" data-category="Uniform">유니폼</li>
@@ -568,7 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* left 멤버쉽 */
 document.addEventListener('DOMContentLoaded', () => {
-    const categoryHeader = document.querySelector('.category-header');
     const subcategoryList = document.querySelector('.subcategory-list');
     const listBtn = document.querySelector('.listBtn');
 

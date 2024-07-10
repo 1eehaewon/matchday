@@ -169,6 +169,11 @@ public class GoodsCont {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("goods/detail");
         mav.addObject("goodsDto", goodsDao.detail(goodsid));
+        
+        // 상품에 대한 관련 리뷰들을 가져옵니다
+        List<ReviewDTO> reviewList = reviewDao.getReviewList(goodsid);
+        mav.addObject("reviewDto", reviewList);
+        
         return mav;
     }//detail end
 
@@ -181,10 +186,6 @@ public class GoodsCont {
     	GoodsDTO goodsDto = goodsDao.detail(goodsid);
     	mav.addObject("goodsDto", goodsDto);
     	
-    	// Retrieve related reviews for the goods
-        List<ReviewDTO> reviews = reviewDao.getReviewsByGoodsId(goodsid);
-        mav.addObject("reviews", reviews);
-        
     	return mav;
     }//updateform() end
     

@@ -478,31 +478,53 @@
                 <div class="review-date">2024-07-09</div>
             </div>
             <div id="review1" class="review-details">
+                <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
                 <div class="review-content">
                     여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
                 </div>
-                <img src="path_to_image.jpg" alt="Review Image" class="review-image">
                 <div class="review-comments">
                     <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
                     <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
                 </div>
             </div>
-
             <div class="review-summary" onclick="toggleReviewDetails('review2')">
-                <div class="review-rating">★★★☆☆</div>
-                <div class="review-title">보통입니다</div>
-                <div class="review-author">다른 사용자</div>
-                <div class="review-date">2024-07-08</div>
+                <div class="review-rating">★★★★☆</div>
+                <div class="review-title">좋은 상품입니다</div>
+                <div class="review-author">사용자 이름</div>
+                <div class="review-date">2024-07-09</div>
             </div>
             <div id="review2" class="review-details">
+                <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
                 <div class="review-content">
-                    상품이 보통입니다.
+                    여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
                 </div>
-                <img src="path_to_image2.jpg" alt="Review Image" class="review-image">
-                <div class="review-comments">
-                    <div class="comment">댓글 1: 동의합니다.</div>
+                    <div class="review-comments">
+                    <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                    <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
                 </div>
             </div>
+
+<c:forEach items="${reviewList}" var="review">
+<div class="review-summary" onclick="toggleReviewDetails('review3')">
+    <!--  <div class="review-rating">${review.rating}평점</div> -->
+    <div class="review-title">${review.title}</div>
+    <div class="review-author">${userid}</div>
+    <div class="review-date">${review.reviewdate}</div>
+</div>
+<div id="review3" class="review-details">
+    <div class="review-content">
+        ${review.content}
+    </div>
+    </c:forEach>
+    <img src="" alt="Review Image" class="review-image">
+    <div class="review-comments">
+        <div class="comment">댓글 1: 동의합니다.</div>
+    </div>
+</div>
+
+            
+            
+            
         </div>
     </div>
 
@@ -707,15 +729,17 @@
     }
 
     function toggleReviewDetails(reviewId) {
-        var details = document.getElementById(reviewId);
-        if (details.style.display === 'none' || details.style.display === '') {
-            details.style.display = 'block';
+    	var reviewDetails = document.getElementById(reviewId);
+        if (reviewDetails.style.display === 'none') {
+            reviewDetails.style.display = 'block';
+            console.log(review.title);
+            
         } else {
-            details.style.display = 'none';
+            reviewDetails.style.display = 'none';
         }
     }
     
-    function openPopup(url) { // 상품 글쓰기
+    function openPopup(url) { // 상품 글쓰기 팝업
     	var width = 1000;
         var height = 900;
 
