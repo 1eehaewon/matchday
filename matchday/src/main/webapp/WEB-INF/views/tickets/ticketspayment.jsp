@@ -138,6 +138,25 @@
                 selectedSection = $(this).data('section');
                 $('.section-link').removeClass('active');
                 $(this).addClass('active');
+                
+                // 모든 구역의 배경색을 초기화
+                $('.north, .west, .east, .south').css('background-color', 'transparent');
+                
+                // 선택된 구역에 배경색을 추가
+                switch (selectedSection) {
+                    case 'N':
+                        $('.north').css('background-color', 'rgba(255, 0, 0, 0.5)'); // 빨간색 반투명
+                        break;
+                    case 'W':
+                        $('.west').css('background-color', 'rgba(0, 0, 255, 0.5)'); // 파란색 반투명
+                        break;
+                    case 'E':
+                        $('.east').css('background-color', 'rgba(0, 128, 0, 0.5)'); // 초록색 반투명
+                        break;
+                    case 'S':
+                        $('.south').css('background-color', 'rgba(255, 255, 0, 0.5)'); // 노란색 반투명
+                        break;
+                }
             });
 
             $('#selectSeats').click(function() {

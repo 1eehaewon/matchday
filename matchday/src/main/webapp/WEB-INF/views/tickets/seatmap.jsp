@@ -158,8 +158,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 경기장 바닥 위치를 지정하는 객체
             var groundPositions = {
-                'N': 'south', // 북쪽은 남쪽에 위치
-                'S': 'north', // 남쪽은 북쪽에 위치
+                'N': 'north', // 북쪽은 북쪽에 위치
+                'S': 'south', // 남쪽은 남쪽에 위치
                 'E': 'west',  // 동쪽은 서쪽에 위치
                 'W': 'east'   // 서쪽은 동쪽에 위치
             };
@@ -214,7 +214,7 @@
                 seatMapContainer.style.flexDirection = (groundPosition === 'south' || groundPosition === 'north') ? 'column' : 'row';
 
                 // 경기장 바닥을 좌석 배치도의 적절한 위치에 추가
-                if (groundPosition === 'south' || groundPosition === 'west') {
+                if (groundPosition === 'north' || groundPosition === 'west') {
                     seatMapContainer.insertBefore(ground, seatMap);
                 } else {
                     seatMapContainer.appendChild(ground);

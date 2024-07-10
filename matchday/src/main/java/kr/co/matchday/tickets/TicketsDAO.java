@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import kr.co.matchday.matches.MatchesDTO;
 
 @Mapper
@@ -85,14 +87,30 @@ public class TicketsDAO {
     }
 
     /**
-     * 다음 예약 ID의 접미사를 가져오는 메서드
-     * @param date 날짜 문자열
-     * @return 다음 예약 ID 접미사
+     * 주어진 날짜에 대한 현재 최대 예약 ID를 가져오는 메서드
+     * @param date 날짜 문자열 (yyyyMMdd 형식)
+     * @return 현재 최대 예약 ID
      */
-    public String getNextReservationIdSuffix(String date) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("date", date);
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getNextReservationIdSuffix", params);
+    public String getMaxReservationId(String date) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getMaxReservationId", date);
+    }
+
+    /**
+     * 새로운 예약 ID를 생성하는 메서드 (트랜잭션 내에서 호출되어야 함)
+     * @param date 날짜 문자열 (yyyyMMdd 형식)
+     * @return 새로 생성된 예약 ID
+     */
+    @Transactional
+    public String generateNewReservationId(String date) {
+        String prefix = "reservation";
+        String maxReservationId = getMaxReservationId(date);
+        int nextSuffix = 1;
+        if (maxReservationId != null) {
+            // 예약 ID의 숫자 부분을 추출하여 다음 순번을 계산
+            nextSuffix = Integer.parseInt(maxReservationId.substring(maxReservationId.length() - 6)) + 1;
+        }
+        // 새로운 예약 ID를 생성하여 반환
+        return String.format("%s%s%06d", prefix, date, nextSuffix);
     }
 
     /**
@@ -117,5 +135,4 @@ public class TicketsDAO {
         System.out.println("Fetching seat info for seatId: " + seatId);
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", params);
     }
-
 }

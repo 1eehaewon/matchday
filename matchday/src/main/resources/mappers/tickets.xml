@@ -21,11 +21,10 @@
 
     <!-- 좌석 ID로 좌석 정보 가져오기 -->
     <select id="getSeatInfoByJson" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-	    SELECT seatid, price
-	    FROM seats
-	    WHERE seatid = #{seatId}
-	</select>
-
+        SELECT seatid, price
+        FROM seats
+        WHERE seatid = #{seatId}
+    </select>
 
     <!-- 사용자 ID로 사용자 정보 가져오기 -->
     <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">
@@ -35,8 +34,8 @@
     </select>
 
     <!-- 다음 예약 ID 접미사 가져오기 -->
-    <select id="getNextReservationIdSuffix" resultType="String">
-        SELECT LPAD(IFNULL(MAX(SUBSTRING(reservationid, 12)), 0) + 1, 5, '0')
+    <select id="getMaxReservationId" resultType="String" parameterType="String">
+        SELECT MAX(reservationid)
         FROM tickets
         WHERE reservationid LIKE CONCAT('reservation', #{date}, '%')
     </select>
