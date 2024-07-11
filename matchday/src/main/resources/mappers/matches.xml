@@ -4,25 +4,64 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.matchday.matches.MatchesDAO">
+
+    <!-- 모든 팀 정보를 가져오는 쿼리 -->
     <select id="getAllTeams" resultType="map">
         SELECT teamname FROM teams
     </select>
 
+    <!-- 모든 경기장 정보를 가져오는 쿼리 -->
     <select id="getAllStadiums" resultType="map">
         SELECT stadiumid FROM stadiums
     </select>
 
+    <!-- 주어진 날짜에 해당하는 최대 matchid를 가져오는 쿼리 -->
     <select id="getMaxMatchIdForDate" resultType="string" parameterType="string">
-        SELECT MAX(matchid) FROM matches WHERE matchdate = #{matchdate}
+        SELECT MAX(matchid) FROM matches WHERE matchid LIKE CONCAT('match', #{datePrefix}, '%')
     </select>
 
+    <!-- 새로운 경기 정보를 삽입하는 쿼리 -->
     <insert id="insert" parameterType="kr.co.matchday.matches.MatchesDTO">
-        INSERT INTO matches (matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate)
-        VALUES (#{matchid}, #{hometeamid}, #{awayteamid}, #{stadiumid}, #{matchdate}, #{bookingstartdate}, #{bookingenddate})
+        INSERT INTO matches (matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate, referee)
+        VALUES (#{matchid}, #{hometeamid}, #{awayteamid}, #{stadiumid}, #{matchdate}, #{bookingstartdate}, #{bookingenddate}, #{referee})
     </insert>
 
+    <!-- 모든 경기 정보를 가져오는 쿼리 -->
     <select id="list" resultType="kr.co.matchday.matches.MatchesDTO">
-        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate
+        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate, referee
         FROM matches
     </select>
+
+    <!-- 특정 경기 정보를 가져오는 쿼리 -->
+    <select id="getMatchDetail" parameterType="string" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, referee, bookingstartdate, bookingenddate
+        FROM matches
+        WHERE matchid = #{matchid}
+    </select>
+
+    <!-- 경기 정보를 업데이트하는 쿼리 -->
+    <update id="update" parameterType="kr.co.matchday.matches.MatchesDTO">
+        UPDATE matches
+        SET hometeamid = #{hometeamid}, awayteamid = #{awayteamid}, stadiumid = #{stadiumid}, matchdate = #{matchdate}, referee = #{referee}, bookingstartdate = #{bookingstartdate}, bookingenddate = #{bookingenddate}
+        WHERE matchid = #{matchid}
+    </update>
+
+    <!-- 경기 정보를 삭제하는 쿼리 -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM matches
+        WHERE matchid = #{matchid}
+    </delete>
+
+    <!-- 특정 경기의 판매 종료일을 가져오는 쿼리 -->
+    <select id="getBookingEndDate" parameterType="string" resultType="java.util.Date">
+        SELECT bookingenddate FROM matches WHERE matchid = #{matchid}
+    </select>
+
+    <!-- 현재 날짜 기준으로 판매종료일이 1일 지난 경기를 필터링하는 쿼리 -->
+    <select id="listActiveMatches" parameterType="java.util.Date" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate, referee
+        FROM matches
+        WHERE bookingenddate >= DATE_SUB(#{currentDate}, INTERVAL 1 DAY)
+    </select>
+    
 </mapper>

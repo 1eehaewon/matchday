@@ -1,20 +1,25 @@
 package kr.co.matchday.matches;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/matches")
@@ -57,7 +62,8 @@ public class MatchesCont {
 
     // 경기 정보를 저장하는 메서드
     @PostMapping("/saveMatch")
-    public String saveMatch(@RequestParam("matchdate") String matchdate, 
+    public String saveMatch(@RequestParam(value = "matchid", required = false) String matchid,
+                            @RequestParam("matchdate") String matchdate, 
                             @RequestParam("matchtime") String matchtime, 
                             @RequestParam("bookingstartdate") String bookingstartdate, 
                             @RequestParam("bookingenddate") String bookingenddate, 
@@ -86,21 +92,69 @@ public class MatchesCont {
             matchesDTO.setStadiumid(stadiumid);
             matchesDTO.setReferee(referee);
 
+            if (matchid == null || matchid.isEmpty()) {
+                // matchid가 없는 경우 새로 생성
+                matchesService.insertMatch(matchesDTO);
+            } else {
+                // matchid가 있는 경우 업데이트
+                matchesDTO.setMatchid(matchid);
+                matchesService.updateMatch(matchesDTO);
+            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        matchesService.insertMatch(matchesDTO); // 경기 정보 삽입
         return "redirect:/matches/list"; // 경기 목록 페이지로 리다이렉트
     }
 
     // 경기 목록 페이지로 이동하는 메서드
     @GetMapping("/list")
-    public ModelAndView list() {
+    public ModelAndView list(HttpSession session) {
         System.out.println("-----list() 메서드 호출됨-----");
-        List<MatchesDTO> matchList = matchesService.list(); // 모든 경기 정보 가져오기
+        List<MatchesDTO> matchList = matchesService.listActiveMatches();
+
         ModelAndView mav = new ModelAndView("matches/list");
-        mav.addObject("matchList", matchList); // 경기 목록을 모델에 추가
-        return mav; // list.jsp 페이지로 이동
+        mav.addObject("matchList", matchList);
+
+        String userGrade = (String) session.getAttribute("grade");
+        System.out.println("회원 등급: " + userGrade); // 디버깅 로그
+        mav.addObject("userGrade", userGrade);
+
+        return mav;
+    }
+
+    // 경기 상세 정보 페이지로 이동하는 메서드
+    @GetMapping("/detail/{matchid}")
+    public ModelAndView detail(@PathVariable("matchid") String matchid) {
+        MatchesDTO matchDetail = matchesService.getMatchDetail(matchid);
+        
+        // matchdate에서 날짜와 시간 분리
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+
+        String matchdate = dateFormat.format(matchDetail.getMatchdate());
+        String matchtime = timeFormat.format(matchDetail.getMatchdate());
+        String bookingstartdate = dateTimeFormat.format(matchDetail.getBookingstartdate());
+        String bookingenddate = dateTimeFormat.format(matchDetail.getBookingenddate());
+
+        ModelAndView mav = new ModelAndView("matches/listDetail");
+        mav.addObject("match", matchDetail);
+        mav.addObject("matchdate", matchdate);
+        mav.addObject("matchtime", matchtime);
+        mav.addObject("bookingstartdate", bookingstartdate);
+        mav.addObject("bookingenddate", bookingenddate);
+        mav.addObject("teams", matchesService.getAllTeams());
+        mav.addObject("stadiums", matchesService.getAllStadiums());
+        return mav;
+    }
+
+    // 경기 정보를 삭제하는 메서드
+    @PostMapping("/delete/{matchid}")
+    public String deleteMatch(@PathVariable("matchid") String matchid, RedirectAttributes redirectAttributes) {
+        matchesService.deleteMatch(matchid);
+        redirectAttributes.addFlashAttribute("message", "경기가 삭제되었습니다.");
+        return "redirect:/matches/list";
     }
 
     // 테스트 메서드
@@ -108,5 +162,12 @@ public class MatchesCont {
     public String test() {
         System.out.println("-----test() 메서드 호출됨-----");
         return "matches/test";
+    }
+    
+    // 특정 경기의 판매 종료일을 조회하는 메서드
+    @GetMapping("/getBookingEndDate")
+    @ResponseBody
+    public Date getBookingEndDate(@RequestParam("matchid") String matchid) {
+        return matchesService.getBookingEndDate(matchid);
     }
 }

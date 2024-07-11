@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.matches.MatchesDTO;
 
 @Mapper
@@ -55,6 +56,39 @@ public class TicketsDAO {
      */
     public Map<String, Object> getUserInfo(String userID) {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getUserInfo", userID);
+    }
+    
+    /**
+     * 사용자 ID로 쿠폰 목록을 가져오는 메서드
+     * @param userId 사용자 ID
+     * @return 쿠폰 목록
+     */
+    public List<CouponDTO> getCouponsByUserId(String userId) {
+        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getCouponsByUserId", userId);
+    }
+
+    /**
+     * 쿠폰 ID로 할인율을 가져오는 메서드
+     * @param couponId 쿠폰 ID
+     * @return 할인율
+     */
+    public int getDiscountRateByCouponId(String couponId) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getDiscountRateByCouponId", couponId);
+    }
+    
+    /**
+     * 쿠폰의 사용 상태를 업데이트하는 메서드
+     * @param couponId 쿠폰 ID
+     */
+    public int updateCouponUsage(String couponId) {
+        System.out.println("쿠폰 사용 업데이트 시도: " + couponId);
+        int result = sqlSession.update("kr.co.matchday.tickets.TicketsDAO.updateCouponUsage", couponId);
+        if (result > 0) {
+            System.out.println("쿠폰 사용 업데이트 성공: " + couponId);
+        } else {
+            System.out.println("쿠폰 사용 업데이트 실패: " + couponId);
+        }
+        return result;
     }
 
     /**

@@ -33,6 +33,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.matches.MatchesDTO;
 import org.mybatis.spring.SqlSessionTemplate;
 
@@ -124,46 +125,39 @@ public class TicketsCont {
             HttpSession session,
             Model model) {
 
-        System.out.println("matchId: " + matchId);
-        System.out.println("seats: " + seatsJson);
-        System.out.println("totalPrice: " + totalPrice);
-        System.out.println("section: " + section);
-        System.out.println("stadiumId: " + stadiumId);
-
-        // 경기 정보를 가져옴
+        // 경기 정보 가져오기
         MatchesDTO match = ticketsDao.getMatchById(matchId);
         if (match == null) {
-            System.out.println("Match not found for ID: " + matchId);
             return "error";
         }
 
         List<String> seatList = null;
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // 좌석 목록을 JSON에서 리스트로 변환
             seatList = objectMapper.readValue(seatsJson, new TypeReference<List<String>>() {});
         } catch (IOException e) {
             e.printStackTrace();
             return "error";
         }
 
-        // 사용자 ID를 세션에서 가져옴
         String userId = (String) session.getAttribute("userID");
-        System.out.println("userID: " + userId);
         Map<String, Object> userInfo = userId != null ? ticketsDao.getUserInfo(userId) : new HashMap<>();
 
-        // 모델에 정보를 추가
+        // 사용자의 쿠폰 정보 조회
+        List<CouponDTO> coupons = ticketsDao.getCouponsByUserId(userId);
+
         model.addAttribute("match", match);
         model.addAttribute("seats", seatList);
         model.addAttribute("totalPrice", totalPrice);
         model.addAttribute("section", section);
         model.addAttribute("stadiumid", stadiumId);
         model.addAttribute("userInfo", userInfo);
+        model.addAttribute("coupons", coupons); // 쿠폰 정보를 모델에 추가
 
-        System.out.println("Returning view: reservation");
         return "tickets/reservation";
     }
-
+    
+    
     /**
      * 예약 ID 생성 메서드
      * @return 예약 ID 문자열
@@ -211,6 +205,7 @@ public class TicketsCont {
         String shippingaddress = requestParams.get("shippingaddress");
         String shippingrequest = requestParams.get("shippingrequest");
         String collectionmethodcode = requestParams.get("collectionmethodcode");
+        String couponId = requestParams.get("couponid"); // 쿠폰 ID 추가
 
         // 좌석 정보 JSON 파싱
         System.out.println("seatsJson: " + seatsJson);
@@ -312,6 +307,16 @@ public class TicketsCont {
                         }
                     }
 
+                    // 결제가 완료된 후 쿠폰 사용 업데이트
+                    if (couponId != null && !couponId.equals("0")) {
+                        int updateResult = ticketsDao.updateCouponUsage(couponId);
+                        if (updateResult > 0) {
+                            System.out.println("쿠폰 사용 업데이트 성공: " + couponId);
+                        } else {
+                            System.out.println("쿠폰 사용 업데이트 실패: " + couponId);
+                        }
+                    }
+
                     response.put("success", true);
                 } else {
                     response.put("success", false);
@@ -331,7 +336,6 @@ public class TicketsCont {
 
         return response;
     }
-
     /**
      * 결제 취소 메서드
      * @param imp_uid 아임포트 UID

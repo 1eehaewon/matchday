@@ -285,7 +285,7 @@
                 var matchId = encodeURIComponent(document.getElementById('matchid').value);
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
-
+																								/* 안전하게 사용할 수 있는 문자열로 변환 */
                 window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
             });
         });
