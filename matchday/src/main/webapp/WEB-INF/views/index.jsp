@@ -131,7 +131,7 @@
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="/matches/list">예매</a></li>
                     <li class="nav-item"><a class="nav-link" href="/video/list">하이라이트</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/goods/list">SHOP</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/goods/list">쇼핑몰</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">알림마당</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -141,7 +141,6 @@
                     </li>
                     <li class="nav-item"><a class="nav-link" href="/customerService/customerPage">고객센터</a></li>
                     <li class="nav-item"><a class="nav-link" href="/team/list">소개</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/membership/list">멤버쉽</a></li>
                 </ul>
             </div>
         </div>
@@ -392,7 +391,7 @@
     </div><!-- row end -->
 </div><!-- container end -->
 
-<hr style="border-top: 4px solid #ccc; width: 100%; margin: 20px 0;">
+<hr style="border-top: 4px solid #ccc; width: 100%; margin: 20px 0;">    
 
 <div class="container-fluid py-5" style="height: 10px;">
     <h2 class="text-center">챔피언스리그의 더 많은 소식을 SNS를 통해 만나보세요 </h2>
@@ -400,25 +399,37 @@
 		
 	<div class="container">
     <div class="row g-0">
-        <div class="col-md-6 px-1">
+        <div class="col-md-4 px-1">
             <section class="instagram-section mt-5 p-4 text-center">
-                <h2>Instagram</h2>
+                <h2 class="mb-4">Instagram</h2>
                 <a href="https://www.instagram.com/championsleague/" target="_blank">
                     <div class="row justify-content-center">
                         <div class="col-md-8">
-                            <img src="https://img.freepik.com/premium-psd/instagram-application-logo_23-2151544088.jpg?w=826" class="img-fluid" alt="Instagram Image" style="max-width: 200px;">
+                            <img src="https://img.freepik.com/premium-psd/instagram-application-logo_23-2151544088.jpg?w=826" class="img-fluid" alt="Instagram Image">
                         </div>
                     </div>
                 </a>
             </section>
         </div>
-        <div class="col-md-6 px-1">
+        <div class="col-md-4 px-1">
             <section class="youtube-section mt-5 p-1 text-center">
-                <h2>Youtube</h2>
+                <h2 class="mb-4">Youtube</h2>
                 <a href="https://www.youtube.com/user/UEFA" target="_blank">
                     <div class="row justify-content-center">
                         <div class="col-md-8">
-                            <img src="https://img.freepik.com/premium-vector/social-media-icon-illustration-youtube-youtube-icon-vector-illustration_561158-2132.jpg?w=826" class="img-fluid" alt="YouTube Image" style="max-width: 230px;">
+                            <img src="https://img.freepik.com/premium-vector/social-media-icon-illustration-youtube-youtube-icon-vector-illustration_561158-2132.jpg?w=826" class="img-fluid" alt="YouTube Image">
+                        </div>
+                    </div>
+                </a>
+            </section>
+        </div>
+        <div class="col-md-4 px-1">
+            <section class="facebook-section mt-5 p-1 text-center">
+                <h2 class="mb-4">Facebook</h2>
+                <a href="https://www.facebook.com/ChampionsLeague/" target="_blank">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <img src="https://img.freepik.com/premium-vector/facebook-app-icon-social-media-logo-meta_277909-586.jpg?w=826" class="img-fluid" alt="Facebook Image">
                         </div>
                     </div>
                 </a>
