@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="memberships">
+    <insert id="insert" parameterType="kr.co.matchday.memberships.MembershipsDTO">
+        INSERT INTO memberships(membershipid, membershipname, price, startdate, enddate, notes, discountamount, filename, filesize)
+        VALUES(#{membershipid}, #{membershipname}, #{price}, #{startdate}, #{enddate}, #{notes}, #{discountamount}, #{filename}, #{filesize})
+    </insert>
+    
+    <select id="list" resultType="kr.co.matchday.memberships.MembershipsDTO">
+        SELECT membershipid, membershipname, price, startdate, enddate, notes, discountamount, filename, filesize
+        FROM memberships
+        ORDER BY membershipid
+    </select>
+
+    <select id="detail" parameterType="string" resultType="kr.co.matchday.memberships.MembershipsDTO">
+        SELECT membershipid, membershipname, price, startdate, enddate, notes, discountamount, filename, filesize
+        FROM memberships
+        WHERE membershipid = #{membershipid}
+    </select>
+    
+        <update id="update" parameterType="kr.co.matchday.memberships.MembershipsDTO">
+    UPDATE memberships
+    SET membershipname = #{membershipname},
+        price = #{price},
+        startdate = #{startdate},
+        enddate = #{enddate},
+        notes = #{notes},
+        discountamount = #{discountamount},
+        filename = #{filename},
+        filesize = #{filesize}
+    WHERE membershipid = #{membershipid}
+</update>
+   
+   <delete id="delete" parameterType="string"> <!-- parameterType을 string으로 변경 -->
+    DELETE FROM memberships
+    WHERE membershipid = #{membershipid}
+</delete>
+    
+</mapper>
+
