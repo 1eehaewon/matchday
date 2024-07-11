@@ -72,7 +72,17 @@ public class CouponCont {
             if (couponMasterDTO == null) {
                 return new Response(false, "해당 쿠폰 정보를 찾을 수 없습니다.");
             }
-
+            
+            //쿠폰발생개수초과되었을때
+            if (couponMasterDTO.getAvailableCount() <= 0) {
+                return new Response(false, "이 쿠폰은 모두 다운로드 되었습니다.");
+            }
+            
+            //이미쿠폰을다운받았을때
+            if (couponDao.checkUserDownloadedCoupon(userID, coupontypeid)) {
+                return new Response(false, "이미 다운로드한 쿠폰입니다.");
+            }
+            
             String couponid = UUID.randomUUID().toString();
             CouponDTO couponDTO = new CouponDTO();
             couponDTO.setCouponid(couponid);

@@ -105,6 +105,8 @@
 </div>
 <%@ include file="adfooter.jsp"%>
 
+<script>
 <c:if test="${not empty message}">
     alert('${message}');
 </c:if>
+</script>

@@ -20,6 +20,7 @@ public class CouponDTO {
 	private Date startdate;
 	private Date enddate;
 	private String applicableproduct;
+	private int discountrate;
 	
 	
 }//class end

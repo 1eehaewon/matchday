@@ -2,13 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ include file="adheader.jsp"%>
 
-<script>
-// alert 창 띄우기
-<c:if test="${not empty message}">
-    alert('${message}');
-</c:if>
-</script>
-
 <div class="container-fluid px-4">
     <h1 class="mt-4">쿠폰 수정</h1>
     <ol class="breadcrumb mb-4"></ol>
