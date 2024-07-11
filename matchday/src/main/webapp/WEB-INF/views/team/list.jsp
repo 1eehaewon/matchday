@@ -38,7 +38,7 @@
          </div>
 		
 		
-		<!-- 한줄에 10칸씩 -->
+		<!-- 한줄에 8칸씩 -->
         <c:if test="${vs.count mod 8 == 0}">
         	</div><!-- row end -->
             <div style="height: 10px;"></div>
