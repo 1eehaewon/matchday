@@ -19,5 +19,4 @@ public class CouponMasterDTO {
 	private Date startdate;
 	private Date enddate;
 	private String applicableproduct;
-	private int available;
 }

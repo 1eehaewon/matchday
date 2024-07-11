@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.admin.AdminDAO;
 import kr.co.matchday.admin.CouponMasterDTO;
 import kr.co.matchday.mypage.MypageDAO;
 
@@ -28,6 +30,9 @@ public class CouponCont {
 
 	@Autowired
 	CouponDAO couponDao;
+	
+	@Autowired
+	AdminDAO adminDao;
 
 	/*
 	 * @GetMapping("/coupon") public String point(HttpSession session, Model model){
@@ -74,7 +79,7 @@ public class CouponCont {
             }
             
             //쿠폰발생개수초과되었을때
-            if (couponMasterDTO.getAvailableCount() <= 0) {
+            if (couponMasterDTO.getIssuecount() <= 0) {
                 return new Response(false, "이 쿠폰은 모두 다운로드 되었습니다.");
             }
             
@@ -90,14 +95,28 @@ public class CouponCont {
             couponDTO.setUserid(userID);
             couponDTO.setUsage("Not Used");
 
+            //사용자 쿠폰 다운로드
             couponDao.insertUserCoupon(couponDTO);
+            
+            // 발행 개수 감소
+            couponMasterDTO.setIssuecount(couponMasterDTO.getIssuecount() - 1);
+            adminDao.updateCoupon(couponMasterDTO);
 
             return new Response(true, "쿠폰이 성공적으로 다운로드되었습니다.");
         } catch (Exception e) {
             return new Response(false, "다운로드 중 오류가 발생했습니다.");
         }
     }
-
+	
+	// 매일 자정에 실행되도록 설정
+	@Scheduled(cron = "0 0 0 * * ?")
+//	@Scheduled(cron = "*/1 * * * * ?")
+	public void deleteExpiredCoupons() {
+		couponDao.deleteExpiredCoupons();
+	}
+	
+	
+	
 	static class DownloadRequest {
 		private String coupontypeid;
 

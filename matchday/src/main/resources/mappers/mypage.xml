@@ -103,6 +103,19 @@
 		FROM couponmaster
 		WHERE coupontypeid = #{coupontypeid}
 	</select>
+	
+	<select id="checkUserDownloadedCoupon" resultType="int">
+        SELECT COUNT(*)
+        FROM coupon
+        WHERE userid = #{userid} AND coupontypeid = #{coupontypeid}
+    </select>
 
+	<!-- 사용자가 보유한 쿠폰 목록에서 만료된 쿠폰 제거 -->
+    <delete id="deleteExpiredCoupons">
+        <![CDATA[
+    		DELETE FROM coupon
+    		WHERE enddate < CURDATE()
+    	]]>
+    </delete>
 </mapper>
 
