@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -54,5 +56,36 @@ public class AdminCont {
     	List<CouponMasterDTO> coupons = adminDao.selectAllCoupons();
         model.addAttribute("coupons", coupons);
         return "/admin/coupons";
+    }
+    
+    //쿠폰수정버튼
+    @GetMapping("/editCoupon")
+    public String editCouponForm(@RequestParam("id") String coupontypeid, Model model) {
+        CouponMasterDTO coupon = adminDao.getCouponById(coupontypeid);
+        model.addAttribute("coupon", coupon);
+        return "/admin/editCoupon";
+    }
+    
+    //쿠폰수정하기
+    @PostMapping("/editCoupon")
+    public String editCouponSubmit(CouponMasterDTO coupon, RedirectAttributes redirectAttributes) {
+        int updatedRows = adminDao.updateCoupon(coupon);
+        if (updatedRows > 0) {
+            redirectAttributes.addFlashAttribute("message", "쿠폰이 성공적으로 수정되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "쿠폰 수정에 실패했습니다.");
+        }
+        return "redirect:/admin/coupon/list";
+    }
+
+    @GetMapping("/deleteCoupon")
+    public String deleteCoupon(@RequestParam("id") String coupontypeid, RedirectAttributes redirectAttributes) {
+        int deletedRows = adminDao.deleteCoupon(coupontypeid);
+        if (deletedRows > 0) {
+            redirectAttributes.addFlashAttribute("message", "쿠폰이 성공적으로 삭제되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "쿠폰 삭제에 실패했습니다.");
+        }
+        return "redirect:/admin/coupon/list";
     }
 }// class end

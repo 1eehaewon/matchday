@@ -27,6 +27,24 @@
         FROM couponmaster
     </select>
     
+    <select id="getCouponById" parameterType="String" resultType="kr.co.matchday.admin.CouponMasterDTO">
+        SELECT * FROM couponmaster WHERE coupontypeid = #{coupontypeid}
+    </select>
+    
+    <update id="updateCoupon" parameterType="kr.co.matchday.admin.CouponMasterDTO">
+        UPDATE couponmaster
+        SET couponname = #{couponname},
+            discountrate = #{discountrate},
+            issuecount = #{issuecount},
+            startdate = #{startdate},
+            enddate = #{enddate},
+            applicableproduct = #{applicableproduct}
+        WHERE coupontypeid = #{coupontypeid}
+    </update>
+    
+    <delete id="deleteCoupon" parameterType="String">
+        DELETE FROM couponmaster WHERE coupontypeid = #{coupontypeid}
+    </delete>
     
 </mapper>
 

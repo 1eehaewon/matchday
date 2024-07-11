@@ -81,8 +81,8 @@
 						<div class="collapse" id="collapseLayouts"
 							aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
 							<nav class="sb-sidenav-menu-nested nav">
-								<a class="nav-link" href="/admin/coupon/create">쿠폰 만들기</a>
-                                <a class="nav-link" href="/admin/coupon/list">쿠폰 목록</a>
+								<a class="nav-link" href="/admin/coupon/create">쿠폰 만들기</a> <a
+									class="nav-link" href="/admin/coupon/list">쿠폰 목록</a>
 							</nav>
 						</div>
 						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse"

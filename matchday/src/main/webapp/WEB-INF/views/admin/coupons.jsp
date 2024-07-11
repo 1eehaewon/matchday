@@ -2,18 +2,55 @@
     pageEncoding="UTF-8"%>
 <%@ include file="adheader.jsp"%>
 <style>
-.filter-buttons {
-    margin-bottom: 15px;
+/* 스타일링을 위한 CSS */
+.dropdown {
+    position: relative;
+    display: inline-block;
 }
 
-.filter-buttons button {
-    margin-right: 10px;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
 }
-.filter-buttons button:hover {
-    background-color: #f0f0f0;
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+
+.dropbtn {
+    background-color: transparent;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropbtn:focus {
+    outline: none;
 }
 </style>
 <div class="container-fluid px-4">
@@ -26,12 +63,6 @@
             <i class="fas fa-table me-1"></i> 쿠폰 목록
         </div>
         <div class="card-body">
-            <div class="filter-buttons">
-                <button onclick="filterCoupons('all')">전체</button>
-                <button onclick="filterCoupons('waiting')">대기</button>
-                <button onclick="filterCoupons('active')">진행중</button>
-                <button onclick="filterCoupons('expired')">종료</button>
-            </div>
             <table id="datatablesSimple">
                 <thead>
                     <tr>
@@ -46,14 +77,25 @@
                 </thead>
                 <tbody>
                     <c:forEach var="coupon" items="${coupons}">
-                        <tr class="coupon-row" data-startdate="${coupon.startdate}" data-enddate="${coupon.enddate}">
+                        <tr class="coupon-row"> 
                             <td>${coupon.coupontypeid}</td>
                             <td>${coupon.couponname}</td>
                             <td>${coupon.discountrate}</td>
                             <td>${coupon.issuecount}</td>
                             <td>${coupon.startdate}</td>
                             <td>${coupon.enddate}</td>
-                            <td>${coupon.applicableproduct}</td>
+                            <td>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>${coupon.applicableproduct}</span>
+                                    <div class="dropdown">
+                                        <button class="dropbtn" id="dropdownMenuButton${coupon.coupontypeid}">···</button>
+                                        <div class="dropdown-content" aria-labelledby="dropdownMenuButton${coupon.coupontypeid}">
+                                            <a href="/admin/editCoupon?id=${coupon.coupontypeid}">수정</a>
+                                            <a href="/admin/deleteCoupon?id=${coupon.coupontypeid}">삭제</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -62,30 +104,7 @@
     </div>
 </div>
 <%@ include file="adfooter.jsp"%>
-<script>
-    function filterCoupons(status) {
-        const rows = document.querySelectorAll('.coupon-row');
-        const now = new Date();
 
-        rows.forEach(row => {
-            const startdate = new Date(row.getAttribute('data-startdate'));
-            const enddate = new Date(row.getAttribute('data-enddate'));
-
-            if (status == 'all') {
-                row.style.display = '';
-            } else if (status == 'waiting' && startdate > now) {
-                row.style.display = '';
-            } else if (status == 'active' && startdate <= now && enddate >= now) {
-                row.style.display = '';
-            } else if (status == 'expired' && enddate < now) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-	
-    <c:if test="${not empty message}">
-        alert('${message}');
-    </c:if>
-</script>
+<c:if test="${not empty message}">
+    alert('${message}');
+</c:if>

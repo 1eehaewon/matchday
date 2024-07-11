@@ -31,4 +31,15 @@ public class AdminDAO {
 	}
 	
 	 
+	public CouponMasterDTO getCouponById(String coupontypeid) {
+        return sqlSession.selectOne("admin.getCouponById", coupontypeid);
+    }
+
+    public int updateCoupon(CouponMasterDTO coupon) {
+        return sqlSession.update("admin.updateCoupon", coupon);
+    }
+
+    public int deleteCoupon(String coupontypeid) {
+    	return sqlSession.delete("admin.deleteCoupon", coupontypeid);
+    }
 }//class end
