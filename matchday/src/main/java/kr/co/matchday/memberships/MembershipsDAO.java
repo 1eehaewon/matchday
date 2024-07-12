@@ -5,47 +5,46 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.co.matchday.goods.GoodsDTO;
-import kr.co.matchday.video.VideoDTO;
-
-
 @Repository
 public class MembershipsDAO {
 
-   public MembershipsDAO() {
-      System.out.println("-----MembershipsDAO() 객체 생성됨");
-   }//end
-      
+    public MembershipsDAO() {
+        System.out.println("-----MembershipsDAO() 객체 생성됨");
+    }
+
     @Autowired
-    SqlSession sqlSession;
-    
+    private SqlSession sqlSession;
+
     public void insert(MembershipsDTO membershipsDto) {
-       sqlSession.insert("memberships.insert", membershipsDto);
-   }//insert end
-      
+        sqlSession.insert("memberships.insert", membershipsDto);
+    }
+
     public List<MembershipsDTO> list() {
-       return sqlSession.selectList("memberships.list");
-   }//list end
-    
+        return sqlSession.selectList("memberships.list");
+    }
+
     public MembershipsDTO detail(String membershipid) {
         return sqlSession.selectOne("memberships.detail", membershipid);
-    }//detail end
-    
+    }
+
     public MembershipsDTO read(String membershipid) {
         return sqlSession.selectOne("memberships.detail", membershipid);
-    }//read end
+    }
 
     public void delete(String membershipid) {
         sqlSession.delete("memberships.delete", membershipid);
-    }//delete end
-    
+    }
+
     public void update(MembershipsDTO membershipsDto) {
         sqlSession.update("memberships.update", membershipsDto);
-    }//update end
-    
+    }
+
     public String filename(String membershipid) {
         return sqlSession.selectOne("memberships.filename", membershipid);
-    }//filename end
-    
-    
-}//class end
+    }
+
+    // 팀 이름 가져오기
+    public List<String> getTeamNames() {
+        return sqlSession.selectList("memberships.getTeamNames");
+    }
+}

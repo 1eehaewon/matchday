@@ -1,6 +1,7 @@
 package kr.co.matchday.membershipticket;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,9 @@ public class MembershipticketDAO {
         params.put("status", status);
         params.put("purchaseDate", purchaseDate);
         sqlSession.insert("kr.co.matchday.membershipticket.MembershipticketDAO.insertUserMembership", params);
+    }
+
+    public List<Map<String, Object>> getUserMemberships(String userID) {
+        return sqlSession.selectList("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMemberships", userID);
     }
 }

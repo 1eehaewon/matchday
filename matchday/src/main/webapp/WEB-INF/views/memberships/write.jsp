@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
 <%@ include file="../header.jsp" %>
 
 <div class="container">
@@ -21,6 +20,16 @@
                         <tr>
                             <td>멤버쉽 이름</td>
                             <td><input type="text" name="membershipname" class="form-control"></td>
+                        </tr>
+                        <tr>
+                            <td>팀 이름</td>
+                            <td>
+                                <select name="teamname" class="form-control">
+                                    <c:forEach var="teamName" items="${teamNames}">
+                                        <option value="${teamName}">${teamName}</option>
+                                    </c:forEach>
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td>멤버쉽 가격</td>
@@ -46,8 +55,8 @@
                     </tbody> 
                 </table>      
             </form>  
-        </div><!-- col end -->
-    </div><!-- row end -->
-</div><!-- container end -->
+        </div>
+    </div>
+</div>
 
 <%@ include file="../footer.jsp" %>

@@ -1,17 +1,8 @@
 package kr.co.matchday.memberships;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +11,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/memberships")
@@ -37,8 +36,14 @@ public class MembershipsCont {
     }
 
     @GetMapping("/write")
-    public String write() {
-        return "memberships/write";
+    public ModelAndView write() {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/write");
+
+        List<String> teamNames = membershipsDao.getTeamNames();
+        mav.addObject("teamNames", teamNames);
+
+        return mav;
     }
 
     @PostMapping("/insert")
@@ -58,9 +63,9 @@ public class MembershipsCont {
             }
 
             MembershipsDTO membershipsDto = new MembershipsDTO();
-            membershipsDto.setMembershipid(UUID.randomUUID().toString()); // UUID를 사용하여 membershipid 생성
+            membershipsDto.setMembershipid(UUID.randomUUID().toString());
             membershipsDto.setMembershipname((String) map.get("membershipname"));
-         /* membershipsDto.setPrice(parseInteger((String) map.get("price"))); */
+            membershipsDto.setTeamname((String) map.get("teamname"));
             membershipsDto.setPrice(parseInteger((String) map.get("price")));
             membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
             membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
@@ -73,7 +78,6 @@ public class MembershipsCont {
 
         } catch (Exception e) {
             e.printStackTrace();
-            // 예외 처리 로직 추가
         }
 
         return "redirect:/memberships/list";
@@ -111,7 +115,6 @@ public class MembershipsCont {
                 filesize = img.getSize();
             } else {
                 filename = (String) map.get("existingFilename");
-                // Check if existingFilesize is null or empty before parsing
                 String existingFilesizeStr = (String) map.get("existingFilesize");
                 if (existingFilesizeStr != null && !existingFilesizeStr.isEmpty()) {
                     filesize = Long.parseLong(existingFilesizeStr);
@@ -129,7 +132,6 @@ public class MembershipsCont {
 
             membershipsDao.update(membershipsDto);
 
-            // 기존 파일 삭제 (선택된 경우에만)
             if (img != null && !img.isEmpty() && !filename.equals((String) map.get("existingFilename"))) {
                 deleteFile(basePath, (String) map.get("existingFilename"));
             }
@@ -167,13 +169,13 @@ public class MembershipsCont {
 
     private Integer parseInteger(String value) {
         if (value == null || value.trim().isEmpty()) {
-            return 0; // 기본값으로 0을 반환
+            return 0;
         }
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            return 0; // 기본값으로 0을 반환
+            return 0;
         }
     }
 
@@ -189,38 +191,4 @@ public class MembershipsCont {
             return null;
         }
     }
-
-    
-    @GetMapping("/delete")
-    public String delete(@RequestParam("membershipid") String membershipid, HttpServletRequest req) {
-        // 파일 이름 가져오기
-        String filename = membershipsDao.filename(membershipid);
-
-        try {
-            if (filename != null && !filename.equals("-")) {
-                // 서블릿 컨텍스트에서 경로 가져오기
-                ServletContext application = req.getServletContext();
-                String basePath = application.getRealPath("/storage/memberships");
-
-                // 파일 경로 생성
-                File file = new File(basePath, filename);
-                if (file.exists()) {
-                    // 파일 삭제
-                    file.delete();
-                }
-            }
-
-            // 데이터베이스에서 행 삭제
-            membershipsDao.delete(membershipid);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 예외 처리 로직 추가
-        }
-
-        return "redirect:/memberships/list";
-    }//delete() end
-    
-    
-    
-}//class end
+}

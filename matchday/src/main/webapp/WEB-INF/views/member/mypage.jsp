@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 <style>
     .mypage-container {
@@ -86,10 +85,10 @@
             <td class="mypage-sidebar" style="border-right: none;">
                 <ul class="list-group">
                     <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
-                            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
-                            <li class="list-group-item"><a href="/tickets/reservationList">나의 예매내역</a></li>
+                    <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
+                    <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
+                    <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
+                    <li class="list-group-item"><a href="/tickets/reservationList">나의 예매내역</a></li>
                 </ul>
             </td>
             <td width="15" style="border: none;"></td>
@@ -120,6 +119,16 @@
                         <tr>
                             <th><label for="point">포인트</label></th>
                             <td><input type="text" class="form-control" id="point" name="point" value="${user.points}" required readonly></td>
+                        </tr>
+                        <tr>
+                            <th>구입한 멤버쉽</th>
+                            <td>
+                                <ul>
+                                    <c:forEach var="membership" items="${userMemberships}">
+                                        <li>${membership.membershipname}</li>
+                                    </c:forEach>
+                                </ul>
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="2" class="text-center">

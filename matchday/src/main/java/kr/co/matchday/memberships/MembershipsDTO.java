@@ -17,18 +17,18 @@ import lombok.ToString;
 public class MembershipsDTO {
      
     private String membershipid;
-       private String membershipname;
-       private int price;
-       
-       @DateTimeFormat(pattern = "yyyy-MM-dd") // 지정된 패턴으로 날짜를 바인딩
-       private Date startdate;
-       
-       @DateTimeFormat(pattern = "yyyy-MM-dd") // 지정된 패턴으로 날짜를 바인딩
-       private Date enddate;
-       
-       private String notes;
-       private int discountamount;
-       private String filename;
-       private long filesize;
-   
-}//class end
+    private String membershipname;
+    private String teamname; // 팀 이름 필드 추가
+    private int price;
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date startdate;
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date enddate;
+    
+    private String notes;
+    private int discountamount;
+    private String filename;
+    private long filesize;
+}

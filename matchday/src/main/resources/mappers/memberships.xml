@@ -5,40 +5,41 @@
 
 <mapper namespace="memberships">
     <insert id="insert" parameterType="kr.co.matchday.memberships.MembershipsDTO">
-        INSERT INTO memberships(membershipid, membershipname, price, startdate, enddate, notes, discountamount, filename, filesize)
-        VALUES(#{membershipid}, #{membershipname}, #{price}, #{startdate}, #{enddate}, #{notes}, #{discountamount}, #{filename}, #{filesize})
+        INSERT INTO memberships(membershipid, membershipname, teamname, price, startdate, enddate, notes, discountamount, filename, filesize)
+        VALUES(#{membershipid}, #{membershipname}, #{teamname}, #{price}, #{startdate}, #{enddate}, #{notes}, #{discountamount}, #{filename}, #{filesize})
     </insert>
     
     <select id="list" resultType="kr.co.matchday.memberships.MembershipsDTO">
-        SELECT membershipid, membershipname, price, startdate, enddate, notes, discountamount, filename, filesize
+        SELECT membershipid, membershipname, teamname, price, startdate, enddate, notes, discountamount, filename, filesize
         FROM memberships
         ORDER BY membershipid
     </select>
 
     <select id="detail" parameterType="string" resultType="kr.co.matchday.memberships.MembershipsDTO">
-        SELECT membershipid, membershipname, price, startdate, enddate, notes, discountamount, filename, filesize
+        SELECT membershipid, membershipname, teamname, price, startdate, enddate, notes, discountamount, filename, filesize
         FROM memberships
         WHERE membershipid = #{membershipid}
     </select>
     
-        <update id="update" parameterType="kr.co.matchday.memberships.MembershipsDTO">
-    UPDATE memberships
-    SET membershipid = #{membershipid},
-       membershipname = #{membershipname},
-        price = #{price},
-        startdate = #{startdate},
-        enddate = #{enddate},
-        notes = #{notes},
-        discountamount = #{discountamount},
-        filename = #{filename},
-        filesize = #{filesize}
-    WHERE membershipid = #{membershipid}
-</update>
+    <update id="update" parameterType="kr.co.matchday.memberships.MembershipsDTO">
+        UPDATE memberships
+        SET membershipid = #{membershipid},
+            membershipname = #{membershipname},
+            teamname = #{teamname},
+            price = #{price},
+            startdate = #{startdate},
+            enddate = #{enddate},
+            notes = #{notes},
+            discountamount = #{discountamount},
+            filename = #{filename},
+            filesize = #{filesize}
+        WHERE membershipid = #{membershipid}
+    </update>
    
-   <delete id="delete" parameterType="string"> <!-- parameterType을 string으로 변경 -->
-    DELETE FROM memberships
-    WHERE membershipid = #{membershipid}
-</delete>
+    <delete id="delete" parameterType="string">
+        DELETE FROM memberships
+        WHERE membershipid = #{membershipid}
+    </delete>
     
     <select id="filename" parameterType="string" resultType="string">
         SELECT filename
@@ -46,6 +47,8 @@
         WHERE membershipid = #{membershipid}
     </select>
     
-    
+    <select id="getTeamNames" resultType="string">
+        SELECT teamname
+        FROM teams
+    </select>
 </mapper>
-
