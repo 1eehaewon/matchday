@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-    
+
 <%@ include file="../header.jsp" %>
 <script>
     function membership_update(membershipid) {
@@ -12,6 +12,10 @@
         if (confirm("해당 멤버쉽을 삭제합니다. 진행할까요?")) {
             location.href = "/memberships/delete?membershipid=" + membershipid;
         }
+    }
+
+    function openPaymentPopup(membershipID) {
+        window.open('/membershipticket/payment?membershipID=' + membershipID, '결제 페이지', 'width=900,height=600,scrollbars=yes');
     }
 </script>
 <style>
@@ -125,7 +129,7 @@
            <button type="button" class="btn btn-primary" onclick="membership_update('${memberships.membershipid}')">수정</button>
            <button type="button" class="btn btn-danger" onclick="membership_delete_confirm('${memberships.membershipid}')">삭제</button>
            </c:if>
-           <a href="/membershipticket/payment"class="btn btn-info">예매하기</a>
+       <button type="button" class="btn btn-info" onclick="openPaymentPopup('${memberships.membershipid}')">멤버쉽 가입하기</button>
         </div>
     </div>
     
