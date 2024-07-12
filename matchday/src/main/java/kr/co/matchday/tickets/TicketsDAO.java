@@ -169,4 +169,19 @@ public class TicketsDAO {
         System.out.println("Fetching seat info for seatId: " + seatId);
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", params);
     }
+    
+    public List<Map<String, Object>> getReservationsByUserId(String userId) {
+        List<Map<String, Object>> reservations = sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getReservationsByUserId", userId);
+        if (reservations == null || reservations.isEmpty()) {
+            System.out.println("No reservations found for userId: " + userId);
+        } else {
+            System.out.println("Reservations found: " + reservations.size());
+        }
+        return reservations;
+    }
+
+    public List<String> getReservedSeats(String matchid) {
+        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getReservedSeats", matchid);
+    }
+
 }

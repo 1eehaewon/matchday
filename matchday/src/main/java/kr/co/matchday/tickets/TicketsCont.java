@@ -84,25 +84,29 @@ public class TicketsCont {
      */
     @GetMapping("/seatmap")
     public ModelAndView seatmap(@RequestParam String stadiumid, @RequestParam String section, @RequestParam String matchid) {
-        // 경기장 ID와 구역에 따른 좌석 정보를 가져옴
         List<Map<String, Object>> seats = ticketsDao.getSeatsByStadiumIdAndSection(stadiumid, section);
+        List<String> reservedSeats = ticketsDao.getReservedSeats(matchid); // 예약된 좌석 정보 가져오기
         ModelAndView mav = new ModelAndView("tickets/seatmap");
         mav.addObject("section", section);
         mav.addObject("stadiumid", stadiumid);
         mav.addObject("matchid", matchid);
 
         try {
-            // 좌석 정보를 JSON 형태로 변환하여 추가
             ObjectMapper objectMapper = new ObjectMapper();
             String seatsJson = objectMapper.writeValueAsString(seats);
+            String reservedSeatsJson = objectMapper.writeValueAsString(reservedSeats); // 예약된 좌석 정보를 JSON으로 변환
             mav.addObject("seatsJson", seatsJson);
+            mav.addObject("reservedSeatsJson", reservedSeatsJson); // JSP에 예약된 좌석 정보 전달
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             mav.addObject("seatsJson", "[]");
+            mav.addObject("reservedSeatsJson", "[]"); // 오류 발생 시 빈 배열 전달
         }
 
         return mav;
     }
+
+
 
     /**
      * 예약 확인 페이지로 이동
@@ -428,7 +432,20 @@ public class TicketsCont {
     }
     
     @GetMapping("/reservationList")
-    public String reservationList() {
-    	return "tickets/reservationList";
+    public ModelAndView reservationList(HttpSession session) {
+        String userId = (String) session.getAttribute("userID");
+        if (userId == null) {
+            System.out.println("User ID not found in session.");
+            return new ModelAndView("redirect:/login"); // 로그인 페이지로 리다이렉트
+        }
+
+        System.out.println("Fetching reservations for userId: " + userId);
+        List<Map<String, Object>> reservations = ticketsDao.getReservationsByUserId(userId);
+
+        ModelAndView mav = new ModelAndView("tickets/reservationList");
+        mav.addObject("reservations", reservations);
+        return mav;
     }
+
+
 }

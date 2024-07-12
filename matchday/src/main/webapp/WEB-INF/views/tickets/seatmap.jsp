@@ -27,6 +27,10 @@
             background-color: #007bff;
             color: white;
         }
+        .reserved {
+            background-color: white; /* 예약된 좌석은 검정색으로 표시 */
+            cursor: not-allowed; /* 예약된 좌석은 클릭할 수 없도록 표시 */
+        }
         .seat-info {
             margin-top: 20px;
         }
@@ -110,6 +114,7 @@
 <body>
     <div class="container mt-4">
         <h1 class="mb-4">좌석 선택</h1>
+        <p class="text-danger">하얀색 좌석은 이미 예매된 좌석입니다.</p>
         <input type="hidden" id="matchid" value="${param.matchid}"/>
         <input type="hidden" id="stadiumid" value="${param.stadiumid}"/>
         <input type="hidden" id="section" value="${param.section}"/>
@@ -154,6 +159,8 @@
             </div> <!-- col-md-4 끝 -->
         </div> <!-- row 끝 -->
     </div> <!-- container 끝 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 경기장 바닥 위치를 지정하는 객체
@@ -166,6 +173,7 @@
 
             // JSP에서 전달된 좌석 JSON 데이터를 파싱하여 자바스크립트 객체로 변환
             var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
+            var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>'); // 예약된 좌석 정보 파싱
             var section = document.getElementById('section').value;
             var matchId = document.getElementById('matchid').value;
             var stadiumId = document.getElementById('stadiumid').value;
@@ -189,21 +197,15 @@
                     seatElement.dataset.price = seat.price;    // 좌석 가격 설정
                     seatElement.textContent = seat.seatnumber; // 좌석 번호 설정
 
-                    // 좌석 클릭 이벤트 리스너 추가
-                    seatElement.addEventListener('click', function() {
-                        // 선택된 좌석의 클래스를 토글
-                        if (this.classList.contains('selected')) {
-                            this.classList.remove('selected');
-                        } else {
-                            // 선택된 좌석이 5개 이하인 경우에만 선택 가능
-                            if (document.querySelectorAll('.seat.selected').length < 5) {
-                                this.classList.add('selected');
-                            } else {
-                                alert('5개의 좌석까지 구매 가능합니다.');
-                            }
-                        }
-                        updateSelectedSeats(); // 선택된 좌석 정보 업데이트
-                    });
+                    // 예약된 좌석을 비활성화 및 색상 변경
+                    if (reservedSeats.includes(seat.seatid)) {
+                        seatElement.classList.add('reserved');
+                        seatElement.style.pointerEvents = 'none'; // 예약된 좌석은 클릭 이벤트 제거
+                    } else {
+                        // 좌석 클릭 이벤트 리스너 추가
+                        seatElement.addEventListener('click', seatClickListener);
+                    }
+
                     seatMap.appendChild(seatElement); // 좌석 요소를 좌석 배치도에 추가
                 });
 
@@ -219,6 +221,29 @@
                 } else {
                     seatMapContainer.appendChild(ground);
                 }
+            }
+
+            /**
+             * 좌석 클릭 이벤트 리스너 함수
+             */
+            function seatClickListener() {
+                var seatId = this.dataset.seatId;
+
+                // 서버에 좌석 선택 메시지 전송
+                stompClient.send("/app/selectSeat", {}, JSON.stringify({'seatId': seatId, 'status': 'selected'}));
+
+                // 선택된 좌석의 클래스를 토글
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                } else {
+                    // 선택된 좌석이 5개 이하인 경우에만 선택 가능
+                    if (document.querySelectorAll('.seat.selected').length < 5) {
+                        this.classList.add('selected');
+                    } else {
+                        alert('5개의 좌석까지 구매 가능합니다.');
+                    }
+                }
+                updateSelectedSeats(); // 선택된 좌석 정보 업데이트
             }
 
             /**
@@ -285,8 +310,24 @@
                 var matchId = encodeURIComponent(document.getElementById('matchid').value);
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
-																								/* 안전하게 사용할 수 있는 문자열로 변환 */
                 window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
+            });
+
+            // WebSocket 설정
+            var socket = new SockJS('/ws');
+            var stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+
+                stompClient.subscribe('/topic/seatSelected', function(messageOutput) {
+                    var message = JSON.parse(messageOutput.body);
+
+                    // 실시간으로 다른 사용자가 선택한 좌석을 확인하고 경고 메시지를 표시
+                    if (document.querySelector('.seat[data-seat-id="' + message.seatId + '"]')) {
+                        alert('다른 회원이 구매 진행중인 좌석입니다.');
+                    }
+                });
             });
         });
     </script> <!-- 스크립트 끝 -->

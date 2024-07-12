@@ -91,4 +91,23 @@
         SET `usage` = 'Used'
         WHERE couponid = #{couponId}
     </update>
+    
+    <select id="getReservationsByUserId" parameterType="String" resultType="java.util.HashMap">
+	    SELECT 
+	        t.reservationid, t.reservationdate, t.matchid, t.quantity, t.reservationstatus, 
+	        m.hometeamid, m.awayteamid, m.matchdate 
+	    FROM tickets t
+	    JOIN matches m ON t.matchid = m.matchid
+	    WHERE t.userid = #{userId}
+	    ORDER BY t.reservationdate DESC
+	</select>
+    
+    <select id="getReservedSeats" parameterType="String" resultType="String">
+	    SELECT td.seatid
+	    FROM ticketdetails td
+	    JOIN tickets t ON td.reservationid = t.reservationid
+	    WHERE td.matchid = #{matchid} AND t.reservationstatus = 'Confirmed'
+	</select>
+
+    
 </mapper>

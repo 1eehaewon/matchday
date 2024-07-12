@@ -12,7 +12,8 @@
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script type="text/javascript">
-        IMP.init('imp05021463'); // 아임포트 관리자 콘솔에서 발급받은 가맹점 식별코드
+        // 아임포트 관리자 콘솔에서 발급받은 가맹점 식별코드로 초기화
+        IMP.init('imp05021463'); 
     </script>
     <style>
         .container {
@@ -51,6 +52,7 @@
     <div class="container mt-4">
         <h1>예매 확인</h1>
         <div class="row">
+            <!-- 좌측 예약 정보 폼 -->
             <div class="col-md-6">
                 <h2>티켓수령방법</h2>
                 <form>
@@ -105,6 +107,7 @@
                     </div>
                 </form>
             </div>
+            <!-- 우측 예약 정보 테이블 -->
             <div class="col-md-6">
                 <h2>My예매정보</h2>
                 <table class="table table-bordered">
@@ -173,9 +176,11 @@
     </div>
     <script>
     $(document).ready(function() {
+        // 총 결제 금액과 좌석 정보를 변수로 저장
         var totalPrice = parseInt("${totalPrice}".replace(/[^0-9]/g, ''), 10);
         var seats = "${seats}".split(",");
 
+        // Subtotal amount를 업데이트하는 함수
         function updateSubtotalAmount() {
             var serviceFee = parseInt($('#service-fee').text().replace(/[^0-9]/g, ''), 10);
             var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10);
@@ -184,6 +189,7 @@
             return subtotalAmount;
         }
 
+        // Total amount를 업데이트하는 함수
         function updateTotalAmount() {
             var subtotalAmount = updateSubtotalAmount();
             var discount = parseInt($('#discount').text().replace(/[^0-9]/g, ''), 10);
@@ -192,6 +198,7 @@
             return totalAmount;
         }
 
+        // Delivery fee를 업데이트하는 함수
         function updateDeliveryFee() {
             var deliveryOption = $('input[name="deliveryOption"]:checked').val();
             var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
@@ -208,6 +215,7 @@
             updateTotalAmount();
         }
 
+        // Discount를 업데이트하는 함수
         function updateDiscount() {
             var selectedCoupon = $('#coupon-select').find(':selected');
             var discountRate = selectedCoupon.data('discount');
@@ -218,6 +226,7 @@
             updateTotalAmount();
         }
 
+        // 취소 가능 기한을 업데이트하는 함수
         function updateCancellationDeadline() {
             var matchDateStr = $('#match-date').text().split(' ')[0];
             var matchDateParts = matchDateStr.split('-');
@@ -234,6 +243,7 @@
             }
         }
 
+        // 우편번호 찾기 기능
         $('#find-postcode').click(function() {
             new daum.Postcode({
                 oncomplete: function(data) {
@@ -268,23 +278,28 @@
             }).open();
         });
 
+        // 배송 옵션 변경 시 요금 업데이트
         $('.delivery-option').change(function() {
             updateDeliveryFee();
         });
 
+        // 쿠폰 선택 시 할인 금액 업데이트
         $('#coupon-select').change(function() {
             updateDiscount();
         });
 
+        // 초기 값 설정
         updateDeliveryFee();
         updateSubtotalAmount();
         updateDiscount();
         updateCancellationDeadline();
 
+        // 이전 단계 버튼 클릭 시 이전 페이지로 이동
         $('#prev-step').click(function() {
             window.history.back();
         });
 
+        // 결제 버튼 클릭 시 결제 요청 및 예약 리스트 페이지로 이동
         $('#pay-button').click(function() {
             var totalAmount = updateTotalAmount();
             var couponId = $('#coupon-select').val(); // 쿠폰 ID 가져오기
@@ -323,7 +338,9 @@
                         traditional: true,
                         success: function(data) {
                             if (data.success) {
-                                window.location.href = '/tickets/confirmation?reservationid=' + data.reservationid;
+                                // 결제가 성공하면 reservation 페이지를 닫고 reservationList 페이지로 이동
+                                window.opener.location.href = '/tickets/reservationList';
+                                window.close();
                             } else {
                                 alert('결제 검증에 실패했습니다.');
                             }
@@ -335,6 +352,7 @@
             });
         });
 
+        // 결제 취소 버튼 클릭 시 결제 취소 요청
         $('#cancel-button').click(function() {
             var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
             if (impUid) {
