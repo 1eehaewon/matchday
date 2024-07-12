@@ -1,6 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
 <div class="container">
@@ -25,8 +24,8 @@
                         </tr>
                         <tr>
                             <td>멤버쉽 가격</td>
-                            <td><input type="number" name="price" class="form-control" value="${memberships.price}"></td>
-                        </tr>
+                            <td><input type="text" name="price" class="form-control" value="${memberships.price}"></td>
+                        </tr>                      
                         <tr>
                             <td>멤버쉽 사용 시작 기간</td>
                             <td><input type="date" name="startdate" class="form-control" value="<fmt:formatDate value='${memberships.startdate}' pattern='yyyy-MM-dd' />"></td>
@@ -40,7 +39,7 @@
                             <td>
                                 <input type="file" name="img" class="form-control">
                                 <c:if test="${memberships.filename != '-'}">
-                                    <img src="/storage/memberships/${memberships.filename}" class="img-responsive margin" style="width:100%">
+                                    <img src="../storage/memberships/${memberships.filename}" class="img-responsive margin" style="width:100%">
                                 </c:if>
                             </td>
                         </tr>

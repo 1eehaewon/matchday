@@ -60,7 +60,7 @@ public class MembershipsCont {
             MembershipsDTO membershipsDto = new MembershipsDTO();
             membershipsDto.setMembershipid(UUID.randomUUID().toString()); // UUID를 사용하여 membershipid 생성
             membershipsDto.setMembershipname((String) map.get("membershipname"));
-			/* membershipsDto.setPrice(parseInteger((String) map.get("price"))); */
+         /* membershipsDto.setPrice(parseInteger((String) map.get("price"))); */
             membershipsDto.setPrice(parseInteger((String) map.get("price")));
             membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
             membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
@@ -83,52 +83,59 @@ public class MembershipsCont {
     public ModelAndView detail(@RequestParam("membershipid") String membershipid) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("memberships/detail");
-        mav.addObject("membership", membershipsDao.detail(membershipid));
+        mav.addObject("memberships", membershipsDao.detail(membershipid));
         return mav;
     }
 
     @GetMapping("/update")
-    public ModelAndView updatedetail(@RequestParam("membershipid") String membershipid) {
+    public ModelAndView update(@RequestParam("membershipid") String membershipid) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("memberships/update");
-        mav.addObject("detail", membershipsDao.detail(membershipid));
+        mav.addObject("memberships", membershipsDao.read(membershipid));
         return mav;
     }
 
     @PostMapping("/updateproc")
-    public String update(@ModelAttribute MembershipsDTO membershipDTO,
-                         @RequestParam(name = "img", required = false) MultipartFile img,
-                         HttpServletRequest req) {
+    public String updateproc(@RequestParam Map<String, Object> map,
+                             @RequestParam(value = "img", required = false) MultipartFile img,
+                             HttpServletRequest req) {
         ServletContext application = req.getServletContext();
         String basePath = application.getRealPath("/storage/memberships");
 
-        String filename = membershipDTO.getFilename();
-        long filesize = membershipDTO.getFilesize();
+        String filename = "-";
+        long filesize = 0;
 
         try {
             if (img != null && !img.isEmpty()) {
-                // 기존 파일 삭제
-                deleteFile(basePath, filename);
-
-                // 새 파일 업로드
                 filename = uploadFile(basePath, img);
                 filesize = img.getSize();
+            } else {
+                filename = (String) map.get("existingFilename");
+                // Check if existingFilesize is null or empty before parsing
+                String existingFilesizeStr = (String) map.get("existingFilesize");
+                if (existingFilesizeStr != null && !existingFilesizeStr.isEmpty()) {
+                    filesize = Long.parseLong(existingFilesizeStr);
+                }
             }
 
-            // 나머지 업데이트 로직은 유지
-            membershipDTO.setStartdate(parseDate(req.getParameter("startdate")));
-            membershipDTO.setEnddate(parseDate(req.getParameter("enddate")));
-            membershipDTO.setFilename(filename);
-            membershipDTO.setFilesize(filesize);
+            MembershipsDTO membershipsDto = new MembershipsDTO();
+            membershipsDto.setMembershipid((String) map.get("membershipid"));
+            membershipsDto.setMembershipname((String) map.get("membershipname"));
+            membershipsDto.setPrice(parseInteger((String) map.get("price")));
+            membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
+            membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
+            membershipsDto.setFilename(filename);
+            membershipsDto.setFilesize(filesize);
 
-            membershipsDao.update(membershipDTO);
+            membershipsDao.update(membershipsDto);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            // 파일 업로드 중 예외 처리
+            // 기존 파일 삭제 (선택된 경우에만)
+            if (img != null && !img.isEmpty() && !filename.equals((String) map.get("existingFilename"))) {
+                deleteFile(basePath, (String) map.get("existingFilename"));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            // 그 외 예외 처리
         }
 
         return "redirect:/memberships/list";
@@ -182,8 +189,9 @@ public class MembershipsCont {
             return null;
         }
     }
+
     
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     public String delete(@RequestParam("membershipid") String membershipid, HttpServletRequest req) {
         // 파일 이름 가져오기
         String filename = membershipsDao.filename(membershipid);

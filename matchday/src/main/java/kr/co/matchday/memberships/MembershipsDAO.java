@@ -31,6 +31,9 @@ public class MembershipsDAO {
         return sqlSession.selectOne("memberships.detail", membershipid);
     }//detail end
     
+    public MembershipsDTO read(String membershipid) {
+        return sqlSession.selectOne("memberships.detail", membershipid);
+    }//read end
 
     public void delete(String membershipid) {
         sqlSession.delete("memberships.delete", membershipid);

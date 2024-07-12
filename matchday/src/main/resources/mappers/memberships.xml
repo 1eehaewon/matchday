@@ -23,7 +23,8 @@
     
         <update id="update" parameterType="kr.co.matchday.memberships.MembershipsDTO">
     UPDATE memberships
-    SET membershipname = #{membershipname},
+    SET membershipid = #{membershipid},
+       membershipname = #{membershipname},
         price = #{price},
         startdate = #{startdate},
         enddate = #{enddate},
@@ -38,6 +39,13 @@
     DELETE FROM memberships
     WHERE membershipid = #{membershipid}
 </delete>
+    
+    <select id="filename" parameterType="string" resultType="string">
+        SELECT filename
+        FROM memberships
+        WHERE membershipid = #{membershipid}
+    </select>
+    
     
 </mapper>
 

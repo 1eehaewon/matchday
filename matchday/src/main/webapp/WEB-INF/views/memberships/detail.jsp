@@ -107,22 +107,25 @@
 <body>
     <div class="container">
         <div class="membership-image">
-            <img src="/storage/memberships/${membership.filename}" alt="멤버쉽 클럽 로고">
+            <img src="/storage/memberships/${memberships.filename}" alt="멤버쉽 클럽 로고">
         </div>
         <div class="membership-info">
-            <div class="membership-title">${membership.membershipname}</div>
+            <div class="membership-title">${memberships.membershipname}</div>
             <dl class="info-list">
                 <dt>기간</dt>
-                <dd>${membership.startdate} ~ ${membership.enddate}</dd>
+                <dd>${memberships.startdate} ~ ${memberships.enddate}</dd>
                 
                 <dt>이용연령</dt>
                 <dd>전체관람가</dd>
                 
                 <dt>가격</dt>
-                <dd><fmt:formatNumber value="${membership.price}" pattern="#,###"/> 원</dd>
+                <dd><fmt:formatNumber value="${memberships.price}" pattern="#,###"/> 원</dd>
             </dl>
-           <button type="button" class="btn btn-primary" onclick="membership_update('${detail.membershipid}')">수정</button>
-		  <button type="button" class="btn btn-danger" onclick="membership_delete_confirm('${membership.membershipid}')">삭제</button>
+           <c:if test="${sessionScope.grade == 'M'}">
+           <button type="button" class="btn btn-primary" onclick="membership_update('${memberships.membershipid}')">수정</button>
+           <button type="button" class="btn btn-danger" onclick="membership_delete_confirm('${memberships.membershipid}')">삭제</button>
+           </c:if>
+           <a href="/membershipticket/payment"class="btn btn-info">예매하기</a>
         </div>
     </div>
     

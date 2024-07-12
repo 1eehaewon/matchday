@@ -25,7 +25,7 @@
                         <tr>
                             <td>멤버쉽 가격</td>
                             <td><input type="number" name="price" class="form-control"></td>
-                        </tr>
+                        </tr>                    
                         <tr>
                             <td>멤버쉽 사용 시작 기간</td>
                             <td><input type="date" name="startdate" class="form-control" placeholder="yyyy-MM-dd"></td>
