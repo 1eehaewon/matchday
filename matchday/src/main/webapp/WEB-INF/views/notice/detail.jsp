@@ -15,15 +15,12 @@
         <div class="row">
             <div class="col-md-8 mx-auto">
                  <c:choose>
-                    <c:when test="${notice.category == 'notice'}">
+                    <c:when test="${notice.category == 'Notice'}">
                         <h3 class="text-center mb-4">공지사항</h3>
                     </c:when>
-                    <c:when test="${notice.category == 'event'}">
+                    <c:when test="${notice.category == 'Event'}">
                         <h3 class="text-center mb-4">이벤트</h3>
                     </c:when>
-                    <c:otherwise>
-                        <h3 class="text-center mb-4">알림</h3>
-                    </c:otherwise>
                 </c:choose>
                 <hr style="width: 100%; margin-left: auto; margin-right: auto;">
                 <h5 style="text-align: left; color: blue;">${notice.title}</h5>
@@ -60,7 +57,7 @@
   <div class="spacing"></div>
     
   <c:choose>
-     <c:when test="${notice.category == 'event'}">
+     <c:when test="${notice.category == 'Event'}">
   <!-- 댓글 시작 -->
   <div class="row" style="margin-left: 26%">
     <div class="col-sm-12">
