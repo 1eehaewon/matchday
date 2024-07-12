@@ -1,24 +1,20 @@
 package kr.co.matchday.tickets;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.matches.MatchesDTO;
 
-@Mapper
-@Repository
-public class TicketsDAO {
+@Service
+public class TicketsService {
 
     @Autowired
-    private SqlSession sqlSession;
+    private TicketsDAO ticketsDao;
 
     /**
      * 경기 ID로 경기 정보를 가져오는 메서드
@@ -26,14 +22,7 @@ public class TicketsDAO {
      * @return MatchesDTO 객체
      */
     public MatchesDTO getMatchById(String matchid) {
-        System.out.println("Fetching match with matchid: " + matchid);
-        MatchesDTO match = sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getMatchById", matchid);
-        if (match == null) {
-            System.out.println("No match found with matchid: " + matchid);
-        } else {
-            System.out.println("Match found: " + match.toString());
-        }
-        return match;
+        return ticketsDao.getMatchById(matchid);
     }
 
     /**
@@ -43,10 +32,7 @@ public class TicketsDAO {
      * @return 좌석 정보 리스트
      */
     public List<Map<String, Object>> getSeatsByStadiumIdAndSection(String stadiumid, String section) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("stadiumid", stadiumid);
-        params.put("section", section);
-        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getSeatsByStadiumIdAndSection", params);
+        return ticketsDao.getSeatsByStadiumIdAndSection(stadiumid, section);
     }
 
     /**
@@ -55,7 +41,7 @@ public class TicketsDAO {
      * @return 사용자 정보 맵
      */
     public Map<String, Object> getUserInfo(String userID) {
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getUserInfo", userID);
+        return ticketsDao.getUserInfo(userID);
     }
     
     /**
@@ -64,7 +50,7 @@ public class TicketsDAO {
      * @return 쿠폰 목록
      */
     public List<CouponDTO> getCouponsByUserId(String userId) {
-        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getCouponsByUserId", userId);
+        return ticketsDao.getCouponsByUserId(userId);
     }
 
     /**
@@ -73,7 +59,7 @@ public class TicketsDAO {
      * @return 할인율
      */
     public int getDiscountRateByCouponId(String couponId) {
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getDiscountRateByCouponId", couponId);
+        return ticketsDao.getDiscountRateByCouponId(couponId);
     }
     
     /**
@@ -81,14 +67,7 @@ public class TicketsDAO {
      * @param couponId 쿠폰 ID
      */
     public int updateCouponUsage(String couponId) {
-        System.out.println("쿠폰 사용 업데이트 시도: " + couponId);
-        int result = sqlSession.update("kr.co.matchday.tickets.TicketsDAO.updateCouponUsage", couponId);
-        if (result > 0) {
-            System.out.println("쿠폰 사용 업데이트 성공: " + couponId);
-        } else {
-            System.out.println("쿠폰 사용 업데이트 실패: " + couponId);
-        }
-        return result;
+        return ticketsDao.updateCouponUsage(couponId);
     }
 
     /**
@@ -96,9 +75,7 @@ public class TicketsDAO {
      * @param ticket TicketsDTO 객체
      */
     public void insertTicket(TicketsDTO ticket) {
-        System.out.println("Inserting ticket: " + ticket);
-        sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertTicket", ticket);
-        System.out.println("Ticket inserted: " + ticket.getReservationid());
+        ticketsDao.insertTicket(ticket);
     }
 
     /**
@@ -106,9 +83,7 @@ public class TicketsDAO {
      * @param ticketsDetail TicketsDetailDTO 객체
      */
     public void insertTicketDetail(TicketsDetailDTO ticketsDetail) {
-        System.out.println("Inserting ticket detail: " + ticketsDetail);
-        sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertTicketDetail", ticketsDetail);
-        System.out.println("Ticket detail inserted: " + ticketsDetail.getTicketdetailid());
+        ticketsDao.insertTicketDetail(ticketsDetail);
     }
 
     /**
@@ -117,7 +92,7 @@ public class TicketsDAO {
      * @return 존재 여부 (1이면 존재, 0이면 존재하지 않음)
      */
     public int checkSeatId(String seatId) {
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.checkSeatId", seatId);
+        return ticketsDao.checkSeatId(seatId);
     }
 
     /**
@@ -126,7 +101,7 @@ public class TicketsDAO {
      * @return 현재 최대 예약 ID
      */
     public String getMaxReservationId(String date) {
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getMaxReservationId", date);
+        return ticketsDao.getMaxReservationId(date);
     }
 
     /**
@@ -136,15 +111,7 @@ public class TicketsDAO {
      */
     @Transactional
     public String generateNewReservationId(String date) {
-        String prefix = "reservation";
-        String maxReservationId = getMaxReservationId(date);
-        int nextSuffix = 1;
-        if (maxReservationId != null) {
-            // 예약 ID의 숫자 부분을 추출하여 다음 순번을 계산
-            nextSuffix = Integer.parseInt(maxReservationId.substring(maxReservationId.length() - 6)) + 1;
-        }
-        // 새로운 예약 ID를 생성하여 반환
-        return String.format("%s%s%06d", prefix, date, nextSuffix);
+        return ticketsDao.generateNewReservationId(date);
     }
 
     /**
@@ -153,9 +120,7 @@ public class TicketsDAO {
      * @return 좌석 정보 맵
      */
     public Map<String, Object> getSeatInfoByJson(String seatId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("seatId", seatId);
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", params);
+        return ticketsDao.getSeatInfoByJson(seatId);
     }
 
     /**
@@ -164,10 +129,7 @@ public class TicketsDAO {
      * @return 좌석 정보 맵
      */
     public Map<String, Object> getSeatInfo(String seatId) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("seatId", seatId);
-        System.out.println("Fetching seat info for seatId: " + seatId);
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getSeatInfoByJson", params);
+        return ticketsDao.getSeatInfo(seatId);
     }
     
     /**
@@ -176,13 +138,7 @@ public class TicketsDAO {
      * @return 예약 정보 리스트
      */
     public List<Map<String, Object>> getReservationsByUserId(String userId) {
-        List<Map<String, Object>> reservations = sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getReservationsByUserId", userId);
-        if (reservations == null || reservations.isEmpty()) {
-            System.out.println("No reservations found for userId: " + userId);
-        } else {
-            System.out.println("Reservations found: " + reservations.size());
-        }
-        return reservations;
+        return ticketsDao.getReservationsByUserId(userId);
     }
 
     /**
@@ -191,7 +147,7 @@ public class TicketsDAO {
      * @return 예약된 좌석 리스트
      */
     public List<String> getReservedSeats(String matchid) {
-        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getReservedSeats", matchid);
+        return ticketsDao.getReservedSeats(matchid);
     }
     
     /**
@@ -200,7 +156,7 @@ public class TicketsDAO {
      * @return TicketsDTO 객체
      */
     public TicketsDTO getReservationById(String reservationid) {
-        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getReservationById", reservationid);
+        return ticketsDao.getReservationById(reservationid);
     }
 
     /**
@@ -209,7 +165,7 @@ public class TicketsDAO {
      * @return TicketsDetailDTO 리스트
      */
     public List<TicketsDetailDTO> getTicketDetailsByReservationId(String reservationid) {
-        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getTicketDetailsByReservationId", reservationid);
+        return ticketsDao.getTicketDetailsByReservationId(reservationid);
     }
     
     /**
@@ -218,7 +174,7 @@ public class TicketsDAO {
      * @return 멤버십 정보 리스트
      */
     public List<Map<String, Object>> getMembershipsByUserId(String userId) {
-        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getMembershipsByUserId", userId);
+        return ticketsDao.getMembershipsByUserId(userId);
     }
-
 }
+

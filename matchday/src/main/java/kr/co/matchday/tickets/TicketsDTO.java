@@ -1,5 +1,8 @@
 package kr.co.matchday.tickets;
 
+import java.util.Date;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,4 +36,13 @@ public class TicketsDTO {
     private String recipientname; // 수령인 이름
     private String shippingaddress; // 배송 주소
     private String shippingrequest; // 배송 요청 사항
+    
+    // 추가된 필드
+    private String userName; // 사용자 이름
+    private String stadiumName; // 경기장 이름
+    private String location; // 경기장 위치
+    private String paymentmethodname; // 결제 방법 이름
+    private List<TicketsDetailDTO> details; // 티켓 상세 정보 리스트
+    private Date cancelDeadline; // 취소 마감시간
+    private Date matchdate; // 경기 날짜
 }

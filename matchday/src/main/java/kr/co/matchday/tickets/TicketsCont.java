@@ -1,7 +1,10 @@
 package kr.co.matchday.tickets;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +48,7 @@ public class TicketsCont {
     private Environment env; // 환경변수를 관리하는 객체
 
     @Autowired
-    private TicketsDAO ticketsDao; // 티켓 관련 DAO 객체
+    private TicketsService ticketsService; // 티켓 관련 Service 객체
 
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate; // MyBatis의 SqlSessionTemplate 객체
@@ -64,7 +67,7 @@ public class TicketsCont {
         System.out.println("Received matchid: " + matchid);
 
         // 경기 정보를 가져옴
-        MatchesDTO matchesDto = ticketsDao.getMatchById(matchid);
+        MatchesDTO matchesDto = ticketsService.getMatchById(matchid);
         if (matchesDto == null) {
             return new ModelAndView("errorPage").addObject("message", "Match not found for ID: " + matchid);
         }
@@ -84,8 +87,8 @@ public class TicketsCont {
      */
     @GetMapping("/seatmap")
     public ModelAndView seatmap(@RequestParam String stadiumid, @RequestParam String section, @RequestParam String matchid) {
-        List<Map<String, Object>> seats = ticketsDao.getSeatsByStadiumIdAndSection(stadiumid, section);
-        List<String> reservedSeats = ticketsDao.getReservedSeats(matchid); // 예약된 좌석 정보 가져오기
+        List<Map<String, Object>> seats = ticketsService.getSeatsByStadiumIdAndSection(stadiumid, section);
+        List<String> reservedSeats = ticketsService.getReservedSeats(matchid); // 예약된 좌석 정보 가져오기
         ModelAndView mav = new ModelAndView("tickets/seatmap");
         mav.addObject("section", section);
         mav.addObject("stadiumid", stadiumid);
@@ -105,8 +108,6 @@ public class TicketsCont {
 
         return mav;
     }
-
-
 
     /**
      * 예약 확인 페이지로 이동
@@ -130,7 +131,7 @@ public class TicketsCont {
             Model model) {
 
         // 경기 정보 가져오기
-        MatchesDTO match = ticketsDao.getMatchById(matchId);
+        MatchesDTO match = ticketsService.getMatchById(matchId);
         if (match == null) {
             return "error";
         }
@@ -145,10 +146,22 @@ public class TicketsCont {
         }
 
         String userId = (String) session.getAttribute("userID");
-        Map<String, Object> userInfo = userId != null ? ticketsDao.getUserInfo(userId) : new HashMap<>();
+        Map<String, Object> userInfo = userId != null ? ticketsService.getUserInfo(userId) : new HashMap<>();
 
         // 사용자의 쿠폰 정보 조회
-        List<CouponDTO> coupons = ticketsDao.getCouponsByUserId(userId);
+        List<CouponDTO> coupons = ticketsService.getCouponsByUserId(userId);
+
+        // 사용자의 멤버십 정보 조회
+        List<Map<String, Object>> memberships = ticketsService.getMembershipsByUserId(userId);
+        List<Map<String, Object>> applicableMemberships = new ArrayList<>();
+
+        // 경기 팀과 관련된 멤버십 필터링
+        for (Map<String, Object> membership : memberships) {
+            String teamName = (String) membership.get("teamname");
+            if (teamName != null && (teamName.equals(match.getHometeamid()) || teamName.equals(match.getAwayteamid()))) {
+                applicableMemberships.add(membership);
+            }
+        }
 
         model.addAttribute("match", match);
         model.addAttribute("seats", seatList);
@@ -157,10 +170,11 @@ public class TicketsCont {
         model.addAttribute("stadiumid", stadiumId);
         model.addAttribute("userInfo", userInfo);
         model.addAttribute("coupons", coupons); // 쿠폰 정보를 모델에 추가
+        model.addAttribute("memberships", applicableMemberships); // 적용 가능한 멤버십 정보를 모델에 추가
 
         return "tickets/reservation";
     }
-    
+
     
     /**
      * 예약 ID 생성 메서드
@@ -170,7 +184,7 @@ public class TicketsCont {
         String prefix = "reservation";
         String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
         // 주어진 날짜에 대한 현재 최대 예약 ID를 가져옴
-        String maxReservationId = ticketsDao.getMaxReservationId(date);
+        String maxReservationId = ticketsService.getMaxReservationId(date);
         
         int nextSuffix = 1;
         if (maxReservationId != null) {
@@ -283,7 +297,7 @@ public class TicketsCont {
                     ticketsDto.setShippingrequest(shippingrequest);
 
                     // 티켓 예약 정보 삽입
-                    ticketsDao.insertTicket(ticketsDto);
+                    ticketsService.insertTicket(ticketsDto);
                     System.out.println("티켓 삽입 결과: 1");
 
                     // 티켓 상세 정보 삽입
@@ -293,7 +307,7 @@ public class TicketsCont {
                         System.out.println("좌석 ID: " + seatId);
 
                         // 각 좌석 정보 가져오기
-                        Map<String, Object> seatInfo = ticketsDao.getSeatInfo(seatId);
+                        Map<String, Object> seatInfo = ticketsService.getSeatInfo(seatId);
                         if (seatInfo != null) {
                             TicketsDetailDTO ticketsDetailDto = new TicketsDetailDTO();
                             ticketsDetailDto.setReservationid(reservationid);
@@ -304,7 +318,7 @@ public class TicketsCont {
                             ticketsDetailDto.setIscanceled(false);
                             ticketsDetailDto.setIsrefunded(false);
 
-                            ticketsDao.insertTicketDetail(ticketsDetailDto);
+                            ticketsService.insertTicketDetail(ticketsDetailDto);
                             System.out.println("좌석 ID: " + seatId + " 삽입 완료");
                         } else {
                             System.out.println("좌석 정보를 찾을 수 없습니다. 좌석 ID: " + seatId);
@@ -313,7 +327,7 @@ public class TicketsCont {
 
                     // 결제가 완료된 후 쿠폰 사용 업데이트
                     if (couponId != null && !couponId.equals("0")) {
-                        int updateResult = ticketsDao.updateCouponUsage(couponId);
+                        int updateResult = ticketsService.updateCouponUsage(couponId);
                         if (updateResult > 0) {
                             System.out.println("쿠폰 사용 업데이트 성공: " + couponId);
                         } else {
@@ -340,6 +354,7 @@ public class TicketsCont {
 
         return response;
     }
+
     /**
      * 결제 취소 메서드
      * @param imp_uid 아임포트 UID
@@ -431,6 +446,11 @@ public class TicketsCont {
         return null;
     }
     
+    /**
+     * 예약 목록 페이지로 이동
+     * @param session 세션 객체
+     * @return ModelAndView 객체
+     */
     @GetMapping("/reservationList")
     public ModelAndView reservationList(HttpSession session) {
         String userId = (String) session.getAttribute("userID");
@@ -440,12 +460,70 @@ public class TicketsCont {
         }
 
         System.out.println("Fetching reservations for userId: " + userId);
-        List<Map<String, Object>> reservations = ticketsDao.getReservationsByUserId(userId);
+        List<Map<String, Object>> reservations = ticketsService.getReservationsByUserId(userId);
 
         ModelAndView mav = new ModelAndView("tickets/reservationList");
         mav.addObject("reservations", reservations);
         return mav;
     }
+    
+    /**
+     * reservationdate를 String에서 Date로 변환하는 유틸리티 메서드
+     * @param dateString 날짜 문자열
+     * @return Date 객체
+     */
+    private Date convertStringToDate(String dateString) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            return formatter.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * 예약 상세 정보 페이지로 이동
+     * @param reservationid 예약 ID
+     * @return ModelAndView 객체
+     */
+    @GetMapping("/reservationDetail")
+    public ModelAndView reservationDetail(@RequestParam("reservationid") String reservationid) {
+        ModelAndView mav = new ModelAndView("tickets/reservationDetail");
 
+        // 예약 정보 조회
+        TicketsDTO reservation = ticketsService.getReservationById(reservationid);
+        if (reservation == null) {
+            mav.setViewName("errorPage");
+            mav.addObject("message", "Reservation not found for ID: " + reservationid);
+            return mav;
+        }
+
+        // 티켓 상세 정보 조회
+        List<TicketsDetailDTO> details = ticketsService.getTicketDetailsByReservationId(reservationid);
+
+        // 예약 상세 정보 설정
+        reservation.setDetails(details);
+
+        // 예약 날짜를 Date 객체로 변환
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date reservationDate = null;
+        try {
+            reservationDate = formatter.parse(reservation.getReservationdate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        mav.addObject("reservationDate", reservationDate);
+
+        // 취소 마감시간 설정 (임의로 3일 전으로 설정)
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(reservation.getMatchdate());
+        cal.add(Calendar.DATE, -3);
+        reservation.setCancelDeadline(cal.getTime());
+
+        mav.addObject("reservation", reservation);
+        return mav;
+    }
 
 }
+

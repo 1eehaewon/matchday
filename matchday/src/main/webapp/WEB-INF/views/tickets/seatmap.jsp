@@ -28,7 +28,7 @@
             color: white;
         }
         .reserved {
-            background-color: white; /* 예약된 좌석은 흰색으로 표시 */
+            background-color: white; /* 예약된 좌석은 하얀색으로 표시 */
             cursor: not-allowed; /* 예약된 좌석은 클릭할 수 없도록 표시 */
         }
         .seat-info {
@@ -159,8 +159,6 @@
             </div> <!-- col-md-4 끝 -->
         </div> <!-- row 끝 -->
     </div> <!-- container 끝 -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 경기장 바닥 위치를 지정하는 객체
@@ -186,32 +184,6 @@
 
             var seatMap = document.getElementById('seat-map');
             var ground = document.getElementById('ground');
-
-            // WebSocket 설정
-            var socket = new SockJS('/ws');
-            var stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-
-                stompClient.subscribe('/topic/seatSelected', function(messageOutput) {
-                    var message = JSON.parse(messageOutput.body);
-
-                    // 실시간으로 다른 사용자가 선택한 좌석을 확인하고 경고 메시지를 표시
-                    var seatElement = document.querySelector('.seat[data-seat-id="' + message.seatId + '"]');
-                    if (seatElement) {
-                        if (message.status === 'selected') {
-                            seatElement.classList.add('reserved');
-                            seatElement.style.pointerEvents = 'none';
-                            seatElement.removeEventListener('click', seatClickListener);
-                        } else {
-                            seatElement.classList.remove('reserved');
-                            seatElement.style.pointerEvents = 'auto';
-                            seatElement.addEventListener('click', seatClickListener);
-                        }
-                    }
-                });
-            });
 
             // 좌석 배치도를 생성
             if (seatMap && seats.length > 0) {
@@ -253,11 +225,6 @@
              * 좌석 클릭 이벤트 리스너 함수
              */
             function seatClickListener() {
-                var seatId = this.dataset.seatId;
-
-                // 서버에 좌석 선택 메시지 전송
-                stompClient.send("/app/selectSeat", {}, JSON.stringify({'seatId': seatId, 'status': 'selected'}));
-
                 // 선택된 좌석의 클래스를 토글
                 if (this.classList.contains('selected')) {
                     this.classList.remove('selected');

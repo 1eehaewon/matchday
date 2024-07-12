@@ -18,10 +18,10 @@
         <tbody>
             <c:forEach var="reservation" items="${reservations}">
                 <tr>
-                    <td>${reservation.reservationdate}</td>
-                    <td>${reservation.reservationid}</td>
+                    <td><fmt:formatDate value="${reservation.reservationdate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+                    <td><a href="/tickets/reservationDetail?reservationid=${reservation.reservationid}">${reservation.reservationid}</a></td>
                     <td>${reservation.hometeamid} vs ${reservation.awayteamid}</td>
-                    <td>${reservation.matchdate} / ${reservation.quantity}</td>
+                    <td><fmt:formatDate value="${reservation.matchdate}" pattern="yyyy-MM-dd HH:mm:ss"/> / ${reservation.quantity}</td>
                     <td><fmt:formatDate value="${reservation.matchdate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                     <td>
                         <c:choose>
