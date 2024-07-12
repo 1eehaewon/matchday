@@ -2,18 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.matchday.membershipticket.MembershipticketDAO">
 
-    <!-- 사용자 ID로 사용자 정보 가져오기 -->
     <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">
         SELECT userid, name, email, number
         FROM users
         WHERE userid = #{userID}
     </select>
 
-    <!-- 멤버쉽 ID로 멤버쉽 정보 가져오기 -->
     <select id="getMembershipInfo" parameterType="String" resultType="java.util.HashMap">
-        SELECT membershipname, price
+        SELECT membershipid, membershipname, price
         FROM memberships
         WHERE membershipid = #{membershipID}
     </select>
 
+    <insert id="insertUserMembership" parameterType="java.util.HashMap">
+        INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate)
+        VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate})
+    </insert>
 </mapper>
