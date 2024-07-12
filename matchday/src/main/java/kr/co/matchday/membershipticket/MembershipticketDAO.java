@@ -38,4 +38,7 @@ public class MembershipticketDAO {
     public List<Map<String, Object>> getUserMemberships(String userID) {
         return sqlSession.selectList("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMemberships", userID);
     }
-}
+    
+
+    
+}//end
