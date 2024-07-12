@@ -194,133 +194,110 @@
 	        display: block;
 	    }
     
-    /* 장바구니 모달 */
-	.modal {
-	    display: none; /* 기본적으로 숨기기 */
-	    position: fixed; /* 위치 고정 */
-	    z-index: 1; /* 가장 위에 위치 */
-	    left: 0;
-	    top: 0;
-	    width: 100%; /* 전체 너비 */
-	    height: 100%; /* 전체 높이 */
-	    overflow: auto; /* 스크롤 필요 시 활성화 */
-	    background-color: rgba(0, 0, 0, 0.4); /* 불투명 검정색 배경 */
-	}
-	
-	.modal-content {
-	    background-color: #fff;
-	    margin: 15% auto; /* 상단에서 15%, 가운데 정렬 */
-	    padding: 20px;
-	    border: 1px solid #888;
-	    width: 40%; /* 화면 크기에 따라 조절 가능 */
-	    border-radius: 4px;
-	    text-align: center;
-	}
-	
-	.close {
-	    color: #aaa;
-	    float: right;
-	    font-size: 30px;
-	    font-weight: bold;
-	}
-	
-	.close:hover,
-	.close:focus {
-	    color: black;
-	    text-decoration: none;
-	    cursor: pointer;
-	}
-	
-	.modal-actions button {
-	    padding: 10px 20px;
-	    font-size: 16px;
-	    margin: 10px;
-	    border: none;
-	    cursor: pointer;
-	    border-radius: 4px;
-	    background-color: #007bff; /* 버튼 색상: 파란색 */
-	    color: #fff;
-	}
-	
-	.modal-actions button:hover {
-	    background-color: #0056b3; /* 호버 시 어두운 파란색 */
-	}
+	    /* 장바구니 모달 */
+		.modal {
+		    display: none; /* 기본적으로 숨기기 */
+		    position: fixed; /* 위치 고정 */
+		    z-index: 1; /* 가장 위에 위치 */
+		    left: 0;
+		    top: 0;
+		    width: 100%; /* 전체 너비 */
+		    height: 100%; /* 전체 높이 */
+		    overflow: auto; /* 스크롤 필요 시 활성화 */
+		    background-color: rgba(0, 0, 0, 0.4); /* 불투명 검정색 배경 */
+		}
+		
+		.modal-content {
+		    background-color: #fff;
+		    margin: 15% auto; /* 상단에서 15%, 가운데 정렬 */
+		    padding: 20px;
+		    border: 1px solid #888;
+		    width: 40%; /* 화면 크기에 따라 조절 가능 */
+		    border-radius: 4px;
+		    text-align: center;
+		}
+		
+		.close {
+		    color: #aaa;
+		    float: right;
+		    font-size: 30px;
+		    font-weight: bold;
+		}
+		
+		.close:hover,
+		.close:focus {
+		    color: black;
+		    text-decoration: none;
+		    cursor: pointer;
+		}
+		
+		.modal-actions button {
+		    padding: 10px 20px;
+		    font-size: 16px;
+		    margin: 10px;
+		    border: none;
+		    cursor: pointer;
+		    border-radius: 4px;
+		    background-color: #007bff; /* 버튼 색상: 파란색 */
+		    color: #fff;
+		}
+		
+		.modal-actions button:hover {
+		    background-color: #0056b3; /* 호버 시 어두운 파란색 */
+		}
+/* 리뷰 섹션 스타일 */
 .review {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    margin-top: 20px;
+    border: 1px solid #ccc;
     padding: 20px;
+    background-color: #f9f9f9;
 }
 
 .review-tabs {
+    margin-bottom: 10px;
     display: flex;
-    justify-content: flex-start;
-    margin-bottom: 20px;
+    justify-content: flex-start; /* 기본적으로 왼쪽 정렬 */
 }
 
 .tab-button {
     background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    padding: 10px 20px;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 10px;
     cursor: pointer;
-    margin-right: 10px;
-    border-radius: 5px;
-    font-size: 16px;
+    margin-right: 10px; /* 버튼 사이에 간격을 줍니다. */
+    border-radius: 5px 5px 0 0;
 }
 
 .tab-button.active {
-    background-color: #fff;
-    border-bottom: 2px solid #007bff;
-    color: #007bff;
+    background-color: #ddd;
+}
+
+.tab-button.right-align {
+    margin-left: auto; /* 오른쪽으로 이동시키기 위한 속성 */
 }
 
 .tab-content {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.review-list {
-    margin-top: 20px;
-}
-
-.review-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f1f1f1;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-.review-summary:hover {
-    background-color: #e1e1e1;
-}
-
-.review-rating, .review-title, .review-author, .review-date {
-    flex: 1;
-    text-align: center;
-}
-
-.review-details {
     display: none;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    margin-bottom: 10px;
 }
 
-.review-content {
-    margin-bottom: 10px;
+.tab-content.active {
+    display: block;
+}
+
+.review-content-wrapper {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    background-color: #fff;
 }
 
 .review-image {
     max-width: 100%;
-    height: auto;
+    margin-bottom: 10px;
+}
+
+.review-content {
     margin-bottom: 10px;
 }
 
@@ -329,8 +306,39 @@
 }
 
 .comment {
+    background-color: #f1f1f1;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+/* 리뷰 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+table th {
+    background-color: #f1f1f1;
+}
+
+table tr:nth-child(even) {
     background-color: #f9f9f9;
-    
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+
+
   </style>
 <!-- 본문 시작 goods/detail.jsp -->
 
@@ -395,7 +403,8 @@
                     </div>
                     
                     <div class="product-action">
-					    <button onclick="purchase()">구매하기</button>
+                    	<button onclick="buyopenPopup('/order/payment?goodsid=${goodsDto.goodsid}')">구매하기</button>
+					    <%-- <a href="/order/payment?goodsid=${goodsDto.goodsid}"><button>구매하기</button></a> --%>
 					    <input type="button" value="장바구니에 추가" onclick="addToCart()" class="product-action-btn">
 					</div>
 					<!-- 장바구니 모달창 -->
@@ -410,6 +419,7 @@
 					        </div>
 					    </div>
 					</div>
+					<!-- 장바구니 폼 -->
 					<form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
 						<input type="hidden" name="userid" value="${sessionScope.userID}">
 						<input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
@@ -450,107 +460,96 @@
 				   			${goodsDto.deliveryreturnsexchangesinfo}	    	
 				   		</div>
 				    	<div id="info04" class="tabcont"> <!-- 리뷰 내용 -->
-				    		<!-- <div class="reviews_cont">
-					            <h3>상품후기</h3>
-					            
-					            <div class="btn_reviews_box">
-					                <a href="../board/list.php?bdId=goodsreview" class="btn_reviews_more">상품후기 전체보기</a>
-					                <a href="javascript:gd_open_write_popup('goodsreview', '1000000296')" class="btn_reviews_write">상품후기 글쓰기</a>
-					            </div>
-					            btn_reviews_box
-					            <div>
-					            	리뷰리스트
-					            </div> -->
-					            
-					            <div class="review">
-    <div class="review-tabs">
-        <button class="tab-button active" onclick="showTab('review')">상품후기</button>
-        <button class="tab-button" onclick="showTab('all-reviews')">상품전체보기(리뷰리스트로 이동?)</button>
-        <button class="tab-button" onclick="openPopup('/review/write?goodsid=${goodsDto.goodsid}')">상품 글쓰기</button>
-    </div>
+							<div class="review">
+								<div class="review-tabs">
+									<button class="tab-button active" onclick="showTab('review')">상품후기</button>
+									<button class="tab-button right-align" onclick="showTab('all-reviews')"><a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a></button>
+									<button class="tab-button right-align2" onclick="writeopenPopup('/review/write?goodsid=${goodsDto.goodsid}')">상품 글쓰기</button>
+								</div>
 
-    <div id="review" class="tab-content">
-        <div class="review-list">
-            <div class="review-summary" onclick="toggleReviewDetails('review1')">
-                <div class="review-rating">4점</div>
-                <div class="review-title">좋은 상품입니다</div>
-                <div class="review-author">사용자 이름</div>
-                <div class="review-date">2024-07-09</div>
-            </div>
-            <div id="review1" class="review-details">
-                <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
-                <div class="review-content">
-                    여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
-                </div>
-                <div class="review-comments">
-                    <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
-                    <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
-                </div>
-            </div>
-            <div class="review-summary" onclick="toggleReviewDetails('review2')">
-                <div class="review-rating">5점</div>
-                <div class="review-title">좋은 상품입니다</div>
-                <div class="review-author">사용자 이름</div>
-                <div class="review-date">2024-07-09</div>
-            </div>
-            <div id="review2" class="review-details">
-                <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
-                <div class="review-content">
-                    여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
-                </div>
-                   <div class="review-comments">
-                    <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
-                    <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
-                </div>
-            </div>
-
-<c:forEach items="${reviewList}" var="review">
-<div class="review-summary" onclick="toggleReviewDetails('review3')">
-    <!--  <div class="review-rating">${review.rating}평점</div> -->
-    <div class="review-title">${review.title}</div>
-    <div class="review-author">${userid}</div>
-    <div class="review-date">${review.reviewdate}</div>
-</div>
-<div id="review3" class="review-details">
-    <div class="review-content">
-        ${review.content}
-    </div>
-    </c:forEach>
-    <img src="" alt="Review Image" class="review-image">
-    <div class="review-comments">
-        <div class="comment">댓글 1: 동의합니다.</div>
-    </div>
-</div>
-
-            
-            
-            
-        </div>
-    </div>
-
-    <div id="all-reviews" class="tab-content" style="display: none;">
-        상품 전체 보기 내용
-    </div>
-
-    <div id="write-review" class="tab-content" style="display: none;">
-        상품 글쓰기 내용
-    </div>
-    </div>
-					            
-					        </div> <!-- 리뷰 내용 -->
-				    	</div> <!-- 상세보기 내용 -->
-				
-				</div> <!-- 상세보기 내용 -->
-				
-            </div> <!-- 상세보기 -->
+							    <div id="review" class="tab-content">
+							    <table>
+							        <thead>
+							            <tr>
+							                <th>평점</th>
+							                <th>제목</th>
+							                <th>작성자</th>
+							                <th>작성일</th>
+							                <th>수정/삭제</th>
+							            </tr>
+							        </thead>
+							        <tbody>
+							            <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+							            <c:forEach items="${reviewList}" var="review">
+							                <tr>
+							                    <td>${review.rating}점</td>
+							                    <td>${review.title}</td>
+							                    <td>${review.userid}</td>
+							                    <td><fmt:formatDate value="${review.reviewdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></td>
+							                    <td>
+							                    	<button>수정</button>
+							                    	<button>삭제</button>
+							                    </td>
+							                </tr>
+							                <tr id="review${review.reviewid}" class="review-details">
+							                <!-- <tr id="review${review.reviewid}" class="review-details" style="display: none;"> -->
+							                    <td colspan="5">
+							                        <div class="review-content-wrapper">
+								                        <img src="${pageContext.request.contextPath}/storage/review/이미지" alt="Review Image" class="review-image">
+								                        <div class="review-content">${review.content}</div>
+								                        <div class="review-comments">
+								                        	<div class="review-comments-top">
+								                        		<span>
+								                        			<strong>0</strong>
+								                        			"개의 댓글이 있습니다"
+								                        		</span>
+									                        	
+									                        	<div class="comment">content.userid: comment.text</div>
+									                        	<ul>
+									                        		<li>d</li>
+									                        		<li>d</li>
+									                        		
+									                        	</ul>
+									                        	
+									                        </div>
+								                        </div>
+							                        </div>
+							                    </td>
+							                </tr>
+							            </c:forEach>
+							
+							         
+							        </tbody>
+							    </table>
+								</div> <!-- id="review" class="tab-content" end -->
+							
+								<div id="all-reviews" class="tab-content" style="display: none;">
+							        <p>상품 전체 보기 내용</p>
+							        <!-- 전체 리뷰 리스트 링크 추가 -->
+							        <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
+							    </div>
+							    
+							</div> <!-- review end -->				            
+					    </div> <!-- 리뷰 내용 -->
+					    
+		    	</div> <!-- 상세보기 내용 -->
+			</div> <!-- 상세보기 -->
 
         </c:if>
-    </div>
+    </div> <!-- container end -->
     
 
 <!-- 본문 끝 -->
 
 <script>
+	//로그인 상태 확인 함수 예시
+	function isLoggedIn() {
+		// 세션 스코프에서 userid 가져오기
+	    var userid = '${sessionScope.userID}';
+		return (userid !== null && userid !== '');
+	    return true; // 혹은 false
+	}
+
 	function updateQuantity(change) { // 주문수량
 	    var input = document.getElementById('quantity-input');
 	    var currentValue = parseInt(input.value);
@@ -612,13 +611,27 @@
         }
     }
 
-    function purchase() {
+		function buyopenPopup(url) { //구매하기 팝업
+
+		    if (isLoggedIn()) {
+		    	
+		    	window.open(url, "popupWindow", "width=1200,height=800,scrollbars=yes");
+		    	
+		    } else {
+		        // 로그인이 되어있지 않으면 팝업을 열지 않음
+		        alert("로그인이 필요합니다.");
+		        return; // 팝업을 열지 않고 함수 종료
+		    }
+		
+    }// buyopenPopup(url) end
+    
+/*     function purchase() {
         // 구매하기 버튼을 눌렀을 때 수행할 동작
         // 예를 들어, Ajax를 사용하여 서버로 상품 추가 요청을 보낼 수 있습니다.
         alert('상품을 구매합니다.');
-    }
+    } */
 
-    // 장바구니에 추가 버튼 클릭 시 모달 열기
+    // 장바구니에 추가 버튼 클릭 시 
     function addToCart() {
 	    // 수량 입력 요소 확인
 	    var quantityInput = document.getElementById('quantity-input');
@@ -713,45 +726,66 @@
         } // if end
     } // goods_delete() end
 
-    //상품 리뷰
+ 	// 상품 리뷰
     function showTab(tabId) {
         var tabs = document.getElementsByClassName('tab-content');
+        var buttons = document.getElementsByClassName('tab-button');
+
+        // 모든 탭 콘텐츠를 숨기기
         for (var i = 0; i < tabs.length; i++) {
             tabs[i].style.display = 'none';
         }
-        document.getElementById(tabId).style.display = 'block';
-
-        var buttons = document.getElementsByClassName('tab-button');
+        
+        // 모든 탭 버튼에서 'active' 클래스 제거
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].classList.remove('active');
         }
+
+        // 선택한 탭 콘텐츠 보이기
+        document.getElementById(tabId).style.display = 'block';
+
+        // 선택한 탭 버튼에 'active' 클래스 추가
         event.currentTarget.classList.add('active');
     }
 
-    function toggleReviewDetails(reviewId) {
-    	var reviewDetails = document.getElementById(reviewId);
+    // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
+    document.getElementById('review').style.display = 'block';
+
+
+
+    /*function toggleReviewDetails(reviewid) {
+    	var reviewDetails = document.getElementById(reviewid);
+    	//if (reviewDetails.style.display === '' || reviewDetails.style.display === 'none') {
         if (reviewDetails.style.display === 'none') {
             reviewDetails.style.display = 'block';
-            console.log(review.title);
             
         } else {
             reviewDetails.style.display = 'none';
         }
+    }*/
+    function toggleReviewDetails(reviewId) {
+        var reviewDetails = document.getElementById(reviewId);
+        if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
+            reviewDetails.style.display = 'block'; // Changed display to 'table-row' for table row visibility
+        } else {
+            reviewDetails.style.display = 'none';
+        }
     }
-    
-    function openPopup(url) { // 상품 글쓰기 팝업
-    	var width = 1000;
-        var height = 900;
 
-        // 화면의 중앙에 위치시키기 위한 좌표 계산
-        var left = (screen.width - width) / 2;
-        var top = (screen.height - height) / 2;
-
-        // 창을 중앙에 띄우기
-        window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
-    }// openPopup(url) end
     
-    
+    function writeopenPopup(url) { // 상품 쓰기 팝업
+        if (isLoggedIn()) {
+            var width = 1000;
+            var height = 900;
+            var left = (screen.width - width) / 2;
+            var top = (screen.height - height) / 2;
+            window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+        } else {
+            // 로그인이 되어있지 않으면 팝업을 열지 않음
+            alert("로그인이 필요합니다.");
+            return; // 팝업을 열지 않고 함수 종료
+        }
+    }//writeopenPopup(url) end
     
     
 </script>

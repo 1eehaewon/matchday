@@ -277,6 +277,7 @@
 			                                        <c:if test="${not empty goods.filename}">
 			                                        	<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
 			                                        	<img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
+			                                        	</a>
 			                                        </c:if>
 		                                        </div>
 		                                        <br>
@@ -344,7 +345,9 @@
 	        <!-- price_sum end -->
 	        <div class="shopping-buy">
 	        	<a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        	<button type="button" class="buy-button">구매하기</button>
+	        	<!-- <button type="button" class="buy-button" onclick="openPopup('/order/payment')">구매하기</button> 자바스크립트에 url -->
+	        	<%-- <a href="/order/payment?goodsid=${goodsDto.goodsid}"><button>구매하기</button></a> --%>
+	        	<button type="button" class="buy-button" onclick="proceedToPayment()">구매하기</button>
 	        </div>
 	    </div>
 	    <!-- order_wrap end-->
@@ -433,7 +436,7 @@
                 var totalPriceCell = row.cells[5];
                 totalSelectedPrice += parseInt(totalPriceCell.textContent.replace('원', '').replace(',', ''));
             }
-        }
+        }//for end
 
      	// 상품금액 표시
         document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
@@ -475,7 +478,7 @@
             var url = '/cart/delete?cartid=' + selectedItems.join(',');
             location.href = url;
         }
-    }
+    }//deleteSelectedItems() end
 
     // 전체 상품 삭제 함수
     function deleteAllItems() {
@@ -499,7 +502,77 @@
 	    document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
     }); //deleteSelectedItems() end
 
+    
+ 	// 결제 진행 함수
+    function proceedToPayment() {
+        var selectedItems = []; // 선택된 상품 배열 생성
+        var checkboxes = document.getElementsByName('selectedItems'); // 'selectedItems' 이름을 가진 모든 체크박스를 가져옴
+        // 각 체크박스를 확인하여 선택된 경우 배열에 추가
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value); // 체크박스의 값을 배열에 추가
+            }
+        }
+        // 선택된 상품이 없는 경우 알림을 표시하고 함수 종료
+        if (selectedItems.length === 0) {
+            alert("상품을 선택해주세요."); // 경고창 표시
+            return; // 함수 종료
+        }
 
+        // 선택된 상품의 ID를 URL에 추가하여 페이지 이동
+        var url = '/order/payment?goodsid=' + selectedItems.join(','); // 선택된 상품 ID를 ','로 구분하여 문자열 생성
+        location.href = url;
+    }//proceedToPayment() end
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+/*     function openPopup(url) {
+        var selectedItems = [];
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value);
+            }
+        }
+
+        if (selectedItems.length === 0) {
+            alert("상품을 선택해주세요.");
+            return;
+        }
+
+        var queryString = selectedItems.join(',');
+        var popupUrl = url + '?goodsid=' + queryString;
+        /* var popupUrl = url + '?cartid=' + queryString; */
+        
+       // window.open(popupUrl, "popupWindow", "width=1200,height=800,scrollbars=yes");
+    //}// openPopup(url) end */
  	
  	
  	

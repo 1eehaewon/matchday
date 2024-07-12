@@ -64,7 +64,7 @@
                     <tr>
                         <th>굿즈 ID</th>
                         <td>
-                            <input type="text" name="goodsid" id="goodsid" class="form-control">
+                            <input type="text" name="goodsid" id="goodsid" class="form-control" readonly>
                             <span id="duplicateMsg" style="color: red;"></span>
                         </td>
                     </tr>
@@ -153,6 +153,34 @@
 	document.addEventListener('DOMContentLoaded', function() {
 	    var form = document.getElementById('goodsfrm');
 
+	 // 굿즈 ID 생성 함수
+	    function generateUniqueGoodsId() {
+	        var prefix = 'goods';
+	        var num;
+	        var existingIds = []; // 기존 굿즈 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+	        // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+	        <c:forEach items="${goodsList}" var="goods">
+	            existingIds.push('${goods.goodsid}');
+	        </c:forEach>
+
+	        // 중복되지 않는 아이디 생성
+	        do {
+	            num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+	            var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+	        } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+	        return newId;
+	    }
+
+	    // 랜덤 숫자 생성 함수
+	    function generateRandomNumber() {
+	        return Math.floor(Math.random() * 999) + 1;
+	    }
+
+	    // 굿즈 ID 설정
+	    document.getElementById('goodsid').value = generateUniqueGoodsId();
+	    
         function validateForm() {
             var isValid = true;
 

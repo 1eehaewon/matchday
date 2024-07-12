@@ -23,23 +23,25 @@ public class ReviewDAO {
 
     public ReviewDTO selectReviewById(String reviewid) {
         return sqlSession.selectOne("selectReviewById", reviewid);
-    }
+    }//selectReviewById end
     
     public List<ReviewDTO> getReviewList(String goodsid) {
         return sqlSession.selectList("review.getReviewList", goodsid);
-    }
-/*
+    }//getReviewList end
+
     public void update(ReviewDTO reviewDto) {
         sqlSession.update("review.update", reviewDto);
-    }
+    }//update end
 
     public void delete(String reviewid) {
         sqlSession.delete("review.delete", reviewid);
+    }//delete end
+
+    // 모든 리뷰 목록 조회
+    public List<ReviewDTO> getAllReviews() {
+        return sqlSession.selectList("review.getAllReviews");
     }
-*/
-    /*public List<ReviewDTO> list() {
-        return sqlSession.selectList("review.list");
-    }*/
+    
     public List<ReviewDTO> list() {
         return sqlSession.selectList("review.selectAll");
     }

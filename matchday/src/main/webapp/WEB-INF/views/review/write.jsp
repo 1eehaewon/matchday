@@ -25,6 +25,7 @@
             padding: 20px;
         }
         .board_write_popup {
+        	width:600px;
             max-width: 800px;
             margin: 0 auto;
             background-color: #fff;
@@ -164,12 +165,12 @@
                                         <input type="text" name="userid" id="userid" value="${userID}" class="form-control" readonly>
                                     </td>
                                 </tr>
-                                <tr>
+                               <!--  <tr>
                                     <th scope="row">비밀번호</th>
                                     <td>
-                                        <input type="password" name="writerPw" class="form-control" placeholder="비밀번호 입력">
+                                        <input type="password" name="password" id="password" class="form-control" placeholder="비밀번호 입력">
                                     </td>
-                                </tr>
+                                </tr> -->
                                 <tr>
                                     <th scope="row">제목</th>
                                     <td>
@@ -183,52 +184,61 @@
                                             <input type="checkbox" name="isSecret" value="y" id="secret">
                                             <label for="secret" class="check_s">비밀글</label>
                                         </div> -->
-                                        <textarea title="내용 입력" id="editor" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
+                                        <textarea title="내용 입력" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">파일</th>
                                     <td id="uploadBox">
+	                                    <div class="file_upload_sec" id="uploadSection">
+										    <input type="file" id="img" name="upfiles[]" class="file" title="찾아보기">
+										    <div class="btn_upload_box">
+										        <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
+										    </div>
+										</div>
+                                    </td>
+                                    
+                                    <!-- <td id="uploadBox">
                                         <div class="file_upload_sec">
-                                            <label for="attach"><input type="text" class="file_text form-control" readonly="readonly" placeholder="파일 첨부하기"></label>
+                                            <label for="img"><input type="text" class="file_text form-control" readonly="readonly" placeholder="파일 첨부하기"></label>
                                             <div class="btn_upload_box">
                                                 <button type="button" class="btn btn-outline-secondary btn_upload" title="찾아보기"><em>찾아보기</em></button>
-                                                <input type="file" id="attach" name="upfiles[]" class="file" title="찾아보기">
+                                                <input type="file" id="img" name="upfiles[]" class="file" title="찾아보기">
                                                 <span class="btn_gray_list">
                                                     <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
                                                 </span>
                                             </div>
                                         </div>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 <tr>
 								    <th scope="row">평점</th>
 								    <td>
-								        <form>
+								    <form>
 								    <label>
 								        <input type="radio" name="rating" value="1">
-								        1
+								        1점
 								    </label>
 								    <label>
 								        <input type="radio" name="rating" value="2">
-								        2
+								        2점
 								    </label>
 								    <label>
 								        <input type="radio" name="rating" value="3">
-								        3
+								        3점
 								    </label>
 								    <label>
 								        <input type="radio" name="rating" value="4">
-								        4
+								        4점
 								    </label>
 								    <label>
 								        <input type="radio" name="rating" value="5">
-								        5
+								        5점
 								    </label>
-								</form>
+									</form>
 								<br>
-								        <small class="text-muted">1부터 5까지의 숫자 중 하나를 선택해주세요.</small>
-								    </td>
+								        <small class="text-muted">1점부터 5점까지의 점수 중 하나를 선택해주세요.</small>
+								</td>
 								</tr>
 
 
@@ -240,9 +250,9 @@
                 <!-- //scroll_box -->
                 <div class="btn_center_box">
                 <a href="javascript:window.close()" class="btn btn-secondary btn_ly_cancel"><strong>취소</strong></a>
-                <a href="" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a>
+                <!-- <a href="" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a> -->
                
-                <input type="submit" value="등록" class="btn btn-success">
+                <input type="submit" value="등록" onclick="return validateForm()" class="btn btn-primary btn_ly_write_ok">
        
  	           </div>
             </form>  
@@ -253,6 +263,44 @@
 </body>
 
 <script>
+
+function validateForm() { //유효성 검사
+    var title = document.getElementById('title').value.trim();
+    var content = document.getElementById('content').value.trim();
+    var radios = document.getElementsByName('rating');
+    var ratingChecked = false;
+
+    // Validate title
+    if (title.length < 2) {
+        alert('제목은 두 글자 이상이어야 합니다.');
+        return false;
+    }
+
+    // Validate content
+    if (content === '') {
+        alert('내용을 입력해주세요.');
+        return false;
+    }
+
+    // Validate rating
+    for (var i = 0; i < radios.length; i++) {
+        if (radios[i].checked) {
+            ratingChecked = true;
+            break;
+        }
+    }
+
+    if (!ratingChecked) {
+        alert('평점을 선택해주세요.');
+        return false;
+    }
+
+    return true;
+}//validateForm() end
+
+var uploadSection = document.getElementById('uploadSection');
+var addUploadBtn = document.getElementById('addUploadBtn');
+var uploadCount = 1;
 document.addEventListener('DOMContentLoaded', function() {
     var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
     document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
@@ -268,7 +316,7 @@ function generateUniqueReviewId() {
         existingIds.push('${review.reviewid}');
     </c:forEach>
 
-    // 중복되지 않는 아이디 생성
+    // 중복되지 않는 아이디 생성vu
     do {
         num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
         var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
@@ -281,7 +329,7 @@ function generateRandomNumber() { //reviewid = review뒤 숫자들 랜덤으로 
     return Math.floor(Math.random() * 999) + 1;
 }
 
-
+//평점 클릭 처리 함수
 function handleRatingClick(rating) {
     var radios = document.getElementsByName('rating');
     for (var i = 0; i < radios.length; i++) {
@@ -293,7 +341,37 @@ function handleRatingClick(rating) {
     }
 }
 
+//파일 선택란에 추가 버튼 누를시 파일선택 버튼과 삭제버튼 생성
+var uploadSection = document.getElementById('uploadSection');
+var addUploadBtn = document.getElementById('addUploadBtn');
+var uploadCount = 1;
 
+addUploadBtn.addEventListener('click', function() {
+    var newInput = document.createElement('input');
+    newInput.type = 'file';
+    newInput.id = 'img' + uploadCount;
+    newInput.name = 'upfiles[]';
+    newInput.className = 'file';
+    newInput.title = '찾아보기';
+
+    var span = document.createElement('span');
+    span.className = 'btn_gray_list';
+    var deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'btn btn-outline-secondary btn_gray_big';
+    deleteBtn.innerHTML = '<span>- 삭제</span>';
+    deleteBtn.addEventListener('click', function() {
+        this.parentNode.previousSibling.remove(); // 파일 입력란 제거
+        this.parentNode.remove(); // 삭제 버튼 제거
+    });
+
+    span.appendChild(deleteBtn);
+
+    uploadSection.appendChild(newInput);
+    uploadSection.appendChild(span);
+
+    uploadCount++;
+});
 
 
 

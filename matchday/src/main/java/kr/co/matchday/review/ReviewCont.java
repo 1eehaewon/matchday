@@ -1,5 +1,6 @@
 package kr.co.matchday.review;
 
+import java.io.File;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.cart.CartDTO;
@@ -35,14 +38,20 @@ public class ReviewCont {
     }//write end
 */
 	@GetMapping("/write")
-    public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model) {
-        List<GoodsDTO> goodsList = goodsDao.list();
+    public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model, HttpSession session) {
+		// 로그인된 사용자 정보 가져오기
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+        }
+		
+		List<GoodsDTO> goodsList = goodsDao.list();
         model.addAttribute("goodsList", goodsList);
         return "review/write";
     }
 	
     @PostMapping("/insert")
-    public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session) {
+    public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session, @RequestParam("upfiles") MultipartFile[] files) {
     	// 로그인된 사용자 정보 가져오기
         String userid = (String) session.getAttribute("userID");
         if (userid == null) {
@@ -59,6 +68,27 @@ public class ReviewCont {
         //reviewDto.setGoodsid(userid);
         
     	reviewDao.insert(reviewDto);
+    	
+    	// 파일 업로드 처리
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        // 실제 서버에 파일 저장하는 로직 추가 (예: 파일명 중복 처리 필요)
+                        String filePath = "/storage/review" + file.getOriginalFilename(); // 실제 저장할 경로 설정
+                        File dest = new File(filePath);
+                        file.transferTo(dest);
+                        // 리뷰ID와 함께 DB에 파일 정보 저장하는 로직 추가 필요
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    	
+    	
+    	
+    	
         return "redirect:/review/list";
     }//insert end
 
@@ -79,6 +109,7 @@ public class ReviewCont {
         List<GoodsDTO> goodsList = goodsDao.list();
         model.addAttribute("reviewList", reviewList);
         model.addAttribute("goodsList", goodsList);
+        
         return "review/list";
         
     }//list end

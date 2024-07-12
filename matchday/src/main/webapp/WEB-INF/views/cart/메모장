@@ -1404,7 +1404,7 @@ function goToCart() {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', '${pageContext.request.contextPath}/cart/insert', true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
+        xhr.onystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     // 성공적으로 추가되면 모달창 띄우기
@@ -4637,3 +4637,4601 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('goodsfrm');
+
+    // 굿즈 ID 생성 함수
+    function generateUniqueGoodsId() {
+        var prefix = 'goods';
+        var num;
+        var existingIds = []; // 기존 굿즈 아이디 리스트 (실제 사용하시는 데이터를 가져와야 합니다)
+
+        // 기존 아이디들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+        <c:forEach items="${goodsList}" var="goods">
+            existingIds.push('${goods.goodsid}');
+        </c:forEach>
+
+        // 중복되지 않는 아이디 생성
+        do {
+            num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+            var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+        } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
+
+        return newId;
+    }
+
+    // 랜덤 숫자 생성 함수
+    function generateRandomNumber() {
+        return Math.floor(Math.random() * 999) + 1;
+    }
+
+    // 굿즈 ID 설정
+    document.getElementById('goodsid').value = generateUniqueGoodsId();
+
+    function validateForm() {
+        var isValid = true;
+
+        // 카테고리 유효성 검사
+        var category = document.getElementById('category').value;
+        var categoryMsg = document.getElementById('categoryMsg');
+        if (category === "") {
+            categoryMsg.textContent = '카테고리를 선택해주세요.';
+            isValid = false;
+        } else {
+            categoryMsg.textContent = '';
+        }
+
+        // 굿즈 ID 유효성 검사 (중복 검사 포함)
+        var goodsid = document.getElementById('goodsid').value;
+        var duplicateMsg = document.getElementById('duplicateMsg');
+        if (goodsid === "") {
+            duplicateMsg.textContent = '굿즈 ID를 입력해주세요.';
+            isValid = false;
+        } else {
+            duplicateMsg.textContent = '';
+        }
+
+        // 상품명 유효성 검사
+        var productname = document.getElementById('productname').value;
+        var productnameMsg = document.getElementById('productnameMsg');
+        if (productname.length < 2) {
+            productnameMsg.textContent = '상품명은 2글자 이상이어야 합니다.';
+            isValid = false;
+        } else {
+            productnameMsg.textContent = '';
+        }
+
+        // 상품 사진 유효성 검사
+        var img = document.getElementById('img').value;
+        var imgMsg = document.getElementById('imgMsg');
+        if (img === "") {
+            imgMsg.textContent = '상품 사진을 선택해주세요.';
+            isValid = false;
+        } else {
+            imgMsg.textContent = '';
+        }
+
+        // 사이즈 유효성 검사
+        var size = document.getElementById('size').value;
+        var sizeMsg = document.getElementById('sizeMsg');
+        if (size === "") {
+            sizeMsg.textContent = '사이즈를 선택해주세요.';
+            isValid = false;
+        } else {
+            sizeMsg.textContent = '';
+        }
+
+        // 가격 유효성 검사
+        var price = document.getElementById('price').value;
+        var priceMsg = document.getElementById('priceMsg');
+        if (price === "" || price <= 0) {
+            priceMsg.textContent = '가격을 입력해주세요 (0 이상).';
+            isValid = false;
+        } else {
+            priceMsg.textContent = '';
+        }
+
+        // 재고 수량 유효성 검사
+        var stockquantity = document.getElementById('stockquantity').value;
+        var stockquantityMsg = document.getElementById('stockquantityMsg');
+        if (stockquantity === "" || stockquantity < 0) {
+            stockquantityMsg.textContent = '재고 수량을 입력해주세요 (0 이상).';
+            isValid = false;
+        } else {
+            stockquantityMsg.textContent = '';
+        }
+
+        // 라디오 버튼 유효성 검사
+        var issoldoutChecked = document.querySelector('input[name="issoldout"]:checked');
+        var issoldoutMsg = document.getElementById('issoldoutMsg');
+        if (!issoldoutChecked) {
+            issoldoutMsg.textContent = '품절 여부를 선택해주세요.';
+            isValid = false;
+        } else {
+            issoldoutMsg.textContent = '';
+        }
+
+        // 폼이 유효하지 않으면 제출 방지
+        if (!isValid) {
+            event.preventDefault();
+        }
+
+        return isValid;
+    }
+
+    // 폼 제출 이벤트 리스너
+    form.addEventListener('submit', function(event) {
+        if (!validateForm()) {
+            event.preventDefault(); // 유효성 검사 실패 시 제출 방지
+        }
+    });
+
+    // Summernote 초기화
+    $('.summernote').summernote({
+        height: 300,
+        lang: 'ko-KR',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                sendFile(files[0]);
+            }
+        }
+    }); //summernote end
+
+    function sendFile(file) {
+        var data = new FormData();
+        data.append("file", file);
+        $.ajax({
+            url: '/goods/uploadImage',
+            method: 'POST',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                $('.summernote').summernote('insertImage', url);
+            },
+            error: function() {
+                alert('이미지 업로드 중 오류가 발생하였습니다.');
+            }
+        });
+    } // sendFile end
+}); //document.addEventListener('DOMContentLoaded', function() end
+
+
+
+
+
+
+
+
+
+<!-- 장바구니 폼 -->
+<form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
+    <input type="hidden" name="userid" value="${sessionScope.userID}">
+    <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+    <input type="hidden" name="quantity" id="form-quantity" value="">
+    <input type="hidden" name="unitprice" id="form-unitprice">
+    <input type="hidden" name="totalprice" id="form-totalprice">
+</form>
+
+<!-- 리뷰 탭 내의 c:forEach 반복문 수정 -->
+<c:forEach items="${reviewList}" var="review">
+    <div class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+        <div class="review-rating">${review.rating} 점</div>
+        <div class="review-title">${review.title}</div>
+        <div class="review-author">${review.userid}</div>
+        <div class="review-date">${review.reviewdate}</div>
+    </div>
+    <div id="review${review.reviewid}" class="review-details">
+        <div class="review-content">
+            ${review.content}
+        </div>
+        <img src="${review.imageurl}" alt="Review Image" class="review-image">
+        <div class="review-comments">
+            <c:forEach items="${review.comments}" var="comment">
+                <div class="comment">${comment.text}</div>
+            </c:forEach>
+        </div>
+    </div>
+</c:forEach>
+
+
+
+
+
+
+// 주문 수량 업데이트 함수
+function updateQuantity(change) {
+    var input = document.getElementById('quantity-input');
+    var currentValue = parseInt(input.value);
+    var newValue = currentValue + change;
+
+    if (newValue < 1) {
+        newValue = 1; // 최소 수량은 1로 설정
+    }
+
+    input.value = newValue;
+    updateTotalPrice(); // 총 가격 업데이트
+}
+
+// 총 가격 업데이트 함수
+function updateTotalPrice() {
+    var quantity = parseInt(document.getElementById('quantity-input').value);
+    var price = ${goodsDto.price};
+    var totalPrice = quantity * price;
+
+    // 업데이트된 값들을 화면에 표시합니다
+    document.getElementById('order-quantity').innerText = quantity + '개';
+    document.getElementById('total-price').innerText = totalPrice.toLocaleString() + '원';
+
+    // 숨겨진 입력 필드를 업데이트합니다
+    document.getElementById('form-quantity').value = quantity;
+    document.getElementById('form-unitprice').value = price;
+    document.getElementById('form-totalprice').value = totalPrice;
+}
+
+// 초기 로드 시 총 상품 금액 계산
+document.addEventListener('DOMContentLoaded', function() {
+    updateTotalPrice();
+});
+
+// 장바구니에 추가 버튼 클릭 시
+function addToCart() {
+    var quantityInput = document.getElementById('quantity-input');
+    if (!quantityInput) {
+        console.error('수량 입력 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var quantity = parseInt(quantityInput.value);
+
+    var totalPriceElement = document.getElementById('total-price');
+    if (!totalPriceElement) {
+        console.error('총 가격 요소를 찾을 수 없습니다');
+        return;
+    }
+
+    var totalPriceText = totalPriceElement.innerText;
+    var totalPrice = parseInt(totalPriceText.replace(/[^0-9]/g, ''));
+
+    var formQuantity = document.getElementById('form-quantity');
+    if (!formQuantity) {
+        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    var formTotalPrice = document.getElementById('form-totalprice');
+    if (!formTotalPrice) {
+        console.error('장바구니 총 가격 입력 필드를 찾을 수 없습니다');
+        return;
+    }
+
+    var userId = '${sessionScope.userID}';
+    console.log('사용자 아이디:', userId);
+
+    formQuantity.value = quantity;
+    formTotalPrice.value = totalPrice;
+
+    console.log('수량:', quantity);
+    console.log('총 가격:', totalPrice);
+
+    showCartModal();
+}
+
+// 장바구니 모달
+var modal = document.getElementById("cartModal");
+var span = document.getElementsByClassName("close")[0];
+
+function showCartModal() {
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+function continueShopping() {
+    modal.style.display = "none";
+    window.location.href = '/goods/list';
+}
+
+
+
+
+
+
+
+
+
+
+
+function loadContent(tabId) {
+    try {
+        var tabContents = document.querySelectorAll('.tabcont');
+        tabContents.forEach(function(content) {
+            content.classList.remove('on');
+        });
+
+        var selectedTabContent = document.getElementById(tabId);
+        selectedTabContent.classList.add('on');
+
+        var tabMenuItems = document.querySelectorAll('.info-tab li');
+        tabMenuItems.forEach(function(item) {
+            item.classList.remove('on');
+        });
+
+        var selectedTabMenuItem = document.querySelector('.info-tab li[data-tab="' + tabId + '"]');
+        selectedTabMenuItem.classList.add('on');
+    } catch (error) {
+        console.error('loadContent 함수에서 오류 발생:', error);
+        alert('콘텐츠를 로드하는 데 실패했습니다. 나중에 다시 시도해주세요.');
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰 페이지</title>
+    <style>
+        .review-details {
+            display: none;
+        }
+        .review-summary {
+            cursor: pointer;
+        }
+        .review-summary:hover {
+            background-color: #f0f0f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        function toggleReviewDetails(reviewid) {
+            var reviewDetails = document.getElementById(reviewid);
+            if (reviewDetails.style.display === '' || reviewDetails.style.display === 'none') {
+                reviewDetails.style.display = 'block';
+            } else {
+                reviewDetails.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="review" class="tab-content">
+        <table>
+            <thead>
+                <tr>
+                    <th>평점</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+                <c:forEach items="${reviewList}" var="review">
+                    <tr class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+                        <td>${review.rating}점</td>
+                        <td>${review.title}</td>
+                        <td>${review.userid}</td>
+                        <td>${review.reviewdate}</td>
+                    </tr>
+                    <tr id="review${review.reviewid}" class="review-details">
+                        <td colspan="4">
+                            <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                            <div class="review-content">
+                                여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                            </div>
+                            <div class="review-comments">
+                                <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                                <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+
+                <!-- 예시 리뷰 항목들 -->
+                <tr class="review-summary" onclick="toggleReviewDetails('review1')">
+                    <td>4점</td>
+                    <td>좋은 상품입니다</td>
+                    <td>사용자 이름</td>
+                    <td>2024-07-09</td>
+                </tr>
+                <tr id="review1" class="review-details">
+                    <td colspan="4">
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="review-summary" onclick="toggleReviewDetails('review2')">
+                    <td>5점</td>
+                    <td>좋은 상품입니다</td>
+                    <td>사용자 이름</td>
+                    <td>2024-07-09</td>
+                </tr>
+                <tr id="review2" class="review-details">
+                    <td colspan="4">
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="all-reviews" class="tab-content" style="display: none;">
+        상품 전체 보기 내용
+    </div>
+
+    <div id="write-review" class="tab-content" style="display: none;">
+        상품 글쓰기 내용
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰 페이지</title>
+    <style>
+        .review-details {
+            display: none;
+        }
+        .review-summary {
+            cursor: pointer;
+        }
+        .review-summary:hover {
+            background-color: #f0f0f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        function toggleReviewDetails(reviewid) {
+            var reviewDetails = document.getElementById(reviewid);
+            if (reviewDetails.style.display === '' || reviewDetails.style.display === 'none') {
+                reviewDetails.style.display = 'table-row';
+            } else {
+                reviewDetails.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="review" class="tab-content">
+        <table>
+            <thead>
+                <tr>
+                    <th>평점</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+                <c:forEach items="${reviewList}" var="review">
+                    <tr class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+                        <td>${review.rating}점</td>
+                        <td>${review.title}</td>
+                        <td>${review.userid}</td>
+                        <td>${review.reviewdate}</td>
+                    </tr>
+                    <tr id="review${review.reviewid}" class="review-details">
+                        <td colspan="4">
+                            <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                            <div class="review-content">
+                                여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                            </div>
+                            <div class="review-comments">
+                                <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                                <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+
+                <!-- 예시 리뷰 항목들 -->
+                <tr class="review-summary" onclick="toggleReviewDetails('review1')">
+                    <td>4점</td>
+                    <td>좋은 상품입니다</td>
+                    <td>사용자 이름</td>
+                    <td>2024-07-09</td>
+                </tr>
+                <tr id="review1" class="review-details">
+                    <td colspan="4">
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="review-summary" onclick="toggleReviewDetails('review2')">
+                    <td>5점</td>
+                    <td>좋은 상품입니다</td>
+                    <td>사용자 이름</td>
+                    <td>2024-07-09</td>
+                </tr>
+                <tr id="review2" class="review-details">
+                    <td colspan="4">
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="all-reviews" class="tab-content" style="display: none;">
+        상품 전체 보기 내용
+    </div>
+
+    <div id="write-review" class="tab-content" style="display: none;">
+        상품 글쓰기 내용
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+모양은 제대로 나옴
+
+<table>
+    	<thead>
+            <tr>
+                <th>평점</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+        </thead>
+        <tbody>
+    	
+        <div class="review-list">
+        <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+            <c:forEach items="${reviewList}" var="review">
+            <tr>
+			    <div class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+			        <th>${review.rating}점</th>
+			        <th>${review.title}</th>
+			        <th>${review.userid}</th>
+			        <th>${review.reviewdate}</th>
+			    </div>
+			</tr>
+			<tr>   
+    			<div id="review3" class="review-details">
+	                <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+	                <div class="review-content">
+	                    여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                	</div>
+                <div class="review-comments">
+                    <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                    <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                </div>
+            	</div>
+            </tr>
+			</c:forEach>
+			</tbody>
+			</table>
+
+
+
+
+
+
+
+
+<table>
+    	
+            <tr>
+                <th>평점</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+        
+    	
+        <div class="review-list">
+        <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+            <c:forEach items="${reviewList}" var="review">
+            <tr class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')"> 
+			        <th>${review.rating}점</th>
+			        <th>${review.title}</th>
+			        <th>${review.userid}</th>
+			        <th>${review.reviewdate}</th>
+			    </tr>
+			    
+    			<tr id="review3" class="review-details">
+    			<td>
+	                <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+	                <div class="review-content">
+	                    여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                </td>
+                </tr>
+                <div class="review-comments">
+                    <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                    <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                </div>
+            	</div>
+			</c:forEach>
+			
+			</table>
+
+
+
+상세보기 됨
+<div id="review" class="tab-content">
+    <table>
+        <thead>
+            <tr>
+                <th>평점</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+            <c:forEach items="${reviewList}" var="review">
+                <tr class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+                    <td>${review.rating}점</td>
+                    <td>${review.title}</td>
+                    <td>${review.userid}</td>
+                    <td>${review.reviewdate}</td>
+                </tr>
+                <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                    <td colspan="4">
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </td>
+                </tr>
+            </c:forEach>
+
+            <!-- 예시 리뷰 항목들 -->
+            <tr class="review-summary" onclick="toggleReviewDetails('review1')">
+                <td>4점</td>
+                <td>좋은 상품입니다</td>
+                <td>사용자 이름</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr id="review1" class="review-details" style="display: none;">
+                <td colspan="4">
+                    <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                    <div class="review-content">
+                        여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                    </div>
+                    <div class="review-comments">
+                        <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                        <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="review-summary" onclick="toggleReviewDetails('review2')">
+                <td>5점</td>
+                <td>좋은 상품입니다</td>
+                <td>사용자 이름</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr id="review2" class="review-details" style="display: none;">
+                <td colspan="4">
+                    <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                    <div class="review-content">
+                        여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                    </div>
+                    <div class="review-comments">
+                        <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                        <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="all-reviews" class="tab-content" style="display: none;">
+    상품 전체 보기 내용
+</div>
+
+<div id="write-review" class="tab-content" style="display: none;">
+    상품 글쓰기 내용
+</div>
+
+<script>
+function toggleReviewDetails(reviewid) {
+    var reviewDetails = document.getElementById(reviewid);
+    if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
+        reviewDetails.style.display = 'table-row';
+    } else {
+        reviewDetails.style.display = 'none';
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="review" class="tab-content">
+    <table>
+        <thead>
+            <tr>
+                <th>평점</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+            <c:forEach items="${reviewList}" var="review">
+                <tr class="review-summary" onclick="toggleReviewDetails('review${review.reviewid}')">
+                    <td>${review.rating}점</td>
+                    <td>${review.title}</td>
+                    <td>${review.userid}</td>
+                    <td>${review.reviewdate}</td>
+                </tr>
+                <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                    <td colspan="4">
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </td>
+                </tr>
+            </c:forEach>
+
+            <!-- 예시 리뷰 항목들 -->
+            <tr class="review-summary" onclick="toggleReviewDetails('review1')">
+                <td>4점</td>
+                <td>좋은 상품입니다</td>
+                <td>사용자 이름</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr id="review1" class="review-details" style="display: none;">
+                <td colspan="4">
+                    <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                    <div class="review-content">
+                        여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                    </div>
+                    <div class="review-comments">
+                        <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                        <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="review-summary" onclick="toggleReviewDetails('review2')">
+                <td>5점</td>
+                <td>좋은 상품입니다</td>
+                <td>사용자 이름</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr id="review2" class="review-details" style="display: none;">
+                <td colspan="4">
+                    <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                    <div class="review-content">
+                        여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                    </div>
+                    <div class="review-comments">
+                        <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                        <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="all-reviews" class="tab-content" style="display: none;">
+    상품 전체 보기 내용
+</div>
+
+<div id="write-review" class="tab-content" style="display: none;">
+    상품 글쓰기 내용
+</div>
+
+<script>
+function toggleReviewDetails(reviewid) {
+    var reviewDetails = document.getElementById(reviewid);
+    if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
+        reviewDetails.style.display = 'table-row';
+    } else {
+        reviewDetails.style.display = 'none';
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="review" class="tab-content">
+    <table>
+        <thead>
+            <tr>
+                <th>평점</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+            <c:forEach items="${reviewList}" var="review">
+                <tr>
+                    <td>${review.rating}점</td>
+                    <td>${review.title}</td>
+                    <td>${review.userid}</td>
+                    <td>${review.reviewdate}</td>
+                </tr>
+                <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                    <td colspan="4">
+                        <div>
+                            <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                            <div class="review-content">
+                                여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                            </div>
+                            <div class="review-comments">
+                                <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                                <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </c:forEach>
+
+            <!-- 예시 리뷰 항목들 -->
+            <tr onclick="toggleReviewDetails('review1')">
+                <td>4점</td>
+                <td>좋은 상품입니다</td>
+                <td>사용자 이름</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr id="review1" class="review-details" style="display: none;">
+                <td colspan="4">
+                    <div>
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr onclick="toggleReviewDetails('review2')">
+                <td>5점</td>
+                <td>좋은 상품입니다</td>
+                <td>사용자 이름</td>
+                <td>2024-07-09</td>
+            </tr>
+            <tr id="review2" class="review-details" style="display: none;">
+                <td colspan="4">
+                    <div>
+                        <img src="../images/울산 원정 유니폼.jpg" alt="Review Image" class="review-image">
+                        <div class="review-content">
+                            여기에 사용자의 후기가 들어갑니다. 상품이 정말 좋습니다!
+                        </div>
+                        <div class="review-comments">
+                            <div class="comment">댓글 1: 정말 좋은 리뷰네요!</div>
+                            <div class="comment">댓글 2: 저도 같은 경험을 했습니다.</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="all-reviews" class="tab-content" style="display: none;">
+    상품 전체 보기 내용
+</div>
+
+<div id="write-review" class="tab-content" style="display: none;">
+    상품 글쓰기 내용
+</div>
+
+<script>
+    function toggleReviewDetails(reviewid) {
+        var reviewDetails = document.getElementById(reviewid);
+        if (reviewDetails.style.display === 'none') {
+            reviewDetails.style.display = 'block';
+        } else {
+            reviewDetails.style.display = 'none';
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="review">
+    <div class="review-tabs">
+        <button class="tab-button active" onclick="showTab('review')">상품후기</button>
+        <button class="tab-button" onclick="showTab('all-reviews')">상품전체보기</button>
+        <button class="tab-button" onclick="openPopup('/review/write?goodsid=${goodsDto.goodsid}')">상품 글쓰기</button>
+    </div>
+
+    <div id="review" class="tab-content">
+        <table>
+            <thead>
+                <tr>
+                    <th>평점</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach items="${reviewList}" var="review">
+                    <tr onclick="toggleReviewDetails('${review.reviewid}')">
+                        <td>${review.rating}점</td>
+                        <td>${review.title}</td>
+                        <td>${review.userid}</td>
+                        <td>${review.reviewdate}</td>
+                    </tr>
+                    <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                        <td colspan="4">
+                            <div class="review-content-wrapper">
+                                <img src="${pageContext.request.contextPath}/storage/reviews/${review.image}" alt="Review Image" class="review-image">
+                                <div class="review-content">${review.content}</div>
+                                <div class="review-comments">
+                                    <c:forEach items="${review.comments}" var="comment">
+                                        <div class="comment">${comment.userid}: ${comment.text}</div>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="all-reviews" class="tab-content" style="display: none;">
+        <p>상품 전체 보기 내용</p>
+        <!-- 전체 리뷰 리스트 링크 추가 -->
+        <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
+    </div>
+</div>
+
+<script>
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    function toggleReviewDetails(reviewId) {
+        var reviewDetails = document.getElementById(reviewId);
+        if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
+            reviewDetails.style.display = 'block';
+        } else {
+            reviewDetails.style.display = 'none';
+        }
+    }
+
+    function openPopup(url) {
+        var width = 1000;
+        var height = 900;
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+        window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    }
+</script>
+
+<style>
+    .review {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+    }
+    .review-tabs {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+    }
+    .tab-button {
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin-right: 10px;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .tab-button.active {
+        background-color: #fff;
+        border-bottom: 2px solid #007bff;
+        color: #007bff;
+    }
+    .tab-content {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .review-content-wrapper {
+        display: flex;
+    }
+    .review-image {
+        max-width: 150px;
+        max-height: 150px;
+        margin-right: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .review-content {
+        flex: 1;
+    }
+    .review-comments {
+        margin-top: 10px;
+    }
+    .comment {
+        background-color: #f1f1f1;
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="info04" class="tabcont">
+    <div class="review">
+        <div class="review-tabs">
+            <button class="tab-button active" onclick="showTab('review')">상품후기</button>
+            <button class="tab-button" onclick="showTab('all-reviews')">상품전체보기</button>
+            <button class="tab-button" onclick="openPopup('/review/write?goodsid=${goodsDto.goodsid}')">상품 글쓰기</button>
+        </div>
+
+        <div id="review" class="tab-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>평점</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${reviewList}" var="review">
+                        <tr onclick="toggleReviewDetails('review${review.reviewid}')">
+                            <td>${review.rating}점</td>
+                            <td>${review.title}</td>
+                            <td>${review.userid}</td>
+                            <td>${review.reviewdate}</td>
+                        </tr>
+                        <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                            <td colspan="4">
+                                <div class="review-content-wrapper">
+                                    <c:if test="${not empty review.image}">
+                                        <img src="${pageContext.request.contextPath}/storage/review/${review.image}" alt="Review Image" class="review-image">
+                                    </c:if>
+                                    <div class="review-content">
+                                        ${review.content}
+                                    </div>
+                                    <div class="review-comments">
+                                        <c:forEach items="${review.comments}" var="comment">
+                                            <div class="comment">${comment.userid}: ${comment.text}</div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div> <!-- id="review" class="tab-content" end -->
+
+        <div id="all-reviews" class="tab-content" style="display: none;">
+            <p>상품 전체 보기 내용</p>
+            <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
+        </div>
+    </div> <!-- review end -->
+</div> <!-- 리뷰 내용 -->
+
+<script>
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    function toggleReviewDetails(reviewId) {
+        var reviewDetails = document.getElementById(reviewId);
+        if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
+            reviewDetails.style.display = 'block';
+        } else {
+            reviewDetails.style.display = 'none';
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<input type="file" id="attach" name="upfiles[]" class="file" title="찾아보기">
+        <span class="btn_gray_list">
+<button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
+          </span>
+
+
+<div class="file_upload_sec" id="uploadSection">
+    <input type="file" id="attach" name="upfiles[]" class="file" title="찾아보기">
+    <div class="btn_upload_box">
+        <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var uploadSection = document.getElementById('uploadSection');
+    var addUploadBtn = document.getElementById('addUploadBtn');
+    var uploadCount = 1;
+
+    addUploadBtn.addEventListener('click', function() {
+        var newInput = document.createElement('input');
+        newInput.type = 'file';
+        newInput.id = 'attach' + uploadCount;
+        newInput.name = 'upfiles[]';
+        newInput.className = 'file';
+        newInput.title = '찾아보기';
+
+        var span = document.createElement('span');
+        span.className = 'btn_gray_list';
+        var deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn btn-outline-secondary btn_gray_big';
+        deleteBtn.innerHTML = '<span>- 삭제</span>';
+        deleteBtn.addEventListener('click', function() {
+            this.parentNode.previousSibling.remove(); // 파일 입력란 제거
+            this.parentNode.remove(); // 삭제 버튼 제거
+        });
+
+        span.appendChild(deleteBtn);
+
+        uploadSection.appendChild(newInput);
+        uploadSection.appendChild(span);
+
+        uploadCount++;
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// JavaScript for toggling review details
+function toggleReviewDetails(reviewId) {
+    var reviewDetails = document.getElementById(reviewId);
+    if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
+        reviewDetails.style.display = 'table-row'; // Changed display to 'table-row' for table row visibility
+    } else {
+        reviewDetails.style.display = 'none';
+    }
+}
+
+// Function to initialize event listeners for all review details toggles
+document.addEventListener('DOMContentLoaded', function() {
+    var reviewToggles = document.querySelectorAll('.review-details-toggle');
+    reviewToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function() {
+            var reviewId = toggle.getAttribute('data-review-id');
+            toggleReviewDetails(reviewId);
+        });
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@GetMapping("/write")
+public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model, HttpSession session, HttpServletRequest request) {
+    // 로그인된 사용자 정보 가져오기
+    String userid = (String) session.getAttribute("userID");
+    if (userid == null) {
+        // 로그인 페이지로 리디렉션하기 전에 현재 페이지의 URL을 세션에 저장
+        String originalUrl = request.getRequestURL().toString();
+        session.setAttribute("originalUrl", originalUrl);
+        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+    }
+
+    // 사용자가 로그인한 경우
+    List<GoodsDTO> goodsList = goodsDao.list();
+    model.addAttribute("goodsList", goodsList);
+    return "review/write";
+}
+
+// 로그인 성공 후의 처리를 담당하는 컨트롤러 메서드
+@PostMapping("/login")
+public String loginPost(HttpSession session, HttpServletRequest request) {
+    // 로그인 성공 로직
+    // ...
+
+    // 세션에서 원래 페이지 URL 가져오기
+    String originalUrl = (String) session.getAttribute("originalUrl");
+    if (originalUrl != null) {
+        // 세션에 저장된 원래 페이지 URL로 리다이렉트
+        session.removeAttribute("originalUrl"); // 리다이렉트 후 세션에서 삭제
+        return "redirect:" + originalUrl;
+    }
+
+    // 원래 페이지 URL이 없을 경우에는 기본적으로 홈페이지 등으로 리다이렉트
+    return "redirect:/";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- <!-- 기존의 상품 글쓰기 버튼 부분 -->
+<button onclick="openProductWritingPopup()">상품 글쓰기</button>
++ <!-- 수정된 부분: 로그인 확인 후 상품 글쓰기 버튼 부분 -->
+<button onclick="checkLoginThenOpenProductWriting()">상품 글쓰기</button>
+
+...
+
+ <script>
+   function checkLoginThenOpenProductWriting() {
+       // 로그인 여부를 확인하는 로직 추가
+       if (isLoggedIn()) {
+           openProductWritingPopup(); // 로그인 되어 있으면 상품 글쓰기 팝업 열기
+       } else {
+           alert("로그인이 필요합니다."); // 로그인 되어 있지 않으면 경고창 띄우기 또는 로그인 페이지로 이동
+           // 예를 들어, 로그인 페이지로 이동하려면 window.location.href = "/login";
+       }
+   }
+
+   function isLoggedIn() {
+       // 로그인 여부를 확인하는 함수
+       // 구체적인 로직은 서버와의 연동 또는 클라이언트 측에서 세션 등을 활용하여 구현
+       // 예시로 임의로 true 또는 false를 반환하는 것으로 표현
+       return true; // 현재는 임의로 true를 반환하여 로그인 상태로 가정
+   }
+ </script>
+
+ 
+ 
+ 
+ 
+ 
+ <script>
+    function checkLoginThenWriteReview() {
+        // 로그인 여부를 확인하는 로직 추가
+        if (isLoggedIn()) {
+            openProductWritingPopup(); // 로그인 되어 있으면 상품 글쓰기 팝업 열기
+        } else {
+            alert("로그인이 필요합니다."); // 로그인 되어 있지 않으면 경고창 띄우기 또는 로그인 페이지로 이동
+            // 예를 들어, 로그인 페이지로 이동하려면 window.location.href = "/login";
+        }
+    }
+
+    function isLoggedIn() {
+        // 로그인 여부를 확인하는 함수
+        // 구체적인 로직은 서버와의 연동 또는 클라이언트 측에서 세션 등을 활용하여 구현
+        // 예시로 임의로 true 또는 false를 반환하는 것으로 표현
+        return true; // 현재는 임의로 true를 반환하여 로그인 상태로 가정
+    }
+
+    function openProductWritingPopup() {
+        var goodsid = '${goodsDto.goodsid}';
+        var url = '/review/write?goodsid=' + goodsid;
+
+        var width = 1000;
+        var height = 900;
+
+        // 화면의 중앙에 위치시키기 위한 좌표 계산
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+
+        // 창을 중앙에 띄우기
+        window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    }
+</script>
+
+
+
+
+
+<script>
+    function checkLoginBeforeWrite() {
+        var isLoggedIn = '${not empty sessionScope.userID}';
+        if (isLoggedIn) {
+            var goodsid = '${goodsDto.goodsid}';
+            var url = '/review/write?goodsid=' + goodsid;
+            window.location.href = url; // 로그인 상태이면 URL로 이동
+        } else {
+            alert('로그인이 필요합니다.');
+            // 예를 들어, 로그인 페이지로 이동하도록 설정할 수 있습니다.
+            // window.location.href = '/login';
+        }
+    }
+
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
+    document.getElementById('review').style.display = 'block';
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="info04" class="tabcont">
+    <!-- 리뷰 내용 -->
+    <div class="review">
+        <div class="review-tabs">
+            <button class="tab-button active" onclick="showTab('review')">상품후기</button>
+            <button class="tab-button" onclick="showTab('all-reviews')"><a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a></button>
+            <button class="tab-button" onclick="openReviewPopup()">상품 글쓰기</button>
+        </div>
+
+        <div id="review" class="tab-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>평점</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+                    <c:forEach items="${reviewList}" var="review">
+                        <tr>
+                            <td>${review.rating}점</td>
+                            <td>${review.title}</td>
+                            <td>${review.userid}</td>
+                            <td>${review.reviewdate}</td>
+                        </tr>
+                        <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                            <td colspan="4">
+                                <div class="review-content-wrapper">
+                                    <div class="review-content">${review.content}</div>
+                                    <div class="review-comments">
+                                        <c:forEach items="${review.comments}" var="comment">
+                                            <div class="comment">${comment.userid}: ${comment.text}</div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div> <!-- id="review" class="tab-content" end -->
+
+        <div id="all-reviews" class="tab-content" style="display: none;">
+            <p>상품 전체 보기 내용</p>
+            <!-- 전체 리뷰 리스트 링크 추가 -->
+            <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
+        </div>
+
+    </div> <!-- review end -->
+</div> <!-- 리뷰 내용 -->
+
+<script>
+    function openReviewPopup() {
+        var isLoggedIn = '${not empty sessionScope.userID}';
+        if (isLoggedIn) {
+            var goodsid = '${goodsDto.goodsid}';
+            var url = '/review/write?goodsid=' + goodsid;
+            // 팝업 창 열기
+            window.open(url, 'reviewPopup', 'width=800,height=600,scrollbars=yes,resizable=yes');
+        } else {
+            alert('로그인이 필요합니다.');
+            // 예를 들어, 로그인 페이지로 이동하도록 설정할 수 있습니다.
+            // window.location.href = '/login';
+        }
+    }
+
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
+    document.getElementById('review').style.display = 'block';
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="info04" class="tabcont">
+    <!-- 리뷰 내용 -->
+    <div class="review">
+        <div class="review-tabs">
+            <button class="tab-button active" onclick="showTab('review')">상품후기</button>
+            <button class="tab-button" onclick="showTab('all-reviews')">상품전체보기(리뷰리스트로 이동?)</button>
+            <button class="tab-button" onclick="redirectToLoginPage()">상품 글쓰기</button>
+        </div>
+
+        <div id="review" class="tab-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>평점</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 리뷰 탭 내의 c:forEach 반복문 -->
+                    <c:forEach items="${reviewList}" var="review">
+                        <tr>
+                            <td>${review.rating}점</td>
+                            <td>${review.title}</td>
+                            <td>${review.userid}</td>
+                            <td>${review.reviewdate}</td>
+                        </tr>
+                        <tr id="review${review.reviewid}" class="review-details" style="display: none;">
+                            <td colspan="4">
+                                <div class="review-content-wrapper">
+                                    <div class="review-content">${review.content}</div>
+                                    <div class="review-comments">
+                                        <c:forEach items="${review.comments}" var="comment">
+                                            <div class="comment">${comment.userid}: ${comment.text}</div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div> <!-- id="review" class="tab-content" end -->
+
+        <div id="all-reviews" class="tab-content" style="display: none;">
+            <p>상품 전체 보기 내용</p>
+            <!-- 전체 리뷰 리스트 링크 추가 -->
+            <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
+        </div>
+
+    </div> <!-- review end -->
+</div> <!-- 리뷰 내용 -->
+
+<script>
+    function redirectToLoginPage() {
+        var isLoggedIn = '${not empty sessionScope.userID}';
+        if (!isLoggedIn) {
+            // 로그인이 필요한 경우 로그인 페이지로 리다이렉트
+            window.location.href = '/login';
+        } else {
+            // 로그인된 상태에서 상품 글쓰기 페이지로 이동
+            var goodsid = '${goodsDto.goodsid}';
+            window.location.href = '/review/write?goodsid=' + goodsid;
+        }
+    }
+
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
+    document.getElementById('review').style.display = 'block';
+</script>
+
+ 
+ 
+
+
+
+
+
+function redirectToLoginPage() {
+        var isLoggedIn = '${not empty sessionScope.userID}';
+        if (!isLoggedIn) {
+            // 로그인이 필요한 경우 로그인 페이지로 리다이렉트
+            window.location.href = '/login';
+        } else {
+        	// 세션 스코프에서 userid 가져오기
+    	    var userId = '${sessionScope.userID}';
+    	    console.log('사용자 아이디:', userId);
+            
+            // 로그인 여부에 따라 팝업을 띄웁니다.
+            if (isLoggedIn) {
+                window.alert('로그인되었습니다. 팝업을 띄웁니다.');
+                // 여기에 추가적인 팝업 내용이나 로직을 추가할 수 있습니다.
+            }
+        }
+    }
+
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
+    document.getElementById('review').style.display = 'block';
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ function redirectToLoginPage() {
+        var isLoggedIn = '${not empty sessionScope.userID}';
+        if (!isLoggedIn) {
+            // 로그인이 필요한 경우 로그인 페이지로 리다이렉트
+            window.location.href = '/login';
+        } else {
+        	// 세션 스코프에서 userid 가져오기
+    	    var userId = '${sessionScope.userID}';
+    	    console.log('사용자 아이디:', userId);
+            
+            // 로그인 여부에 따라 팝업을 띄웁니다.
+            if (isLoggedIn) {
+            	var width = 1000;
+                var height = 900;
+
+                // 화면의 중앙에 위치시키기 위한 좌표 계산
+                var left = (screen.width - width) / 2;
+                var top = (screen.height - height) / 2;
+
+                // 창을 중앙에 띄우기
+                window.open('/review/write?goodsid=${goodsDto.goodsid}', "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+            }
+        }
+    }
+
+    function showTab(tabId) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        document.getElementById(tabId).style.display = 'block';
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        event.currentTarget.classList.add('active');
+    }
+
+    // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
+    document.getElementById('review').style.display = 'block';
+    
+    
+    
+    
+    
+    function redirectToLoginPage() {
+    var isLoggedIn = '${not empty sessionScope.userID}';
+    
+    // 로그인이 필요한 경우 로그인 페이지로 리다이렉트
+    if (!isLoggedIn) {
+        window.location.href = '/login';
+    } else {
+        // 세션 스코프에서 userID 가져오기
+        var userId = '${sessionScope.userID}';
+        console.log('사용자 아이디:', userId);
+        
+        // 팝업 띄우기
+        var width = 1000;
+        var height = 900;
+        
+        // 화면의 중앙에 위치시키기 위한 좌표 계산
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+        
+        // 창을 중앙에 띄우기
+        window.open('/review/write?goodsid=${goodsDto.goodsid}', "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    }
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 후기 쓰기</title>
+  <!-- 부트스트랩 CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons CDN 추가 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <link href="/css/styles.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        .board_write_popup {
+        	width:600px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .ly_tit {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .ly_cont {
+            margin-bottom: 20px;
+        }
+        
+        /* 이미지 및 상품명 센터 정렬 */
+	    .top_item_photo_info {
+	        text-align: center;
+	        margin-bottom: 20px;
+	    }
+	    
+	    .item_photo_box {
+	        display: inline-block;
+	    }
+	    
+	    .item_photo_box img {
+	        max-width: 100%;
+	        height: auto;
+	    }
+	    
+	    /* 상품명 스타일 */
+	    .productname {
+	        font-size: 24px; /* 원하는 크기로 조정 */
+	        font-weight: bold; /* 굵게 설정 */
+	        margin-top: 10px; /* 필요에 따라 조정 */
+	        margin-bottom: 10px; /* 필요에 따라 조정 */
+	    } 
+    
+        .board_write_box {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .board_write_table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .board_write_table th {
+            width: 15%;
+            text-align: right;
+            vertical-align: top;
+        }
+        .board_write_table td {
+            width: 85%;
+            padding-left: 10px;
+        }
+        .write_editor textarea {
+            width: 100%;
+            min-width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .btn_center_box {
+            text-align: center;
+        }
+        .btn_ly_cancel, .btn_ly_write_ok {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn_ly_cancel:hover, .btn_ly_write_ok:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body class="body-board body-popup-goods-board-write pc">
+    <div class="board_write_popup">
+        <div class="ly_tit">
+            <h2>상품 후기 쓰기</h2>
+        </div>
+        
+        <div class="ly_cont">
+            <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
+                <input type="hidden" name="reviewid" id="reviewid" value="">
+                <div class="scroll_box">
+                    <div class="top_item_photo_info">
+                        <div class="item_photo_box">
+                            <img src="<c:url value='/images/서울 홈 유니폼(앞).jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                        </div>
+                        <br>
+                        <c:forEach items="${goodsList}" var="goods">
+				            <c:if test="${goods.goodsid eq param.goodsid}">
+				                <h5 class="productname">${goods.productname}</h5>
+				            </c:if>
+				        </c:forEach>    
+                    </div>
+                    <!-- //top_item_photo_info -->
+
+                    <div class="board_write_box">
+                        <table class="board_write_table">
+                            <colgroup>
+                                <col style="width:15%">
+                                <col style="width:85%">
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">작성자</th>
+                                    <td>
+                                        <input type="text" name="userid" id="userid" value="${userID}" class="form-control" readonly>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">제목</th>
+                                    <td>
+                                        <input type="text" name="title" id="title" class="form-control write_title" placeholder="제목 입력">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">내용</th>
+                                    <td class="write_editor">
+                                        <textarea title="내용 입력" id="editor" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">평점</th>
+                                    <td>
+                                        <label>
+                                            <input type="radio" name="rating" value="1">
+                                            1점
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="rating" value="2">
+                                            2점
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="rating" value="3">
+                                            3점
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="rating" value="4">
+                                            4점
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="rating" value="5">
+                                            5점
+                                        </label>
+                                        <br>
+                                        <small class="text-muted">1점부터 5점까지의 점수 중 하나를 선택해주세요.</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">파일</th>
+                                    <td id="uploadBox">
+                                        <div class="file_upload_sec" id="uploadSection">
+                                            <input type="file" id="attach" name="upfiles[]" class="file" title="찾아보기">
+                                            <div class="btn_upload_box">
+                                                <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- //board_write_box -->
+                </div>
+                <!-- //scroll_box -->
+                <div class="btn_center_box">
+                    <a href="javascript:window.close()" class="btn btn-secondary btn_ly_cancel"><strong>취소</strong></a>
+                    <input type="submit" value="등록" class="btn btn-primary btn_ly_write_ok">
+                </div>
+            </form>  
+        </div>
+        <!-- //ly_cont -->
+    </div>
+    <!-- //board_write_popup -->
+
+    <script>
+        function validateForm() {
+            var title = document.getElementById('title').value.trim();
+            var content = document.getElementById('content').value.trim();
+            var radios = document.getElementsByName('rating');
+            var ratingChecked = false;
+
+            // Validate title
+            if (title.length < 2) {
+                alert('제목은 두 글자 이상이어야 합니다.');
+                return false;
+            }
+
+            // Validate content
+            if (content === '') {
+                alert('내용을 입력해주세요.');
+                return false;
+            }
+
+            // Validate rating
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    ratingChecked = true;
+                    break;
+                }
+            }
+
+            if (!ratingChecked) {
+                alert('평점을 선택해주세요.');
+                return false;
+            }
+
+            return true;
+        }
+
+        var uploadSection = document.getElementById('uploadSection');
+        var addUploadBtn = document.getElementById('addUploadBtn');
+        var uploadCount = 1;
+
+        addUploadBtn.addEventListener('click', function() {
+            var newInput = document.createElement('input');
+            newInput.type = 'file';
+            newInput.id = 'attach' + uploadCount;
+            newInput.name = 'upfiles[]';
+            newInput.className = 'file';
+            newInput.title = '찾아보기';
+
+            var span = document.createElement('span');
+            span.className = 'btn_gray_list';
+            var deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'btn btn-outline-secondary btn_gray_big';
+            deleteBtn.innerHTML = '<span>- 삭제</span>';
+            deleteBtn.addEventListener('click', function() {
+                this.parentNode.previousSibling.remove(); // 파일 입력란 제거
+                this.parentNode.remove(); // 삭제 버튼 제거
+            });
+
+            span.appendChild(deleteBtn);
+
+            uploadSection.appendChild(newInput);
+            uploadSection.appendChild(span);
+
+            uploadCount++;
+        });
+    </script>
+</body>
+</html>
+    
+
+
+
+
+.review-tabs {
+    display: flex;
+    justify-content: flex-start; /* 기본적으로 왼쪽 정렬 */
+}
+
+.tab-button {
+    margin-right: 10px; /* 버튼 사이에 간격을 줍니다. */
+}
+
+.tab-button.right-align {
+    margin-left: auto; /* 오른쪽으로 이동시키기 위한 속성 */
+}
+<div class="review-tabs">
+    <button class="tab-button active" onclick="showTab('review')">상품후기</button>
+    <div class="right-buttons">
+        <button class="tab-button" onclick="showTab('all-reviews')">
+            <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
+        </button>
+        <button class="tab-button" onclick="openPopup('/review/write?goodsid=${goodsDto.goodsid}')">상품 글쓰기</button>
+    </div>
+</div>
+
+
+
+
+.review-tabs {
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝에 정렬 */
+    align-items: center; /* 버튼들이 수직으로 중앙에 위치하도록 설정 */
+}
+
+.right-buttons {
+    display: flex;
+    gap: 10px; /* 두 버튼 사이의 간격 설정 */
+}
+
+.tab-button {
+    margin: 0;
+}
+
+.tab-button a {
+    text-decoration: none;
+    color: inherit; /* a 태그의 기본 스타일을 제거하고 버튼 스타일에 맞춥니다. */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.memberships;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+
+@Controller
+@RequestMapping("/memberships")
+public class MembershipsCont {
+
+    @Autowired
+    private MembershipsDAO membershipsDao;
+
+    @RequestMapping("/list")
+    public ModelAndView list() {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/list");
+        mav.addObject("list", membershipsDao.list());
+        return mav;
+    }
+
+    @GetMapping("/write")
+    public String write() {
+        return "memberships/write";
+    }
+
+    @PostMapping("/insert")
+    public String insert(@RequestParam Map<String, Object> map,
+                         @RequestParam("img") MultipartFile img,
+                         HttpServletRequest req) {
+        ServletContext application = req.getServletContext();
+        String basePath = application.getRealPath("/storage/memberships");
+
+        String filename = "-";
+        long filesize = 0;
+
+        try {
+            if (!img.isEmpty()) {
+                filesize = img.getSize();
+                filename = uploadFile(basePath, img);
+            }
+
+            MembershipsDTO membershipsDto = new MembershipsDTO();
+            membershipsDto.setMembershipid(UUID.randomUUID().toString()); // UUID를 사용하여 membershipid 생성
+            membershipsDto.setMembershipname((String) map.get("membershipname"));
+            membershipsDto.setPrice(parseInteger((String) map.get("price")));
+            membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
+            membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
+            membershipsDto.setNotes((String) map.getOrDefault("notes", ""));
+            membershipsDto.setDiscountamount(parseInteger((String) map.get("discountamount")));
+            membershipsDto.setFilename(filename);
+            membershipsDto.setFilesize(filesize);
+
+            membershipsDao.insert(membershipsDto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 예외 처리 로직 추가
+        }
+
+        return "redirect:/memberships/list";
+    }
+
+    @GetMapping("/detail")
+    public ModelAndView detail(@RequestParam("membershipid") String membershipid) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/detail");
+        mav.addObject("memberships", membershipsDao.detail(membershipid));
+        return mav;
+    }
+
+    @GetMapping("/update")
+    public ModelAndView updatedetail(@RequestParam("membershipid") String membershipid) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/update");
+        mav.addObject("detail", membershipsDao.detail(membershipid));
+        return mav;
+    }
+
+    @PostMapping("/updateproc")
+    public String update(@ModelAttribute MembershipsDTO membershipDTO,
+                         @RequestParam(name = "img", required = false) MultipartFile img,
+                         HttpServletRequest req) {
+        ServletContext application = req.getServletContext();
+        String basePath = application.getRealPath("/storage/memberships");
+
+        String filename = membershipDTO.getFilename();
+        long filesize = membershipDTO.getFilesize();
+
+        try {
+            if (img != null && !img.isEmpty()) {
+                // 기존 파일 삭제
+                deleteFile(basePath, filename);
+
+                // 새 파일 업로드
+                filename = uploadFile(basePath, img);
+                filesize = img.getSize();
+            }
+
+            // 나머지 업데이트 로직은 유지
+            membershipDTO.setStartdate(parseDate(req.getParameter("startdate")));
+            membershipDTO.setEnddate(parseDate(req.getParameter("enddate")));
+            membershipDTO.setFilename(filename);
+            membershipDTO.setFilesize(filesize);
+
+            membershipsDao.update(membershipDTO);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 파일 업로드 중 예외 처리
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 그 외 예외 처리
+        }
+
+        return "redirect:/memberships/list";
+    }
+
+    private String uploadFile(String basePath, MultipartFile img) throws IOException {
+        String originalFilename = img.getOriginalFilename();
+        String filename = originalFilename;
+        File file = new File(basePath, originalFilename);
+        int i = 1;
+        while (file.exists()) {
+            int lastDot = originalFilename.lastIndexOf(".");
+            filename = originalFilename.substring(0, lastDot) + "_" + i + originalFilename.substring(lastDot);
+            file = new File(basePath, filename);
+            i++;
+        }
+        img.transferTo(file);
+        return filename;
+    }
+
+    private void deleteFile(String basePath, String filename) {
+        if (filename != null && !filename.isEmpty()) {
+            File existingFile = new File(basePath, filename);
+            if (existingFile.exists()) {
+                existingFile.delete();
+            }
+        }
+    }
+
+    private Integer parseInteger(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0; // 기본값으로 0을 반환
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0; // 기본값으로 0을 반환
+        }
+    }
+
+    private Date parseDate(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            return dateFormat.parse(value);
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.memberships;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+
+@Controller
+@RequestMapping("/memberships")
+public class MembershipsCont {
+
+    @Autowired
+    private MembershipsDAO membershipsDao;
+
+    @RequestMapping("/list")
+    public ModelAndView list() {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/list");
+        mav.addObject("list", membershipsDao.list());
+        return mav;
+    }
+
+    @GetMapping("/write")
+    public String write() {
+        return "memberships/write";
+    }
+
+    @PostMapping("/insert")
+    public String insert(@RequestParam Map<String, Object> map,
+                         @RequestParam("img") MultipartFile img,
+                         HttpServletRequest req) {
+        ServletContext application = req.getServletContext();
+        String basePath = application.getRealPath("/storage/memberships");
+
+        String filename = "-";
+        long filesize = 0;
+
+        try {
+            if (!img.isEmpty()) {
+                filesize = img.getSize();
+                filename = uploadFile(basePath, img);
+            }
+
+            MembershipsDTO membershipsDto = new MembershipsDTO();
+            membershipsDto.setMembershipid(UUID.randomUUID().toString());
+            membershipsDto.setMembershipname((String) map.get("membershipname"));
+            membershipsDto.setPrice(parseInteger((String) map.get("price")));
+            membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
+            membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
+            membershipsDto.setNotes((String) map.getOrDefault("notes", ""));
+            membershipsDto.setDiscountamount(parseInteger((String) map.get("discountamount")));
+            membershipsDto.setFilename(filename);
+            membershipsDto.setFilesize(filesize);
+
+            membershipsDao.insert(membershipsDto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/memberships/list";
+    }
+
+    @GetMapping("/update")
+    public ModelAndView update(@RequestParam String membershipid) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/update");
+        mav.addObject("memberships", membershipsDao.read(membershipid));
+        return mav;
+    }
+
+    @PostMapping("/updateproc")
+    public String updateproc(@RequestParam Map<String, Object> map,
+                             @RequestParam("img") MultipartFile img,
+                             HttpServletRequest req) {
+        ServletContext application = req.getServletContext();
+        String basePath = application.getRealPath("/storage/memberships");
+
+        String filename = "-";
+        long filesize = 0;
+
+        try {
+            if (!img.isEmpty()) {
+                filename = uploadFile(basePath, img);
+                filesize = img.getSize();
+            } else {
+                filename = (String) map.get("existingFilename");
+                filesize = Long.parseLong((String) map.get("existingFilesize"));
+            }
+
+            MembershipsDTO membershipsDto = new MembershipsDTO();
+            membershipsDto.setMembershipid((String) map.get("membershipid"));
+            membershipsDto.setMembershipname((String) map.get("membershipname"));
+            membershipsDto.setPrice(parseInteger((String) map.get("price")));
+            membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
+            membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
+            membershipsDto.setNotes((String) map.getOrDefault("notes", ""));
+            membershipsDto.setDiscountamount(parseInteger((String) map.get("discountamount")));
+            membershipsDto.setFilename(filename);
+            membershipsDto.setFilesize(filesize);
+
+            membershipsDao.update(membershipsDto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/memberships/list";
+    }
+
+    private String uploadFile(String basePath, MultipartFile img) throws IllegalStateException, IOException {
+        String filename = UUID.randomUUID().toString() + "_" + img.getOriginalFilename();
+        File file = new File(basePath, filename);
+        img.transferTo(file);
+        return filename;
+    }
+
+    private Integer parseInteger(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private Date parseDate(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            return dateFormat.parse(value);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.memberships;
+
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class MembershipsDAO {
+
+   public MembershipsDAO() {
+      System.out.println("-----MembershipsDAO() 객체 생성됨");
+   }//end
+      
+    @Autowired
+    SqlSession sqlSession;
+    
+    public void insert(MembershipsDTO membershipsDto) {
+       sqlSession.insert("memberships.insert", membershipsDto);
+   }//insert end
+      
+    public List<MembershipsDTO> list() {
+       return sqlSession.selectList("memberships.list");
+   }//list end
+    
+    public MembershipsDTO read(String membershipid) {
+        return sqlSession.selectOne("memberships.detail", membershipid);
+    }//read end
+    
+    public void delete(String membershipid) {
+        sqlSession.delete("memberships.delete", membershipid);
+    }//delete end
+    
+    public void update(MembershipsDTO membershipsDto) {
+        sqlSession.update("memberships.update", membershipsDto);
+    }//update end
+    
+    public String filename(String membershipid) {
+        return sqlSession.selectOne("memberships.filename", membershipid);
+    }//filename end
+}//class end
+
+
+
+@GetMapping("/update")
+public ModelAndView update(@RequestParam("membershipid") String membershipid) {
+    ModelAndView mav = new ModelAndView();
+    mav.setViewName("memberships/update");
+    mav.addObject("memberships", membershipsDao.read(membershipid));
+    return mav;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+String filename = (String) map.get("existingFilename");
+Long filesize = null;
+
+// Check if filesize is provided and not null
+if (map.get("existingFilesize") != null) {
+    try {
+        filesize = Long.parseLong((String) map.get("existingFilesize"));
+    } catch (NumberFormatException e) {
+        // Handle the case where existingFilesize is not a valid long
+        // You might want to log an error or handle this case appropriately
+        e.printStackTrace(); // Or log the exception
+        // Optionally provide a default value or handle the error case
+    }
+}
+
+// Now you can use filename and filesize safely
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@PostMapping("/updateproc")
+public String updateproc(@RequestParam Map<String, Object> map,
+                         @RequestParam(value = "img", required = false) MultipartFile img,
+                         HttpServletRequest req) {
+    ServletContext application = req.getServletContext();
+    String basePath = application.getRealPath("/storage/memberships");
+
+    String filename = "-";
+    long filesize = 0;
+
+    try {
+        // Handle the case when img is not empty
+        if (img != null && !img.isEmpty()) {
+            filename = uploadFile(basePath, img);
+            filesize = img.getSize();
+        } else {
+            // Handle the case when img is empty or not provided
+            filename = (String) map.get("existingFilename");
+            String existingFilesize = (String) map.get("existingFilesize");
+
+            if (existingFilesize != null && !existingFilesize.isEmpty()) {
+                filesize = Long.parseLong(existingFilesize);
+            } else {
+                // If existingFilesize is null or empty, set filesize to 0 or handle it as appropriate
+                filesize = 0; // or any default value that makes sense in your context
+            }
+        }
+
+        MembershipsDTO membershipsDto = new MembershipsDTO();
+        membershipsDto.setMembershipid((String) map.get("membershipid"));
+        membershipsDto.setMembershipname((String) map.get("membershipname"));
+        membershipsDto.setPrice(parseInteger((String) map.get("price")));
+        membershipsDto.setStartdate(parseDate((String) map.get("startdate")));
+        membershipsDto.setEnddate(parseDate((String) map.get("enddate")));
+        membershipsDto.setNotes((String) map.getOrDefault("notes", ""));
+        membershipsDto.setDiscountamount(parseInteger((String) map.get("discountamount")));
+        membershipsDto.setFilename(filename);
+        membershipsDto.setFilesize(filesize);
+
+        membershipsDao.update(membershipsDto);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        // Handle the exception as needed
+    }
+
+    return "redirect:/memberships/list";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Controller에서의 예시
+@GetMapping("/product/reviews")
+public String showReviews(@RequestParam("goodsId") Long goodsId, Model model) {
+    List<Review> reviewList = reviewService.getReviewsByGoodsId(goodsId);
+    model.addAttribute("reviewList", reviewList);
+    return "reviewPage"; // 리뷰를 보여주는 JSP 페이지
+}
+
+
+
+
+
+
+
+
+package kr.co.matchday.goods;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.review.ReviewDAO;
+import kr.co.matchday.review.ReviewDTO;
+
+@Controller
+@RequestMapping("/goods")
+public class GoodsCont {
+
+    @Autowired
+    private GoodsDAO goodsDao;
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    @GetMapping("/review")
+    public ModelAndView showReviews(@RequestParam("goodsId") Long goodsId, HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("goods/review");
+
+        // 리뷰 목록 조회
+        mav.addObject("reviewList", reviewDao.getReviewsByGoodsId(goodsId));
+
+        // 다른 필요한 정보들도 함께 전달 가능
+        String userID = (String) session.getAttribute("userID");
+        mav.addObject("userID", userID);
+
+        return mav;
+    }
+
+    @PostMapping("/updateReview")
+    public String updateReview(@RequestParam("reviewid") Long reviewId) {
+        // 리뷰 수정 로직 구현
+        // reviewDao.updateReview(reviewId); // 실제 DAO 호출 필요
+
+        return "redirect:/goods/review";
+    }
+
+    @PostMapping("/deleteReview")
+    public String deleteReview(@RequestParam("reviewid") Long reviewId) {
+        // 리뷰 삭제 로직 구현
+        // reviewDao.deleteReview(reviewId); // 실제 DAO 호출 필요
+
+        return "redirect:/goods/review";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.review;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ReviewDAO {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public List<ReviewDTO> getReviewsByGoodsId(Long goodsId) {
+        String sql = "SELECT * FROM reviews WHERE goods_id = ?";
+        return jdbcTemplate.query(sql, new Object[] { goodsId }, (rs, rowNum) -> {
+            ReviewDTO review = new ReviewDTO();
+            review.setReviewId(rs.getLong("review_id"));
+            review.setRating(rs.getInt("rating"));
+            review.setTitle(rs.getString("title"));
+            review.setContent(rs.getString("content"));
+            review.setUserId(rs.getString("user_id"));
+            review.setReviewDate(rs.getTimestamp("review_date").toLocalDateTime());
+            return review;
+        });
+    }
+
+    // 다음과 같은 방식으로 updateReview 및 deleteReview 메서드를 구현할 수 있습니다.
+    // public void updateReview(Long reviewId) { ... }
+    // public void deleteReview(Long reviewId) { ... }
+}
+
+
+
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="kr.co.matchday.review.ReviewMapper">
+
+
+
+
+
+
+    <!-- 리뷰 상세 조회 -->
+    <select id="getReviewById" resultType="kr.co.matchday.review.ReviewDTO" parameterType="String">
+        SELECT *
+        FROM reviews
+        WHERE reviewid = #{reviewid}
+    </select>
+
+   
+</mapper>
+
+
+
+
+
+
+
+
+package kr.co.matchday.goods;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import kr.co.matchday.review.ReviewDAO;
+import kr.co.matchday.review.ReviewDTO;
+
+@Controller
+@RequestMapping("/goods")
+public class GoodsCont {
+
+    @Autowired
+    private GoodsDAO goodsDao;
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    // 상품 상세 페이지 조회
+    @GetMapping("/detail")
+    public ModelAndView detail(@RequestParam("goodsid") String goodsid, Model model, HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("goods/detail");
+
+        // 상품 정보 조회
+        GoodsDTO goodsDto = goodsDao.detail(goodsid);
+        mav.addObject("goodsDto", goodsDto);
+
+        // 상품의 리뷰 목록 조회
+        List<ReviewDTO> reviewList = reviewDao.getReviewList(goodsid);
+        mav.addObject("reviewList", reviewList);
+
+        // 세션에서 userID를 가져와서 사용자가 로그인한 상태인지 확인
+        String userID = (String) session.getAttribute("userID");
+        mav.addObject("userID", userID);
+
+        return mav;
+    }
+
+    // 리뷰 등록 처리
+    @PostMapping("/addReview")
+    public String addReview(@ModelAttribute ReviewDTO reviewDto) {
+        reviewDto.setReviewdate(new Timestamp(System.currentTimeMillis())); // 현재 시간으로 리뷰 작성 날짜 설정
+        reviewDao.insertReview(reviewDto);
+        return "redirect:/goods/detail?goodsid=" + reviewDto.getGoodsid();
+    }
+
+    // 리뷰 수정 처리
+    @PostMapping("/updateReview")
+    public String updateReview(@ModelAttribute ReviewDTO reviewDto) {
+        reviewDao.updateReview(reviewDto);
+        return "redirect:/goods/detail?goodsid=" + reviewDto.getGoodsid();
+    }
+
+    // 리뷰 삭제 처리
+    @PostMapping("/deleteReview")
+    public String deleteReview(@RequestParam("reviewid") String reviewid, @RequestParam("goodsid") String goodsid) {
+        reviewDao.deleteReview(reviewid);
+        return "redirect:/goods/detail?goodsid=" + goodsid;
+    }
+}
+
+
+
+
+
+
+
+
+// 파일 선택란에 추가 버튼 누를시 파일선택 버튼과 삭제버튼 생성
+var uploadSection = document.getElementById('uploadSection');
+var addUploadBtn = document.getElementById('addUploadBtn');
+var uploadCount = 1;
+
+addUploadBtn.addEventListener('click', function() {
+    var newInput = document.createElement('input');
+    newInput.type = 'file';
+    newInput.id = 'img' + uploadCount;
+    newInput.name = 'upfiles[]';
+    newInput.className = 'file';
+    newInput.title = '찾아보기';
+
+    var span = document.createElement('span');
+    span.className = 'btn_gray_list';
+    var deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'btn btn-outline-secondary btn_gray_big';
+    deleteBtn.innerHTML = '<span>- 삭제</span>';
+    deleteBtn.addEventListener('click', function() {
+        this.parentNode.previousSibling.remove(); // 파일 입력란 제거
+        this.parentNode.remove(); // 삭제 버튼 제거
+    });
+
+    span.appendChild(deleteBtn);
+
+    uploadSection.appendChild(newInput);
+    uploadSection.appendChild(span);
+
+    uploadCount++;
+});
+
+
+
+
+
+
+
+package kr.co.matchday.review;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+
+@Controller
+@RequestMapping("/review")
+public class ReviewController {
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    @PostMapping("/insert")
+    public String insertReview(HttpServletRequest request) throws IOException {
+        String goodsid = request.getParameter("goodsid");
+        String title = request.getParameter("title");
+        String content = request.getParameter("content");
+        int rating = Integer.parseInt(request.getParameter("rating"));
+
+        // 파일 처리
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile multipartFile = multipartRequest.getFile("upfiles[]");
+
+        String originalFileName = multipartFile.getOriginalFilename();
+        String filename = generateFileName(originalFileName);
+
+        String savePath = "/src/main/webapp/storage"; // 저장할 경로 설정 (실제 경로에 맞게 변경 필요)
+
+        File file = new File(savePath + "/" + filename);
+        multipartFile.transferTo(file); // 파일 저장
+
+        // 리뷰 정보 저장
+        ReviewDTO reviewDto = new ReviewDTO();
+        reviewDto.setGoodsid(goodsid);
+        reviewDto.setTitle(title);
+        reviewDto.setContent(content);
+        reviewDto.setRating(rating);
+        reviewDto.setFilename(filename); // 파일명 저장
+
+        reviewDao.insert(reviewDto); // 리뷰 정보 DB에 저장
+
+        return "redirect:/goods/detail?goodsid=" + goodsid;
+    }
+
+    private String generateFileName(String originalFileName) {
+        String filename;
+        String extension;
+
+        int lastIndex = originalFileName.lastIndexOf('.');
+        if (lastIndex == -1) {
+            filename = originalFileName;
+            extension = "";
+        } else {
+            filename = originalFileName.substring(0, lastIndex);
+            extension = originalFileName.substring(lastIndex);
+        }
+
+        return filename + "_" + UUID.randomUUID().toString() + extension;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import org.springframework.web.multipart.MultipartFile;
+
+@Controller
+@RequestMapping("/review")
+public class ReviewCont {
+
+    @Autowired
+    private ReviewDAO reviewDao;
+
+    @Autowired
+    private GoodsDAO goodsDao;
+
+    // 리뷰 작성 폼 요청 처리
+    @GetMapping("/write")
+    public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model, HttpSession session) {
+        // 로그인된 사용자 정보 가져오기
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+        }
+
+        List<GoodsDTO> goodsList = goodsDao.list();
+        model.addAttribute("goodsList", goodsList);
+        return "review/write"; // 리뷰 작성 폼으로 이동
+    }
+
+    // 리뷰 작성 처리
+    @PostMapping("/insert")
+    public String insert(@ModelAttribute ReviewDTO reviewDto, @RequestParam("upfiles") MultipartFile[] files, HttpSession session) {
+        // 로그인된 사용자 정보 가져오기
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+        }
+
+        // 사용자 ID, 굿즈 ID 설정
+        reviewDto.setUserid(userid);
+        reviewDto.setMatchid(reviewDto.getMatchid()); // 매치 ID 설정 필요
+        reviewDto.setGoodsid(reviewDto.getGoodsid()); // 굿즈 ID 설정 필요
+
+        // 리뷰 정보 DB에 저장
+        reviewDao.insert(reviewDto);
+
+        // 파일 업로드 처리
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        // 실제 서버에 파일 저장하는 로직 추가 (예: 파일명 중복 처리 필요)
+                        String filePath = "/your/server/path/" + file.getOriginalFilename(); // 실제 저장할 경로 설정
+                        File dest = new File(filePath);
+                        file.transferTo(dest);
+                        // 리뷰ID와 함께 DB에 파일 정보 저장하는 로직 추가 필요
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return "redirect:/review/list"; // 리뷰 목록 페이지로 리디렉션
+    }
+
+    // 리뷰 목록 조회
+    @GetMapping("/list")
+    public String list(Model model, HttpSession session) {
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+        }
+
+        // 모든 리뷰와 상품 목록을 조회하여 모델에 추가
+        List<ReviewDTO> reviewList = reviewDao.list();
+        List<GoodsDTO> goodsList = goodsDao.list();
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("goodsList", goodsList);
+
+        return "review/list"; // 리뷰 목록 페이지로 이동
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.order;
+
+import java.sql.Timestamp;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class OrderDTO {
+
+    private String orderid; // 주문 ID
+    private String userid; // 사용자 ID
+    private Timestamp orderdate; // 주문 날짜
+    private String orderstatus; // 주문 상태 ('Pending', 'Completed')
+    private String couponid; // 쿠폰 ID
+    private Integer usedpoints; // 사용한 포인트
+    private Integer finalpaymentamount; // 최종 결제 금액
+    private Timestamp shippingstartdate; // 배송 시작 날짜
+    private Timestamp shippingenddate; // 배송 종료 날짜
+    private String shippingstatus; // 배송 상태 ('Pending', 'Completed')
+    private String recipientname; // 수령인 이름
+    private String shippingaddress; // 배송 주소
+    private String shippingrequest; // 배송 요청사항
+    private String paymentmethodcode; // 결제 방법 코드
+    private Integer price; // 가격
+    private Integer quantity; // 수량
+    private String receiptmethodcode; // 영수증 방법 코드
+
+    // 생성자, Getter 및 Setter 메서드는 Lombok이 자동으로 생성합니다.
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.order;
+
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class OrderDAOImpl implements OrderDAO {
+
+    @Autowired
+    private SqlSession sqlSession;
+
+    private static final String NAMESPACE = "kr.co.matchday.order.OrderMapper";
+
+
+    public List<Order> findAll() {
+        return sqlSession.selectList(NAMESPACE + ".findAll");
+    }
+
+    public Order findById(String orderid) {
+        return sqlSession.selectOne(NAMESPACE + ".findById", orderid);
+    }
+
+    public void insert(Order order) {
+        sqlSession.insert(NAMESPACE + ".insert", order);
+    }
+
+    public void update(Order order) {
+        sqlSession.update(NAMESPACE + ".update", order);
+    }
+
+    public void deleteById(String orderid) {
+        sqlSession.delete(NAMESPACE + ".deleteById", orderid);
+    }
+}
+
+
+
+
+
+package kr.co.matchday.order;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+
+    @Autowired
+    private OrderDAO orderDao;
+
+    @GetMapping
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderDao.findAll();
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{orderid}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable String orderid) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            return ResponseEntity.ok(convertToDTO(order));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public void createOrder(@RequestBody OrderDTO orderDto) {
+        orderDao.insert(convertToEntity(orderDto));
+    }
+
+    @PutMapping("/{orderid}")
+    public ResponseEntity<OrderDTO> updateOrder(@PathVariable String orderid, @RequestBody OrderDTO orderDto) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            Order updatedOrder = convertToEntity(orderDto);
+            updatedOrder.setOrderid(orderid);
+            orderDao.update(updatedOrder);
+            return ResponseEntity.ok(convertToDTO(updatedOrder));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{orderid}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable String orderid) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            orderDao.deleteById(orderid);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private OrderDTO convertToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setOrderid(order.getOrderid());
+        dto.setUserid(order.getUserid());
+        dto.setOrderdate(order.getOrderdate());
+        dto.setOrderstatus(order.getOrderstatus());
+        dto.setCouponid(order.getCouponid());
+        dto.setUsedpoints(order.getUsedpoints());
+        dto.setFinalpaymentamount(order.getFinalpaymentamount());
+        dto.setShippingstartdate(order.getShippingstartdate());
+        dto.setShippingenddate(order.getShippingenddate());
+        dto.setShippingstatus(order.getShippingstatus());
+        dto.setRecipientname(order.getRecipientname());
+        dto.setShippingaddress(order.getShippingaddress());
+        dto.setShippingrequest(order.getShippingrequest());
+        dto.setPaymentmethodcode(order.getPaymentmethodcode());
+        dto.setPrice(order.getPrice());
+        dto.setQuantity(order.getQuantity());
+        dto.setReceiptmethodcode(order.getReceiptmethodcode());
+        return dto;
+    }
+
+    private Order convertToEntity(OrderDTO dto) {
+        Order order = new Order();
+        order.setOrderid(dto.getOrderid());
+        order.setUserid(dto.getUserid());
+        order.setOrderdate(dto.getOrderdate());
+        order.setOrderstatus(dto.getOrderstatus());
+        order.setCouponid(dto.getCouponid());
+        order.setUsedpoints(dto.getUsedpoints());
+        order.setFinalpaymentamount(dto.getFinalpaymentamount());
+        order.setShippingstartdate(dto.getShippingstartdate());
+        order.setShippingenddate(dto.getShippingenddate());
+        order.setShippingstatus(dto.getShippingstatus());
+        order.setRecipientname(dto.getRecipientname());
+        order.setShippingaddress(dto.getShippingaddress());
+        order.setShippingrequest(dto.get
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.order;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/order")
+public class OrderController {
+
+    @Autowired
+    private OrderDAO orderDao;
+
+    @GetMapping
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderDao.findAll();
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{orderid}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable String orderid) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            return ResponseEntity.ok(convertToDTO(order));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public void createOrder(@RequestBody OrderDTO orderDto) {
+        orderDao.insert(convertToEntity(orderDto));
+    }
+
+    @PutMapping("/{orderid}")
+    public ResponseEntity<OrderDTO> updateOrder(@PathVariable String orderid, @RequestBody OrderDTO orderDto) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            Order updatedOrder = convertToEntity(orderDto);
+            updatedOrder.setOrderid(orderid);
+            orderDao.update(updatedOrder);
+            return ResponseEntity.ok(convertToDTO(updatedOrder));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{orderid}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable String orderid) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            orderDao.deleteById(orderid);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private OrderDTO convertToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setOrderid(order.getOrderid());
+        dto.setUserid(order.getUserid());
+        dto.setOrderdate(order.getOrderdate());
+        dto.setOrderstatus(order.getOrderstatus());
+        dto.setCouponid(order.getCouponid());
+        dto.setUsedpoints(order.getUsedpoints());
+        dto.setFinalpaymentamount(order.getFinalpaymentamount());
+        dto.setShippingstartdate(order.getShippingstartdate());
+        dto.setShippingenddate(order.getShippingenddate());
+        dto.setShippingstatus(order.getShippingstatus());
+        dto.setRecipientname(order.getRecipientname());
+        dto.setShippingaddress(order.getShippingaddress());
+        dto.setShippingrequest(order.getShippingrequest());
+        dto.setPaymentmethodcode(order.getPaymentmethodcode());
+        dto.setPrice(order.getPrice());
+        dto.setQuantity(order.getQuantity());
+        dto.setReceiptmethodcode(order.getReceiptmethodcode());
+        return dto;
+    }
+
+    private Order convertToEntity(OrderDTO dto) {
+        Order order = new Order();
+        order.setOrderid(dto.getOrderid());
+        order.setUserid(dto.getUserid());
+        order.setOrderdate(dto.getOrderdate());
+        order.setOrderstatus(dto.getOrderstatus());
+        order.setCouponid(dto.getCouponid());
+        order.setUsedpoints(dto.getUsedpoints());
+        order.setFinalpaymentamount(dto.getFinalpaymentamount());
+        order.setShippingstartdate(dto.getShippingstartdate());
+        order.setShippingenddate(dto.getShippingenddate());
+        order.setShippingstatus(dto.getShippingstatus());
+        order.setRecipientname(dto.getRecipientname());
+        order.setShippingaddress(dto.getShippingaddress());
+        order.setShippingrequest(dto.getShippingrequest());
+        order.setPaymentmethodcode(dto.getPaymentmethodcode());
+        order.setPrice(dto.getPrice());
+        order.setQuantity(dto.getQuantity());
+        order.setReceiptmethodcode(dto.getReceiptmethodcode());
+        return order;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.order;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/order")
+public class OrderController {
+
+    @Autowired
+    private OrderDAO orderDao;
+
+    @GetMapping
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderDao.findAll();
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{orderid}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable String orderid) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            return ResponseEntity.ok(convertToDTO(order));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public void createOrder(@RequestBody OrderDTO orderDto) {
+        orderDao.insert(convertToEntity(orderDto));
+    }
+
+    @PutMapping("/{orderid}")
+    public ResponseEntity<OrderDTO> updateOrder(@PathVariable String orderid, @RequestBody OrderDTO orderDto) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            Order updatedOrder = convertToEntity(orderDto);
+            updatedOrder.setOrderid(orderid);
+            orderDao.update(updatedOrder);
+            return ResponseEntity.ok(convertToDTO(updatedOrder));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{orderid}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable String orderid) {
+        Order order = orderDao.findById(orderid);
+        if (order != null) {
+            orderDao.deleteById(orderid);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    private OrderDTO convertToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setOrderid(order.getOrderid());
+        dto.setUserid(order.getUserid());
+        dto.setOrderdate(order.getOrderdate());
+        dto.setOrderstatus(order.getOrderstatus());
+        dto.setCouponid(order.getCouponid());
+        dto.setUsedpoints(order.getUsedpoints());
+        dto.setFinalpaymentamount(order.getFinalpaymentamount());
+        dto.setShippingstartdate(order.getShippingstartdate());
+        dto.setShippingenddate(order.getShippingenddate());
+        dto.setShippingstatus(order.getShippingstatus());
+        dto.setRecipientname(order.getRecipientname());
+        dto.setShippingaddress(order.getShippingaddress());
+        dto.setShippingrequest(order.getShippingrequest());
+        dto.setPaymentmethodcode(order.getPaymentmethodcode());
+        dto.setPrice(order.getPrice());
+        dto.setQuantity(order.getQuantity());
+        dto.setReceiptmethodcode(order.getReceiptmethodcode());
+        return dto;
+    }
+
+    private Order convertToEntity(OrderDTO dto) {
+        Order order = new Order();
+        order.setOrderid(dto.getOrderid());
+        order.setUserid(dto.getUserid());
+        order.setOrderdate(dto.getOrderdate());
+        order.setOrderstatus(dto.getOrderstatus());
+        order.setCouponid(dto.getCouponid());
+        order.setUsedpoints(dto.getUsedpoints());
+        order.setFinalpaymentamount(dto.getFinalpaymentamount());
+        order.setShippingstartdate(dto.getShippingstartdate());
+        order.setShippingenddate(dto.getShippingenddate());
+        order.setShippingstatus(dto.getShippingstatus());
+        order.setRecipientname(dto.getRecipientname());
+        order.setShippingaddress(dto.getShippingaddress());
+        order.setShippingrequest(dto.getShippingrequest());
+        order.setPaymentmethodcode(dto.getPaymentmethodcode());
+        order.setPrice(dto.getPrice());
+        order.setQuantity(dto.getQuantity());
+        order.setReceiptmethodcode(dto.getReceiptmethodcode());
+        return order;
+    }
+}
+
+
+package kr.co.matchday.order;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/order")
+public class OrderCont {
+
+    public OrderCont() {
+        System.out.println("-----OrderCont() 객체 생성됨");
+    }
+
+    @Autowired
+    private OrderDAO orderDao;
+
+    @PostMapping("/insert")
+    public String insert(@ModelAttribute OrderDTO orderDto, HttpSession session) {
+        // 로그인된 사용자 정보 가져오기
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+        }
+        orderDto.setUserid(userid);
+        
+        // 주문 정보 삽입
+        orderDao.insert(orderDto);
+        
+        return "redirect:/order/payment?goodsid=" + orderDto.getOrderid();
+    }
+
+    @GetMapping("/payment")
+    public String payment(@RequestParam("goodsid") String goodsid) {
+        // 여기에서 결제 관련 로직을 처리합니다.
+        // 예를 들어, 결제 페이지로 이동
+        return "order/payment";
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package kr.co.matchday.order;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class OrderDAO {
+
+    public OrderDAO() {
+        System.out.println("-----OrderDAO() 객체 생성됨");
+    }
+
+    @Autowired
+    private SqlSession sqlSession;
+
+    public void insert(OrderDTO orderDto) {
+        sqlSession.insert("order.insert", orderDto);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.matchday.order.OrderDAO">
+
+    <select id="findAll" resultType="kr.co.matchday.order.OrderDTO">
+        SELECT * FROM orders
+    </select>
+
+    <select id="findById" parameterType="String" resultType="kr.co.matchday.order.OrderDTO">
+        SELECT * FROM orders WHERE orderid = #{orderid}
+    </select>
+
+    <insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
+        INSERT INTO orders (orderid, userid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, 
+                             shippingstartdate, shippingenddate, shippingstatus, recipientname, shippingaddress, 
+                             shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode)
+        VALUES (#{orderid}, #{userid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, 
+                #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{shippingaddress}, 
+                #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode})
+    </insert>
+
+    <update id="update" parameterType="kr.co.matchday.order.OrderDTO">
+        UPDATE orders
+        SET userid = #{userid}, orderdate = #{orderdate}, orderstatus = #{orderstatus}, couponid = #{couponid}, 
+            usedpoints = #{usedpoints}, finalpaymentamount = #{finalpaymentamount}, shippingstartdate = #{shippingstartdate}, 
+            shippingenddate = #{shippingenddate}, shippingstatus = #{shippingstatus}, recipientname = #{recipientname}, 
+            shippingaddress = #{shippingaddress}, shippingrequest = #{shippingrequest}, paymentmethodcode = #{paymentmethodcode}, 
+            price = #{price}, quantity = #{quantity}, receiptmethodcode = #{receiptmethodcode}
+        WHERE orderid = #{orderid}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        DELETE FROM orders WHERE orderid = #{orderid}
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    // 전체 선택 체크박스 클릭 시 모든 체크박스를 선택 또는 해제하는 함수
+    function toggleCheckboxes(checked) {
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = checked;
+        }
+        calculateTotal();
+    }
+
+    // 수량 증가 함수
+    function incrementQuantity(button) {
+        var input = button.parentNode.querySelector('.quantity-input');
+        var newValue = parseInt(input.value) + 1;
+        input.value = newValue;
+        updateTotalPrice();
+    }
+
+    // 수량 감소 함수
+    function decrementQuantity(button) {
+        var input = button.parentNode.querySelector('.quantity-input');
+        var newValue = parseInt(input.value) - 1;
+        if (newValue >= 0) {
+            input.value = newValue;
+            updateTotalPrice();
+        }
+    }
+
+    // 수량 변경에 따른 총 가격 업데이트 함수
+    function updateTotalPrice() {
+        var totalSelectedCount = 0;
+        var totalSelectedPrice = 0;
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                totalSelectedCount++;
+                var row = checkbox.parentNode.parentNode;
+                var quantity = parseInt(row.querySelector('.quantity-input').value);
+                var unitPrice = parseInt(row.cells[4].textContent.replace('원', '').replace(',', '')); // 단가가 표시된 셀 인덱스를 가정
+                var totalPrice = quantity * unitPrice;
+                totalSelectedPrice += totalPrice;
+                row.cells[5].textContent = totalPrice.toLocaleString() + ("원"); // 총 가격 열 업데이트
+            }
+        }
+
+        // 화면에 표시되는 총합 업데이트
+        document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+        document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString();
+        
+        // 배송비 계산 및 총 결제 가격 업데이트
+        var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
+        
+        var totalSettlePrice = totalSelectedPrice + deliveryCharge;
+        document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
+    }// updateTotalPrice() end
+
+    // 수량 입력 변경 이벤트 리스너
+    document.addEventListener("DOMContentLoaded", function() {
+        var quantityInputs = document.querySelectorAll('.quantity-input');
+        for (var input of quantityInputs) {
+            input.addEventListener('change', updateTotalPrice);
+        }
+    });
+ 
+    // 선택된 상품의 개수와 총 가격을 계산하여 표시하는 함수
+    function calculateTotal() {
+        var totalSelectedCount = 0;
+        var totalSelectedPrice = 0;
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                totalSelectedCount++;
+                var row = checkbox.parentNode.parentNode;
+                var totalPriceCell = row.cells[5];
+                totalSelectedPrice += parseInt(totalPriceCell.textContent.replace('원', '').replace(',', ''));
+            }
+        }//for end
+
+     	// 상품금액 표시
+        document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+        document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString(); // 콤마(,) 표시 추가
+
+        // 배송비 계산
+        var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
+        
+        // 합계 계산
+        var totalSettlePrice = totalSelectedPrice + deliveryCharge;
+        document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
+    }//calculateTotal() end
+    
+ 	// 문서 로드 시 장바구니에 상품이 없는 경우 메시지 표시
+    document.addEventListener("DOMContentLoaded", function() {
+        var cartItems = document.getElementsByName('selectedItems');
+        if (cartItems.length === 0) {
+            document.getElementById('noDataMessage').style.display = 'block';
+        }
+    });
+ 	
+ 	// 선택된 상품 삭제 함수
+    function deleteSelectedItems() {
+        var selectedItems = [];
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value);
+            }
+        }
+
+        if (selectedItems.length === 0) {
+            alert("삭제할 상품을 선택해주세요.");
+            return;
+        }
+
+        if (confirm("선택한 상품을 삭제하시겠습니까?")) {
+            var url = '/cart/delete?cartid=' + selectedItems.join(',');
+            location.href = url;
+        }
+    }//deleteSelectedItems() end
+
+    // 전체 상품 삭제 함수
+    function deleteAllItems() {
+        if (confirm("전체 상품을 삭제하시겠습니까?")) {
+            var checkboxes = document.getElementsByName('selectedItems');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = true;
+            }
+            var selectedItems = [];
+            for (var checkbox of checkboxes) {
+                selectedItems.push(checkbox.value);
+            }
+            var url = '/cart/delete?cartid=' + selectedItems.join(',');
+            location.href = url;
+        }
+    }
+
+	// 버튼에 기능을 첨부합니다
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('deleteSelectedButton').addEventListener('click', deleteSelectedItems);
+        document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
+    }); //deleteSelectedItems() end
+
+    function openPopup(url) {
+        var selectedItems = [];
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                selectedItems.push(checkbox.value);
+            }
+        }
+
+        if (selectedItems.length === 0) {
+            alert("상품을 선택해주세요.");
+            return;
+        }
+
+        var queryString = selectedItems.join(',');
+        var popupUrl = url + '?cartid=' + queryString;
+        
+        window.open(popupUrl, "popupWindow", "width=1200,height=800,scrollbars=yes");
+    }// openPopup(url) end
+</script>
+
+
+
+
+
+
+
+
+<div class="shopping-buy">
+    <a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button type="button" class="buy-button" onclick="proceedToPayment()">구매하기</button>
+</div>
+
+
+// Proceed to payment function
+function proceedToPayment() {
+    var selectedItems = [];
+    var checkboxes = document.getElementsByName('selectedItems');
+    for (var checkbox of checkboxes) {
+        if (checkbox.checked) {
+            selectedItems.push(checkbox.value);
+        }
+    }
+
+    if (selectedItems.length === 0) {
+        alert("상품을 선택해주세요.");
+        return;
+    }
+
+    var url = '/order/payment?goodsid=' + selectedItems.join(',');
+    location.href = url;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+        /* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.order-section,
+.customer-section,
+.shipping-section,
+.payment-section,
+.payment-method-section {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.order-details {
+    margin-bottom: 20px;
+}
+
+.product-info {
+    margin-bottom: 10px;
+}
+
+.product-name {
+    font-weight: bold;
+}
+
+.product-options {
+    color: #666;
+}
+
+.quantity,
+.price,
+.discount,
+.total,
+.shipping {
+    margin-bottom: 10px;
+}
+
+.total-amount {
+    text-align: right;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="tel"],
+form textarea,
+form input[type="radio"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+form input[type="radio"] {
+    margin-right: 10px;
+}
+
+.checkout-button {
+    text-align: center;
+}
+
+.checkout-button button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.checkout-button button:hover {
+    background-color: #45a049;
+}
+
+    </style> <!-- CSS 스타일 끝 -->
+
+
+<div class="container">
+        <h1>주문 및 결제</h1>
+
+        <!-- 주문상세내역 -->
+        <section class="order-section">
+            <h2>주문상세내역</h2>
+            <div class="order-details">
+                <div class="product-info">
+                    <p class="product-name">2024 스틸러스 원정 유니폼</p>
+                    <p class="product-options">사이즈: L (100)</p>
+                </div>
+                <div class="quantity">
+                    <p>수량: 1개</p>
+                </div>
+                <div class="price">
+                    <p>상품금액: 99,000원</p>
+                </div>
+                <div class="discount">
+                    <p>할인/적립: -</p>
+                </div>
+                <div class="total">
+                    <p>합계금액: 99,000원</p>
+                </div>
+                <div class="shipping">
+                    <p>배송비: 3,000원</p>
+                </div>
+            </div>
+            <div class="total-amount">
+                <p>총 결제 금액: 102,000원</p>
+            </div>
+        </section>
+
+        <!-- 주문자 정보 -->
+        <section class="customer-section">
+            <h2>주문자 정보</h2>
+            <form action="">
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="email" required>
+                <label for="phone">전화번호</label>
+                <input type="tel" id="phone" name="phone" required>
+            </form>
+        </section>
+
+        <!-- 배송 정보 -->
+        <section class="shipping-section">
+            <h2>배송 정보</h2>
+            <form action="">
+                <label for="address">배송 주소</label>
+                <input type="text" id="address" name="address" required>
+                <label for="notes">배송 시 요청 사항</label>
+                <textarea id="notes" name="notes" rows="4"></textarea>
+            </form>
+        </section>
+
+        <!-- 결제 정보 -->
+        <section class="payment-section">
+            <h2>결제 정보</h2>
+            <form action="">
+                <label for="card-number">카드 번호</label>
+                <input type="text" id="card-number" name="card-number" required>
+                <label for="expiry-date">만료 일자</label>
+                <input type="text" id="expiry-date" name="expiry-date" required>
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" name="cvv" required>
+            </form>
+        </section>
+
+        <!-- 결제 방법 선택 -->
+        <section class="payment-method-section">
+            <h2>결제 방법 선택</h2>
+            <form action="">
+                <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
+                <label for="credit-card">신용카드 결제</label><br>
+                <input type="radio" id="bank-transfer" name="payment-method" value="bank-transfer">
+                <label for="bank-transfer">계좌 이체</label><br>
+                <input type="radio" id="paypal" name="payment-method" value="paypal">
+                <label for="paypal">페이팔</label>
+            </form>
+        </section>
+
+        <!-- 결제하기 버튼 -->
+        <div class="checkout-button">
+            <button type="button">결제하기</button>
+        </div>
+    </div>
+
+
+
+
+
+// 구매하기 버튼 클릭 시 실행되는 함수
+function purchaseButtonClicked() {
+    // 여기에 로그인 상태 확인하는 로직을 추가할 수 있습니다.
+    if (!isLoggedIn()) { // isLoggedIn()는 로그인 여부를 확인하는 함수라고 가정합니다.
+        // 로그인이 되어 있지 않으면 로그인 화면으로 이동
+        window.location.href = '/login'; // 로그인 페이지 URL로 변경해주세요.
+    } else {
+        // 로그인이 되어 있는 경우 구매하기 팝업 열기
+        openPopup('/order/payment?goodsid=' + goodsDto.goodsid);
+    }
+}
+
+// 구매하기 버튼 클릭 이벤트 리스너 등록
+document.querySelector('button').addEventListener('click', purchaseButtonClicked);
+
+
+
+<script>
+// 로그인 상태 확인 함수 예시
+function isLoggedIn() {
+    // 여기에 서버에서 로그인 여부를 확인하는 로직을 추가하세요.
+    // 예시로 true를 반환하는 것으로 가정합니다.
+    return true; // 혹은 false
+}
+
+function writeopenPopup(url) {
+    // 상품 쓰기 팝업
+    if (isLoggedIn()) {
+        var width = 1000;
+        var height = 900;
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+        window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    } else {
+        // 로그인이 되어있지 않으면 팝업을 열지 않음
+        alert("로그인이 필요합니다.");
+        return; // 팝업을 열지 않고 함수 종료
+    }
+}
+
+function buyopenPopup(url) {
+    // 구매하기 팝업
+    if (isLoggedIn()) {
+        var width = 1200;
+        var height = 800;
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+        window.open(url, "popupWindow", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    } else {
+        // 로그인이 되어있지 않으면 팝업을 열지 않음
+        alert("로그인이 필요합니다.");
+        return; // 팝업을 열지 않고 함수 종료
+    }
+}
+</script>
+
+
+
+
+
+package kr.co.matchday.order;
+
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class OrderDAO {
+
+    public OrderDAO() {
+        System.out.println("-----OrderDAO() 객체 생성됨");
+    }
+
+    @Autowired
+    private SqlSession sqlSession;
+    
+    public void insert(OrderDTO orderDto) {
+        sqlSession.insert("order.insert", orderDto);
+    }
+    
+    public List<OrderDTO> list(String userid) {
+        return sqlSession.selectList("order.listByUser", userid);
+    }
+}
+
+
+
+
+package kr.co.matchday.order;
+
+import java.util.List;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class OrderDAO {
+
+    public OrderDAO() {
+        System.out.println("-----OrderDAO() 객체 생성됨");
+    }
+
+    // MyBatis SqlSession 객체를 자동으로 주입
+    @Autowired
+    private SqlSession sqlSession;
+    
+    // 새로운 주문 정보를 데이터베이스에 삽입하는 메서드
+    public void insert(OrderDTO orderDto) {
+        sqlSession.insert("order.insert", orderDto);
+    }
+    
+    // 특정 사용자의 주문 목록을 데이터베이스에서 조회하는 메서드
+    public List<OrderDTO> list(String userid) {
+        return sqlSession.selectList("order.listByUser", userid);
+    }
+}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="order">
+
+    <!-- 새로운 주문 정보를 데이터베이스에 삽입하는 SQL 쿼리 -->
+    <insert id="insert" parameterType="OrderDTO">
+        INSERT INTO orders (orderid, userid, orderdate, totalamount)
+        VALUES (#{orderid}, #{userid}, #{orderdate}, #{totalamount})
+    </insert>
+
+    <!-- 특정 사용자의 주문 목록을 데이터베이스에서 조회하는 SQL 쿼리 -->
+    <select id="listByUser" parameterType="String" resultType="OrderDTO">
+        SELECT * FROM orders WHERE userid = #{userid}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+<!-- 주문 상세 내역 테이블 -->
+<table class="table table-hover">
+    <thead class="table-active">
+        <tr>
+            <th>상품 정보</th>
+            <th>사이즈</th>
+            <th>수량</th>
+            <th>가격</th>
+            <th>총 가격</th>
+        </tr>
+    </thead>
+    <tbody>
+        <c:forEach items="${goodsList}" var="goods">
+            <tr>
+                <td>
+                    <div class="product-image">
+                        <c:if test="${not empty goods.filename}">
+                            <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
+                                <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}"
+                                    alt="${goods.productname}"
+                                    style="width: 100px; height: 100px; object-fit: cover;">
+                            </a>
+                        </c:if>
+                    </div>
+                    <br>
+                    <span>${goods.productname}</span>
+                </td>
+                <td>${goods.size}</td>
+                <td>
+                    <button type="button" onclick="decrementQuantity(this)" class="수량-button">-</button>
+                    <input type="text" class="quantity-input" value="${goods.quantity}" readonly>
+                    <button type="button" onclick="incrementQuantity(this)" class="수량-button">+</button>
+                </td>
+                <td><fmt:formatNumber value="${goods.unitprice}" pattern="#,###원" /></td>
+                <td><fmt:formatNumber value="${goods.totalprice}" pattern="#,###원" /></td>
+            </tr>
+        </c:forEach>
+    </tbody>
+</table>
+
+
+
+
+
+
+<tr>
+    <td>
+        <div class="product-image">
+            <c:if test="${not empty goods.filename}">
+                <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
+                    <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
+                </a>
+            </c:if>
+        </div>
+        <br>
+        <span>${goods.productname}</span>
+    </td>
+    <td>${goods.size}</td>
+    <td>
+        <button type="button" onclick="decrementQuantity(this)" class="수량-button">-</button> 
+        <input type="text" class="quantity-input" value="1" readonly>
+        <button type="button" onclick="incrementQuantity(this)" class="수량-button">+</button>
+    </td>
+    <td><fmt:formatNumber value="1" pattern="#,###원" /></td>
+    <td><fmt:formatNumber value="1" pattern="#,###원" /></td>
+</tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<c:forEach items="${goodsList}" var="goods">
+    <c:if test="${goods.goodsid eq param.goodsid}">
+        <tr>
+            <td>
+                <div class="product-image">
+                    <c:if test="${not empty goods.filename}">
+                        <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
+                            <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
+                        </a>
+                    </c:if>
+                </div>
+                <br>
+                <span>${goods.productname}</span>
+            </td>
+            <td>${goods.size}</td>
+            <td>
+                <button type="button" onclick="decrementQuantity(this)" class="수량-button">-</button> 
+                <input type="text" class="quantity-input" value="1" readonly>
+                <button type="button" onclick="incrementQuantity(this)" class="수량-button">+</button>
+            </td>
+            <td><fmt:formatNumber value="${goods.price}" pattern="#,###원" /></td>
+            <td><fmt:formatNumber value="${goods.totalPrice}" pattern="#,###원" /></td>
+        </tr>
+    </c:if>
+</c:forEach>
+
+
+
+
+
+<insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
+    INSERT INTO `order` (orderid, userid, goodsid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, 
+                         shippingstartdate, shippingenddate, shippingstatus, recipientname, shippingaddress, 
+                         shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode)
+    VALUES (#{orderid}, #{userid}, #{goodsid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, 
+            #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{shippingaddress}, 
+            #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode})
+</insert>
+
+
+
+
+
+
+<button onclick="openPopup('/order/payment?goodsid=${goodsDto.goodsid}')">구매하기</button>
+
+
+function openPopup(url) { //구매하기 팝업
+    	
+        window.open(url, "popupWindow", "width=1200,height=800,scrollbars=yes");
+    }// openPopup(url) end
+    
+    
+    <fmt:formatDate value="${review.reviewdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/>

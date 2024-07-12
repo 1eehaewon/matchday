@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -165,14 +166,24 @@ public class GoodsCont {
     //@GetMapping("/detail/{goodsid}")
     //public ModelAndView detail(@PathVariable String goodsid) {
     @GetMapping("/detail")
-    public ModelAndView detail(@RequestParam("goodsid") String goodsid) {
+    public ModelAndView detail(@RequestParam("goodsid") String goodsid,Model model, HttpSession session) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("goods/detail");
         mav.addObject("goodsDto", goodsDao.detail(goodsid));
         
+        // 상품 정보 조회
+        GoodsDTO goodsDto = goodsDao.detail(goodsid);
+        mav.addObject("goodsDto", goodsDto);
+        
         // 상품에 대한 관련 리뷰들을 가져옵니다
-        List<ReviewDTO> reviewList = reviewDao.getReviewList(goodsid);
-        mav.addObject("reviewDto", reviewList);
+        //List<ReviewDTO> reviewList = reviewDao.getReviewList(goodsid);
+       //mav.addObject("reviewDto", reviewList);
+        List<ReviewDTO> reviewList = reviewDao.list();
+        model.addAttribute("reviewList", reviewList);
+        
+        // 세션에서 userID를 가져와서 사용자가 로그인한 상태인지 확인
+        String userID = (String) session.getAttribute("userID");
+        mav.addObject("userID", userID);
         
         return mav;
     }//detail end

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="order">
+
+	<!-- 굿즈 ID로 굿즈 정보 가져오기 -->
+    <select id="getGoodsById" parameterType="kr.co.matchday.order.OrderDTO">
+        SELECT * FROM order WHERE goodsid = #{goodsid}
+    </select>
+
+	<!-- 사용자 ID로 사용자 정보 가져오기 -->
+    <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">
+        SELECT *
+        FROM users
+        WHERE userid = #{userid}
+    </select>
+
+	<!-- 주문 정보 삽입 -->
+	<insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
+    INSERT INTO `order` (orderid, userid, goodsid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, 
+                         shippingstartdate, shippingenddate, shippingstatus, recipientname, shippingaddress, 
+                         shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode)
+    VALUES (#{orderid}, #{userid}, #{goodsid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, 
+            #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{shippingaddress}, 
+            #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode})
+</insert>
+
+
+	<!-- 특정 사용자의 주문 목록을 데이터베이스에서 조회하는 SQL 쿼리 -->
+    <select id="listByUser" parameterType="String" resultType="kr.co.matchday.order.OrderDTO">
+        SELECT * FROM order WHERE userid = #{userid}
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- <select id="findById" parameterType="String">
+        SELECT * FROM order WHERE orderid = #{orderid}
+    </select>
+
+    <update id="update" parameterType="kr.co.matchday.order.OrderDTO">
+        UPDATE order
+        SET userid = #{userid}, goodsid = #{goodsid}, orderdate = #{orderdate}, orderstatus = #{orderstatus}, couponid = #{couponid}, 
+            usedpoints = #{usedpoints}, finalpaymentamount = #{finalpaymentamount}, shippingstartdate = #{shippingstartdate}, 
+            shippingenddate = #{shippingenddate}, shippingstatus = #{shippingstatus}, recipientname = #{recipientname}, 
+            shippingaddress = #{shippingaddress}, shippingrequest = #{shippingrequest}, paymentmethodcode = #{paymentmethodcode}, 
+            price = #{price}, quantity = #{quantity}, receiptmethodcode = #{receiptmethodcode}
+        WHERE orderid = #{orderid}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        DELETE FROM order WHERE orderid = #{orderid}
+    </delete> -->
+
+
+
+
+</mapper>
