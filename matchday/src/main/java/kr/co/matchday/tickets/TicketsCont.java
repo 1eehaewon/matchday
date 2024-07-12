@@ -426,4 +426,9 @@ public class TicketsCont {
 
         return null;
     }
+    
+    @GetMapping("/reservationList")
+    public String reservationList() {
+    	return "tickets/reservationList";
+    }
 }
