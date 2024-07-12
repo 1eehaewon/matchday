@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reply">
+
+
+    <insert id="insert" parameterType="kr.co.matchday.reply.ReplyDTO">
+		INSERT INTO reply (noticeid, content, userid, createddate)
+		VALUES (${noticeid}, #{content}, #{userid}, NOW())
+	</insert>
+
+
+	<select id="list" parameterType="Integer" resultType="kr.co.matchday.reply.ReplyDTO">
+        SELECT replyid, noticeid, content, userid, createddate 
+        FROM reply 
+        WHERE noticeid = #{noticeid}
+        ORDER BY createddate
+	</select>
+
+
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM reply 
+        WHERE replyid = #{replyid}
+    </delete>
+    
+    
+    <update id="updateproc" parameterType="kr.co.matchday.reply.ReplyDTO">
+        UPDATE reply
+        SET content = #{content}
+        WHERE replyid = #{replyid}
+    </update>
+
+
+</mapper>
