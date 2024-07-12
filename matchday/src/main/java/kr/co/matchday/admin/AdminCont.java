@@ -88,4 +88,37 @@ public class AdminCont {
         }
         return "redirect:/admin/coupon/list";
     }
+    
+    //포인트페이지
+    @GetMapping("/point/setting")
+    public String pointSettingForm(Model model) {
+    	List<PointMasterDTO> pointMasterDto = adminDao.getPointCategories();
+    	model.addAttribute("points", pointMasterDto);
+    	return "/admin/point";
+    }
+    
+    @PostMapping("/point/add")
+    public String createPoint(PointMasterDTO pointMasterDto, RedirectAttributes redirectAttributes) {
+        adminDao.createPoint(pointMasterDto);
+     // 기본값 설정
+        if (pointMasterDto.getAccumulatedpoints() == null) {
+            pointMasterDto.setAccumulatedpoints(0);
+        }
+        if (pointMasterDto.getRate() == null) {
+            pointMasterDto.setRate(0.0);
+        }
+        redirectAttributes.addFlashAttribute("message", "포인트가 성공적으로 등록되었습니다.");
+        return "redirect:/admin/point/setting";
+    }
+    
+    @GetMapping("/deletePoint")
+    public String deletePoint(@RequestParam("id") String pointcategoryid, RedirectAttributes redirectAttributes) {
+        int deletedRows = adminDao.deletePoint(pointcategoryid);
+        if (deletedRows > 0) {
+            redirectAttributes.addFlashAttribute("message", "포인트가 성공적으로 삭제되었습니다.");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "포인트 삭제에 실패했습니다.");
+        }
+        return "redirect:/admin/point/setting";
+    }
 }// class end

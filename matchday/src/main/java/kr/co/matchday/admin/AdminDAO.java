@@ -42,4 +42,18 @@ public class AdminDAO {
     public int deleteCoupon(String coupontypeid) {
     	return sqlSession.delete("admin.deleteCoupon", coupontypeid);
     }
+    
+    public List<PointMasterDTO> getPointCategories(){
+    	return sqlSession.selectList("admin.getPointCategories");
+    }
+    
+  //포인트등록하기
+  	public void createPoint(PointMasterDTO pointMasterDto) {
+          sqlSession.insert("admin.createPoint", pointMasterDto);
+      }
+  	
+  	//포인트삭제
+  	public int deletePoint(String pointcategoryid) {
+    	return sqlSession.delete("admin.deletePoint", pointcategoryid);
+    }
 }//class end
