@@ -110,12 +110,14 @@
         WHERE userid = #{userid} AND coupontypeid = #{coupontypeid}
     </select>
 
-	<!-- 사용자가 보유한 쿠폰 목록에서 만료된 쿠폰 제거 -->
+	<!-- 사용자가 보유한 쿠폰 목록에서 만료된 쿠폰 제거 쿠폰마스터테이블 조인해서 enddate 가져옴 -->
     <delete id="deleteExpiredCoupons">
         <![CDATA[
-    		DELETE FROM coupon
-    		WHERE enddate < CURDATE()
-    	]]>
+            DELETE c
+            FROM coupon c
+            INNER JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
+            WHERE cm.enddate < CURDATE()
+        ]]>
     </delete>
 </mapper>
 

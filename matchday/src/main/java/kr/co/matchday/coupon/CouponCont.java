@@ -110,7 +110,7 @@ public class CouponCont {
 	
 	// 매일 자정에 실행되도록 설정
 	@Scheduled(cron = "0 0 0 * * ?")
-//	@Scheduled(cron = "*/1 * * * * ?")
+//	@Scheduled(cron = "*/1 * * * * ?") 1초마다 테스트용
 	public void deleteExpiredCoupons() {
 		couponDao.deleteExpiredCoupons();
 	}
