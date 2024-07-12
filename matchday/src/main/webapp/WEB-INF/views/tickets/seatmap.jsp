@@ -28,7 +28,7 @@
             color: white;
         }
         .reserved {
-            background-color: white; /* 예약된 좌석은 검정색으로 표시 */
+            background-color: white; /* 예약된 좌석은 흰색으로 표시 */
             cursor: not-allowed; /* 예약된 좌석은 클릭할 수 없도록 표시 */
         }
         .seat-info {
@@ -187,6 +187,32 @@
             var seatMap = document.getElementById('seat-map');
             var ground = document.getElementById('ground');
 
+            // WebSocket 설정
+            var socket = new SockJS('/ws');
+            var stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+
+                stompClient.subscribe('/topic/seatSelected', function(messageOutput) {
+                    var message = JSON.parse(messageOutput.body);
+
+                    // 실시간으로 다른 사용자가 선택한 좌석을 확인하고 경고 메시지를 표시
+                    var seatElement = document.querySelector('.seat[data-seat-id="' + message.seatId + '"]');
+                    if (seatElement) {
+                        if (message.status === 'selected') {
+                            seatElement.classList.add('reserved');
+                            seatElement.style.pointerEvents = 'none';
+                            seatElement.removeEventListener('click', seatClickListener);
+                        } else {
+                            seatElement.classList.remove('reserved');
+                            seatElement.style.pointerEvents = 'auto';
+                            seatElement.addEventListener('click', seatClickListener);
+                        }
+                    }
+                });
+            });
+
             // 좌석 배치도를 생성
             if (seatMap && seats.length > 0) {
                 // 각 좌석에 대해 div 요소를 생성하고 배치
@@ -311,23 +337,6 @@
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
                 window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
-            });
-
-            // WebSocket 설정
-            var socket = new SockJS('/ws');
-            var stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-
-                stompClient.subscribe('/topic/seatSelected', function(messageOutput) {
-                    var message = JSON.parse(messageOutput.body);
-
-                    // 실시간으로 다른 사용자가 선택한 좌석을 확인하고 경고 메시지를 표시
-                    if (document.querySelector('.seat[data-seat-id="' + message.seatId + '"]')) {
-                        alert('다른 회원이 구매 진행중인 좌석입니다.');
-                    }
-                });
             });
         });
     </script> <!-- 스크립트 끝 -->
