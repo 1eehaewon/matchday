@@ -130,7 +130,6 @@ public class TicketsCont {
             HttpSession session,
             Model model) {
 
-        // 경기 정보 가져오기
         MatchesDTO match = ticketsService.getMatchById(matchId);
         if (match == null) {
             return "error";
@@ -147,19 +146,17 @@ public class TicketsCont {
 
         String userId = (String) session.getAttribute("userID");
         Map<String, Object> userInfo = userId != null ? ticketsService.getUserInfo(userId) : new HashMap<>();
-
-        // 사용자의 쿠폰 정보 조회
         List<CouponDTO> coupons = ticketsService.getCouponsByUserId(userId);
 
-        // 사용자의 멤버십 정보 조회
         List<Map<String, Object>> memberships = ticketsService.getMembershipsByUserId(userId);
         List<Map<String, Object>> applicableMemberships = new ArrayList<>();
 
-        // 경기 팀과 관련된 멤버십 필터링
         for (Map<String, Object> membership : memberships) {
             String teamName = (String) membership.get("teamname");
-            if (teamName != null && (teamName.equals(match.getHometeamid()) || teamName.equals(match.getAwayteamid()))) {
-                applicableMemberships.add(membership);
+            if (teamName != null) {
+                if (teamName.equals(match.getHometeamid()) || teamName.equals(match.getAwayteamid())) {
+                    applicableMemberships.add(membership);
+                }
             }
         }
 
@@ -169,13 +166,12 @@ public class TicketsCont {
         model.addAttribute("section", section);
         model.addAttribute("stadiumid", stadiumId);
         model.addAttribute("userInfo", userInfo);
-        model.addAttribute("coupons", coupons); // 쿠폰 정보를 모델에 추가
-        model.addAttribute("memberships", applicableMemberships); // 적용 가능한 멤버십 정보를 모델에 추가
+        model.addAttribute("coupons", coupons);
+        model.addAttribute("memberships", applicableMemberships);
 
         return "tickets/reservation";
     }
 
-    
     /**
      * 예약 ID 생성 메서드
      * @return 예약 ID 문자열

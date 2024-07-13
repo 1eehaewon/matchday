@@ -118,7 +118,7 @@
                     </div>
                 </div>
                 <div class="text-center stadium">
-                    경기장: ${match.stadiumid}
+                    경기장: ${match.stadiumname}
                 </div>
                 <div class="text-center booking-dates">
                     판매 시작일: <fmt:formatDate value="${match.bookingstartdate}" pattern="yyyy-MM-dd HH:mm" />

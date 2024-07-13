@@ -139,21 +139,20 @@
                         <th>합계금액</th>
                         <td id="subtotal-amount">0원</td>
                     </tr>
-                    
-                    <!-- 멤버십 선택 -->
                     <tr>
                         <th>멤버십</th>
                         <td>
-                            <select id="membership-select" class="form-select">
-                                <c:forEach var="membership" items="${memberships}">
-                                    <option value="${membership.membershipid}" data-discount="3000" data-teamname="${membership.teamname}">
-                                        ${membership.membershipname} (${membership.teamname})
-                                    </option>
-                                </c:forEach>
-                            </select>
+                            <c:if test="${!empty memberships}">
+                                <select id="membership-select" class="form-select">
+                                    <c:forEach var="membership" items="${memberships}">
+                                        <option value="${membership.membershipid}" data-discount="2000" data-teamname="${membership.teamname}">
+                                            ${membership.membershipname} (${membership.teamname})
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </c:if>
                         </td>
                     </tr>
-
                     <tr>
                         <th>할인쿠폰</th>
                         <td>
@@ -165,7 +164,6 @@
                             </select>
                         </td>
                     </tr>
-
                     <tr>
                         <th>할인</th>
                         <td id="discount">0원</td>
@@ -234,15 +232,17 @@
         // Discount를 업데이트하는 함수
         function updateDiscount() {
             var selectedCoupon = $('#coupon-select').find(':selected');
-            var discountRate = selectedCoupon.data('discount');
+            var discountRate = selectedCoupon.data('discount') || 0; // 쿠폰 할인이 없는 경우 0으로 설정
             var selectedMembership = $('#membership-select').find(':selected');
-            var membershipDiscount = selectedMembership.data('discount');
+            var membershipDiscount = selectedMembership.data('discount') || 0; // 멤버십 할인이 없는 경우 0으로 설정
             var seatCount = seats.length;
 
             var subtotalAmount = updateSubtotalAmount();
             var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
-            var membershipAmount = seatCount * 2000; // 멤버십 할인: 좌석당 2000원
-            var totalDiscount = discountAmount + membershipDiscount + membershipAmount;
+            
+            // 멤버십이 선택된 경우에만 멤버십 할인을 적용
+            var membershipAmount = selectedMembership.val() ? seatCount * membershipDiscount : 0; // 멤버십 할인: 좌석당 2000원
+            var totalDiscount = discountAmount + membershipAmount;
             $('#discount').text(totalDiscount.toLocaleString() + '원');
             updateTotalAmount();
         }

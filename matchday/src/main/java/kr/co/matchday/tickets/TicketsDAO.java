@@ -64,7 +64,11 @@ public class TicketsDAO {
      * @return 쿠폰 목록
      */
     public List<CouponDTO> getCouponsByUserId(String userId) {
-        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getCouponsByUserId", userId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("applicableProduct", "Ticket");
+        params.put("usage", "Not Used");
+        return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getCouponsByUserId", params);
     }
 
     /**

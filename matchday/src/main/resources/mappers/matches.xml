@@ -28,15 +28,17 @@
 
     <!-- 모든 경기 정보를 가져오는 쿼리 -->
     <select id="list" resultType="kr.co.matchday.matches.MatchesDTO">
-        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate, referee
-        FROM matches
+        SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.bookingstartdate, m.bookingenddate, m.referee, s.stadiumname
+        FROM matches m
+        JOIN stadiums s ON m.stadiumid = s.stadiumid
     </select>
 
     <!-- 특정 경기 정보를 가져오는 쿼리 -->
     <select id="getMatchDetail" parameterType="string" resultType="kr.co.matchday.matches.MatchesDTO">
-        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, referee, bookingstartdate, bookingenddate
-        FROM matches
-        WHERE matchid = #{matchid}
+        SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.referee, m.bookingstartdate, m.bookingenddate, s.stadiumname
+        FROM matches m
+        JOIN stadiums s ON m.stadiumid = s.stadiumid
+        WHERE m.matchid = #{matchid}
     </select>
 
     <!-- 경기 정보를 업데이트하는 쿼리 -->
@@ -59,9 +61,10 @@
 
     <!-- 현재 날짜 기준으로 판매종료일이 1일 지난 경기를 필터링하는 쿼리 -->
     <select id="listActiveMatches" parameterType="java.util.Date" resultType="kr.co.matchday.matches.MatchesDTO">
-        SELECT matchid, hometeamid, awayteamid, stadiumid, matchdate, bookingstartdate, bookingenddate, referee
-        FROM matches
-        WHERE bookingenddate >= DATE_SUB(#{currentDate}, INTERVAL 1 DAY)
+        SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.bookingstartdate, m.bookingenddate, m.referee, s.stadiumname
+        FROM matches m
+        JOIN stadiums s ON m.stadiumid = s.stadiumid
+        WHERE m.bookingenddate >= DATE_SUB(#{currentDate}, INTERVAL 1 DAY)
     </select>
-    
+
 </mapper>
