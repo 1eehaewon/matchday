@@ -8,6 +8,14 @@
     <title>좌석 선택</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            margin-top: 50px;
+        }
         .seat {
             width: 25px;
             height: 25px;
@@ -27,9 +35,9 @@
             background-color: #007bff;
             color: white;
         }
-        .reserved {
-            background-color: white; /* 예약된 좌석은 하얀색으로 표시 */
-            cursor: not-allowed; /* 예약된 좌석은 클릭할 수 없도록 표시 */
+        .reserved, .unavailable {
+            background-color: #fff;
+            cursor: not-allowed;
         }
         .seat-info {
             margin-top: 20px;
@@ -49,7 +57,7 @@
             margin: 20px 0;
         }
         .ground {
-            background-color: #008000;
+            background-color: #28a745;
             color: white;
             display: flex;
             align-items: center;
@@ -82,6 +90,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
         }
         .choice-table {
             width: 100%;
@@ -109,21 +120,38 @@
             flex: 1;
             margin: 0 5px;
         }
-    </style> <!-- CSS 스타일 끝 -->
+        .steps {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .steps span {
+            margin: 0 10px;
+            font-size: 1.2rem;
+        }
+        .steps .active {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="mb-4">좌석 선택</h1>
-        <p class="text-danger">하얀색 좌석은 이미 예매된 좌석입니다.</p>
+    <div class="steps">
+        <span>1. 구역선택</span> -> 
+        <span class="active">2. 좌석선택</span> -> 
+        <span>3. 결제정보확인</span>
+    </div>
+    <div class="container">
+        <h1 class="mb-4 text-center">좌석 선택</h1>
+        <p class="text-danger text-center">하얀색 좌석은 이미 예매된 좌석입니다.</p>
         <input type="hidden" id="matchid" value="${param.matchid}"/>
         <input type="hidden" id="stadiumid" value="${param.stadiumid}"/>
         <input type="hidden" id="section" value="${param.section}"/>
         <div class="row">
             <div class="col-md-8">
                 <div id="seat-map-container">
-                    <div id="ground" class="ground spacing"></div>
                     <div id="seat-map" class="spacing"></div>
-                </div> <!-- seat-map-container 끝 -->
+                    <div id="ground" class="ground spacing"></div>
+                </div>
             </div>
             <div class="col-md-4">
                 <div id="selected-seats-info" class="seat-info">
@@ -148,100 +176,89 @@
                             <tbody>
                             </tbody>
                         </table>
-                    </div> <!-- choice 끝 -->
-                </div> <!-- selected-seats-info 끝 -->
-                <div id="total-price">총 금액: 0원</div>
+                    </div>
+                </div>
+                <div id="total-price" class="text-center">총 금액: 0원</div>
                 <div class="btn-group mt-3">
                     <button type="button" class="btn btn-secondary" id="prev-step">이전단계</button>
                     <button type="button" class="btn btn-secondary" id="reset-seats">좌석 다시 선택</button>
                     <button type="button" class="btn btn-danger" id="complete-selection">좌석선택완료</button>
-                </div> <!-- btn-group 끝 -->
-            </div> <!-- col-md-4 끝 -->
-        </div> <!-- row 끝 -->
-    </div> <!-- container 끝 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 경기장 바닥 위치를 지정하는 객체
+            var userId = "${sessionScope.userID}";
             var groundPositions = {
-                'N': 'north', // 북쪽은 북쪽에 위치
-                'S': 'south', // 남쪽은 남쪽에 위치
-                'E': 'west',  // 동쪽은 서쪽에 위치
-                'W': 'east'   // 서쪽은 동쪽에 위치
+                'N': 'north',
+                'S': 'south',
+                'E': 'east',
+                'W': 'west'
             };
 
-            // JSP에서 전달된 좌석 JSON 데이터를 파싱하여 자바스크립트 객체로 변환
             var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
-            var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>'); // 예약된 좌석 정보 파싱
+            var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>');
             var section = document.getElementById('section').value;
             var matchId = document.getElementById('matchid').value;
             var stadiumId = document.getElementById('stadiumid').value;
             var groundPosition = groundPositions[section];
 
-            // 디버깅을 위한 콘솔 로그
-            console.log("matchId:", matchId);
-            console.log("stadiumId:", stadiumId);
-            console.log("section:", section);
-
             var seatMap = document.getElementById('seat-map');
             var ground = document.getElementById('ground');
 
-            // 좌석 배치도를 생성
             if (seatMap && seats.length > 0) {
-                // 각 좌석에 대해 div 요소를 생성하고 배치
                 seats.forEach(function(seat) {
                     var seatElement = document.createElement('div');
                     seatElement.className = 'seat';
-                    seatElement.dataset.seatId = seat.seatid;  // 좌석 ID 설정
-                    seatElement.dataset.price = seat.price;    // 좌석 가격 설정
-                    seatElement.textContent = seat.seatnumber; // 좌석 번호 설정
+                    seatElement.dataset.seatId = seat.seatid;
+                    seatElement.dataset.price = seat.price;
+                    seatElement.textContent = seat.seatnumber;
 
-                    // 예약된 좌석을 비활성화 및 색상 변경
                     if (reservedSeats.includes(seat.seatid)) {
                         seatElement.classList.add('reserved');
-                        seatElement.style.pointerEvents = 'none'; // 예약된 좌석은 클릭 이벤트 제거
+                        seatElement.style.pointerEvents = 'none';
                     } else {
-                        // 좌석 클릭 이벤트 리스너 추가
                         seatElement.addEventListener('click', seatClickListener);
                     }
 
-                    seatMap.appendChild(seatElement); // 좌석 요소를 좌석 배치도에 추가
+                    seatMap.appendChild(seatElement);
                 });
 
-                // 경기장 바닥의 위치와 방향을 설정
                 ground.className = 'ground ' + groundPosition;
                 ground.textContent = 'GROUND';
                 var seatMapContainer = document.getElementById('seat-map-container');
-                seatMapContainer.style.flexDirection = (groundPosition === 'south' || groundPosition === 'north') ? 'column' : 'row';
-
-                // 경기장 바닥을 좌석 배치도의 적절한 위치에 추가
-                if (groundPosition === 'north' || groundPosition === 'west') {
+                
+                // 좌석 맵과 그라운드의 위치를 섹션에 맞춰 배치
+                if (groundPosition === 'north') {
+                    seatMapContainer.appendChild(seatMap);
+                    seatMapContainer.appendChild(ground);
+                } else if (groundPosition === 'south') {
                     seatMapContainer.insertBefore(ground, seatMap);
-                } else {
+                } else if (groundPosition === 'east') {
+                    seatMapContainer.style.flexDirection = 'row';
+                    seatMapContainer.insertBefore(ground, seatMap);
+                } else if (groundPosition === 'west') {
+                    seatMapContainer.style.flexDirection = 'row';
                     seatMapContainer.appendChild(ground);
                 }
             }
 
-            /**
-             * 좌석 클릭 이벤트 리스너 함수
-             */
             function seatClickListener() {
-                // 선택된 좌석의 클래스를 토글
-                if (this.classList.contains('selected')) {
-                    this.classList.remove('selected');
-                } else {
-                    // 선택된 좌석이 5개 이하인 경우에만 선택 가능
-                    if (document.querySelectorAll('.seat.selected').length < 5) {
-                        this.classList.add('selected');
-                    } else {
-                        alert('5개의 좌석까지 구매 가능합니다.');
-                    }
+                if (this.classList.contains('selected') || this.classList.contains('unavailable')) {
+                    return;
                 }
-                updateSelectedSeats(); // 선택된 좌석 정보 업데이트
+                if (document.querySelectorAll('.seat.selected').length < 5) {
+                    this.classList.add('selected');
+                    sendSeatStatus(this.dataset.seatId, 'selected');
+                } else {
+                    alert('5개의 좌석까지 구매 가능합니다.');
+                }
+                updateSelectedSeats();
             }
 
-            /**
-             * 선택된 좌석 정보를 업데이트하는 함수
-             */
             function updateSelectedSeats() {
                 var selectedSeats = document.querySelectorAll('.seat.selected');
                 var tbody = document.querySelector('.choice-table tbody');
@@ -250,62 +267,92 @@
                 var totalPrice = 0;
                 tbody.innerHTML = '';
 
-                // 선택된 각 좌석에 대해 테이블에 정보를 추가
                 selectedSeats.forEach(function(seat) {
-                    var price = parseInt(seat.dataset.price, 10); // 좌석 가격
-                    totalPrice += price; // 총 가격에 추가
+                    var price = parseInt(seat.dataset.price, 10);
+                    totalPrice += price;
                     var row = document.createElement('tr');
                     var cell1 = document.createElement('th');
-                    cell1.innerHTML = '<span>일반석</span>'; // 좌석 등급 정보
+                    cell1.innerHTML = '<span>일반석</span>';
                     var cell2 = document.createElement('td');
-                    cell2.textContent = seat.dataset.seatId; // 좌석 ID 정보
+                    cell2.textContent = seat.dataset.seatId;
                     var cell3 = document.createElement('td');
-                    cell3.textContent = price.toLocaleString() + '원'; // 좌석 가격 정보
+                    cell3.textContent = price.toLocaleString() + '원';
                     row.appendChild(cell1);
                     row.appendChild(cell2);
                     row.appendChild(cell3);
-                    tbody.appendChild(row); // 테이블에 행 추가
+                    tbody.appendChild(row);
                 });
 
-                // 선택된 좌석 수와 총 금액을 업데이트
                 seatCount.textContent = '총 ' + selectedSeats.length + '석 선택되었습니다.';
                 totalPriceElement.textContent = '총 금액: ' + totalPrice.toLocaleString() + '원';
             }
 
-            // 이전 단계 버튼 클릭 이벤트 리스너 추가
+            function sendSeatStatus(seatId, status) {
+                stompClient.send("/app/selectSeat", {}, JSON.stringify({
+                    seatId: seatId,
+                    status: status,
+                    userId: userId
+                }));
+            }
+
             document.getElementById('prev-step').addEventListener('click', function() {
-                window.history.back(); // 이전 페이지로 이동
+                window.history.back();
             });
 
-            // 좌석 다시 선택 버튼 클릭 이벤트 리스너 추가
             document.getElementById('reset-seats').addEventListener('click', function() {
                 document.querySelectorAll('.seat.selected').forEach(function(seat) {
-                    seat.classList.remove('selected'); // 선택된 좌석 해제
+                    seat.classList.remove('selected');
+                    sendSeatStatus(seat.dataset.seatId, 'deselected');
                 });
-                updateSelectedSeats(); // 선택된 좌석 정보 업데이트
+                updateSelectedSeats();
             });
 
-            // 좌석 선택 완료 버튼 클릭 이벤트 리스너 추가
             document.getElementById('complete-selection').addEventListener('click', function() {
                 var selectedSeats = document.querySelectorAll('.seat.selected');
                 if (selectedSeats.length === 0) {
-                    alert('좌석을 선택해 주세요.'); // 좌석이 선택되지 않았을 경우 경고
+                    alert('좌석을 선택해 주세요.');
                     return;
                 }
                 var seats = [];
                 var totalPrice = 0;
                 selectedSeats.forEach(function(seat) {
-                    seats.push(seat.dataset.seatId); // 선택된 좌석 ID 저장
-                    totalPrice += parseInt(seat.dataset.price, 10); // 총 가격 계산
+                    seats.push(seat.dataset.seatId);
+                    totalPrice += parseInt(seat.dataset.price, 10);
                 });
 
-                // 매치 ID, 경기장 ID, 구역 정보를 인코딩하여 URL로 이동
                 var matchId = encodeURIComponent(document.getElementById('matchid').value);
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
                 window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
             });
+
+            var socket = new SockJS('/ws');
+            var stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/seatSelected', function(message) {
+                    var seatMessage = JSON.parse(message.body);
+                    var seatElement = document.querySelector('.seat[data-seat-id="' + seatMessage.seatId + '"]');
+                    if (seatElement) {
+                        if (seatMessage.status === 'selected' && seatMessage.userId !== userId) {
+                            seatElement.classList.add('unavailable');
+                            seatElement.style.pointerEvents = 'none';
+                            alert('다른회원이 구매진행중인 좌석입니다');
+                        } else if (seatMessage.status === 'deselected') {
+                            seatElement.classList.remove('unavailable');
+                            seatElement.style.pointerEvents = '';
+                        }
+                    }
+                });
+
+                window.addEventListener('beforeunload', function() {
+                    document.querySelectorAll('.seat.selected').forEach(function(seat) {
+                        sendSeatStatus(seat.dataset.seatId, 'deselected');
+                    });
+                });
+            });
         });
-    </script> <!-- 스크립트 끝 -->
+    </script>
 </body>
 </html>

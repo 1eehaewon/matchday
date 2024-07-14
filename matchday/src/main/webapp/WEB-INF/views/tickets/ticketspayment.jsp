@@ -12,15 +12,20 @@
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/seatSelection.js"></script>
     <style>
-        /* 기본적인 스타일 설정 */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            margin-top: 50px;
         }
         .map-container {
             position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: auto;
+            max-width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .map {
             width: 100%;
@@ -37,6 +42,7 @@
             position: absolute;
             background-color: transparent;
             transition: background-color 0.3s;
+            border-radius: 5px;
         }
         .north {
             top: 10%;
@@ -62,45 +68,87 @@
             width: 60%;
             height: 15%;
         }
-        .list-group-item.active, .section-link.active {
-            background-color: #d3d3d3 !important;
-            border-color: #d3d3d3 !important;
-        }
         .section-link {
             display: block;
             padding: 10px;
             margin-bottom: 5px;
-            border: 1px solid #ccc;
+            border: 1px solid #dee2e6;
             border-radius: 5px;
             text-decoration: none;
-            color: black;
-            cursor: pointer;
+            color: #333;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .section-link:hover {
+            background-color: #e9ecef;
+        }
+        .section-link.active {
+            background-color: #007bff;
+            color: #fff;
         }
         .seat-map {
             display: grid;
-            grid-template-columns: repeat(20, 1fr);
+            grid-template-columns: repeat(10, 1fr);
             gap: 10px;
             margin-top: 20px;
         }
         .seat {
-            width: 30px;
-            height: 30px;
-            background-color: #ccc;
+            width: 40px;
+            height: 40px;
+            background-color: #6c757d;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
         .seat.selected {
-            background-color: #00f;
+            background-color: #007bff;
             color: #fff;
         }
-    </style> <!-- CSS 스타일 끝 -->
+        .seat:hover {
+            background-color: #5a6268;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-primary:focus, .btn-primary.focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .btn-primary:disabled {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .steps {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .steps span {
+            margin: 0 10px;
+            font-size: 1.2rem;
+        }
+        .steps .active {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+    <div class="steps">
+        <span class="active">1. 구역선택</span> -> 
+        <span>2. 좌석선택</span> -> 
+        <span>3. 결제정보확인</span>
+    </div>
     <input type="hidden" id="matchid" value="${match.matchid}"/>
-    <input type="hidden" id="stadiumid" value="${match.stadiumid}"/> <!-- stadiumid 추가 -->
-    <div class="container mt-4">
+    <input type="hidden" id="stadiumid" value="${match.stadiumid}"/>
+    <div class="container">
         <div class="row">
             <div class="col-md-8">
                 <div class="map-container">
@@ -111,65 +159,59 @@
                         <div class="east"></div>
                         <div class="south"></div>
                     </div>
-                </div> <!-- map-container 끝 -->
+                </div>
             </div>
-            <div class="col-md-4">
-                <h1><c:out value="${match.hometeamid}"/><br> <p align="center">vs</p><c:out value="${match.awayteamid}"/></h1>
-                <p>경기일정: <fmt:formatDate value="${match.matchdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></p>
+            <div class="col-md-4 text-center">
+                <h1><c:out value="${match.hometeamid}"/> <br> <small>vs</small> <br> <c:out value="${match.awayteamid}"/></h1>
+                <p class="mb-4">경기일정: <fmt:formatDate value="${match.matchdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></p>
                 <div class="list-group mb-3">
                     <a href="#" data-section="N" class="section-link">N 구역</a>
                     <a href="#" data-section="W" class="section-link">W 구역</a>
                     <a href="#" data-section="E" class="section-link">E 구역</a>
                     <a href="#" data-section="S" class="section-link">S 구역</a>
                 </div>
-                <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-primary" id="selectSeats">좌석선택</button>
-                </div>
-                <div class="seat-map mt-3"></div> <!-- 좌석 배치도 표시 영역 끝 -->
-            </div> <!-- col-md-4 끝 -->
-        </div> <!-- row 끝 -->
-    </div> <!-- container 끝 -->
+                <button type="button" class="btn btn-primary btn-lg" id="selectSeats">좌석선택</button>
+                <div class="seat-map mt-4"></div>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
-            let selectedSection = null; // 선택된 구역을 저장할 변수
+            let selectedSection = null;
 
             $('.section-link').click(function() {
-                // 구역을 클릭했을 때 selectedSection 변수에 저장
                 selectedSection = $(this).data('section');
                 $('.section-link').removeClass('active');
                 $(this).addClass('active');
-                
-                // 모든 구역의 배경색을 초기화
+
                 $('.north, .west, .east, .south').css('background-color', 'transparent');
-                
-                // 선택된 구역에 배경색을 추가
+
                 switch (selectedSection) {
                     case 'N':
-                        $('.north').css('background-color', 'rgba(255, 0, 0, 0.5)'); // 빨간색 반투명
+                        $('.north').css('background-color', 'rgba(255, 0, 0, 0.5)');
                         break;
                     case 'W':
-                        $('.west').css('background-color', 'rgba(0, 0, 255, 0.5)'); // 파란색 반투명
+                        $('.west').css('background-color', 'rgba(0, 0, 255, 0.5)');
                         break;
                     case 'E':
-                        $('.east').css('background-color', 'rgba(0, 128, 0, 0.5)'); // 초록색 반투명
+                        $('.east').css('background-color', 'rgba(0, 128, 0, 0.5)');
                         break;
                     case 'S':
-                        $('.south').css('background-color', 'rgba(255, 255, 0, 0.5)'); // 노란색 반투명
+                        $('.south').css('background-color', 'rgba(255, 255, 0, 0.5)');
                         break;
                 }
             });
 
             $('#selectSeats').click(function() {
-                // '좌석선택' 버튼을 눌렀을 때 페이지를 이동
                 if (selectedSection) {
                     var matchId = $('#matchid').val();
-                    var stadiumId = $('#stadiumid').val(); // stadiumId 추가
-                    window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + selectedSection + '&stadiumid=' + stadiumId; // stadiumId 포함
+                    var stadiumId = $('#stadiumid').val();
+                    window.location.href = '/tickets/seatmap?matchid=' + matchId + '&section=' + selectedSection + '&stadiumid=' + stadiumId;
                 } else {
                     alert('구역을 선택하세요.');
                 }
             });
         });
-    </script> <!-- 스크립트 끝 -->
+    </script>
 </body>
-</html> <!-- html 끝 -->
+</html>

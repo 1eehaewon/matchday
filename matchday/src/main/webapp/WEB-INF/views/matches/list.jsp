@@ -9,16 +9,24 @@
         border-radius: 8px;
         padding: 15px;
         margin-bottom: 20px;
-        background-color: #f9f9f9;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .match-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
     .match-card h5 {
         margin-bottom: 15px;
+        font-weight: bold;
+        color: #343a40;
     }
     .team-container {
         text-align: center;
     }
     .team-logo {
-        width: 50px; /* 원하는 크기로 설정 */
+        width: 60px;
         height: auto;
     }
     .teams {
@@ -35,13 +43,13 @@
         font-size: 1rem;
         color: #6c757d;
     }
-    .btn-book {
-        margin-top: 15px;
-    }
     .booking-dates {
         font-size: 0.9rem;
         color: #6c757d;
         margin-top: 10px;
+    }
+    .btn-book {
+        margin-top: 15px;
     }
 </style>
 
@@ -96,15 +104,15 @@
 
     <div class="mt-4">
         <c:forEach var="match" items="${matchList}">
-            <div class="match-card" data-bookingenddate="${match.bookingenddate}">
-                <h5 class="text-center">
+            <div class="match-card p-3 shadow-sm rounded">
+                <h5 class="text-center mb-4">
                     <fmt:formatDate value="${match.matchdate}" pattern="yyyy년 M월 d일 E요일 a h시 m분" />
                 </h5>
                 <div class="row align-items-center">
                     <div class="col text-end">
                         <div class="team-container">
-                            <img src="/storage/matchimg/${match.hometeamid}.jpg" alt="${match.hometeamid} 로고" class="team-logo">
-                            <div class="teams">${match.hometeamid}</div>
+                            <img src="/storage/matchimg/${match.hometeamid}.jpg" alt="${match.hometeamid} 로고" class="team-logo img-fluid">
+                            <div class="teams mt-2">${match.hometeamid}</div>
                         </div>
                     </div>
                     <div class="col text-center">
@@ -112,22 +120,21 @@
                     </div>
                     <div class="col text-start">
                         <div class="team-container">
-                            <img src="/storage/matchimg/${match.awayteamid}.jpg" alt="${match.awayteamid} 로고" class="team-logo">
-                            <div class="teams">${match.awayteamid}</div>
+                            <img src="/storage/matchimg/${match.awayteamid}.jpg" alt="${match.awayteamid} 로고" class="team-logo img-fluid">
+                            <div class="teams mt-2">${match.awayteamid}</div>
                         </div>
                     </div>
                 </div>
-                <div class="text-center stadium">
+                <div class="text-center stadium mt-3">
                     경기장: ${match.stadiumname}
                 </div>
-                <div class="text-center booking-dates">
+                <div class="text-center booking-dates mt-2">
                     판매 시작일: <fmt:formatDate value="${match.bookingstartdate}" pattern="yyyy-MM-dd HH:mm" />
                     <br>
                     판매 종료일: <fmt:formatDate value="${match.bookingenddate}" pattern="yyyy-MM-dd HH:mm" />
                 </div>
-                <div class="text-center">
-                    <button type="button" class="btn btn-success btn-book" 
-                            onclick="handleBooking('${match.matchid}')">
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-success btn-book" onclick="handleBooking('${match.matchid}')">
                         예매하기
                     </button>
                     <!-- 회원 등급이 M인 경우에만 상세 보기 버튼 표시 -->

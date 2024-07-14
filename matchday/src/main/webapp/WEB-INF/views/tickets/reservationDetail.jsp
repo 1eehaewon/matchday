@@ -1,12 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>예약 상세 정보</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .card-header {
             background-color: #f8f9fa;
@@ -26,8 +19,6 @@
             word-wrap: break-word;
         }
     </style>
-</head>
-<body>
 <div class="container mt-4">
     <h1 class="mb-4">예약 상세 정보</h1>
 

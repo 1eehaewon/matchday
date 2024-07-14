@@ -172,6 +172,7 @@ public class TicketsCont {
         return "tickets/reservation";
     }
 
+
     /**
      * 예약 ID 생성 메서드
      * @return 예약 ID 문자열
