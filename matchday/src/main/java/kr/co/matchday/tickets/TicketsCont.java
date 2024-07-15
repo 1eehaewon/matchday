@@ -25,12 +25,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.websocket.WebSocketController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +54,9 @@ public class TicketsCont {
 
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate; // MyBatis의 SqlSessionTemplate 객체
+    
+    @Autowired
+    private WebSocketController webSocketController; // WebSocketController 주입
 
     public TicketsCont() {
         System.out.println("----TicketsCont() 객체 생성");
@@ -547,6 +552,19 @@ public class TicketsCont {
 
         return mav;
     }
+    
+    @PostMapping("/checkSelectedSeats")
+    @ResponseBody
+    public Map<String, Object> checkSelectedSeats(@RequestBody Map<String, Object> params) {
+        String userId = (String) params.get("userId");
+        List<String> seats = (List<String>) params.get("seats");
+        boolean available = webSocketController.checkIfSeatsAvailable(seats.toArray(new String[0]));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", available);
+        return response;
+    }
+
 
 }
 

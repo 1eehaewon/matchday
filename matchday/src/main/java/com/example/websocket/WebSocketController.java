@@ -6,11 +6,12 @@ import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 public class WebSocketController {
 
-    private static final Map<String, String> selectedSeats = new HashMap<>();
+    private static final Map<String, String> selectedSeats = new ConcurrentHashMap<>();
 
     @MessageMapping("/selectSeat")
     @SendTo("/topic/seatSelected")
@@ -70,5 +71,14 @@ public class WebSocketController {
         public void setSelectedSeats(Map<String, String> selectedSeats) {
             this.selectedSeats = selectedSeats;
         }
+    }
+
+    public boolean checkIfSeatsAvailable(String[] seatIds) {
+        for (String seatId : seatIds) {
+            if (selectedSeats.containsKey(seatId)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

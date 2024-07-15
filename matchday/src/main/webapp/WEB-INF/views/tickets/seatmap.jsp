@@ -189,169 +189,186 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var userId = "${sessionScope.userID}";
-            var groundPositions = {
-                'N': 'north',
-                'S': 'south',
-                'E': 'east',
-                'W': 'west'
-            };
+    document.addEventListener('DOMContentLoaded', function() {
+        var userId = "${sessionScope.userID}";
+        var groundPositions = {
+            'N': 'north',
+            'S': 'south',
+            'E': 'east',
+            'W': 'west'
+        };
 
-            var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
-            var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>');
-            var section = document.getElementById('section').value;
-            var matchId = document.getElementById('matchid').value;
-            var stadiumId = document.getElementById('stadiumid').value;
-            var groundPosition = groundPositions[section];
+        var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
+        var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>');
+        var section = document.getElementById('section').value;
+        var matchId = document.getElementById('matchid').value;
+        var stadiumId = document.getElementById('stadiumid').value;
+        var groundPosition = groundPositions[section];
+        var selectedSeats = [];
 
-            var seatMap = document.getElementById('seat-map');
-            var ground = document.getElementById('ground');
+        var seatMap = document.getElementById('seat-map');
+        var ground = document.getElementById('ground');
 
-            if (seatMap && seats.length > 0) {
-                seats.forEach(function(seat) {
-                    var seatElement = document.createElement('div');
-                    seatElement.className = 'seat';
-                    seatElement.dataset.seatId = seat.seatid;
-                    seatElement.dataset.price = seat.price;
-                    seatElement.textContent = seat.seatnumber;
+        if (seatMap && seats.length > 0) {
+            seats.forEach(function(seat) {
+                var seatElement = document.createElement('div');
+                seatElement.className = 'seat';
+                seatElement.dataset.seatId = seat.seatid;
+                seatElement.dataset.price = seat.price;
+                seatElement.textContent = seat.seatnumber;
 
-                    if (reservedSeats.includes(seat.seatid)) {
-                        seatElement.classList.add('reserved');
-                        seatElement.style.pointerEvents = 'none';
-                    } else {
-                        seatElement.addEventListener('click', seatClickListener);
-                    }
-
-                    seatMap.appendChild(seatElement);
-                });
-
-                ground.className = 'ground ' + groundPosition;
-                ground.textContent = 'GROUND';
-                var seatMapContainer = document.getElementById('seat-map-container');
-                
-                // 좌석 맵과 그라운드의 위치를 섹션에 맞춰 배치
-                if (groundPosition === 'north') {
-                    seatMapContainer.appendChild(seatMap);
-                    seatMapContainer.appendChild(ground);
-                } else if (groundPosition === 'south') {
-                    seatMapContainer.insertBefore(ground, seatMap);
-                } else if (groundPosition === 'east') {
-                    seatMapContainer.style.flexDirection = 'row';
-                    seatMapContainer.insertBefore(ground, seatMap);
-                } else if (groundPosition === 'west') {
-                    seatMapContainer.style.flexDirection = 'row';
-                    seatMapContainer.appendChild(ground);
-                }
-            }
-
-            function seatClickListener() {
-                if (this.classList.contains('selected') || this.classList.contains('unavailable')) {
-                    return;
-                }
-                if (document.querySelectorAll('.seat.selected').length < 5) {
-                    this.classList.add('selected');
-                    sendSeatStatus(this.dataset.seatId, 'selected');
+                if (reservedSeats.includes(seat.seatid)) {
+                    seatElement.classList.add('reserved');
+                    seatElement.style.pointerEvents = 'none';
                 } else {
-                    alert('5개의 좌석까지 구매 가능합니다.');
+                    seatElement.addEventListener('click', seatClickListener);
                 }
-                updateSelectedSeats();
-            }
 
-            function updateSelectedSeats() {
-                var selectedSeats = document.querySelectorAll('.seat.selected');
-                var tbody = document.querySelector('.choice-table tbody');
-                var seatCount = document.getElementById('selected-seat-count');
-                var totalPriceElement = document.getElementById('total-price');
-                var totalPrice = 0;
-                tbody.innerHTML = '';
-
-                selectedSeats.forEach(function(seat) {
-                    var price = parseInt(seat.dataset.price, 10);
-                    totalPrice += price;
-                    var row = document.createElement('tr');
-                    var cell1 = document.createElement('th');
-                    cell1.innerHTML = '<span>일반석</span>';
-                    var cell2 = document.createElement('td');
-                    cell2.textContent = seat.dataset.seatId;
-                    var cell3 = document.createElement('td');
-                    cell3.textContent = price.toLocaleString() + '원';
-                    row.appendChild(cell1);
-                    row.appendChild(cell2);
-                    row.appendChild(cell3);
-                    tbody.appendChild(row);
-                });
-
-                seatCount.textContent = '총 ' + selectedSeats.length + '석 선택되었습니다.';
-                totalPriceElement.textContent = '총 금액: ' + totalPrice.toLocaleString() + '원';
-            }
-
-            function sendSeatStatus(seatId, status) {
-                stompClient.send("/app/selectSeat", {}, JSON.stringify({
-                    seatId: seatId,
-                    status: status,
-                    userId: userId
-                }));
-            }
-
-            document.getElementById('prev-step').addEventListener('click', function() {
-                window.history.back();
+                seatMap.appendChild(seatElement);
             });
 
-            document.getElementById('reset-seats').addEventListener('click', function() {
-                document.querySelectorAll('.seat.selected').forEach(function(seat) {
-                    seat.classList.remove('selected');
-                    sendSeatStatus(seat.dataset.seatId, 'deselected');
-                });
-                updateSelectedSeats();
+            ground.className = 'ground ' + groundPosition;
+            ground.textContent = 'GROUND';
+            var seatMapContainer = document.getElementById('seat-map-container');
+            
+            // 좌석 맵과 그라운드의 위치를 섹션에 맞춰 배치
+            if (groundPosition === 'north') {
+                seatMapContainer.appendChild(seatMap);
+                seatMapContainer.appendChild(ground);
+            } else if (groundPosition === 'south') {
+                seatMapContainer.insertBefore(ground, seatMap);
+            } else if (groundPosition === 'east') {
+                seatMapContainer.style.flexDirection = 'row';
+                seatMapContainer.insertBefore(ground, seatMap);
+            } else if (groundPosition === 'west') {
+                seatMapContainer.style.flexDirection = 'row';
+                seatMapContainer.appendChild(ground);
+            }
+        }
+
+        function seatClickListener() {
+            if (this.classList.contains('selected') || this.classList.contains('unavailable')) {
+                return;
+            }
+            if (document.querySelectorAll('.seat.selected').length < 5) {
+                this.classList.add('selected');
+                selectedSeats.push(this.dataset.seatId);
+                sendSeatStatus(this.dataset.seatId, 'selected');
+            } else {
+                alert('5개의 좌석까지 구매 가능합니다.');
+            }
+            updateSelectedSeats();
+        }
+
+        function updateSelectedSeats() {
+            var selectedSeats = document.querySelectorAll('.seat.selected');
+            var tbody = document.querySelector('.choice-table tbody');
+            var seatCount = document.getElementById('selected-seat-count');
+            var totalPriceElement = document.getElementById('total-price');
+            var totalPrice = 0;
+            tbody.innerHTML = '';
+
+            selectedSeats.forEach(function(seat) {
+                var price = parseInt(seat.dataset.price, 10);
+                totalPrice += price;
+                var row = document.createElement('tr');
+                var cell1 = document.createElement('th');
+                cell1.innerHTML = '<span>일반석</span>';
+                var cell2 = document.createElement('td');
+                cell2.textContent = seat.dataset.seatId;
+                var cell3 = document.createElement('td');
+                cell3.textContent = price.toLocaleString() + '원';
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                row.appendChild(cell3);
+                tbody.appendChild(row);
             });
 
-            document.getElementById('complete-selection').addEventListener('click', function() {
-                var selectedSeats = document.querySelectorAll('.seat.selected');
-                if (selectedSeats.length === 0) {
-                    alert('좌석을 선택해 주세요.');
-                    return;
-                }
-                var seats = [];
-                var totalPrice = 0;
-                selectedSeats.forEach(function(seat) {
-                    seats.push(seat.dataset.seatId);
-                    totalPrice += parseInt(seat.dataset.price, 10);
-                });
+            seatCount.textContent = '총 ' + selectedSeats.length + '석 선택되었습니다.';
+            totalPriceElement.textContent = '총 금액: ' + totalPrice.toLocaleString() + '원';
+        }
 
-                var matchId = encodeURIComponent(document.getElementById('matchid').value);
-                var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
-                var section = encodeURIComponent(document.getElementById('section').value);
-                window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
+        function sendSeatStatus(seatId, status) {
+            stompClient.send("/app/selectSeat", {}, JSON.stringify({
+                seatId: seatId,
+                status: status,
+                userId: userId
+            }));
+        }
+
+        document.getElementById('prev-step').addEventListener('click', function() {
+            window.history.back();
+        });
+
+        document.getElementById('reset-seats').addEventListener('click', function() {
+            document.querySelectorAll('.seat.selected').forEach(function(seat) {
+                seat.classList.remove('selected');
+                sendSeatStatus(seat.dataset.seatId, 'deselected');
+            });
+            selectedSeats = [];
+            updateSelectedSeats();
+        });
+
+        document.getElementById('complete-selection').addEventListener('click', function() {
+            var selectedSeats = document.querySelectorAll('.seat.selected');
+            if (selectedSeats.length === 0) {
+                alert('좌석을 선택해 주세요.');
+                return;
+            }
+            var seats = [];
+            var totalPrice = 0;
+            selectedSeats.forEach(function(seat) {
+                seats.push(seat.dataset.seatId);
+                totalPrice += parseInt(seat.dataset.price, 10);
             });
 
-            var socket = new SockJS('/ws');
-            var stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/seatSelected', function(message) {
-                    var seatMessage = JSON.parse(message.body);
-                    var seatElement = document.querySelector('.seat[data-seat-id="' + seatMessage.seatId + '"]');
-                    if (seatElement) {
-                        if (seatMessage.status === 'selected' && seatMessage.userId !== userId) {
-                            seatElement.classList.add('unavailable');
-                            seatElement.style.pointerEvents = 'none';
-                            alert('다른회원이 구매진행중인 좌석입니다');
-                        } else if (seatMessage.status === 'deselected') {
-                            seatElement.classList.remove('unavailable');
-                            seatElement.style.pointerEvents = '';
-                        }
+            // Send request to check if the seats are still available
+            $.ajax({
+                url: '/tickets/checkSelectedSeats',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ seats: seats, userId: userId }),
+                success: function(response) {
+                    if (response.success) {
+                        var matchId = encodeURIComponent(document.getElementById('matchid').value);
+                        var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
+                        var section = encodeURIComponent(document.getElementById('section').value);
+                        window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
+                    } else {
+                        alert('다른 사용자가 구매진행중인 좌석입니다. 다른 좌석을 선택해주세요.');
                     }
-                });
+                }
+            });
+        });
 
-                window.addEventListener('beforeunload', function() {
-                    document.querySelectorAll('.seat.selected').forEach(function(seat) {
-                        sendSeatStatus(seat.dataset.seatId, 'deselected');
-                    });
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/seatSelected', function(message) {
+                var seatMessage = JSON.parse(message.body);
+                var seatElement = document.querySelector('.seat[data-seat-id="' + seatMessage.seatId + '"]');
+                if (seatElement) {
+                    if (seatMessage.status === 'selected' && seatMessage.userId !== userId) {
+                        seatElement.classList.add('unavailable');
+                        seatElement.style.pointerEvents = 'none';
+                        alert('다른 사용자가 구매중인 좌석입니다. 다른 좌석을 선택해주세요.');
+                    } else if (seatMessage.status === 'deselected') {
+                        seatElement.classList.remove('unavailable');
+                        seatElement.style.pointerEvents = '';
+                    }
+                }
+            });
+
+            window.addEventListener('beforeunload', function() {
+                document.querySelectorAll('.seat.selected').forEach(function(seat) {
+                    sendSeatStatus(seat.dataset.seatId, 'deselected');
                 });
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
