@@ -250,7 +250,7 @@ $(document).ready(function() {
                     data: JSON.stringify(formData),
                     success: function(data) {
                         alert('결제가 성공적으로 완료되었습니다.');
-                        window.location.href = '/membershipticket/success';
+                        window.location.href = '/memberships/list'; // 리디렉션 경로 수정
                     },
                     error: function(error) {
                         alert('결제 처리 중 오류가 발생했습니다.');

@@ -106,6 +106,28 @@
         color: #fff;
         border: none;
     }
+    /* 공지사항 스타일 */
+    .notice-section {
+        margin-top: 250px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center; /* 이미지 가운데 정렬 */
+        max-width: 600px; /* 섹션의 최대 너비 설정 */
+    }
+    .notice-section h2 {
+        margin-bottom: 20px;
+        font-size: 42px; /* 글씨 크기 조정 */
+        font-weight: bold; /* 글씨 굵게 */
+    }
+    .notice-section li {
+        margin-bottom: 20px;
+        font-size: 24px; /* 글씨 크기 조정 */
+    }
+    .notice-section img {
+        margin-top: 20px;
+        width: 100%;
+        max-width: 600px;
+    }
 </style>
 </head>
 <body>
@@ -125,17 +147,19 @@
                 <dt>가격</dt>
                 <dd><fmt:formatNumber value="${memberships.price}" pattern="#,###"/> 원</dd>
             </dl>
-           <c:if test="${sessionScope.grade == 'M'}">
-           <button type="button" class="btn btn-primary" onclick="membership_update('${memberships.membershipid}')">수정</button>
-           <button type="button" class="btn btn-danger" onclick="membership_delete_confirm('${memberships.membershipid}')">삭제</button>
-           </c:if>
-       <button type="button" class="btn btn-info" onclick="openPaymentPopup('${memberships.membershipid}')">멤버쉽 가입하기</button>
+            <c:if test="${sessionScope.grade == 'M'}">
+                <button type="button" class="btn btn-primary" onclick="membership_update('${memberships.membershipid}')">수정</button>
+                <button type="button" class="btn btn-danger" onclick="membership_delete_confirm('${memberships.membershipid}')">삭제</button>
+            </c:if>
+            <button type="button" class="btn btn-info" onclick="openPaymentPopup('${memberships.membershipid}')">멤버쉽 가입하기</button>
         </div>
     </div>
     
-   <div class="col-10" style="margin-top: 250px; margin-left: 290px;">
-    <h2 style="margin-bottom: 5px;">공지사항</h2>
-</div>
+    <div class="notice-section">
+        <h2>공지사항🔊</h2>
+        <li>아래의 이미지를 참고하시기 바랍니다.</li>
+        <img src="/storage/images/Frame 2.png" alt="공지사항 이미지">
+    </div>
       
 </body>
 

@@ -25,20 +25,33 @@ public class MembershipticketDAO {
         return sqlSession.selectOne("kr.co.matchday.membershipticket.MembershipticketDAO.getMembershipInfo", membershipID);
     }
 
-    public void insertUserMembership(String userMembershipId, String userID, String membershipID, String status, String purchaseDate) {
+    public void insertUserMembership(String userMembershipId, String userID, String membershipID, String status, String purchaseDate, String impUid) {
         Map<String, String> params = new HashMap<>();
         params.put("userMembershipId", userMembershipId);
         params.put("userID", userID);
         params.put("membershipID", membershipID);
         params.put("status", status);
         params.put("purchaseDate", purchaseDate);
+        params.put("impUid", impUid);
         sqlSession.insert("kr.co.matchday.membershipticket.MembershipticketDAO.insertUserMembership", params);
     }
 
     public List<Map<String, Object>> getUserMemberships(String userID) {
         return sqlSession.selectList("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMemberships", userID);
     }
-    
 
-    
-}//end
+    public List<Map<String, Object>> getUserMembershipDetails(String userID) {
+        return sqlSession.selectList("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMembershipDetails", userID);
+    }
+
+    public Map<String, Object> getUserMembershipById(String userMembershipId) {
+        return sqlSession.selectOne("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMembershipById", userMembershipId);
+    }
+
+    public void updateUserMembershipStatus(String userMembershipId, String status) {
+        Map<String, String> params = new HashMap<>();
+        params.put("userMembershipId", userMembershipId);
+        params.put("status", status);
+        sqlSession.update("kr.co.matchday.membershipticket.MembershipticketDAO.updateUserMembershipStatus", params);
+    }
+}

@@ -73,11 +73,11 @@
         background-color: #f0f0f0; /* 회색 배경 적용 */
     }
     input[readonly]:focus {
-    background-color: #f0f0f0; /* 포커스 상태에서도 회색 배경 유지 */
-    outline: none; /* 포커스 아웃라인 제거 */
-    cursor: default; /* 기본 커서 유지 */
-    pointer-events: none; /* 클릭 이벤트 비활성화 */
-}
+        background-color: #f0f0f0; /* 포커스 상태에서도 회색 배경 유지 */
+        outline: none; /* 포커스 아웃라인 제거 */
+        cursor: default; /* 기본 커서 유지 */
+        pointer-events: none; /* 클릭 이벤트 비활성화 */
+    }
 </style>
 <div class="mypage-container">
     <table class="table table-bordered">
@@ -89,6 +89,7 @@
                     <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
                     <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
                     <li class="list-group-item"><a href="/tickets/reservationList">나의 예매내역</a></li>
+                     <li class="list-group-item"><a href="/membershipticket/membershippaymentlist">멤버쉽 구매내역</a></li>
                 </ul>
             </td>
             <td width="15" style="border: none;"></td>
@@ -124,8 +125,8 @@
                             <th>구입한 멤버쉽</th>
                             <td>
                                 <ul>
-                                    <c:forEach var="membership" items="${userMemberships}">
-                                        <li>${membership.membershipname}</li>
+                                    <c:forEach var="membership" items="${userPurchasedMemberships}">
+                                        <li>${membership.membershipname} (구매일: ${membership.purchasedate})</li>
                                     </c:forEach>
                                 </ul>
                             </td>

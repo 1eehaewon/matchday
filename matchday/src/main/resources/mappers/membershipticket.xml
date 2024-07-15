@@ -15,10 +15,34 @@
     </select>
 
     <insert id="insertUserMembership" parameterType="java.util.HashMap">
-        INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate)
-        VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate})
-    </insert>
-    
-    
+    INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate, imp_uid)
+    VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate}, #{impUid})
+</insert>
 
+
+    <select id="getUserMemberships" parameterType="String" resultType="java.util.HashMap">
+        SELECT um.usermembershipid, m.membershipname, um.purchasedate
+        FROM usermemberships um
+        JOIN memberships m ON um.membershipid = m.membershipid
+        WHERE um.userid = #{userID}
+    </select>
+
+    <select id="getUserMembershipDetails" parameterType="String" resultType="java.util.HashMap">
+        SELECT um.purchasedate, m.membershipid, m.membershipname, m.startdate, m.enddate, um.usermembershipid
+        FROM usermemberships um
+        JOIN memberships m ON um.membershipid = m.membershipid
+        WHERE um.userid = #{userID}
+    </select>
+
+    <select id="getUserMembershipById" parameterType="String" resultType="java.util.HashMap">
+        SELECT usermembershipid, userid, membershipid, status, purchasedate, imp_uid
+        FROM usermemberships
+        WHERE usermembershipid = #{userMembershipId}
+    </select>
+
+    <update id="updateUserMembershipStatus" parameterType="java.util.HashMap">
+        UPDATE usermemberships
+        SET status = #{status}
+        WHERE usermembershipid = #{userMembershipId}
+    </update>
 </mapper>
