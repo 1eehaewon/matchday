@@ -2,7 +2,7 @@
 <%@ include file="../header.jsp" %>
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">예매내역 확인・취소</h1>
+    <h1 class="text-center mb-4">예매내역</h1>
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
@@ -30,7 +30,7 @@
                                     <span class="badge bg-success">결제완료</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge bg-danger">취소</span>
+                                    <span class="badge bg-danger">결제취소</span>
                                 </c:otherwise>
                             </c:choose>
                         </td>

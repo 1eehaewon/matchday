@@ -228,6 +228,9 @@ public class TicketsCont {
         String couponId = requestParams.get("couponid");
         String membershipId = requestParams.get("membershipid");
 
+        // imp_uid 로그 출력
+        System.out.println("imp_uid: " + imp_uid);
+
         // 좌석 정보 JSON 파싱
         System.out.println("seatsJson: " + seatsJson);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -305,6 +308,7 @@ public class TicketsCont {
                     ticketsDto.setRecipientname(recipientname);
                     ticketsDto.setShippingaddress(shippingaddress);
                     ticketsDto.setShippingrequest(shippingrequest);
+                    ticketsDto.setImpUid(imp_uid); // 결제 UID 설정
 
                     // 티켓 예약 정보 삽입
                     ticketsService.insertTicket(ticketsDto);
@@ -373,58 +377,66 @@ public class TicketsCont {
 
         return response;
     }
-    
+
     /**
      * 결제 취소 메서드
-     * @param imp_uid 아임포트 UID
+     * @param reservationid 예약 ID
      * @return 취소 결과 맵
      */
-    @DeleteMapping("/cancelPayment")
+    @PostMapping("/cancelPayment")
     @ResponseBody
-    public Map<String, Object> cancelPayment(@RequestParam String imp_uid) {
+    public Map<String, Object> cancelPayment(@RequestParam("reservationid") String reservationid) {
         Map<String, Object> response = new HashMap<>();
 
-        String token = getToken();
-        if (token == null) {
-            response.put("success", false);
-            response.put("message", "Failed to get token");
-            return response;
-        }
+        try {
+            String impUid = ticketsService.getImpUidByReservationId(reservationid);
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
+            if (impUid == null || impUid.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "imp_uid를 찾을 수 없습니다.");
+                return response;
+            }
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("reason", "고객 요청에 의한 결제 취소");
+            String token = getToken();
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> cancelResponse = restTemplate.exchange(
-                "https://api.iamport.kr/payments/cancel/" + imp_uid,
-                HttpMethod.POST,
-                entity,
-                String.class);
+            if (token == null) {
+                response.put("success", false);
+                response.put("message", "아임포트 토큰을 가져올 수 없습니다.");
+                return response;
+            }
 
-        if (cancelResponse.getStatusCode() == HttpStatus.OK) {
-            try {
-                JSONObject cancelJson = new JSONObject(cancelResponse.getBody());
-                boolean success = cancelJson.getJSONObject("response").getBoolean("cancelled");
-                if (success) {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(token);
+
+            Map<String, String> request = new HashMap<>();
+            request.put("imp_uid", impUid);
+
+            String jsonRequest = new ObjectMapper().writeValueAsString(request);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            ResponseEntity<String> paymentResponse = restTemplate.postForEntity(
+                    "https://api.iamport.kr/payments/cancel", entity, String.class);
+
+            if (paymentResponse.getStatusCode() == HttpStatus.OK) {
+                JSONObject json = new JSONObject(paymentResponse.getBody());
+                if (!json.isNull("response")) {
+                    ticketsService.updateReservationStatus(reservationid, "Cancelled");
                     response.put("success", true);
-                    response.put("message", "Payment cancelled successfully");
+                    response.put("message", "결제가 취소되었습니다.");
                 } else {
                     response.put("success", false);
-                    response.put("message", "Failed to cancel payment");
+                    response.put("message", "결제 취소 실패: " + json.getString("message"));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
                 response.put("success", false);
-                response.put("message", "Exception occurred while cancelling payment");
+                response.put("message", "결제 취소 실패: " + paymentResponse.getBody());
             }
-        } else {
+        } catch (Exception e) {
+            e.printStackTrace();
             response.put("success", false);
-            response.put("message", "Failed to cancel payment");
+            response.put("message", "결제 취소 중 오류가 발생했습니다.");
         }
 
         return response;
@@ -440,21 +452,25 @@ public class TicketsCont {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
+            String apiKey = env.getProperty("iamport.api_key");
+            String apiSecret = env.getProperty("iamport.api_secret");
+
             Map<String, String> request = new HashMap<>();
-            request.put("imp_key", env.getProperty("iamport.api_key"));
-            request.put("imp_secret", env.getProperty("iamport.api_secret"));
+            request.put("imp_key", apiKey);
+            request.put("imp_secret", apiSecret);
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            String requestBody = objectMapper.writeValueAsString(request);
+            String jsonRequest = new ObjectMapper().writeValueAsString(request);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
 
-            System.out.println("Request Body: " + requestBody);
-
-            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
             ResponseEntity<String> response = restTemplate.postForEntity("https://api.iamport.kr/users/getToken", entity, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
-                return json.getJSONObject("response").getString("access_token");
+                if (!json.isNull("response")) {
+                    return json.getJSONObject("response").getString("access_token");
+                } else {
+                    System.out.println("Failed to get token, response is null: " + json.getString("message"));
+                }
             } else {
                 System.out.println("Failed to get token, response: " + response.getBody());
             }
@@ -464,7 +480,8 @@ public class TicketsCont {
 
         return null;
     }
-    
+
+
     /**
      * 예약 목록 페이지로 이동
      * @param session 세션 객체

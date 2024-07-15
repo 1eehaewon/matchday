@@ -224,5 +224,26 @@ public class TicketsDAO {
     public List<Map<String, Object>> getMembershipsByUserId(String userId) {
         return sqlSession.selectList("kr.co.matchday.tickets.TicketsDAO.getMembershipsByUserId", userId);
     }
+    
+    /**
+     * 예약 상태를 업데이트하는 메서드
+     * @param reservationid 예약 ID
+     * @param status 업데이트할 상태
+     */
+    public void updateReservationStatus(String reservationid, String status) {
+        Map<String, String> params = new HashMap<>();
+        params.put("reservationid", reservationid);
+        params.put("status", status);
+        sqlSession.update("kr.co.matchday.tickets.TicketsDAO.updateReservationStatus", params);
+    }
+    
+    /**
+     * 예약 ID로 imp_uid 가져오는 메서드
+     * @param reservationid 예약 ID
+     * @return imp_uid
+     */
+    public String getImpUidByReservationId(String reservationid) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getImpUidByReservationId", reservationid);
+    }
 
 }

@@ -42,20 +42,20 @@
 
     <!-- 티켓 정보 삽입 -->
     <insert id="insertTicket" parameterType="kr.co.matchday.tickets.TicketsDTO">
-        INSERT INTO tickets (
-            reservationid, matchid, quantity, price, userid, reservationdate,
-            paymentmethodcode, reservationstatus, collectionmethodcode,
-            membermembershipid, methodcode, couponid, usedpoints,
-            finalpaymentamount, shippingstartdate, shippingenddate,
-            shippingstatus, recipientname, shippingaddress, shippingrequest
-        ) VALUES (
-            #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate},
-            #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode},
-            #{membermembershipid}, #{methodcode}, #{couponid}, #{usedpoints},
-            #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate},
-            #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}
-        )
-    </insert>
+	    INSERT INTO tickets (
+	        reservationid, matchid, quantity, price, userid, reservationdate,
+	        paymentmethodcode, reservationstatus, collectionmethodcode,
+	        membermembershipid, methodcode, couponid, usedpoints,
+	        finalpaymentamount, shippingstartdate, shippingenddate,
+	        shippingstatus, recipientname, shippingaddress, shippingrequest, imp_uid
+	    ) VALUES (
+	        #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate},
+	        #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode},
+	        #{membermembershipid}, #{methodcode}, #{couponid}, #{usedpoints},
+	        #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate},
+	        #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}, #{impUid}
+	    )
+	</insert>
 
     <!-- 티켓 상세 정보 삽입 -->
     <insert id="insertTicketDetail" parameterType="kr.co.matchday.tickets.TicketsDetailDTO">
@@ -137,5 +137,19 @@
         JOIN memberships m ON um.membershipid = m.membershipid
         WHERE um.userid = #{userId}
     </select>
+    
+    <!-- 예약 상태 업데이트 -->
+    <update id="updateReservationStatus" parameterType="java.util.HashMap">
+        UPDATE tickets
+        SET reservationstatus = #{status}
+        WHERE reservationid = #{reservationid}
+    </update>
+    
+    <select id="getImpUidByReservationId" parameterType="string" resultType="string">
+	    SELECT imp_uid
+	    FROM tickets
+	    WHERE reservationid = #{reservationid}
+	</select>
+    
     
 </mapper>

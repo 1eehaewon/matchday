@@ -36,6 +36,7 @@ public class TicketsDTO {
     private String recipientname; // 수령인 이름
     private String shippingaddress; // 배송 주소
     private String shippingrequest; // 배송 요청 사항
+    private String impUid; // 결제 UID
     
     // 추가된 필드
     private String userName; // 사용자 이름

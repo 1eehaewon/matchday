@@ -176,5 +176,24 @@ public class TicketsService {
     public List<Map<String, Object>> getMembershipsByUserId(String userId) {
         return ticketsDao.getMembershipsByUserId(userId);
     }
+    
+    /**
+     * 예약 상태를 업데이트하는 메서드
+     * @param reservationid 예약 ID
+     * @param status 업데이트할 상태
+     */
+    @Transactional
+    public void updateReservationStatus(String reservationid, String status) {
+        ticketsDao.updateReservationStatus(reservationid, status);
+    }
+    
+    /**
+     * 예약 ID로 imp_uid 가져오는 메서드
+     * @param reservationid 예약 ID
+     * @return imp_uid
+     */
+    public String getImpUidByReservationId(String reservationid) {
+        return ticketsDao.getImpUidByReservationId(reservationid);
+    }
 }
 

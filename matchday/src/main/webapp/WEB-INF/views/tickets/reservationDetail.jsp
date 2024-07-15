@@ -159,5 +159,40 @@
             <p class="text-danger mt-3">취소 유의사항을 여기에 추가하세요.</p>
         </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            예매 취소
+        </div>
+        <div class="card-body">
+            <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+        </div>
+    </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#cancel-payment').click(function() {
+            if (confirm('정말로 결제를 취소하시겠습니까?')) {
+                $.ajax({
+                    url: '/tickets/cancelPayment',
+                    type: 'POST',
+                    data: { reservationid: '${reservation.reservationid}' },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('결제가 취소되었습니다.');
+                            location.reload();
+                        } else {
+                            alert('결제 취소에 실패했습니다: ' + response.message);
+                        }
+                    },
+                    error: function(error) {
+                        alert('결제 취소 요청 중 오류가 발생했습니다.');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
 <%@ include file="../footer.jsp" %>
+
