@@ -15,12 +15,15 @@
         <div class="row">
             <div class="col-md-8 mx-auto">
                  <c:choose>
-                    <c:when test="${notice.category == 'Notice'}">
+                    <c:when test="${notice.category == 'notice'}">
                         <h3 class="text-center mb-4">공지사항</h3>
                     </c:when>
-                    <c:when test="${notice.category == 'Event'}">
+                    <c:when test="${notice.category == 'event'}">
                         <h3 class="text-center mb-4">이벤트</h3>
                     </c:when>
+                    <c:otherwise>
+                        <h3 class="text-center mb-4">알림</h3>
+                    </c:otherwise>
                 </c:choose>
                 <hr style="width: 100%; margin-left: auto; margin-right: auto;">
                 <h5 style="text-align: left; color: blue;">${notice.title}</h5>
@@ -43,13 +46,18 @@
                             </div>
                         </form>
                     </div>
-                    <c:if test="${sessionScope.grade == 'M'}">
-                      <div class="text-center">
+                  <c:if test="${sessionScope.grade == 'M'}">
+                    <div class="text-center">
                         <input type="hidden" name="noticeid" value="${notice.noticeid}">
                         <button type="button" class="btn btn-success mr-2" onclick="location.href='update?noticeid=${notice.noticeid}'">공지사항 수정</button>
                         <button type="button" class="btn btn-danger" onclick="noticeDelete(${notice.noticeid})">공지사항 삭제</button>
-                      </div>
-                    </c:if>
+                    </div>
+                        <div class="d-flex justify-content-center align-items-center mt-3">
+                        <label for="numWinners" class="mr-2">추첨 인원:</label>
+                        <input type="number" id="numWinners" class="form-control mr-2" placeholder="추첨할 인원 수를 입력하세요" min="1" style="width: 200px;">
+                        <button type="button" class="btn btn-primary" id="drawButton">추첨</button>
+                    </div>
+                  </c:if>
                 </div>
             </div>
         </div>
@@ -59,7 +67,7 @@
   <div class="spacing"></div>
     
   <c:choose>
-     <c:when test="${notice.category == 'Event'}">
+     <c:when test="${notice.category == 'event'}">
   <!-- 댓글 시작 -->
   <div class="row" style="margin-left: 26%">
     <div class="col-sm-12">
@@ -86,6 +94,7 @@
     </div><!-- col end -->
   </div><!-- row end -->
   <!-- 댓글 끝 -->
+  
      </c:when>
   </c:choose>
   
@@ -223,6 +232,76 @@
 		     }//success end
 		  });//ajax() end
 	  }//replyDelete() end
+	  
+	  
+	  $(document).ready(function(){
+		    // 페이지 로드 시 댓글 목록을 가져옴
+		    replyList();
+
+		    // 추첨 버튼 클릭 시 이벤트 처리
+		    $("#drawButton").click(function(){
+		        drawWinners();
+		    });
+		});
+
+		function drawWinners() {
+		    // 추첨 인원 수를 입력받음
+		    let numWinners = parseInt($("#numWinners").val());
+		    if (isNaN(numWinners) || numWinners <= 0) {
+		        alert("올바른 추첨 인원 수를 입력하세요.");
+		        return;
+		    }
+
+		    // 댓글 목록 가져오기
+		    $.ajax({
+		        url: '/reply/list',
+		        type: 'get',
+		        data: {'noticeid': noticeid}, // noticeid는 전역 변수로 설정되어 있음
+		        success: function(result){
+		            // 댓글 작성자 중복 제거
+		            let authors = result.map(reply => reply.userid);
+		            let uniqueAuthors = [...new Set(authors)];
+
+		            if (numWinners > uniqueAuthors.length) {
+		                alert("추첨 인원이 댓글 작성자 수보다 많습니다.");
+		                return;
+		            }
+
+		            // 댓글 작성자 목록에서 랜덤으로 numWinners명 선택 (중복 없이)
+		            let shuffled = uniqueAuthors.slice(0); // 배열 복사
+		            let winners = [];
+
+		            while (winners.length < numWinners) {
+		                let randomIndex = Math.floor(Math.random() * shuffled.length);
+		                let winner = shuffled.splice(randomIndex, 1)[0];
+		                winners.push(winner);
+		            }
+
+		            // 추첨된 댓글 작성자 정보 출력 혹은 다른 처리 방법 (예: 모달 창에 출력)
+		            displayWinners(winners);
+		        },
+		        error: function(error){
+		            alert("댓글 목록을 불러오는 데 실패했습니다.");
+		            console.error(error);
+		        }
+		    });
+		}
+
+		function displayWinners(winners) {
+		    let winnerListHTML = '<h5>추첨된 댓글 작성자 목록:</h5><ul>';
+		    winners.forEach(function(winner){
+		        winnerListHTML += '<li>' + winner + '</li>';
+		    });
+		    winnerListHTML += '</ul>';
+
+		    // 결과를 모달 창 등을 통해 보여줄 수도 있음
+		    alert("추첨 결과: " + winners.length + "명의 작성자가 선정되었습니다.\n" + winners.join(", "));
+
+		    // 예시로 alert로 결과 출력, 필요에 따라 모달 창 등을 사용하여 보다 시각적으로 출력 가능
+		    // $("#winnerModalBody").html(winnerListHTML); // 모달에 출력하는 경우
+		    // $("#winnerModal").modal("show"); // 모달 표시
+		}
+		
   </script>
   <!-- 댓글 관련 자바스크립트 끝 -->
 
