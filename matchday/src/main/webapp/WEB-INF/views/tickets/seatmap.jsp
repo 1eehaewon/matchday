@@ -190,7 +190,7 @@
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var userId = "${sessionScope.userID}";
+            var userId = "${sessionScope.userID}"; // 현재 사용자 ID
             var groundPositions = {
                 'N': 'north',
                 'S': 'south',
@@ -198,6 +198,7 @@
                 'W': 'west'
             };
 
+            // 좌석 정보 JSON으로 파싱
             var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
             var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>');
             var section = document.getElementById('section').value;
@@ -208,6 +209,35 @@
             var seatMap = document.getElementById('seat-map');
             var ground = document.getElementById('ground');
 
+            // WebSocket 연결
+            var socket = new SockJS('/ws');
+            var stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/seatSelected', function(message) {
+                    var seatMessage = JSON.parse(message.body);
+                    var seatElement = document.querySelector('.seat[data-seat-id="' + seatMessage.seatId + '"]');
+                    if (seatElement) {
+                        if (seatMessage.status === 'selected' && seatMessage.userId !== userId) {
+                            seatElement.classList.add('unavailable');
+                            seatElement.style.pointerEvents = 'none';
+                            alert('다른회원이 구매진행중인 좌석입니다.');
+                        } else if (seatMessage.status === 'deselected') {
+                            seatElement.classList.remove('unavailable');
+                            seatElement.style.pointerEvents = '';
+                        }
+                    }
+                });
+
+                window.addEventListener('beforeunload', function() {
+                    document.querySelectorAll('.seat.selected').forEach(function(seat) {
+                        sendSeatStatus(seat.dataset.seatId, 'deselected');
+                    });
+                });
+            });
+
+            // 좌석 초기화
             if (seatMap && seats.length > 0) {
                 seats.forEach(function(seat) {
                     var seatElement = document.createElement('div');
@@ -230,7 +260,6 @@
                 ground.textContent = 'GROUND';
                 var seatMapContainer = document.getElementById('seat-map-container');
                 
-                // 좌석 맵과 그라운드의 위치를 섹션에 맞춰 배치
                 if (groundPosition === 'north') {
                     seatMapContainer.appendChild(seatMap);
                     seatMapContainer.appendChild(ground);
@@ -245,6 +274,7 @@
                 }
             }
 
+            // 좌석 클릭 이벤트 리스너
             function seatClickListener() {
                 if (this.classList.contains('selected') || this.classList.contains('unavailable')) {
                     return;
@@ -258,6 +288,7 @@
                 updateSelectedSeats();
             }
 
+            // 선택된 좌석 정보 업데이트
             function updateSelectedSeats() {
                 var selectedSeats = document.querySelectorAll('.seat.selected');
                 var tbody = document.querySelector('.choice-table tbody');
@@ -286,6 +317,7 @@
                 totalPriceElement.textContent = '총 금액: ' + totalPrice.toLocaleString() + '원';
             }
 
+            // 좌석 상태 서버로 전송
             function sendSeatStatus(seatId, status) {
                 stompClient.send("/app/selectSeat", {}, JSON.stringify({
                     seatId: seatId,
@@ -294,10 +326,12 @@
                 }));
             }
 
+            // 이전 단계 버튼 클릭 이벤트
             document.getElementById('prev-step').addEventListener('click', function() {
                 window.history.back();
             });
 
+            // 좌석 초기화 버튼 클릭 이벤트
             document.getElementById('reset-seats').addEventListener('click', function() {
                 document.querySelectorAll('.seat.selected').forEach(function(seat) {
                     seat.classList.remove('selected');
@@ -306,6 +340,7 @@
                 updateSelectedSeats();
             });
 
+            // 좌석 선택 완료 버튼 클릭 이벤트
             document.getElementById('complete-selection').addEventListener('click', function() {
                 var selectedSeats = document.querySelectorAll('.seat.selected');
                 if (selectedSeats.length === 0) {
@@ -323,33 +358,6 @@
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
                 var section = encodeURIComponent(document.getElementById('section').value);
                 window.location.href = '/tickets/reservation?matchid=' + matchId + '&seats=' + encodeURIComponent(JSON.stringify(seats)) + '&totalPrice=' + totalPrice + '&section=' + section + '&stadiumid=' + stadiumId;
-            });
-
-            var socket = new SockJS('/ws');
-            var stompClient = Stomp.over(socket);
-
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/seatSelected', function(message) {
-                    var seatMessage = JSON.parse(message.body);
-                    var seatElement = document.querySelector('.seat[data-seat-id="' + seatMessage.seatId + '"]');
-                    if (seatElement) {
-                        if (seatMessage.status === 'selected' && seatMessage.userId !== userId) {
-                            seatElement.classList.add('unavailable');
-                            seatElement.style.pointerEvents = 'none';
-                            alert('다른회원이 구매진행중인 좌석입니다');
-                        } else if (seatMessage.status === 'deselected') {
-                            seatElement.classList.remove('unavailable');
-                            seatElement.style.pointerEvents = '';
-                        }
-                    }
-                });
-
-                window.addEventListener('beforeunload', function() {
-                    document.querySelectorAll('.seat.selected').forEach(function(seat) {
-                        sendSeatStatus(seat.dataset.seatId, 'deselected');
-                    });
-                });
             });
         });
     </script>

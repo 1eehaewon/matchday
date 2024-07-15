@@ -373,6 +373,7 @@ public class TicketsCont {
 
         return response;
     }
+    
     /**
      * 결제 취소 메서드
      * @param imp_uid 아임포트 UID
@@ -569,8 +570,6 @@ public class TicketsCont {
         response.put("success", available);
         return response;
     }
-
-
 
 }
 

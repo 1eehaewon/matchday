@@ -430,7 +430,33 @@
                 });
             }
         });
+
+        // WebSocket 연결 설정
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+
+            // 페이지를 나갈 때 좌석 상태 해제
+            window.addEventListener('beforeunload', function() {
+                seats.forEach(function(seatId) {
+                    sendSeatStatus(seatId, 'deselected');
+                });
+            });
+        });
+
+        // 좌석 상태 서버로 전송
+        function sendSeatStatus(seatId, status) {
+            stompClient.send("/app/selectSeat", {}, JSON.stringify({
+                seatId: seatId,
+                status: status,
+                userId: "${sessionScope.userID}"
+            }));
+        }
+
     });
     </script>
 </body>
 </html>
+
