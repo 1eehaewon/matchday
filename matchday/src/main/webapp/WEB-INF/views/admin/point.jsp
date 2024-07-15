@@ -102,7 +102,6 @@
 											id="dropdownMenuButton${point.pointcategoryid}">···</button>
 										<div class="dropdown-content"
 											aria-labelledby="dropdownMenuButton${point.pointcategoryid}">
-											<a href="/admin/editPoint?id=${point.pointcategoryid}">수정</a>
 											<a href="/admin/deletePoint?id=${point.pointcategoryid}">삭제</a>
 										</div>
 									</div>
