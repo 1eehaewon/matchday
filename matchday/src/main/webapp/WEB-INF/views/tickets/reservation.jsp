@@ -350,6 +350,11 @@
             var totalAmount = updateTotalAmount();
             var couponId = $('#coupon-select').val();
             var membershipId = $('#membership-select').val();
+            var couponName = $('#coupon-select').find(':selected').text();
+            var membershipName = $('#membership-select').find(':selected').text();
+            var serviceFee = $('#service-fee').text().replace(/[^0-9]/g, '');
+            var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
+            var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
 
             IMP.request_pay({
                 pg: 'html5_inicis',
@@ -376,7 +381,13 @@
                         shippingrequest: $('#extraAddress').val(),
                         seats: seatsStr,
                         couponid: couponId,
-                        membershipid: membershipId
+                        membershipid: membershipId,
+                        couponName: couponName,
+                        membershipName: membershipName,
+                        serviceFee: serviceFee,
+                        deliveryFee: deliveryFee,
+                        totalDiscount: totalDiscount,
+                        totalPaymentAmount: totalAmount
                     };
 
                     $.ajax({
@@ -386,7 +397,7 @@
                         traditional: true,
                         success: function(data) {
                             if (data.success) {
-                                window.opener.location.href = '/tickets/reservationList';
+                                window.opener.location.href = data.redirectUrl;
                                 window.close();
                             } else {
                                 alert('결제 검증에 실패했습니다.');

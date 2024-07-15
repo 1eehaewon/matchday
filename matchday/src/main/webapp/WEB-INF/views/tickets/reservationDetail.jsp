@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ include file="../header.jsp" %>
     <style>
         .card-header {
@@ -64,15 +66,56 @@
                 </tr>
                 <tr>
                     <th>현재상태</th>
-                    <td>${reservation.reservationstatus}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${reservation.reservationstatus == 'Confirmed'}">
+                                예매완료
+                            </c:when>
+                            <c:when test="${reservation.reservationstatus == 'Cancelled'}">
+                                결제취소
+                            </c:when>
+                            <c:otherwise>
+                                ${reservation.reservationstatus}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
                 </tr>
                 <tr>
                     <th>결제수단</th>
-                    <td>${reservation.paymentmethodname}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${reservation.paymentmethodname == 'card'}">
+                                카드
+                            </c:when>
+                            <c:otherwise>
+                                ${reservation.paymentmethodname}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
                 </tr>
                 <tr>
-                    <th>결제상태</th>
-                    <td>빈칸</td>
+                    <th>수수료</th>
+                    <td>${serviceFee}원</td>
+                </tr>
+                <tr>
+                    <th>배송료</th>
+                    <td>${deliveryFee}원</td>
+                </tr>
+                <tr>
+                    <th>사용한 쿠폰</th>
+                    <td>${couponName}</td>
+                </tr>
+                <tr>
+                    <th>사용한 멤버십</th>
+                    <td>${membershipName}</td>
+                </tr>
+                <tr>
+                    <th>총 할인액</th>
+                    <td>${totalDiscount}원</td>
+                </tr>
+                <tr>
+                    <th>총 결제금액</th>
+                    <td>${totalPaymentAmount}원</td>
                 </tr>
             </table>
         </div>

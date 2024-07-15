@@ -220,7 +220,8 @@ public class TicketsCont {
         String shippingaddress = requestParams.get("shippingaddress");
         String shippingrequest = requestParams.get("shippingrequest");
         String collectionmethodcode = requestParams.get("collectionmethodcode");
-        String couponId = requestParams.get("couponid"); // 쿠폰 ID 추가
+        String couponId = requestParams.get("couponid");
+        String membershipId = requestParams.get("membershipid");
 
         // 좌석 정보 JSON 파싱
         System.out.println("seatsJson: " + seatsJson);
@@ -332,7 +333,16 @@ public class TicketsCont {
                         }
                     }
 
+                    // 세션에 결제 정보 저장
+                    session.setAttribute("serviceFee", requestParams.get("serviceFee"));
+                    session.setAttribute("deliveryFee", requestParams.get("deliveryFee"));
+                    session.setAttribute("couponName", requestParams.get("couponName"));
+                    session.setAttribute("membershipName", requestParams.get("membershipName"));
+                    session.setAttribute("totalDiscount", requestParams.get("totalDiscount"));
+                    session.setAttribute("totalPaymentAmount", requestParams.get("totalPaymentAmount"));
+
                     response.put("success", true);
+                    response.put("redirectUrl", "/tickets/reservationList?reservationid=" + reservationid);
                 } else {
                     response.put("success", false);
                     response.put("message", "결제 금액이 일치하지 않습니다.");
@@ -351,6 +361,7 @@ public class TicketsCont {
 
         return response;
     }
+
 
     /**
      * 결제 취소 메서드
@@ -485,7 +496,7 @@ public class TicketsCont {
      * @return ModelAndView 객체
      */
     @GetMapping("/reservationDetail")
-    public ModelAndView reservationDetail(@RequestParam("reservationid") String reservationid) {
+    public ModelAndView reservationDetail(@RequestParam("reservationid") String reservationid, HttpSession session) {
         ModelAndView mav = new ModelAndView("tickets/reservationDetail");
 
         // 예약 정보 조회
@@ -498,8 +509,6 @@ public class TicketsCont {
 
         // 티켓 상세 정보 조회
         List<TicketsDetailDTO> details = ticketsService.getTicketDetailsByReservationId(reservationid);
-
-        // 예약 상세 정보 설정
         reservation.setDetails(details);
 
         // 예약 날짜를 Date 객체로 변환
@@ -518,7 +527,24 @@ public class TicketsCont {
         cal.add(Calendar.DATE, -3);
         reservation.setCancelDeadline(cal.getTime());
 
+        // 결제 내역 설정
+        int serviceFee = session.getAttribute("serviceFee") != null ? Integer.parseInt(session.getAttribute("serviceFee").toString()) : 0;
+        int deliveryFee = session.getAttribute("deliveryFee") != null ? Integer.parseInt(session.getAttribute("deliveryFee").toString()) : 0;
+        int totalDiscount = session.getAttribute("totalDiscount") != null ? Integer.parseInt(session.getAttribute("totalDiscount").toString()) : 0;
+        int totalPrice = reservation.getPrice() * reservation.getQuantity();
+        int totalPaymentAmount = session.getAttribute("totalPaymentAmount") != null ? Integer.parseInt(session.getAttribute("totalPaymentAmount").toString()) : 0;
+        String couponName = session.getAttribute("couponName") != null ? session.getAttribute("couponName").toString() : "";
+        String membershipName = session.getAttribute("membershipName") != null ? session.getAttribute("membershipName").toString() : "";
+
+        mav.addObject("serviceFee", serviceFee);
+        mav.addObject("deliveryFee", deliveryFee);
+        mav.addObject("couponName", couponName);
+        mav.addObject("membershipName", membershipName);
+        mav.addObject("totalDiscount", totalDiscount);
+        mav.addObject("totalPrice", totalPrice);
+        mav.addObject("totalPaymentAmount", totalPaymentAmount);
         mav.addObject("reservation", reservation);
+
         return mav;
     }
 

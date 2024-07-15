@@ -141,7 +141,6 @@
         <span>3. 결제정보확인</span>
     </div>
     <div class="container">
-        <h1 class="mb-4 text-center">좌석 선택</h1>
         <p class="text-danger text-center">하얀색 좌석은 이미 예매된 좌석입니다.</p>
         <input type="hidden" id="matchid" value="${param.matchid}"/>
         <input type="hidden" id="stadiumid" value="${param.stadiumid}"/>
