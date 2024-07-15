@@ -66,5 +66,12 @@
         JOIN stadiums s ON m.stadiumid = s.stadiumid
         WHERE m.bookingenddate >= DATE_SUB(#{currentDate}, INTERVAL 1 DAY)
     </select>
+    
+    <update id="resetCouponUsage" parameterType="string">
+	    UPDATE coupon
+	    SET usage = 'Not Used'
+	    WHERE couponid = #{couponId}
+	</update>
+    
 
 </mapper>

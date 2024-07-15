@@ -161,13 +161,14 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">
-            예매 취소
-        </div>
-        <div class="card-body">
-            <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
-        </div>
+    <div class="card-header">
+        예매 취소
     </div>
+	    <div class="card-body">
+	        <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+	        <button id="go-back" class="btn btn-secondary mt-2">목록으로</button>
+	    </div>
+	</div>
 </div>
 <script>
     $(document).ready(function() {
@@ -180,7 +181,7 @@
                     success: function(response) {
                         if (response.success) {
                             alert('결제가 취소되었습니다.');
-                            location.reload();
+                            window.location.href = '/tickets/reservationList';
                         } else {
                             alert('결제 취소에 실패했습니다: ' + response.message);
                         }
@@ -190,6 +191,10 @@
                     }
                 });
             }
+        });
+
+        $('#go-back').click(function() {
+            window.location.href = '/tickets/reservationList';
         });
     });
 </script>

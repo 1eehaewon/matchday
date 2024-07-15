@@ -195,5 +195,32 @@ public class TicketsService {
     public String getImpUidByReservationId(String reservationid) {
         return ticketsDao.getImpUidByReservationId(reservationid);
     }
+    
+    /**
+     * 쿠폰 사용 상태를 'Not Used'로 업데이트하는 메서드
+     * @param couponId 쿠폰 ID
+     * @return 업데이트된 행의 수
+     */
+    public int resetCouponUsage(String couponId) {
+        System.out.println("Service: Resetting coupon usage for couponId: " + couponId);
+        int result = ticketsDao.resetCouponUsage(couponId);
+        System.out.println("Service result: " + result);
+        return result;
+    }
+    
+    @Transactional
+    public void cancelReservationAndUpdateCoupon(String reservationid) {
+        // 예약 상태 업데이트
+        System.out.println("Cancelling reservation: " + reservationid);
+        ticketsDao.updateReservationStatus(reservationid, "Cancelled");
+
+        // 쿠폰 사용 상태를 'Not Used'로 업데이트
+        TicketsDTO reservation = ticketsDao.getReservationById(reservationid);
+        String couponId = reservation.getCouponid();
+        if (couponId != null && !couponId.isEmpty()) {
+            int result = ticketsDao.resetCouponUsage(couponId);
+            System.out.println("Coupon usage update result (Not Used): " + result);
+        }
+    }
 }
 

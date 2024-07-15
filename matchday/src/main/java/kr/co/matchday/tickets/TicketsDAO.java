@@ -245,5 +245,17 @@ public class TicketsDAO {
     public String getImpUidByReservationId(String reservationid) {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getImpUidByReservationId", reservationid);
     }
+    
+    /**
+     * 쿠폰 사용 상태를 'Not Used'로 업데이트하는 메서드
+     * @param couponId 쿠폰 ID
+     * @return 업데이트된 행의 수
+     */
+    public int resetCouponUsage(String couponId) {
+        System.out.println("Updating coupon usage to 'Not Used' for couponId: " + couponId);
+        int result = sqlSession.update("kr.co.matchday.tickets.TicketsDAO.resetCouponUsage", couponId);
+        System.out.println("Update result (Not Used): " + result);
+        return result;
+    }
 
 }

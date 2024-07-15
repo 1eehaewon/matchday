@@ -309,6 +309,7 @@ public class TicketsCont {
                     ticketsDto.setShippingaddress(shippingaddress);
                     ticketsDto.setShippingrequest(shippingrequest);
                     ticketsDto.setImpUid(imp_uid); // 결제 UID 설정
+                    ticketsDto.setCouponid(couponId); // 쿠폰 ID 설정
 
                     // 티켓 예약 정보 삽입
                     ticketsService.insertTicket(ticketsDto);
@@ -378,6 +379,7 @@ public class TicketsCont {
         return response;
     }
 
+
     /**
      * 결제 취소 메서드
      * @param reservationid 예약 ID
@@ -422,9 +424,12 @@ public class TicketsCont {
             if (paymentResponse.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(paymentResponse.getBody());
                 if (!json.isNull("response")) {
-                    ticketsService.updateReservationStatus(reservationid, "Cancelled");
+                    System.out.println("Payment cancellation successful for reservation: " + reservationid);
+                    ticketsService.cancelReservationAndUpdateCoupon(reservationid);
+
                     response.put("success", true);
                     response.put("message", "결제가 취소되었습니다.");
+                    response.put("redirectUrl", "/tickets/reservationList");  // 리디렉션 URL 추가
                 } else {
                     response.put("success", false);
                     response.put("message", "결제 취소 실패: " + json.getString("message"));
