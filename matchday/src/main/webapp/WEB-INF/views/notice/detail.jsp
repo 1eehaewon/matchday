@@ -43,11 +43,13 @@
                             </div>
                         </form>
                     </div>
-                    <div class="text-center">
+                    <c:if test="${sessionScope.grade == 'M'}">
+                      <div class="text-center">
                         <input type="hidden" name="noticeid" value="${notice.noticeid}">
                         <button type="button" class="btn btn-success mr-2" onclick="location.href='update?noticeid=${notice.noticeid}'">공지사항 수정</button>
                         <button type="button" class="btn btn-danger" onclick="noticeDelete(${notice.noticeid})">공지사항 삭제</button>
-                    </div>
+                      </div>
+                    </c:if>
                 </div>
             </div>
         </div>

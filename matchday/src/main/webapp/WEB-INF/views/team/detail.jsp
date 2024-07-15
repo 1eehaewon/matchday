@@ -56,10 +56,12 @@
       </c:forEach>
    </div>
    <div class="spacing"></div>
+ <c:if test="${sessionScope.grade == 'M'}">
    <div class="text-right" style="margin-right: 10px; text-align: right">
       <button class="btn btn-primary" onclick="location.href='/player/write'">선수등록</button>
       <button class="btn btn-primary" onclick="location.href='/team/update?teamname=${team.teamname}'">팀 정보 수정</button>
    </div>
+ </c:if>
 </main>
 
 

@@ -47,10 +47,11 @@
       </c:forEach>
    </div>
    
-   
-   <div class="text-right" style="margin-right: 10%; text-align: right">
-      <button class="btn btn-primary" onclick="location.href='write'">팀 등록</button>
-   </div>
+ <c:if test="${sessionScope.grade == 'M'}">
+    <div class="text-right" style="margin-right: 10%; text-align: right">
+       <button class="btn btn-primary" onclick="location.href='write'">팀 등록</button>
+    </div>
+ </c:if>
    
    
 </main>

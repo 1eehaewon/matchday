@@ -68,12 +68,14 @@
             </div>
         </div>
     </c:if>
-
+  
+  <c:if test="${sessionScope.grade == 'M'}">
     <div class="row justify-content-center">
         <div class="col-auto">
             <input type="button" value="글쓰기" class="btn btn-success" onclick="location.href='write'">
         </div>
     </div>
+  </c:if>
     <div class="spacing"></div>
 
     <!-- 페이지 리스트 시작 -->

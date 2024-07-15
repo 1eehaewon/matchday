@@ -31,6 +31,14 @@
             city = #{city}, introduction = #{introduction}, leaguecategory = #{leaguecategory}, filename = #{filename}, filesize = #{filesize}
         WHERE teamname = #{teamname}
     </update>
+    
+    
+    <select id="search" resultType="kr.co.matchday.team.TeamDTO" parameterType="String">
+        SELECT teamname, koreanname, stadiumid, foundingyear, coach, city, introduction, leaguecategory, filename, filesize
+        FROM teams
+        WHERE teamname LIKE #{keyword}
+        ORDER BY teamname DESC
+    </select>
 
 
 

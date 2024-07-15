@@ -30,6 +30,11 @@ public class TeamDAO {
     }//list() end
     
     
+    public List<TeamDTO> search(String teamname) {
+        return sqlSession.selectList("team.search", "%" + teamname + "%");
+    }
+    
+    
     public Map<String, Object> detail(String teamname){
         return sqlSession.selectOne("team.detail", teamname);
     }//detail() end

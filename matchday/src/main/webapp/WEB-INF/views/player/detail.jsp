@@ -75,11 +75,13 @@
    
    
    <div class="spacing"></div>
-      <div class="text-center">
-         <input type="hidden" name="playerid" value="${player.playerid}">
-            <button type="button" class="btn btn-success mr-2" onclick="location.href='/player/update?playerid=${player.playerid}'">선수정보 수정</button>
-            <button type="button" class="btn btn-danger" onclick="playerDelete('${player.playerid}')">선수삭제</button>
-      </div>
+     <c:if test="${sessionScope.grade == 'M'}">
+       <div class="text-center">
+          <input type="hidden" name="playerid" value="${player.playerid}">
+             <button type="button" class="btn btn-success mr-2" onclick="location.href='/player/update?playerid=${player.playerid}'">선수정보 수정</button>
+             <button type="button" class="btn btn-danger" onclick="playerDelete('${player.playerid}')">선수삭제</button>
+       </div>
+     </c:if>
    
    
 </main>

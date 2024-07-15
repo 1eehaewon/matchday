@@ -86,6 +86,16 @@ public class TeamCont {
     }//insert() end
     
     
+    @GetMapping("search")
+    public ModelAndView search(@RequestParam(defaultValue = "") String teamname) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("team/list");
+        mav.addObject("list", teamDao.search(teamname));
+        mav.addObject("teamname", teamname);
+        return mav;
+    }
+    
+    
     @RequestMapping("/list")
     public ModelAndView list() {
         ModelAndView mav = new ModelAndView();
