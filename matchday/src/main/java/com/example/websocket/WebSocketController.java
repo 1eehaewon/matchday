@@ -3,15 +3,18 @@ package com.example.websocket;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 @Controller
 public class WebSocketController {
 
-    private static final Map<String, String> selectedSeats = new ConcurrentHashMap<>();
+    private static final Map<String, String> selectedSeats = new HashMap<>();
 
     @MessageMapping("/selectSeat")
     @SendTo("/topic/seatSelected")
@@ -34,12 +37,37 @@ public class WebSocketController {
         return message;
     }
 
+    @PostMapping("/websocket/checkSelectedSeats")
+    @ResponseBody
+    public Map<String, Object> checkSelectedSeats(@RequestBody SeatCheckRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        for (String seatId : request.getSeats()) {
+            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(request.getUserId())) {
+                response.put("success", false);
+                response.put("message", "다른 사용자가 구매중인 좌석이 있습니다.");
+                return response;
+            }
+        }
+        response.put("success", true);
+        return response;
+    }
+
+    public boolean checkIfSeatsAvailable(String[] seats, String userId) {
+        for (String seatId : seats) {
+            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(userId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static class SeatMessage {
         private String seatId;
         private String status;
         private String userId;
         private Map<String, String> selectedSeats;
 
+        // Getters and Setters
         public String getSeatId() {
             return seatId;
         }
@@ -73,12 +101,25 @@ public class WebSocketController {
         }
     }
 
-    public boolean checkIfSeatsAvailable(String[] seatIds) {
-        for (String seatId : seatIds) {
-            if (selectedSeats.containsKey(seatId)) {
-                return false;
-            }
+    public static class SeatCheckRequest {
+        private List<String> seats;
+        private String userId;
+
+        // Getters and Setters
+        public List<String> getSeats() {
+            return seats;
         }
-        return true;
+
+        public void setSeats(List<String> seats) {
+            this.seats = seats;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
     }
 }

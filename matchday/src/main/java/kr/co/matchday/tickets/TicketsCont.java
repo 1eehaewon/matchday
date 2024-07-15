@@ -93,7 +93,7 @@ public class TicketsCont {
     @GetMapping("/seatmap")
     public ModelAndView seatmap(@RequestParam String stadiumid, @RequestParam String section, @RequestParam String matchid) {
         List<Map<String, Object>> seats = ticketsService.getSeatsByStadiumIdAndSection(stadiumid, section);
-        List<String> reservedSeats = ticketsService.getReservedSeats(matchid); // 예약된 좌석 정보 가져오기
+        List<String> reservedSeats = ticketsService.getReservedSeats(matchid);
         ModelAndView mav = new ModelAndView("tickets/seatmap");
         mav.addObject("section", section);
         mav.addObject("stadiumid", stadiumid);
@@ -102,13 +102,13 @@ public class TicketsCont {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String seatsJson = objectMapper.writeValueAsString(seats);
-            String reservedSeatsJson = objectMapper.writeValueAsString(reservedSeats); // 예약된 좌석 정보를 JSON으로 변환
+            String reservedSeatsJson = objectMapper.writeValueAsString(reservedSeats);
             mav.addObject("seatsJson", seatsJson);
-            mav.addObject("reservedSeatsJson", reservedSeatsJson); // JSP에 예약된 좌석 정보 전달
+            mav.addObject("reservedSeatsJson", reservedSeatsJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             mav.addObject("seatsJson", "[]");
-            mav.addObject("reservedSeatsJson", "[]"); // 오류 발생 시 빈 배열 전달
+            mav.addObject("reservedSeatsJson", "[]");
         }
 
         return mav;
@@ -243,6 +243,14 @@ public class TicketsCont {
 
         System.out.println("seats: " + seats);
 
+        // 좌석 가용성 확인
+        String userId = (String) session.getAttribute("userID");
+        if (!webSocketController.checkIfSeatsAvailable(seats.toArray(new String[0]), userId)) {
+            response.put("success", false);
+            response.put("message", "다른 사용자가 구매진행중인 좌석이 있습니다.");
+            return response;
+        }
+
         // 토큰 획득
         String token = getToken();
         if (token == null) {
@@ -271,7 +279,6 @@ public class TicketsCont {
                     System.out.println("결제 금액이 일치합니다.");
 
                     // 세션에서 사용자 ID 가져오기
-                    String userId = (String) session.getAttribute("userID");
                     if (userId == null) {
                         response.put("success", false);
                         response.put("message", "세션에서 사용자 ID를 찾을 수 없습니다.");
@@ -366,8 +373,6 @@ public class TicketsCont {
 
         return response;
     }
-
-
     /**
      * 결제 취소 메서드
      * @param imp_uid 아임포트 UID
@@ -558,12 +563,13 @@ public class TicketsCont {
     public Map<String, Object> checkSelectedSeats(@RequestBody Map<String, Object> params) {
         String userId = (String) params.get("userId");
         List<String> seats = (List<String>) params.get("seats");
-        boolean available = webSocketController.checkIfSeatsAvailable(seats.toArray(new String[0]));
+        boolean available = webSocketController.checkIfSeatsAvailable(seats.toArray(new String[0]), userId);
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", available);
         return response;
     }
+
 
 
 }
