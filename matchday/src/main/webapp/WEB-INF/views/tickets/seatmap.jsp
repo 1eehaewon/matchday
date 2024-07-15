@@ -269,17 +269,19 @@
 
             function seatClickListener() {
                 if (this.classList.contains('selected')) {
-                    return;
-                }
-                if (this.classList.contains('unavailable')) {
-                    alert('다른 회원이 구매진행중인 좌석입니다. 다른 좌석을 선택해주세요.');
-                    return;
-                }
-                if (document.querySelectorAll('.seat.selected').length < 5) {
-                    this.classList.add('selected');
-                    sendSeatStatus(this.dataset.seatId, 'selected');
+                    this.classList.remove('selected');
+                    sendSeatStatus(this.dataset.seatId, 'deselected');
                 } else {
-                    alert('5개의 좌석까지 구매 가능합니다.');
+                    if (this.classList.contains('unavailable')) {
+                        alert('다른 회원이 구매진행중인 좌석입니다. 다른 좌석을 선택해주세요.');
+                        return;
+                    }
+                    if (document.querySelectorAll('.seat.selected').length < 5) {
+                        this.classList.add('selected');
+                        sendSeatStatus(this.dataset.seatId, 'selected');
+                    } else {
+                        alert('5개의 좌석까지 구매 가능합니다.');
+                    }
                 }
                 updateSelectedSeats();
             }
