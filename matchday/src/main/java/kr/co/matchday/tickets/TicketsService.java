@@ -207,7 +207,11 @@ public class TicketsService {
         System.out.println("Service result: " + result);
         return result;
     }
-    
+
+    /**
+     * 예약 취소 및 쿠폰 사용 상태 업데이트
+     * @param reservationid 예약 ID
+     */
     @Transactional
     public void cancelReservationAndUpdateCoupon(String reservationid) {
         // 예약 상태 업데이트

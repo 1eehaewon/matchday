@@ -164,11 +164,10 @@
     <div class="card-header">
         예매 취소
     </div>
-	    <div class="card-body">
-	        <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
-	        <button id="go-back" class="btn btn-secondary mt-2">목록으로</button>
-	    </div>
-	</div>
+    <div class="card-body">
+        <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+        <button id="go-back" class="btn btn-secondary mt-2">목록으로</button>
+    </div>
 </div>
 <script>
     $(document).ready(function() {
@@ -198,6 +197,7 @@
         });
     });
 </script>
+
 
 <%@ include file="../footer.jsp" %>
 

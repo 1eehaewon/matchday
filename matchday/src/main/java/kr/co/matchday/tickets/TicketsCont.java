@@ -310,6 +310,9 @@ public class TicketsCont {
                     ticketsDto.setShippingrequest(shippingrequest);
                     ticketsDto.setImpUid(imp_uid); // 결제 UID 설정
                     ticketsDto.setCouponid(couponId); // 쿠폰 ID 설정
+                    ticketsDto.setMembershipid(membershipId); // 멤버십 ID 설정
+                    ticketsDto.setMethodcode("someMethodCode"); // 방법 코드 설정
+                    ticketsDto.setFinalpaymentamount(paid_amount); // 최종 결제 금액 설정
 
                     // 티켓 예약 정보 삽입
                     ticketsService.insertTicket(ticketsDto);
@@ -378,6 +381,7 @@ public class TicketsCont {
 
         return response;
     }
+
 
 
     /**

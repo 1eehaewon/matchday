@@ -25,7 +25,7 @@ public class TicketsDTO {
     private String paymentmethodcode; // 결제 방법 코드
     private String reservationstatus; // 예약 상태
     private String collectionmethodcode; // 수령 방법 코드
-    private String membermembershipid; // 회원 ID
+    private String membershipid; // 회원 ID
     private String methodcode; // 방법 코드
     private String couponid; // 쿠폰 ID
     private int usedpoints; // 사용된 포인트
@@ -37,8 +37,6 @@ public class TicketsDTO {
     private String shippingaddress; // 배송 주소
     private String shippingrequest; // 배송 요청 사항
     private String impUid; // 결제 UID
-    
-    // 추가된 필드
     private String userName; // 사용자 이름
     private String stadiumName; // 경기장 이름
     private String location; // 경기장 위치
