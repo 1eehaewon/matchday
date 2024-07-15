@@ -21,6 +21,8 @@ public class WebSocketController {
     public SeatMessage selectSeat(SeatMessage message) {
         if ("selected".equals(message.getStatus())) {
             selectedSeats.put(message.getSeatId(), message.getUserId());
+        } else if ("reserved".equals(message.getStatus())) {
+            selectedSeats.put(message.getSeatId(), "reserved");
         } else {
             selectedSeats.remove(message.getSeatId());
         }
@@ -42,7 +44,7 @@ public class WebSocketController {
     public Map<String, Object> checkSelectedSeats(@RequestBody SeatCheckRequest request) {
         Map<String, Object> response = new HashMap<>();
         for (String seatId : request.getSeats()) {
-            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(request.getUserId())) {
+            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(request.getUserId()) && !selectedSeats.get(seatId).equals("reserved")) {
                 response.put("success", false);
                 response.put("message", "다른 사용자가 구매중인 좌석이 있습니다.");
                 return response;
@@ -54,7 +56,7 @@ public class WebSocketController {
 
     public boolean checkIfSeatsAvailable(String[] seats, String userId) {
         for (String seatId : seats) {
-            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(userId)) {
+            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(userId) && !selectedSeats.get(seatId).equals("reserved")) {
                 return false;
             }
         }

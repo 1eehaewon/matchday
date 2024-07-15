@@ -434,29 +434,22 @@
         // WebSocket 연결 설정
         var socket = new SockJS('/ws');
         var stompClient = Stomp.over(socket);
+        var userId = "${sessionScope.userID}";
 
         stompClient.connect({}, function(frame) {
             console.log('Connected: ' + frame);
-
-            // 페이지를 나갈 때 좌석 상태 해제
-            window.addEventListener('beforeunload', function() {
-                seats.forEach(function(seatId) {
-                    sendSeatStatus(seatId, 'deselected');
-                });
+            stompClient.subscribe('/topic/seatSelected', function(message) {
+                var seatMessage = JSON.parse(message.body);
+                if (seatMessage.userId !== userId && seatMessage.status === 'selected') {
+                    seats = seats.filter(function(seat) {
+                        return seat !== seatMessage.seatId;
+                    });
+                    alert('다른 회원이 구매진행중인 좌석이 있습니다. 다시 선택해주세요.');
+                    window.location.href = '/tickets/seatmap?matchid=${param.matchid}&section=${param.section}&stadiumid=${param.stadiumid}';
+                }
             });
         });
-
-        // 좌석 상태 서버로 전송
-        function sendSeatStatus(seatId, status) {
-            stompClient.send("/app/selectSeat", {}, JSON.stringify({
-                seatId: seatId,
-                status: status,
-                userId: "${sessionScope.userID}"
-            }));
-        }
-
     });
     </script>
 </body>
 </html>
-
