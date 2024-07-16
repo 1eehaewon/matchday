@@ -29,6 +29,8 @@ public class OrderDTO {
     private Timestamp shippingenddate; // 배송 종료 날짜*/
     private String shippingstatus; // 배송 상태 ('Pending', 'Completed')
     private String recipientname; // 수령인 이름
+    private String recipientemail; // 수령인 이메일
+    private String recipientphone; // 수령인 전화번호
     private String shippingaddress; // 배송 주소
     private String shippingrequest; // 배송 요청사항
     private String paymentmethodcode; // 결제 방법 코드

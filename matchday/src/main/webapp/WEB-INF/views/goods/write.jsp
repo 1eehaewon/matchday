@@ -94,7 +94,7 @@
                         <th>배송/반품/교환</th>
                         <td><textarea rows="5" name="deliveryreturnsexchangesinfo" id="deliveryreturnsexchangesinfo" class="form-control summernote"></textarea></td>
                     </tr>
-                    <tr>
+                    <%-- <tr>
                         <th>사이즈</th>
                         <td>
                             <select name="size" id="size" class="form-control">
@@ -114,7 +114,7 @@
                             </select>
                             <span id="sizeMsg" style="color: red;"></span>
                         </td>
-                    </tr>
+                    </tr> --%>
                     <tr>
                         <th>가격</th>
                         <td>
@@ -123,9 +123,31 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>재고 수량</th>
+                        <th>사이즈 / 재고 수량</th>
                         <td>
-                            <input type="number" name="stockquantity" id="stockquantity" class="form-control">
+                        	<a> FREE : </a>
+                        	<input type="hidden" name="size1" id="size" class="form-control" value="FREE">
+                            <input type="number" name="stockquantity1" id="stockquantity" class="form-control" value="0">
+                            <span id="stockquantityMsg" style="color: red;"></span>
+                            
+                            <a> S : </a>
+                        	<input type="hidden" name="size2" id="size" class="form-control" value="S">
+                            <input type="number" name="stockquantity2" id="stockquantity" class="form-control" value="0">
+                            <span id="stockquantityMsg" style="color: red;"></span>
+                            
+                            <a> M : </a>
+                        	<input type="hidden" name="size3" id="size" class="form-control" value="M">
+                            <input type="number" name="stockquantity3" id="stockquantity" class="form-control" value="0">
+                            <span id="stockquantityMsg" style="color: red;"></span>
+                            
+                            <a> L : </a>
+                        	<input type="hidden" name="size4" id="size" class="form-control" value="L">
+                            <input type="number" name="stockquantity4" id="stockquantity" class="form-control" value="0">
+                            <span id="stockquantityMsg" style="color: red;"></span>
+                            
+                            <a> XL : </a>
+                        	<input type="hidden" name="size5" id="size" class="form-control" value="XL">
+                            <input type="number" name="stockquantity5" id="stockquantity" class="form-control" value="0">
                             <span id="stockquantityMsg" style="color: red;"></span>
                         </td>
                     </tr>
@@ -225,14 +247,14 @@
             }
 
             // 사이즈 유효성 검사
-            var size = document.getElementById('size').value;
+            /* var size = document.getElementById('size').value;
             var sizeMsg = document.getElementById('sizeMsg');
-            if (size === "") {
+            if (size === "NO") {
                 sizeMsg.textContent = '사이즈를 선택해주세요.';
                 isValid = false;
             } else {
                 sizeMsg.textContent = '';
-            }
+            } */
 
             // 가격 유효성 검사
             var price = document.getElementById('price').value;

@@ -7,7 +7,7 @@
 
 	<!-- 굿즈 ID로 굿즈 정보 가져오기 -->
     <select id="getGoodsById" parameterType="kr.co.matchday.order.OrderDTO">
-        SELECT * FROM order WHERE goodsid = #{goodsid}
+        SELECT * FROM 'order' WHERE goodsid = #{goodsid}
     </select>
 
 	<!-- 사용자 ID로 사용자 정보 가져오기 -->
@@ -20,18 +20,65 @@
 	<!-- 주문 정보 삽입 -->
 	<insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
     INSERT INTO `order` (orderid, userid, goodsid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, 
-                         shippingstartdate, shippingenddate, shippingstatus, recipientname, shippingaddress, 
+                         shippingstartdate, shippingenddate, shippingstatus, recipientname, recipientemail, recipientphone, shippingaddress, 
                          shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode)
     VALUES (#{orderid}, #{userid}, #{goodsid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, 
-            #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{shippingaddress}, 
+            #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{recipientemail}, #{recipientphone}, #{shippingaddress}, 
             #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode})
-</insert>
-
+	</insert>
 
 	<!-- 특정 사용자의 주문 목록을 데이터베이스에서 조회하는 SQL 쿼리 -->
     <select id="listByUser" parameterType="String" resultType="kr.co.matchday.order.OrderDTO">
-        SELECT * FROM order WHERE userid = #{userid}
+        SELECT * FROM 'order' WHERE userid = #{userid}
     </select>
+
+	<!-- 사용자 ID로 쿠폰 목록 가져오기 -->
+    <select id="getCouponsByUserId" resultType="kr.co.matchday.coupon.CouponDTO">
+        SELECT c.couponid, c.coupontypeid, c.userid, c.usage,
+               cm.couponname, cm.startdate, cm.enddate, cm.applicableproduct, cm.discountrate
+        FROM coupon c
+        JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
+        WHERE c.userid = #{userid}
+          AND cm.applicableproduct = #{applicableProduct}
+          AND c.usage = #{usage}
+    </select>
+
+    <!-- 쿠폰 ID로 할인율 가져오기 -->
+    <select id="getDiscountRateByCouponId" parameterType="String" resultType="int">
+        SELECT discountrate
+        FROM couponmaster
+        WHERE coupontypeid = (SELECT coupontypeid FROM coupon WHERE couponid = #{couponid})
+    </select>
+
+    <!-- 쿠폰 사용 여부 업데이트 -->
+    <update id="updateCouponUsage" parameterType="String">
+        UPDATE coupon
+        SET `usage` = 'Used'
+        WHERE couponid = #{couponid}
+    </update>
+    
+    <!-- 사용자 ID로 해당 사용자의 포인트 이력 조회 -->
+	<select id="getPointByUserId" parameterType="String" resultType="kr.co.matchday.point.PointHistoryDTO">
+	    SELECT * FROM pointhistory WHERE userid = #{userid}
+	</select>
+
+	<!-- PointHistoryDTO를 이용해 포인트 이력 추가 -->
+	<insert id="insertPointHistory" parameterType="kr.co.matchday.point.PointHistoryDTO">
+	    INSERT INTO pointhistory (userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, pointusedate)
+	    VALUES (#{userid}, #{pointcategoryid}, #{pointtype}, #{reviewid}, #{pointsource}, #{pointamount}, #{pointcreationdate}, #{pointusedate})
+	</insert>
+
+	
+
+
+
+
+
+
+
+
+
+
 
 
 

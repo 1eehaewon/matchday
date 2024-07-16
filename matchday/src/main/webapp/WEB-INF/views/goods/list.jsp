@@ -262,83 +262,9 @@
 						<p style="height: 53px; align-content: center;">
 							<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">${row.productname}</a>
 						</p>
-						
-						<c:choose>
-							<c:when test="${'Y' eq row.issoldout }">
-							
-								<p> 품절 </p>
-								
-							</c:when>
-							<c:otherwise>
-							
-								<p> <fmt:formatNumber value="${row.price}" pattern="#,###원" /> </p>
-								
-							</c:otherwise>
-						</c:choose>
+							<p> <fmt:formatNumber value="${row.price}" pattern="#,###원" /> </p>
 					</div>
 				</div>
-				
-<%-- <div class="goodsItem"> 품절시 상품 전체 비활성화
-
-.sold-out {
-    opacity: 0.7; /* 품절 상품의 투명도를 줄입니다. */
-    pointer-events: none; /* 클릭 이벤트 비활성화 */
-    filter: grayscale(100%); /* 회색으로 만듭니다. */
-    /* 추가적으로 품절 상품의 스타일을 지정할 수 있습니다. */
-}
-
-.sold-out-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3); /* 투명 회색 배경 */
-}
-
-.sold-out-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 0, 0, 0.7); /* 반투명 빨간 배경 */
-    color: white;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 4px;
-}
-
-    <div class="item-card ${'Y' eq row.issoldout ? 'sold-out' : ''}" data-category="${row.category}">
-        <c:choose>
-            <c:when test="${not empty row.filename && row.filename != '-'}">
-                <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
-                    <img src="${pageContext.request.contextPath}/storage/goods/${row.filename}"
-                         class="img-responsive margin">
-                </a>
-            </c:when>
-            <c:otherwise>
-                <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">
-                    <img src="${pageContext.request.contextPath}/images/default_product_image.jpg"
-                         alt="등록된 사진 없음" class="small-image">
-                </a>
-            </c:otherwise>
-        </c:choose>
-        <p>
-            <a href="${pageContext.request.contextPath}/goods/detail?goodsid=${row.goodsid}">${row.productname}</a>
-        	<p><fmt:formatNumber value="${row.price}" pattern="#,###원" /></p>
-        </p>
-
-        <c:choose>
-            <c:when test="${'Y' eq row.issoldout}">
-                <div class="sold-out-overlay"></div>
-                <p class="sold-out-text">품절</p>
-            </c:when>
-            <c:otherwise>
-                <p><fmt:formatNumber value="${row.price}" pattern="#,###원" /></p>
-            </c:otherwise>
-        </c:choose>
-    </div>
-</div> --%>
 
 				<!-- 행의 4번째 항목인지 확인하여 닫고 새 행을 시작하세요 -->
 				<c:if test="${vs.count % 4 == 0}">

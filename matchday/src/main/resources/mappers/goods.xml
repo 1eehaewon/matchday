@@ -72,11 +72,40 @@
         SELECT COUNT(*) FROM goods
     </select>
 	
+	<insert id="stockinsert" parameterType="kr.co.matchday.goods.StockDTO">
+		INSERT INTO stock(goodsid, size, stockquantity)
+		VALUES(#{goodsid}, #{size}, #{stockquantity})
+	</insert>
+
+	<select id="stocklist" resultType="kr.co.matchday.goods.StockDTO">
+	   	SELECT goodsid, size, stockquantity
+        FROM stock
+        WHERE goodsid = #{goodsid}
+        ORDER BY FIELD(size, 'FREE', 'S', 'M', 'L', 'XL')
+	</select>
+
+	<update id="stockupdate" parameterType="kr.co.matchday.goods.StockDTO">
+		UPDATE stock
+		SET stockquantity = #{stockquantity}
+		WHERE goodsid = #{goodsid} AND size = #{size};
+	</update>
+	
+	<delete id="stockdelete" parameterType="kr.co.matchday.goods.StockDTO">
+		DELETE from stock
+		WHERE goodsid = #{goodsid}
+	</delete>
+	
+	
+	
+	
+	<!-- 구매하기 하고나서 추가 
+		<update id="stockupdate" parameterType="kr.co.matchday.goods.StockDTO">
+		UPDATE stock
+		SET stockquantity = stockquantity-1
+		WHERE goodsid = #{goodsid} AND size = #{size};
+	</update> -->
 	
 
-
-	
-	
 	
 	
 	

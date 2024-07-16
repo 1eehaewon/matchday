@@ -130,9 +130,9 @@ public class GoodsCont {
         goodsDto.setCategory((String) map.get("category"));
         goodsDto.setProductname((String) map.get("productname"));
         goodsDto.setDescription((String) map.get("description"));
-        goodsDto.setSize((String) map.get("size"));
+        //goodsDto.setSize((String) map.get("size"));
         goodsDto.setPrice(Integer.parseInt((String) map.get("price")));
-        goodsDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity")));
+        //goodsDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity")));
         /*goodsDto.setIssoldout(((String) map.get("issoldout")).charAt(0)); // issoldout은 String에서 char로 변환할 때 첫 번째 문자를 사용*/
         goodsDto.setIssoldout((String) map.get("issoldout"));
         goodsDto.setFilename(filename);
@@ -148,6 +148,24 @@ public class GoodsCont {
 
         // goodsDTO 객체를 데이터베이스에 삽입합니다.
         goodsDao.insert(goodsDto);
+        
+        StockDTO stockDto = new StockDTO();
+        stockDto.setGoodsid((String) map.get("goodsid"));
+        stockDto.setSize((String) map.get("size1"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity1")));
+        goodsDao.stockinsert(stockDto);
+        stockDto.setSize((String) map.get("size2"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity2")));
+        goodsDao.stockinsert(stockDto);
+        stockDto.setSize((String) map.get("size3"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity3")));
+        goodsDao.stockinsert(stockDto);
+        stockDto.setSize((String) map.get("size4"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity4")));
+        goodsDao.stockinsert(stockDto);
+        stockDto.setSize((String) map.get("size5"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity5")));
+        goodsDao.stockinsert(stockDto);
         
         return "redirect:/goods/list";
     } // insert end
@@ -175,6 +193,10 @@ public class GoodsCont {
         GoodsDTO goodsDto = goodsDao.detail(goodsid);
         mav.addObject("goodsDto", goodsDto);
         
+        //사이즈 재고
+        List<StockDTO> stockDto = goodsDao.stocklist(goodsid);
+        mav.addObject("stockDto", stockDto);
+        
         // 상품에 대한 관련 리뷰들을 가져옵니다
         //List<ReviewDTO> reviewList = reviewDao.getReviewList(goodsid);
        //mav.addObject("reviewDto", reviewList);
@@ -197,6 +219,10 @@ public class GoodsCont {
     	GoodsDTO goodsDto = goodsDao.detail(goodsid);
     	mav.addObject("goodsDto", goodsDto);
     	
+    	//사이즈 재고
+        List<StockDTO> stockDto = goodsDao.stocklist(goodsid);
+        mav.addObject("stockDto", stockDto);
+        
     	return mav;
     }//updateform() end
     
@@ -204,12 +230,14 @@ public class GoodsCont {
     //수정하기 (update문)
     @PostMapping("/update")
     public String update(@ModelAttribute GoodsDTO goodsDto,
+    					 @RequestParam Map<String, Object> map,
                          @RequestParam(value = "img", required = false) MultipartFile img,
                          HttpServletRequest req) {
 
         String goodsid = goodsDto.getGoodsid();
         GoodsDTO oldGoods = goodsDao.detail(goodsid); // Retrieve old goods details
 
+        
         String filename = oldGoods.getFilename();
         long filesize = oldGoods.getFilesize();
 
@@ -243,7 +271,23 @@ public class GoodsCont {
         goodsDto.setFilename(filename);
         goodsDto.setFilesize(filesize);
         
-        System.out.println("Updated goodsDTO: " + goodsDto);
+        StockDTO stockDto = new StockDTO();
+        stockDto.setGoodsid((String) map.get("goodsid"));
+        stockDto.setSize((String) map.get("size1"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity1")));
+        goodsDao.stockupdate(stockDto);
+        stockDto.setSize((String) map.get("size2"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity2")));
+        goodsDao.stockupdate(stockDto);
+        stockDto.setSize((String) map.get("size3"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity3")));
+        goodsDao.stockupdate(stockDto);
+        stockDto.setSize((String) map.get("size4"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity4")));
+        goodsDao.stockupdate(stockDto);
+        stockDto.setSize((String) map.get("size5"));
+        stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity5")));
+        goodsDao.stockupdate(stockDto);
         
         goodsDao.update(goodsDto);
 

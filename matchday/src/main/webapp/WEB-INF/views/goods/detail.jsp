@@ -362,20 +362,33 @@ table tr:hover {
                         <dl>
                             <dt>사이즈</dt>
                             <dd>
-                                <select name="size">
-                                    <option value="">선택하세요.</option>
-                                    <option value="FREE">FREE ${goodsDto.stockquantity}개</option>
-                                    <option value="S">S ${goodsDto.stockquantity}개</option>
-                                    <option value="M">M ${goodsDto.stockquantity}개</option>
-                                    <option value="L">L ${goodsDto.stockquantity}개</option>
-                                    <option value="XL">XL ${goodsDto.stockquantity}개</option>
+                                <select id="size" name="size" class="form-select" style="width: 200px;">
+                                    <option value="NO">사이즈를 선택하세요.</option>
+                                    <c:forEach items="${stockDto}" var="row" varStatus="idx">
+                                    	<c:choose>
+                                    		<c:when test="${row.size eq 'FREE' && goodsDto.category ne 'Uniform'}"> <!-- 카테고리가 유니폼이 아니면 FREE만 나오게 -->
+                                    			 <option value="FREE" stock="${row.stockquantity}">FREE ${row.stockquantity}개</option>
+                                    		</c:when>
+                                    		<c:when test="${row.size eq 'S' && goodsDto.category eq 'Uniform'}">
+                                    			 <option value="S" stock="${row.stockquantity}">S ${row.stockquantity}개</option>
+                                    		</c:when>
+                                    		<c:when test="${row.size eq 'M' && goodsDto.category eq 'Uniform'}">
+                                    			 <option value="M" stock="${row.stockquantity}">M ${row.stockquantity}개</option>
+                                    		</c:when>
+                                    		<c:when test="${row.size eq 'L' && goodsDto.category eq 'Uniform'}">
+                                    			 <option value="L" stock="${row.stockquantity}">L ${row.stockquantity}개</option>
+                                    		</c:when>
+                                    		<c:when test="${row.size eq 'XL' && goodsDto.category eq 'Uniform'}">
+                                    			 <option value="XL" stock="${row.stockquantity}">XL ${row.stockquantity}개</option>
+                                    		</c:when>
+                                    	</c:choose>
+                                    </c:forEach>
 						    	</select>
                             </dd>
 
                             <dt>배송비</dt>
                             <dd>
                                 3,500원 (100,000원 이상 구매시 무료) 
-                                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;제주 및 도서 산간 3,000원 추가
                             </dd>
 
                             <dt>주문 수량</dt>
@@ -423,6 +436,7 @@ table tr:hover {
 					<form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
 						<input type="hidden" name="userid" value="${sessionScope.userID}">
 						<input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
+						<input type="hidden" name="size" id="form-size" value="">
 						<input type="hidden" name="quantity" id="form-quantity" value="">
 						<input type="hidden" name="unitprice" id="form-unitprice">
 						<input type="hidden" name="totalprice" id="form-totalprice">
@@ -495,7 +509,7 @@ table tr:hover {
 							                <!-- <tr id="review${review.reviewid}" class="review-details" style="display: none;"> -->
 							                    <td colspan="5">
 							                        <div class="review-content-wrapper">
-								                        <img src="${pageContext.request.contextPath}/storage/review/이미지" alt="Review Image" class="review-image">
+								                        <!-- <img src="${pageContext.request.contextPath}/storage/review/이미지" alt="Review Image" class="review-image"> -->
 								                        <div class="review-content">${review.content}</div>
 								                        <div class="review-comments">
 								                        	<div class="review-comments-top">
@@ -568,12 +582,15 @@ table tr:hover {
         var quantity = parseInt(document.getElementById('quantity-input').value);
         var price = ${goodsDto.price};
         var totalPrice = quantity * price;
+        var selectSize = document.getElementById('size');
+        selectSize = selectSize.options[selectSize.selectedIndex].value;
 
      	// 업데이트된 값들을 화면에 표시합니다
         document.getElementById('order-quantity').innerText = quantity + '개';
         document.getElementById('total-price').innerText = totalPrice.toLocaleString() + '원';
 
         // 숨겨진 입력 필드를 업데이트합니다
+        document.getElementById('form-size').value = selectSize;
         document.getElementById('form-quantity').value = quantity;
         document.getElementById('form-unitprice').value = price;
         document.getElementById('form-totalprice').value = totalPrice;
@@ -612,10 +629,37 @@ table tr:hover {
     }
 
 		function buyopenPopup(url) { //구매하기 팝업
-
+			var selectSize = document.getElementById('size');
+			var quantity = parseInt(document.getElementById('quantity-input').value);
+	        var price = ${goodsDto.price};
+	        var totalPrice = quantity * price;
+	    	
+			// 선택햔 사이즈 재고 체크
+			const sizeStock = selectSize.options[selectSize.selectedIndex].getAttribute("stock");
+	    	
+			// 선택한 사이즈 체크
+			selectSize = selectSize.options[selectSize.selectedIndex].value;
+	    	
+	    	if(selectSize == "NO"){
+	    		alert("사이즈를 선택하세요");
+	    		return;
+	    	}else{
+	    		// 입력 구매수량
+	    		var buyStock = document.getElementById('quantity-input');	// 입력 구매수량
+	    		buyStock = buyStock.value;									// 입력 구매수량
+	    		
+	    		if(sizeStock == "0"){
+	    			alert("품절입니다.");
+		    		return;
+	    		}else if((parseInt(sizeStock)-parseInt(buyStock)) < 0){
+	    			alert("구매수량이 남은 수량보다 많습니다.");
+	    			return;
+	    		}
+	    	}
+	    	
 		    if (isLoggedIn()) {
-		    	
-		    	window.open(url, "popupWindow", "width=1200,height=800,scrollbars=yes");
+
+		    	window.open(url+"&size="+selectSize+"&price="+price+"&quantity="+quantity+"&totalPrice="+totalPrice, "popupWindow", "width=1200,height=800,scrollbars=yes");
 		    	
 		    } else {
 		        // 로그인이 되어있지 않으면 팝업을 열지 않음
@@ -624,12 +668,6 @@ table tr:hover {
 		    }
 		
     }// buyopenPopup(url) end
-    
-/*     function purchase() {
-        // 구매하기 버튼을 눌렀을 때 수행할 동작
-        // 예를 들어, Ajax를 사용하여 서버로 상품 추가 요청을 보낼 수 있습니다.
-        alert('상품을 구매합니다.');
-    } */
 
     // 장바구니에 추가 버튼 클릭 시 
     function addToCart() {
@@ -659,6 +697,13 @@ table tr:hover {
 	        console.error('장바구니 수량 입력 필드를 찾을 수 없습니다');
 	        return;
 	    }
+	    
+	    var selectSize = document.getElementById('size');
+        selectSize = selectSize.options[selectSize.selectedIndex].value;
+        if (selectSize == "NO") {
+	        alert('장바구니에 추가할 사이즈를 선택해주세요');
+	        return;
+    	}
 	
 	    // formTotalPrice 입력 요소 확인
 	    var formTotalPrice = document.getElementById('form-totalprice');

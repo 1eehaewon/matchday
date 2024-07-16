@@ -97,10 +97,17 @@
                         <th>배송/반품/교환</th>
                         <td><textarea rows="5" name="deliveryreturnsexchangesinfo" id="deliveryreturnsexchangesinfo" class="form-control summernote">${goodsDto.deliveryreturnsexchangesinfo}</textarea></td>
                     </tr>
-                    <tr>
+                                        <%-- <tr>
                         <th>사이즈</th>
                         <td>
                             <select name="size" id="size" class="form-control">
+<!--                                 <option value="">사이즈 선택</option>
+                                <option value="FREE">FREE</option>
+                                <option value="S">Small</option>
+                                <option value="M">Medium</option>
+                                <option value="L">Large</option>
+                                <option value="XL">XLarge</option>
+                                 -->
                                 <option value="">사이즈 선택</option>
                                 <option value="FREE" <c:if test="${goodsDto.size == 'FREE'}">selected</c:if>>FREE</option>
                                 <option value="S" <c:if test="${goodsDto.size == 'S'}">selected</c:if>>Small</option>
@@ -110,7 +117,7 @@
                             </select>
                             <span id="sizeMsg" style="color: red;"></span>
                         </td>
-                    </tr>
+                    </tr> --%>
                     <tr>
                         <th>가격</th>
                         <td>
@@ -119,10 +126,42 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>재고 수량</th>
+                        <th>사이즈 / 재고 수량</th>
                         <td>
-                            <input type="number" name="stockquantity" id="stockquantity" class="form-control" value="${goodsDto.stockquantity}">
-                            <span id="stockquantityMsg" style="color: red;"></span>
+                        	<c:forEach items="${stockDto}" var="row" varStatus="idx">
+                           		<c:choose>
+                            		<c:when test="${row.size eq 'FREE'}"> 
+                            			<a> FREE : </a>
+			                        	<input type="hidden" name="size1" id="size" class="form-control" value="FREE">
+			                            <input type="number" name="stockquantity1" id="stockquantity" class="form-control" value="${row.stockquantity}">
+			                            <span id="stockquantityMsg" style="color: red;"></span>
+                            		</c:when>
+                            		<c:when test="${row.size eq 'S'}">
+			                            <a> S : </a>
+			                        	<input type="hidden" name="size2" id="size" class="form-control" value="S">
+			                            <input type="number" name="stockquantity2" id="stockquantity" class="form-control" value="${row.stockquantity}">
+			                            <span id="stockquantityMsg" style="color: red;"></span>
+                            		</c:when>
+                            		<c:when test="${row.size eq 'M'}">
+                            			 <a> M : </a>
+			                        	<input type="hidden" name="size3" id="size" class="form-control" value="M">
+			                            <input type="number" name="stockquantity3" id="stockquantity" class="form-control" value="${row.stockquantity}">
+			                            <span id="stockquantityMsg" style="color: red;"></span>
+                            		</c:when>
+                            		<c:when test="${row.size eq 'L'}">
+                            			 <a> L : </a>
+			                        	<input type="hidden" name="size4" id="size" class="form-control" value="L">
+			                            <input type="number" name="stockquantity4" id="stockquantity" class="form-control" value="${row.stockquantity}">
+			                            <span id="stockquantityMsg" style="color: red;"></span>
+                            		</c:when>
+                            		<c:when test="${row.size eq 'XL'}">
+                            			<a> XL : </a>
+			                        	<input type="hidden" name="size5" id="size" class="form-control" value="XL">
+			                            <input type="number" name="stockquantity5" id="stockquantity" class="form-control" value="${row.stockquantity}">
+			                            <span id="stockquantityMsg" style="color: red;"></span>
+                            		</c:when>
+                            	</c:choose>
+                            </c:forEach>
                         </td>
                     </tr>
                     <tr>

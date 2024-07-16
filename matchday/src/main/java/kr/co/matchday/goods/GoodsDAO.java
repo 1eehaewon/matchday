@@ -53,8 +53,17 @@ public class GoodsDAO {
         return sqlSession.selectOne("goods.countGoods");
     }//countGoods end
 	
+    public void stockinsert(StockDTO stockDto) {
+	    sqlSession.insert("goods.stockinsert", stockDto);
+	}//stockinsert end
 	
+    public List<StockDTO> stocklist(String goodsid) {
+	    return sqlSession.selectList("goods.stocklist", goodsid);
+	}//stocklist end
 	
-	
+    public void stockupdate(StockDTO stockDto) {
+	    sqlSession.update("goods.stockupdate", stockDto);
+	}//update end
+    
 	
 }//class end

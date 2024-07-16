@@ -18,5 +18,6 @@ public class CartDTO {
     private int quantity;	// 수량
     private int unitprice;	// 가격
     private int totalprice; // 총 금액
+    private String size; 	// 사이즈
     
 }//class end

@@ -6,8 +6,8 @@
 <mapper namespace="cart">
 
 	<insert id="insert" parameterType="kr.co.matchday.cart.CartDTO">
-        INSERT INTO cart (userid, goodsid, quantity, unitprice, totalprice)
-        VALUES (#{userid}, #{goodsid}, #{quantity}, #{unitprice}, #{totalprice})
+        INSERT INTO cart (userid, goodsid, quantity, unitprice, totalprice, size)
+        VALUES (#{userid}, #{goodsid}, #{quantity}, #{unitprice}, #{totalprice}, #{size})
     </insert>
 
     <select id="getCartList" parameterType="String" resultType="kr.co.matchday.cart.CartDTO">

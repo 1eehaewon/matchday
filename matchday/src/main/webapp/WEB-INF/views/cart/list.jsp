@@ -286,11 +286,7 @@
                                         </c:forEach>
                                         </td>
                                         <td>
-                                        	<c:forEach items="${goodsList}" var="goods">
-                                        	<c:if test="${cart.goodsid eq goods.goodsid}">
-                                        	${goods.size}
-                                        	</c:if>
-                                        	</c:forEach>
+                                        	${cart.size}
                                         </td>
 							            <td>
 										    <button type="button" onclick="decrementQuantity(this)" class="수량-button">-</button>
@@ -520,7 +516,7 @@
         }
 
         // 선택된 상품의 ID를 URL에 추가하여 페이지 이동
-        var url = '/order/payment?goodsid=' + selectedItems.join(','); // 선택된 상품 ID를 ','로 구분하여 문자열 생성
+        var url = '/order/payment?cartid=' + selectedItems.join(','); // 선택된 상품 ID를 ','로 구분하여 문자열 생성
         location.href = url;
     }//proceedToPayment() end
 
