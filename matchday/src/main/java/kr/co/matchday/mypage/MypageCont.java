@@ -1,5 +1,6 @@
 package kr.co.matchday.mypage;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +22,10 @@ public class MypageCont {
     public MypageCont() {
         System.out.println("MypageCont() 객체 생성됨");
     }
-
+    
+    @Autowired
+    SqlSession sqlSession;
+    
     @Autowired
     private MypageDAO mypageDao;
 
@@ -35,9 +39,15 @@ public class MypageCont {
             model.addAttribute("message", "로그인이 필요합니다.");
             return "/member/login"; // 경고 메시지와 함께 로그인페이지로 이동
         }
+        
+     // 포인트 합산 쿼리 실행
+        int totalpoints = sqlSession.selectOne("mypage.getTotalPoints", userID);
+        
         MypageDTO user = mypageDao.getUserById(userID);
         List<Map<String, Object>> userPurchasedMemberships = membershipticketDao.getUserMemberships(userID);
+        
         model.addAttribute("user", user);
+        model.addAttribute("totalpoints", totalpoints);
         model.addAttribute("userPurchasedMemberships", userPurchasedMemberships);
         return "member/mypage"; // 마이페이지로 이동
     }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- point.xml -->
+
+<mapper namespace="point">
+	
+	<!-- 회원가입 후 첫 로그인 포인트 지급 -->
+	<select id="isFirstLogin" resultType="int">
+        SELECT COUNT(*) FROM pointhistory
+        WHERE userid = #{userid} AND pointsource = '회원가입 축하 포인트'
+    </select>
+
+	<insert id="addPointHistory">
+        INSERT INTO pointhistory (userid, pointtype, pointsource, pointamount, pointcreationdate)
+        VALUES (#{userid}, #{pointtype}, #{pointsource}, #{pointamount}, NOW())
+    </insert>
+	
+	
+	<select id="getLastAttendance" resultType="kr.co.matchday.point.AttendanceDTO">
+        SELECT userid, last_attendance
+        FROM attendance
+        WHERE userid = #{userid}
+    </select>
+
+    <update id="updateLastAttendance">
+        INSERT INTO attendance (userid, last_attendance)
+        VALUES (#{userid}, #{last_attendance})
+        ON DUPLICATE KEY UPDATE last_attendance = #{last_attendance}
+    </update>
+</mapper>
+

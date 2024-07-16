@@ -119,7 +119,7 @@
                         </tr>
                         <tr>
                             <th><label for="point">포인트</label></th>
-                            <td><input type="text" class="form-control" id="point" name="point" value="${user.points}" required readonly></td>
+                            <td><input type="text" class="form-control" id="totalpoints" name="totalpoints" value="${totalpoints}" required readonly></td>
                         </tr>
                         <tr>
                             <th>구입한 멤버쉽</th>

@@ -20,6 +20,6 @@ public class MypageDTO {
 	private String address2;
 	private String number;
 	private String grade;
-	private int points;
+	private int totalpoints;
 
 }// class end

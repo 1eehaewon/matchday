@@ -19,4 +19,15 @@ public class PointHistoryDAO {
 	public List<PointHistoryDTO> getPointHistoryList(String userid){
 		return sqlSession.selectList("mypage.getPointHistoryList", userid); //namespace.메서드이름
 	}
+	
+	//회원가입 후 첫 로그인 포인트 지급
+	 public boolean isFirstLogin(String userid) {
+	        Integer count = sqlSession.selectOne("point.isFirstLogin", userid);
+	        return count == null || count == 0;
+	    }
+	 
+	 //포인트 지급
+	 public void addPointHistory(PointHistoryDTO pointHistory) {
+	        sqlSession.insert("point.addPointHistory", pointHistory);
+	    }
 }// class end

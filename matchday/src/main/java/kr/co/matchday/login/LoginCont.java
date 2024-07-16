@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.point.UserService;
 
 @Controller
 @RequestMapping("/member")
@@ -17,6 +18,9 @@ public class LoginCont {
 
 	@Autowired
 	private LoginDAO loginDao;
+	
+	@Autowired
+	UserService userService;
 
 	@GetMapping("/login")
 	public String login() {
@@ -43,6 +47,10 @@ public class LoginCont {
 			session.setAttribute("userID", userID); // 로그인 성공 시 세션에 사용자 정보 저장
 			session.setAttribute("grade", grade); // 세션에 사용자 등급 저장(M,A,F)
 			modelAndView.setViewName("redirect:/home.do"); // 메인 페이지로 리다이렉트
+			
+			// 포인트 지급 로직 추가
+            userService.checkFirstLogin(userID); // 첫 로그인 시 포인트 지급
+            userService.dailyAttendance(userID); // 매일 출석 시 포인트 지급
 		} else {
 			modelAndView.setViewName("/member/login"); // /WEB-INF/views/member/login.jsp
 			modelAndView.addObject("errorMessage", "아이디 또는 비밀번호가 잘못되었습니다.");
