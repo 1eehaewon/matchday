@@ -40,14 +40,14 @@ public class MypageCont {
             return "/member/login"; // 경고 메시지와 함께 로그인페이지로 이동
         }
         
-     // 포인트 합산 쿼리 실행
-        int totalpoints = sqlSession.selectOne("mypage.getTotalPoints", userID);
         
+     // 사용자 정보 조회
         MypageDTO user = mypageDao.getUserById(userID);
+        
         List<Map<String, Object>> userPurchasedMemberships = membershipticketDao.getUserMemberships(userID);
         
         model.addAttribute("user", user);
-        model.addAttribute("totalpoints", totalpoints);
+        model.addAttribute("totalpoints", user.getTotalpoints());
         model.addAttribute("userPurchasedMemberships", userPurchasedMemberships);
         return "member/mypage"; // 마이페이지로 이동
     }

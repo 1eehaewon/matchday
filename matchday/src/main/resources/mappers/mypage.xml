@@ -128,8 +128,14 @@
         FROM
             pointhistory
         WHERE
-            userid = #{value}
+            userid = #{userid}
     </select>
 
+	<!-- totalpoints 업데이트 -->
+    <update id="updateTotalPoints">
+        UPDATE users
+        SET totalpoints = #{totalpoints}
+        WHERE userid = #{userid}
+    </update>
 </mapper>
 
