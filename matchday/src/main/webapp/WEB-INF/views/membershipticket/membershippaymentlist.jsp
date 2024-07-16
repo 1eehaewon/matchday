@@ -31,7 +31,7 @@
                             <c:when test="${membership.status == 'completed'}">
                                 결제 완료
                             </c:when>
-                            <c:when test="${membership.status == 'refunded'}">
+                            <c:when test="${membership.status == '환불완료'}">
                                 환불 완료
                             </c:when>
                             <c:otherwise>
@@ -40,15 +40,37 @@
                         </c:choose>
                     </td>
                     <td>
-                        <form action="/membershipticket/refund" method="post">
-                            <input type="hidden" name="imp_uid" value="${membership.imp_uid}" />
-                            <button type="submit" class="btn btn-danger">환불하기</button>
-                        </form>
+                        <c:choose>
+                            <c:when test="${membership.status == '환불완료'}">
+                                <button class="btn btn-danger" disabled>환불 완료</button>
+                            </c:when>
+                            <c:otherwise>
+                                <button class="btn btn-danger" onclick="refund('${membership.usermembershipid}')">환불하기</button>
+                            </c:otherwise>
+                        </c:choose>
                     </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function refund(userMembershipId) {
+    $.ajax({
+        type: "POST",
+        url: "/membershipticket/refund",
+        data: { usermembershipid: userMembershipId },
+        success: function(response) {
+            alert(response);
+            location.reload(); // 현재 페이지를 다시 로드합니다.
+        },
+        error: function(error) {
+            alert("환불 실패: " + error.responseText);
+        }
+    });
+}
+</script>
 
 <%@ include file="../footer.jsp" %>

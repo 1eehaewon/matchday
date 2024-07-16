@@ -27,7 +27,7 @@
     </select>
 
     <select id="getUserMembershipDetails" parameterType="String" resultType="java.util.HashMap">
-        SELECT um.purchasedate, m.membershipid, m.membershipname, m.startdate, m.enddate, um.usermembershipid
+        SELECT um.purchasedate, m.membershipid, m.membershipname, m.startdate, m.enddate, um.usermembershipid, um.status
         FROM usermemberships um
         JOIN memberships m ON um.membershipid = m.membershipid
         WHERE um.userid = #{userID}
@@ -40,8 +40,13 @@
     </select>
 
     <update id="updateUserMembershipStatusByImpUid" parameterType="java.util.HashMap">
-    UPDATE usermemberships
-    SET status = #{status}
-    WHERE imp_uid = #{impUid}
-</update>
+        UPDATE usermemberships
+        SET status = #{status}
+        WHERE imp_uid = #{impUid}
+    </update>
+
+    <delete id="deleteUserMembershipById" parameterType="String">
+        DELETE FROM usermemberships WHERE usermembershipid = #{userMembershipId}
+    </delete>
+
 </mapper>

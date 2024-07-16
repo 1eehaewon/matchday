@@ -55,6 +55,7 @@ public class MembershipticketDAO {
         sqlSession.update("kr.co.matchday.membershipticket.MembershipticketDAO.updateUserMembershipStatusByImpUid", params);
     }
 
-
-    
+    public void deleteUserMembershipById(String userMembershipId) {
+        sqlSession.delete("kr.co.matchday.membershipticket.MembershipticketDAO.deleteUserMembershipById", userMembershipId);
+    }
 }
