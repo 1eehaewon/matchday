@@ -59,23 +59,18 @@
     }
 
     function handleBooking(matchId) {
-        // 현재 날짜와 시간 가져오기
         var now = new Date().getTime();
         
-        // Ajax를 통해 서버에서 판매 종료일을 조회
         $.ajax({
             url: "/matches/getBookingEndDate",
             type: "GET",
             data: { matchid: matchId },
             success: function(result) {
-                // 조회한 판매 종료일을 Date 객체로 변환
                 var endDate = new Date(result).getTime();
                 
-                // 판매 종료일이 현재 날짜와 시간 이전인지 확인
                 if (now > endDate) {
                     alert("판매가 종료된 경기입니다.");
                 } else {
-                    // 로그인 여부를 세션에서 확인
                     var isLoggedIn = '${sessionScope.userID}' !== '';
                     if (isLoggedIn) {
                         openPopup('/tickets/ticketspayment?matchid=' + matchId);
@@ -101,6 +96,22 @@
             </c:if>
         </div>
     </div>
+
+    <!-- 팀 검색 섹션 시작 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <form action="/matches/search" method="get" class="d-flex">
+                <select name="teamname" class="form-control mr-2">
+                    <option value="">전체</option>
+                    <c:forEach var="team" items="${teams}">
+                        <option value="${team}">${team}</option>
+                    </c:forEach>
+                </select>
+                <button type="submit" class="btn btn-primary">검색</button>
+            </form>
+        </div>
+    </div>
+    <!-- 팀 검색 섹션 끝 -->
 
     <div class="mt-4">
         <c:forEach var="match" items="${matchList}">
@@ -137,7 +148,6 @@
                     <button type="button" class="btn btn-success btn-book" onclick="handleBooking('${match.matchid}')">
                         예매하기
                     </button>
-                    <!-- 회원 등급이 M인 경우에만 상세 보기 버튼 표시 -->
                     <c:if test="${sessionScope.grade == 'M'}">
                         <div class="text-center mt-2">
                             <a href="/matches/detail/${match.matchid}" class="btn btn-primary">상세 보기</a>

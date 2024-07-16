@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.matchday.instagram.InstagramDAO;
 import kr.co.matchday.instagram.InstagramDTO;
+import kr.co.matchday.matches.MatchesService;
+import kr.co.matchday.matches.MatchesDTO;
 import kr.co.matchday.video.VideoDAO;
 import kr.co.matchday.video.VideoDTO;
 
@@ -26,20 +27,23 @@ public class HomeController {
    @Autowired
    private VideoDAO videoDao;
    
+   @Autowired
+   private MatchesService matchesService; // MatchesService 주입
+   
    //matchday 프로젝트의 첫페이지 호출 명령어 등록
    //http://localhost:9095/home.do
-    @RequestMapping("/home.do")
-       public String home(Model model) {
-           List<InstagramDTO> instagramList = instagramDao.list();
-           model.addAttribute("instagramList", instagramList);    
-           
-           List<VideoDTO> videoList = videoDao.list();
-           model.addAttribute("videoList", videoList);
-           
-           return "index";
-       }//home() end
-   
-   
-   
-   
+   @RequestMapping("/home.do")
+   public String home(Model model) {
+       List<InstagramDTO> instagramList = instagramDao.list();
+       model.addAttribute("instagramList", instagramList);    
+       
+       List<VideoDTO> videoList = videoDao.list();
+       model.addAttribute("videoList", videoList);
+       
+       List<MatchesDTO> matchList = matchesService.getMatchesWithinFiveDays(); // 경기 일정 가져오기
+       model.addAttribute("matchList", matchList); // 모델에 추가
+       
+       return "index";
+   }//home() end
+
 }//class end

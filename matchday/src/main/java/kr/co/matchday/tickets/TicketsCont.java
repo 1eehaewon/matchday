@@ -228,6 +228,11 @@ public class TicketsCont {
         String couponId = requestParams.get("couponid");
         String membershipId = requestParams.get("membershipid");
 
+        // 쿠폰 ID가 null 또는 빈 문자열이면 null로 설정
+        if (couponId == null || couponId.trim().isEmpty() || "0".equals(couponId)) {
+            couponId = null;
+        }
+
         // imp_uid 로그 출력
         System.out.println("imp_uid: " + imp_uid);
 
@@ -309,7 +314,7 @@ public class TicketsCont {
                     ticketsDto.setShippingaddress(shippingaddress);
                     ticketsDto.setShippingrequest(shippingrequest);
                     ticketsDto.setImpUid(imp_uid); // 결제 UID 설정
-                    ticketsDto.setCouponid(couponId); // 쿠폰 ID 설정
+                    ticketsDto.setCouponid(couponId); // 쿠폰 ID 설정 (null 일 수 있음)
                     ticketsDto.setMembershipid(membershipId); // 멤버십 ID 설정
                     ticketsDto.setMethodcode("someMethodCode"); // 방법 코드 설정
                     ticketsDto.setFinalpaymentamount(paid_amount); // 최종 결제 금액 설정
@@ -381,7 +386,6 @@ public class TicketsCont {
 
         return response;
     }
-
 
 
     /**
@@ -585,17 +589,38 @@ public class TicketsCont {
         return mav;
     }
     
-    @PostMapping("/checkSelectedSeats")
+    @GetMapping("/generateQRCode")
     @ResponseBody
-    public Map<String, Object> checkSelectedSeats(@RequestBody Map<String, Object> params) {
-        String userId = (String) params.get("userId");
-        List<String> seats = (List<String>) params.get("seats");
-        boolean available = webSocketController.checkIfSeatsAvailable(seats.toArray(new String[0]), userId);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", available);
-        return response;
+    public ResponseEntity<byte[]> generateQRCode(@RequestParam("reservationid") String reservationid) {
+        try {
+            TicketsDTO reservation = ticketsService.getReservationById(reservationid);
+            if (reservation == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            
+            List<TicketsDetailDTO> details = ticketsService.getTicketDetailsByReservationId(reservationid);
+            
+            // QR 코드에 포함될 정보를 JSON 형식으로 생성
+            Map<String, Object> qrData = new HashMap<>();
+            qrData.put("reservationid", reservationid);
+            qrData.put("matchid", reservation.getMatchid());
+            qrData.put("seats", details.stream().map(TicketsDetailDTO::getSeatid).toArray());
+            qrData.put("username", reservation.getUserName());
+            qrData.put("matchdate", reservation.getMatchdate().getTime()); // 타임스탬프로 변환
+			/*
+			 * qrData.put("stadiumid", reservation.getStadiumName()); // 경기장 ID 추가
+			 */            
+            ObjectMapper objectMapper = new ObjectMapper();
+            String qrText = objectMapper.writeValueAsString(qrData);
+            
+            byte[] qrImage = QRCodeGenerator.generateQRCodeImage(qrText, 200, 200);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<>(qrImage, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
 }
 

@@ -2,7 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ include file="../header.jsp" %>
-    <style>
+
+<style>
         .card-header {
             background-color: #f8f9fa;
             font-weight: bold;
@@ -20,10 +21,16 @@
         .table th, .table td {
             word-wrap: break-word;
         }
+        .btn-group {
+            display: flex; /* Flexbox 레이아웃 설정 */
+            justify-content: center; /* 가운데 정렬 */
+            gap: 10px; /* 버튼 간의 간격 설정 */
+        }
     </style>
+
 <div class="container mt-4">
     <h1 class="mb-4">예약 상세 정보</h1>
-
+    
     <div class="card mb-4">
         <div class="card-header">
             예매정보
@@ -51,6 +58,16 @@
                     <td>${reservation.location}</td>
                 </tr>
             </table>
+        </div>
+    </div>
+
+    <!-- QR 코드 섹션 추가 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            모바일 티켓 (QR 코드)
+        </div>
+        <div class="card-body">
+            <img src="/tickets/generateQRCode?reservationid=${reservation.reservationid}" alt="QR Code"  style="width: 500px; height: 500px" />
         </div>
     </div>
 
@@ -160,15 +177,12 @@
         </div>
     </div>
 
-    <div class="card mb-4">
-    <div class="card-header">
-        예매 취소
-    </div>
-    <div class="card-body">
-        <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
-        <button id="go-back" class="btn btn-secondary mt-2">목록으로</button>
-    </div>
-</div>
+    <div class="btn-group" align="center">
+	    <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+	    &nbsp;&nbsp;
+	    <button id="go-back" class="btn btn-secondary">목록으로</button>
+	</div>
+
 <script>
     $(document).ready(function() {
         $('#cancel-payment').click(function() {
@@ -198,6 +212,4 @@
     });
 </script>
 
-
 <%@ include file="../footer.jsp" %>
-

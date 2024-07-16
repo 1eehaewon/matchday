@@ -48,7 +48,7 @@ public class MatchesCont {
         binder.registerCustomEditor(Date.class, "bookingstartdate", new CustomDateEditor(dateTimeFormat, true));
         binder.registerCustomEditor(Date.class, "bookingenddate", new CustomDateEditor(dateTimeFormat, true));
     }
-
+    
     // 경기 등록 페이지로 이동하는 메서드
     @GetMapping("/write")
     public ModelAndView write() {
@@ -112,9 +112,11 @@ public class MatchesCont {
     public ModelAndView list(HttpSession session) {
         System.out.println("-----list() 메서드 호출됨-----");
         List<MatchesDTO> matchList = matchesService.listActiveMatches();
+        List<String> teams = matchesService.getAllTeams(); // 팀 목록 가져오기
 
         ModelAndView mav = new ModelAndView("matches/list");
         mav.addObject("matchList", matchList);
+        mav.addObject("teams", teams); // 팀 목록을 모델에 추가
 
         String userGrade = (String) session.getAttribute("grade");
         System.out.println("회원 등급: " + userGrade); // 디버깅 로그
@@ -122,6 +124,8 @@ public class MatchesCont {
 
         return mav;
     }
+
+
 
     // 경기 상세 정보 페이지로 이동하는 메서드
     @GetMapping("/detail/{matchid}")
@@ -169,5 +173,29 @@ public class MatchesCont {
     @ResponseBody
     public Date getBookingEndDate(@RequestParam("matchid") String matchid) {
         return matchesService.getBookingEndDate(matchid);
+    }
+    
+    @GetMapping("/search")
+    public ModelAndView search(@RequestParam(value = "teamname", required = false) String teamname, HttpSession session) {
+        System.out.println("-----search() 메서드 호출됨-----");
+        List<MatchesDTO> matchList;
+
+        if (teamname == null || teamname.isEmpty()) {
+            matchList = matchesService.listActiveMatches();
+        } else {
+            matchList = matchesService.searchMatchesByTeamName(teamname);
+        }
+
+        List<String> teams = matchesService.getAllTeams(); // 팀 목록 가져오기
+
+        ModelAndView mav = new ModelAndView("matches/list");
+        mav.addObject("matchList", matchList);
+        mav.addObject("teams", teams); // 팀 목록을 모델에 추가
+
+        String userGrade = (String) session.getAttribute("grade");
+        System.out.println("회원 등급: " + userGrade); // 디버깅 로그
+        mav.addObject("userGrade", userGrade);
+
+        return mav;
     }
 }

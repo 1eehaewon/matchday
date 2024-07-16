@@ -40,22 +40,24 @@
         WHERE reservationid LIKE CONCAT('reservation', #{date}, '%')
     </select>
 
-    <!-- 티켓 정보 삽입 -->
     <insert id="insertTicket" parameterType="kr.co.matchday.tickets.TicketsDTO">
-        INSERT INTO tickets (
-            reservationid, matchid, quantity, price, userid, reservationdate,
-            paymentmethodcode, reservationstatus, collectionmethodcode,
-            membershipid, methodcode, couponid, usedpoints,
-            finalpaymentamount, shippingstartdate, shippingenddate,
-            shippingstatus, recipientname, shippingaddress, shippingrequest, imp_uid
-        ) VALUES (
-            #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate},
-            #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode},
-            #{membershipid}, #{methodcode}, #{couponid}, #{usedpoints},
-            #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate},
-            #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}, #{impUid}
-        )
-    </insert>
+	    INSERT INTO tickets (
+	        reservationid, matchid, quantity, price, userid, reservationdate,
+	        paymentmethodcode, reservationstatus, collectionmethodcode,
+	        membershipid, methodcode, couponid, usedpoints,
+	        finalpaymentamount, shippingstartdate, shippingenddate,
+	        shippingstatus, recipientname, shippingaddress, shippingrequest, imp_uid
+	    ) VALUES (
+	        #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate},
+	        #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode},
+	        #{membershipid}, #{methodcode}, 
+	        <if test="couponid != null">#{couponid},</if>
+	        <if test="couponid == null">NULL,</if>
+	        #{usedpoints}, #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate},
+	        #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}, #{impUid}
+	    )
+	</insert>
+
 
 
     <!-- 티켓 상세 정보 삽입 -->

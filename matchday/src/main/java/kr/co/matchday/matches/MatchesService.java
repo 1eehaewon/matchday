@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,9 +22,12 @@ public class MatchesService {
      * @return 모든 팀 이름 목록
      */
     public List<String> getAllTeams() {
-        return matchesDAO.getAllTeams().stream()
-                         .map(team -> (String) team.get("teamname"))
-                         .collect(Collectors.toList());
+        List<Map<String, Object>> teamsList = matchesDAO.getAllTeams();
+        List<String> teamNames = new ArrayList<String>();
+        for (Map<String, Object> team : teamsList) {
+            teamNames.add((String) team.get("teamname"));
+        }
+        return teamNames;
     }
 
     /**
@@ -111,4 +117,37 @@ public class MatchesService {
         Date currentDate = new Date();
         return matchesDAO.listActiveMatches(currentDate);
     }
+    
+    /**
+     * 현재 날짜가 지난 경기를 삭제하는 메서드
+     */
+    public void deleteOldMatches() {
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDateString = dateFormat.format(currentDate);
+        matchesDAO.deleteOldMatches(currentDateString);
+    }
+    
+    public List<MatchesDTO> searchMatchesByTeamName(String teamname) {
+        return matchesDAO.searchMatchesByTeamName(teamname);
+    }
+    
+    /**
+     * 오늘 날짜부터 5일 후까지의 경기 정보를 반환하는 메서드
+     * @return 경기 정보 목록
+     */
+    public List<MatchesDTO> getMatchesWithinFiveDays() {
+        Date today = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        calendar.add(Calendar.DATE, 5);
+        Date fiveDaysLater = calendar.getTime();
+
+        return matchesDAO.list()
+                .stream()
+                .filter(match -> !match.getMatchdate().before(today) && !match.getMatchdate().after(fiveDaysLater))
+                .sorted((m1, m2) -> m1.getMatchdate().compareTo(m2.getMatchdate())) // 날짜 순으로 정렬
+                .collect(Collectors.toList());
+    }
+
 }

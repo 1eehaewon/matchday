@@ -64,4 +64,14 @@ public class MatchesDAO {
     public List<MatchesDTO> listActiveMatches(Date currentDate) {
         return sqlSession.selectList("kr.co.matchday.matches.MatchesDAO.listActiveMatches", currentDate);
     }
+    
+    // 현재 날짜가 지난 경기를 삭제하는 메서드
+    public void deleteOldMatches(String currentDateString) {
+        sqlSession.delete("kr.co.matchday.matches.MatchesDAO.deleteOldMatches", currentDateString);
+    }
+    
+    public List<MatchesDTO> searchMatchesByTeamName(String teamname) {
+        return sqlSession.selectList("kr.co.matchday.matches.MatchesDAO.searchMatchesByTeamName", teamname);
+    }
+
 }

@@ -66,12 +66,18 @@
         JOIN stadiums s ON m.stadiumid = s.stadiumid
         WHERE m.bookingenddate >= DATE_SUB(#{currentDate}, INTERVAL 1 DAY)
     </select>
-    
-    <update id="resetCouponUsage" parameterType="string">
-	    UPDATE coupon
-	    SET usage = 'Not Used'
-	    WHERE couponid = #{couponId}
-	</update>
-    
 
+    <!-- 현재 날짜가 지난 경기를 삭제하는 쿼리 -->
+    <delete id="deleteOldMatches" parameterType="string">
+        DELETE FROM matches WHERE DATE(matchdate) &lt; DATE_SUB(#{currentDateString}, INTERVAL 1 DAY)
+    </delete>
+    
+    <!-- 특정 팀 이름으로 경기 정보를 검색하는 쿼리 -->
+	<select id="searchMatchesByTeamName" parameterType="string" resultType="kr.co.matchday.matches.MatchesDTO">
+	    SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.bookingstartdate, m.bookingenddate, m.referee, s.stadiumname
+	    FROM matches m
+	    JOIN stadiums s ON m.stadiumid = s.stadiumid
+	    WHERE m.hometeamid = #{teamname} OR m.awayteamid = #{teamname}
+	</select>
+    
 </mapper>
