@@ -15,7 +15,7 @@
                 <th>멤버쉽 시작 날짜</th>
                 <th>멤버쉽 종료 날짜</th>
                 <th>결제 상태</th>
-                <th>환불</th> <!-- 환불하기 버튼을 위한 새로운 열 -->
+                <th>환불</th>
             </tr>
         </thead>
         <tbody>
@@ -28,21 +28,22 @@
                     <td><fmt:formatDate value="${membership.enddate}" pattern="yyyy-MM-dd"/></td>
                     <td>
                         <c:choose>
-                            <c:when test="${membership.status == '환불완료'}">
-                                환불완료
+                            <c:when test="${membership.status == 'completed'}">
+                                결제 완료
+                            </c:when>
+                            <c:when test="${membership.status == 'refunded'}">
+                                환불 완료
                             </c:when>
                             <c:otherwise>
-                                결제 완료
+                                ${membership.status}
                             </c:otherwise>
                         </c:choose>
                     </td>
                     <td>
-                        <c:if test="${membership.status != '환불완료'}">
-                            <form action="/membershipticket/refund" method="post">
-                                <input type="hidden" name="userMembershipId" value="${membership.usermembershipid}">
-                                <button type="submit" class="btn btn-danger">환불하기</button>
-                            </form>
-                        </c:if>
+                        <form action="/membershipticket/refund" method="post">
+                            <input type="hidden" name="imp_uid" value="${membership.imp_uid}" />
+                            <button type="submit" class="btn btn-danger">환불하기</button>
+                        </form>
                     </td>
                 </tr>
             </c:forEach>

@@ -15,10 +15,9 @@
     </select>
 
     <insert id="insertUserMembership" parameterType="java.util.HashMap">
-    INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate, imp_uid)
-    VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate}, #{impUid})
-</insert>
-
+        INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate, imp_uid)
+        VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate}, #{impUid})
+    </insert>
 
     <select id="getUserMemberships" parameterType="String" resultType="java.util.HashMap">
         SELECT um.usermembershipid, m.membershipname, um.purchasedate
@@ -40,9 +39,9 @@
         WHERE usermembershipid = #{userMembershipId}
     </select>
 
-    <update id="updateUserMembershipStatus" parameterType="java.util.HashMap">
-        UPDATE usermemberships
-        SET status = #{status}
-        WHERE usermembershipid = #{userMembershipId}
-    </update>
+    <update id="updateUserMembershipStatusByImpUid" parameterType="java.util.HashMap">
+    UPDATE usermemberships
+    SET status = #{status}
+    WHERE imp_uid = #{impUid}
+</update>
 </mapper>

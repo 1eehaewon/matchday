@@ -48,10 +48,13 @@ public class MembershipticketDAO {
         return sqlSession.selectOne("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMembershipById", userMembershipId);
     }
 
-    public void updateUserMembershipStatus(String userMembershipId, String status) {
+    public void updateUserMembershipStatus(String impUid, String status) {
         Map<String, String> params = new HashMap<>();
-        params.put("userMembershipId", userMembershipId);
+        params.put("impUid", impUid);
         params.put("status", status);
-        sqlSession.update("kr.co.matchday.membershipticket.MembershipticketDAO.updateUserMembershipStatus", params);
+        sqlSession.update("kr.co.matchday.membershipticket.MembershipticketDAO.updateUserMembershipStatusByImpUid", params);
     }
+
+
+    
 }
