@@ -372,7 +372,6 @@ public class TicketsCont {
                     pointHistoryDTO.setPointsource("좌석예매 포인트 적립");
                     pointHistoryDTO.setPointamount(pointsToAccumulate);
                     pointHistoryDTO.setPointcreationdate(new Timestamp(System.currentTimeMillis()));
-                    pointHistoryDTO.setPointusedate(new Timestamp(System.currentTimeMillis()));
                     ticketsService.insertPointHistory(pointHistoryDTO);
 
                     // 세션에 결제 정보 저장
@@ -403,6 +402,7 @@ public class TicketsCont {
 
         return response;
     }
+
 
 
     /**
