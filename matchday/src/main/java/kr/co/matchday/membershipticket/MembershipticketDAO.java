@@ -25,7 +25,7 @@ public class MembershipticketDAO {
         return sqlSession.selectOne("kr.co.matchday.membershipticket.MembershipticketDAO.getMembershipInfo", membershipID);
     }
 
-    public void insertUserMembership(String userMembershipId, String userID, String membershipID, String status, String purchaseDate, String impUid) {
+    public void insertUserMembership(String userMembershipId, String userID, String membershipID, String status, String purchaseDate, String impUid, String expirationStatus) {
         Map<String, String> params = new HashMap<>();
         params.put("userMembershipId", userMembershipId);
         params.put("userID", userID);
@@ -33,6 +33,7 @@ public class MembershipticketDAO {
         params.put("status", status);
         params.put("purchaseDate", purchaseDate);
         params.put("impUid", impUid);
+        params.put("expirationStatus", expirationStatus); // expirationstatus 추가
         sqlSession.insert("kr.co.matchday.membershipticket.MembershipticketDAO.insertUserMembership", params);
     }
 
@@ -43,6 +44,7 @@ public class MembershipticketDAO {
     public List<Map<String, Object>> getUserMembershipDetails(String userID) {
         return sqlSession.selectList("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMembershipDetails", userID);
     }
+
 
     public Map<String, Object> getUserMembershipById(String userMembershipId) {
         return sqlSession.selectOne("kr.co.matchday.membershipticket.MembershipticketDAO.getUserMembershipById", userMembershipId);
@@ -58,4 +60,9 @@ public class MembershipticketDAO {
     public void deleteUserMembershipById(String userMembershipId) {
         sqlSession.delete("kr.co.matchday.membershipticket.MembershipticketDAO.deleteUserMembershipById", userMembershipId);
     }
+    
+    public void updateExpirationStatus() {
+        sqlSession.update("kr.co.matchday.membershipticket.MembershipticketDAO.updateExpirationStatus");
+    }
+    
 }

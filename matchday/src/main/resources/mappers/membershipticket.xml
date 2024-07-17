@@ -15,9 +15,10 @@
     </select>
 
     <insert id="insertUserMembership" parameterType="java.util.HashMap">
-        INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate, imp_uid)
-        VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate}, #{impUid})
-    </insert>
+    INSERT INTO usermemberships (usermembershipid, userid, membershipid, status, purchasedate, imp_uid, expirationstatus)
+    VALUES (#{userMembershipId}, #{userID}, #{membershipID}, #{status}, #{purchaseDate}, #{impUid}, #{expirationStatus})
+</insert>
+
 
     <select id="getUserMemberships" parameterType="String" resultType="java.util.HashMap">
         SELECT um.usermembershipid, m.membershipname, um.purchasedate
@@ -27,11 +28,12 @@
     </select>
 
     <select id="getUserMembershipDetails" parameterType="String" resultType="java.util.HashMap">
-        SELECT um.purchasedate, m.membershipid, m.membershipname, m.startdate, m.enddate, um.usermembershipid, um.status
-        FROM usermemberships um
-        JOIN memberships m ON um.membershipid = m.membershipid
-        WHERE um.userid = #{userID}
-    </select>
+    SELECT um.purchasedate, m.membershipid, m.membershipname, m.startdate, m.enddate, um.usermembershipid, um.status, um.expirationstatus
+    FROM usermemberships um
+    JOIN memberships m ON um.membershipid = m.membershipid
+    WHERE um.userid = #{userID}
+	</select>
+
 
     <select id="getUserMembershipById" parameterType="String" resultType="java.util.HashMap">
         SELECT usermembershipid, userid, membershipid, status, purchasedate, imp_uid
@@ -48,5 +50,15 @@
     <delete id="deleteUserMembershipById" parameterType="String">
         DELETE FROM usermemberships WHERE usermembershipid = #{userMembershipId}
     </delete>
+    
+    <update id="updateExpirationStatus">
+    UPDATE usermemberships
+    SET expirationstatus = '비활성화'
+    WHERE expirationstatus = '활성화' AND NOW() > (
+        SELECT enddate FROM memberships
+        WHERE memberships.membershipid = usermemberships.membershipid
+    )
+	</update>
+    
 
 </mapper>

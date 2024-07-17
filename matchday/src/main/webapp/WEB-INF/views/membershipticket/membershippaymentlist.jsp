@@ -15,6 +15,7 @@
                 <th>멤버쉽 시작 날짜</th>
                 <th>멤버쉽 종료 날짜</th>
                 <th>결제 상태</th>
+                <th>유효기간</th>
                 <th>환불</th>
             </tr>
         </thead>
@@ -39,6 +40,7 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
+                    <td>${membership.expirationstatus}</td> <!-- 유효기간 추가 -->
                     <td>
                         <c:choose>
                             <c:when test="${membership.status == '환불완료'}">

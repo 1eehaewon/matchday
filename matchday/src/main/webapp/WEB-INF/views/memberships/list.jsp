@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-    
+
 <%@ include file="../header.jsp" %>
 
 <div class="container text-center">
@@ -20,7 +20,7 @@
             <div class="col-sm-4 col-md-4">
                 <c:choose>
                     <c:when test="${row.filename != '-'}">
-                        <img src="/storage/memberships/${row.filename}" class="img-responsive margin" style="width:100%">
+                        <img src="/storage/memberships/${row.filename}" class="img-responsive margin" style="width:100%; height:200px; object-fit:cover;">
                     </c:when>
                     <c:otherwise>
                         등록된 팀 로고 없음 !!<br>

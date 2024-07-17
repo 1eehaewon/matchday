@@ -62,23 +62,30 @@ public class MembershipticketCont {
     }
 
     @PostMapping("/paymentSuccess")
-    public ModelAndView paymentSuccess(@RequestBody Map<String, Object> paymentData, HttpSession session) {
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> paymentSuccess(@RequestBody Map<String, Object> paymentData, HttpSession session) {
         String userId = (String) session.getAttribute("userID");
 
         if (userId == null || paymentData.get("membershipID") == null) {
-            return new ModelAndView("error"); // error.jsp로 이동하도록 수정 필요
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "error");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
         String membershipID = (String) paymentData.get("membershipID");
         String status = "completed";
         String purchaseDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        String userMembershipId = UUID.randomUUID().toString(); // UUID 생성
-        String impUid = (String) paymentData.get("imp_uid"); // imp_uid 추가
+        String userMembershipId = UUID.randomUUID().toString();
+        String impUid = (String) paymentData.get("imp_uid");
+        String expirationStatus = "활성화";
 
-        membershipticketDao.insertUserMembership(userMembershipId, userId, membershipID, status, purchaseDate, impUid);
+        membershipticketDao.insertUserMembership(userMembershipId, userId, membershipID, status, purchaseDate, impUid, expirationStatus);
 
-        // 결제 완료 후 memberships/list로 리디렉션 
-        return new ModelAndView("redirect:/memberships/list");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "success");
+
+        // 결제 완료 후 memberships/list로 리디렉션을 클라이언트 측에서 수행할 수 있도록 수정
+        return ResponseEntity.ok(response);
     }
 
     @RequestMapping("/membershippaymentlist")
@@ -88,6 +95,7 @@ public class MembershipticketCont {
         mav.setViewName("membershipticket/membershippaymentlist");
 
         if (userId != null) {
+            membershipticketDao.updateExpirationStatus(); // 상태 업데이트 호출
             List<Map<String, Object>> membershipDetails = membershipticketDao.getUserMembershipDetails(userId);
             mav.addObject("membershipDetails", membershipDetails);
         } else {
