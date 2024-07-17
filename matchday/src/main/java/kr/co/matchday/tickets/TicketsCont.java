@@ -381,6 +381,7 @@ public class TicketsCont {
                     session.setAttribute("membershipName", requestParams.get("membershipName"));
                     session.setAttribute("totalDiscount", requestParams.get("totalDiscount"));
                     session.setAttribute("totalPaymentAmount", requestParams.get("totalPaymentAmount"));
+                    session.setAttribute("collectionmethodcode", collectionmethodcode);
 
                     response.put("success", true);
                     response.put("redirectUrl", "/tickets/reservationList?reservationid=" + reservationid);
@@ -402,7 +403,6 @@ public class TicketsCont {
 
         return response;
     }
-
 
 
     /**
