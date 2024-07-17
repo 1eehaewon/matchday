@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class AttendanceDTO {
+	private int attendanceid;
 	private String userid;
 	private Date last_attendance;
 	

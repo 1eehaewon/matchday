@@ -21,9 +21,11 @@
 	
 	
 	<select id="getLastAttendance" resultType="kr.co.matchday.point.AttendanceDTO">
-        SELECT userid, last_attendance
+        SELECT attendanceid, userid, last_attendance
         FROM attendance
         WHERE userid = #{userid}
+        ORDER BY last_attendance DESC
+        LIMIT 1
     </select>
 
     <update id="updateLastAttendance">
