@@ -47,7 +47,7 @@ public class MypageCont {
         List<Map<String, Object>> userPurchasedMemberships = membershipticketDao.getUserMemberships(userID);
         
         model.addAttribute("user", user);
-        model.addAttribute("totalpoints", user.getTotalpoints());
+        model.addAttribute("totalpoints", user.getTotalpoints()); //총포인트계산
         model.addAttribute("userPurchasedMemberships", userPurchasedMemberships);
         return "member/mypage"; // 마이페이지로 이동
     }

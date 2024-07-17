@@ -16,7 +16,7 @@
         border-radius: 10px;
         margin-right: 20px;
     }
-    .mypage-form {
+    .mypage-content {
         flex: 1;
         padding: 30px;
         border: 1px solid #ccc;
@@ -30,19 +30,16 @@
         font-weight: bold;
         color: #333;
     }
-    .form-group {
-        margin-bottom: 15px;
-    }
     .form-table {
         width: 100%;
+        border-collapse: collapse;
     }
     .form-table th, .form-table td {
         padding: 8px;
-        vertical-align: middle;
         border: 1px solid #ccc;
+        text-align: center;
     }
     .form-table th {
-        text-align: left;
         background-color: #f0f0f0;
     }
     @media (max-width: 768px) {
@@ -60,54 +57,44 @@
             margin-bottom: 10px;
         }
     }
-    .input-group {
-        display: flex;
-        align-items: center;
-    }
-    .input-group input {
-        flex: 1;
-    }
-    .input-group button {
-        margin-left: 10px;
-    }
 </style>
 <div class="mypage-container">
-    <table class="table table-bordered">
-        <tr>
-            <td class="mypage-sidebar" style="border-right: none;">
-                <ul class="list-group">
-                    <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
-                            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
-                </ul>
-            </td>
-            <td width="15" style="border: none;"></td>
-            <td class="mypage-form" style="border-left: none;">
-                <h2 class="mypage-title">포인트 적립 내역</h2>
-                <table class="form-table">
-                    <thead>
-                        <tr>
-                            <th>적립일</th>
-                            <th>적립 유형</th>
-                            <th>적립 포인트</th>
-                            <th>포인트 출처</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="history" items="${pointHistoryList}">
-                            <tr>
-                                <td>${history.pointcreationdate}</td>
-                                <td>${history.pointtype}</td>
-                                <td>${history.pointamount}</td>
-                                <td>${history.pointsource}</td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </table>
+    <!-- 사이드바 -->
+    <div class="mypage-sidebar">
+        <ul class="list-group">
+            <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
+            <li class="list-group-item active"><a href="/member/mypage/point">포인트 내역</a></li>
+            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
+            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
+            <li class="list-group-item"><a href="/tickets/reservationList">나의 예매내역</a></li>
+            <li class="list-group-item"><a href="/membershipticket/membershippaymentlist">멤버쉽 구매내역</a></li>
+        </ul>
+    </div>
+
+    <!-- 포인트 적립 내역 -->
+    <div class="mypage-content">
+        <h2 class="mypage-title">포인트 적립 내역</h2>
+        <table class="form-table">
+            <thead>
+                <tr>
+                    <th>적립일</th>
+                    <th>적립 유형</th>
+                    <th>적립 포인트</th>
+                    <th>포인트 출처</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="history" items="${pointHistoryList}">
+                    <tr>
+                        <td>${history.pointcreationdate}</td>
+                        <td>${history.pointtype}</td>
+                        <td>${history.pointamount}</td>
+                        <td>${history.pointsource}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <%@ include file="../footer.jsp" %>

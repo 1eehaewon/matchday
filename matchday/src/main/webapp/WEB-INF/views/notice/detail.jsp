@@ -67,36 +67,34 @@
   <div class="spacing"></div>
     
   <c:choose>
-     <c:when test="${notice.category == 'event'}">
-  <!-- 댓글 시작 -->
-  <div class="row" style="margin-left: 26%">
-    <div class="col-sm-12">
-		<form name="replyInsertForm" id="replyInsertForm">
-			<!-- 부모글번호 -->
-			<input type="hidden" name="noticeid" id=noticeid value="${notice.noticeid}">
-			<table class="table table-borderless">
-			<tr>
-				<td>
-					<input type="text" name="content" id="content" placeholder="댓글 내용 입력해 주세요" class="form-control">
-				</td>
-				<td>
-					<button type="button" name="replyInsertBtn" id="replyInsertBtn" class="btn btn-secondary">댓글등록</button>
-				</td>
-			</table>
-		</form>
-    </div><!-- col end -->
-  </div><!-- row end -->
+        <c:when test="${notice.category == 'event'}">
+            <!-- 댓글 시작 -->
+            <div class="row" style="margin-left: 26%">
+                <div class="col-sm-12">
+                    <form name="replyInsertForm" id="replyInsertForm">
+                        <input type="hidden" name="noticeid" id="noticeid" value="${notice.noticeid}">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>
+                                    <input type="text" name="content" id="content" placeholder="댓글 내용 입력해 주세요" class="form-control">
+                                </td>
+                                <td>
+                                    <button type="button" name="replyInsertBtn" id="replyInsertBtn" class="btn btn-secondary">댓글등록</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
   
-
-  <div class="row" style="margin-left: 26%"><!-- 댓글 목록 -->
-    <div class="col-sm-12">
-		<div class="replyList"></div>
-    </div><!-- col end -->
-  </div><!-- row end -->
-  <!-- 댓글 끝 -->
-  
-     </c:when>
-  </c:choose>
+            <div class="row" style="margin-left: 26%">
+                <div class="col-sm-12">
+                    <div class="replyList"></div>
+                </div>
+            </div>
+            <!-- 댓글 끝 -->
+        </c:when>
+    </c:choose>
   
 </main>
 

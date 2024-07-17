@@ -62,11 +62,13 @@
 <div class="mypage-container">
     <div class="mypage-sidebar">
         <ul class="list-group">
-                    <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
-                            <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
-                            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
-                </ul>
+            <li class="list-group-item"><a href="/member/mypage">회원 정보</a></li>
+            <li class="list-group-item"><a href="/member/mypage/point">포인트 내역</a></li>
+            <li class="list-group-item active"><a href="/member/mypage/coupon">쿠폰함</a></li>
+            <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
+            <li class="list-group-item"><a href="/tickets/reservationList">나의 예매내역</a></li>
+            <li class="list-group-item"><a href="/membershipticket/membershippaymentlist">멤버쉽 구매내역</a></li>
+        </ul>
     </div>
     <div class="mypage-form">
         <h2 class="mypage-title">쿠폰함</h2>
