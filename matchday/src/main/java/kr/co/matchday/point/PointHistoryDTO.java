@@ -21,4 +21,5 @@ public class PointHistoryDTO {
 	private int pointamount;
 	private Timestamp pointcreationdate;
 	private Timestamp pointusedate;
+	private String reservationid;
 }//class end

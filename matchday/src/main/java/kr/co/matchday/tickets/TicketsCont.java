@@ -364,15 +364,19 @@ public class TicketsCont {
                     // 결제가 완료된 후 포인트 적립
                     String pointcategoryid = "15"; // 예매적립 ID
                     double rate = ticketsService.getRateByCategoryId(pointcategoryid); // rate 가져오기
-                    int pointsToAccumulate = (int) (paid_amount * rate); // 결제 금액의 rate 비율로 포인트 적립
-                    PointHistoryDTO pointHistoryDTO = new PointHistoryDTO();
-                    pointHistoryDTO.setUserid(userId);
-                    pointHistoryDTO.setPointcategoryid(pointcategoryid);
-                    pointHistoryDTO.setPointtype("적립");
-                    pointHistoryDTO.setPointsource("좌석예매 포인트 적립");
-                    pointHistoryDTO.setPointamount(pointsToAccumulate);
-                    pointHistoryDTO.setPointcreationdate(new Timestamp(System.currentTimeMillis()));
-                    ticketsService.insertPointHistory(pointHistoryDTO);
+                    int pointsToAccumulate = (int) (paid_amount * rate); // 결제 금액의 rate 비율로 포인트 계산
+
+                    // PointHistoryDTO 객체 생성 및 설정
+                    PointHistoryDTO pointHistoryDto = new PointHistoryDTO();
+                    pointHistoryDto.setUserid(userId);
+                    pointHistoryDto.setPointcategoryid(pointcategoryid);
+                    pointHistoryDto.setPointtype("적립");
+                    pointHistoryDto.setPointsource("좌석예매 포인트 적립");
+                    pointHistoryDto.setPointamount(pointsToAccumulate);
+                    pointHistoryDto.setPointcreationdate(Timestamp.valueOf(currentTimestamp));
+                    pointHistoryDto.setReservationid(reservationid); // reservationid 설정
+
+                    ticketsService.insertPointHistory(pointHistoryDto);
 
                     // 세션에 결제 정보 저장
                     session.setAttribute("serviceFee", requestParams.get("serviceFee"));
@@ -381,7 +385,6 @@ public class TicketsCont {
                     session.setAttribute("membershipName", requestParams.get("membershipName"));
                     session.setAttribute("totalDiscount", requestParams.get("totalDiscount"));
                     session.setAttribute("totalPaymentAmount", requestParams.get("totalPaymentAmount"));
-                    session.setAttribute("collectionmethodcode", collectionmethodcode);
 
                     response.put("success", true);
                     response.put("redirectUrl", "/tickets/reservationList?reservationid=" + reservationid);
@@ -405,9 +408,11 @@ public class TicketsCont {
     }
 
 
+
     /**
      * 결제 취소 메서드
      * @param reservationid 예약 ID
+     * @param impUid 결제 UID
      * @return 취소 결과 맵
      */
     @PostMapping("/cancelPayment")
@@ -416,61 +421,58 @@ public class TicketsCont {
         Map<String, Object> response = new HashMap<>();
 
         try {
+            // reservationid로 imp_uid 가져오기
             String impUid = ticketsService.getImpUidByReservationId(reservationid);
 
             if (impUid == null || impUid.isEmpty()) {
                 response.put("success", false);
-                response.put("message", "imp_uid를 찾을 수 없습니다.");
+                response.put("message", "결제 정보를 찾을 수 없습니다.");
                 return response;
             }
 
+            // 아임포트 API를 통해 결제 취소
             String token = getToken();
-
             if (token == null) {
                 response.put("success", false);
-                response.put("message", "아임포트 토큰을 가져올 수 없습니다.");
+                response.put("message", "토큰을 가져오지 못했습니다.");
                 return response;
             }
 
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(token);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-            Map<String, String> request = new HashMap<>();
-            request.put("imp_uid", impUid);
+            Map<String, String> body = new HashMap<>();
+            body.put("imp_uid", impUid);
+            body.put("reason", "사용자 요청에 의한 취소");
 
-            String jsonRequest = new ObjectMapper().writeValueAsString(request);
-            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
-
-            ResponseEntity<String> paymentResponse = restTemplate.postForEntity(
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> cancelResponse = restTemplate.postForEntity(
                     "https://api.iamport.kr/payments/cancel", entity, String.class);
 
-            if (paymentResponse.getStatusCode() == HttpStatus.OK) {
-                JSONObject json = new JSONObject(paymentResponse.getBody());
-                if (!json.isNull("response")) {
-                    System.out.println("Payment cancellation successful for reservation: " + reservationid);
-                    ticketsService.cancelReservationAndUpdateCoupon(reservationid);
+            if (cancelResponse.getStatusCode() == HttpStatus.OK) {
+                // 결제 취소 성공 시 포인트 내역 삭제
+                ticketsService.deletePointHistoryByReservationId(reservationid);
 
-                    response.put("success", true);
-                    response.put("message", "결제가 취소되었습니다.");
-                    response.put("redirectUrl", "/tickets/reservationList");  // 리디렉션 URL 추가
-                } else {
-                    response.put("success", false);
-                    response.put("message", "결제 취소 실패: " + json.getString("message"));
-                }
+                // 예약 상태 업데이트 (취소 처리)
+                ticketsService.updateReservationStatus(reservationid, "Cancelled");
+
+                response.put("success", true);
+                response.put("message", "결제가 성공적으로 취소되었습니다.");
             } else {
                 response.put("success", false);
-                response.put("message", "결제 취소 실패: " + paymentResponse.getBody());
+                response.put("message", "결제 취소에 실패했습니다.");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             response.put("success", false);
-            response.put("message", "결제 취소 중 오류가 발생했습니다.");
+            response.put("message", "결제 취소 처리 중 오류가 발생했습니다.");
+            e.printStackTrace();
         }
 
         return response;
     }
+
 
     /**
      * 아임포트 API 토큰 획득 메서드

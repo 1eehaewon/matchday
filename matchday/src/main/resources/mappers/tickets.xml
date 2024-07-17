@@ -163,13 +163,20 @@
     
     <!-- 포인트 적립 정보 삽입 -->
     <insert id="insertPointHistory" parameterType="kr.co.matchday.point.PointHistoryDTO">
-        INSERT INTO pointhistory (userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate)
-        VALUES (#{userid}, #{pointcategoryid}, #{pointtype}, #{reviewid}, #{pointsource}, #{pointamount}, #{pointcreationdate})
-    </insert>
+	    INSERT INTO pointhistory (userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, reservationid)
+	    VALUES (#{userid}, #{pointcategoryid}, #{pointtype}, #{reviewid}, #{pointsource}, #{pointamount}, #{pointcreationdate}, #{reservationid})
+	</insert>
+
+
     
     <select id="getRateByCategoryId" parameterType="String" resultType="Double">
 	    SELECT rate FROM pointmaster WHERE pointcategoryid = #{pointcategoryid}
 	</select>
+    
+    <delete id="deletePointHistoryByReservationId" parameterType="String">
+	    DELETE FROM pointhistory WHERE reservationid = #{reservationid}
+	</delete>
+
     
 
     

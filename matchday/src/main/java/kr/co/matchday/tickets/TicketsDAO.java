@@ -260,8 +260,8 @@ public class TicketsDAO {
     }
     
     /**
-     * 포인트 적립 정보를 데이터베이스에 삽입하는 메서드
-     * @param pointHistoryDTO PointHistoryDTO 객체
+     * 포인트 기록 삽입 메서드
+     * @param pointHistoryDTO 포인트 기록 DTO
      */
     public void insertPointHistory(PointHistoryDTO pointHistoryDTO) {
         sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertPointHistory", pointHistoryDTO);
@@ -269,6 +269,14 @@ public class TicketsDAO {
     
     public double getRateByCategoryId(String pointcategoryid) {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getRateByCategoryId", pointcategoryid);
+    }
+    
+    /**
+     * 예약 ID로 포인트 히스토리 삭제
+     * @param reservationid 예약 ID
+     */
+    public void deletePointHistoryByReservationId(String reservationid) {
+        sqlSession.delete("kr.co.matchday.tickets.TicketsDAO.deletePointHistoryByReservationId", reservationid);
     }
 
 

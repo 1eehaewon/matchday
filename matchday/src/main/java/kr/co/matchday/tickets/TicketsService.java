@@ -229,15 +229,25 @@ public class TicketsService {
     }
     
     /**
-     * 포인트 적립 정보를 데이터베이스에 삽입하는 메서드
-     * @param pointHistoryDTO PointHistoryDTO 객체
+     * 포인트 기록 삽입 메서드
+     * @param pointHistoryDTO 포인트 기록 DTO
      */
+    @Transactional
     public void insertPointHistory(PointHistoryDTO pointHistoryDTO) {
         ticketsDao.insertPointHistory(pointHistoryDTO);
     }
     
     public double getRateByCategoryId(String pointcategoryid) {
         return ticketsDao.getRateByCategoryId(pointcategoryid);
+    }
+    
+    /**
+     * 포인트 기록 삭제 메서드
+     * @param reservationid 예약 ID
+     */
+    @Transactional
+    public void deletePointHistoryByReservationId(String reservationid) {
+        ticketsDao.deletePointHistoryByReservationId(reservationid);
     }
 
 }
