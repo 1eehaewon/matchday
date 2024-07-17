@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import kr.co.matchday.join.JoinDTO;
+import kr.co.matchday.tickets.TicketsDTO;
 
 @Repository
 public class CustomerDAO {
@@ -92,6 +93,12 @@ public class CustomerDAO {
     public String getUserEmail(String userID) {
         return sqlSession.selectOne("Customer.getUserEmail", userID);
     }
+    
+    // 구매 내역 조회
+    public List<TicketsDTO> getPurchaseHistory(String userID) {
+        return sqlSession.selectList("Customer.getPurchaseHistory", userID);
+    }
+
 
 
 }

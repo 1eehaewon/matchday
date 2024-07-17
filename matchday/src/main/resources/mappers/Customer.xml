@@ -167,4 +167,12 @@
         WHERE userID = #{userID}
     </select>
     
+    <!-- 구매 내역 조회 -->
+	<select id="getPurchaseHistory" parameterType="string" resultType="kr.co.matchday.tickets.TicketsDTO">
+	    SELECT reservationid, reservationdate
+	    FROM tickets
+	    WHERE userid = #{userID}
+	</select>
+    
+    
 </mapper>

@@ -274,6 +274,4 @@ public class TicketsDAO {
     public PointHistoryDTO getPointHistoryByReservationId(String reservationid) {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getPointHistoryByReservationId", reservationid);
     }
-
-
 }

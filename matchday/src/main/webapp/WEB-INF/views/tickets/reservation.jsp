@@ -13,7 +13,7 @@
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script type="text/javascript">
         // 아임포트 관리자 콘솔에서 발급받은 가맹점 식별코드로 초기화
-        IMP.init('imp05021463'); 
+        IMP.init('imp05021463');
     </script>
     <style>
         body {
@@ -78,11 +78,14 @@
     </style>
 </head>
 <body>
+    <!-- 단계 표시 영역 -->
     <div class="steps">
         <span>1. 구역선택</span> -> 
         <span>2. 좌석선택</span> -> 
         <span class="active">3. 결제정보확인</span>
     </div>
+
+    <!-- 예약 확인 컨테이너 -->
     <div class="container">
         <h1>예매 확인</h1>
         <div class="row">
@@ -103,6 +106,8 @@
                         <label class="form-check-label" for="mobile">모바일 티켓</label>
                     </div>
                 </form>
+
+                <!-- 배송지 주소 폼 -->
                 <div id="delivery-address">
                     <h2>배송지 주소</h2>
                     <form>
@@ -125,6 +130,8 @@
                         </div>
                     </form>
                 </div>
+
+                <!-- 예매자 확인 폼 -->
                 <h2>예매자 확인</h2>
                 <form>
                     <div class="mb-3">
@@ -141,6 +148,7 @@
                     </div>
                 </form>
             </div>
+
             <!-- 우측 예약 정보 테이블 -->
             <div class="col-md-6">
                 <h2>My예매정보</h2>
@@ -222,11 +230,14 @@
             <button type="button" class="btn btn-primary" id="pay-button">결제하기</button>
         </div>
     </div>
+
+    <!-- JavaScript 로직 -->
     <script>
     $(document).ready(function() {
         var totalPrice = parseInt("${totalPrice}".replace(/[^0-9]/g, ''), 10);
         var seats = "${seats}".split(",");
 
+        // 총 합계 금액 업데이트 함수
         function updateSubtotalAmount() {
             var serviceFee = parseInt($('#service-fee').text().replace(/[^0-9]/g, ''), 10);
             var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10);
@@ -235,6 +246,7 @@
             return subtotalAmount;
         }
 
+        // 최종 결제 금액 업데이트 함수
         function updateTotalAmount() {
             var subtotalAmount = updateSubtotalAmount();
             var discount = parseInt($('#discount').text().replace(/[^0-9]/g, ''), 10);
@@ -243,6 +255,7 @@
             return totalAmount;
         }
 
+        // 배송 옵션에 따라 배송비 업데이트 함수
         function updateDeliveryFee() {
             var deliveryOption = $('input[name="deliveryOption"]:checked').val();
             var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
@@ -259,6 +272,7 @@
             updateTotalAmount();
         }
 
+        // 할인 금액 업데이트 함수
         function updateDiscount() {
             var selectedCoupon = $('#coupon-select').find(':selected');
             var discountRate = selectedCoupon.data('discount') || 0;
@@ -275,6 +289,7 @@
             updateTotalAmount();
         }
 
+        // 취소 가능 기한 업데이트 함수
         function updateCancellationDeadline() {
             var matchDateStr = $('#match-date').text().split(' ')[0];
             var matchDateParts = matchDateStr.split('-');
@@ -291,6 +306,7 @@
             }
         }
 
+        // 우편번호 찾기 버튼 클릭 시 동작
         $('#find-postcode').click(function() {
             new daum.Postcode({
                 oncomplete: function(data) {
@@ -325,27 +341,33 @@
             }).open();
         });
 
+        // 배송 옵션 변경 시 동작
         $('.delivery-option').change(function() {
             updateDeliveryFee();
         });
 
+        // 쿠폰 선택 변경 시 동작
         $('#coupon-select').change(function() {
             updateDiscount();
         });
 
+        // 멤버십 선택 변경 시 동작
         $('#membership-select').change(function() {
             updateDiscount();
         });
 
+        // 초기 설정
         updateDeliveryFee();
         updateSubtotalAmount();
         updateDiscount();
         updateCancellationDeadline();
 
+        // 이전 단계 버튼 클릭 시 동작
         $('#prev-step').click(function() {
             window.history.back();
         });
 
+        // 결제 버튼 클릭 시 동작
         $('#pay-button').click(function() {
             var totalAmount = updateTotalAmount();
             var couponId = $('#coupon-select').val();
@@ -410,6 +432,7 @@
             });
         });
 
+        // 결제 취소 버튼 클릭 시 동작
         $('#cancel-button').click(function() {
             var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
             if (impUid) {

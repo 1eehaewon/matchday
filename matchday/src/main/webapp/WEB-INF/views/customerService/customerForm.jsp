@@ -13,21 +13,8 @@
                         <h2 class="mb-0 fw-bold">1:1 문의</h2>
                     </div>
                     <div class="card-body p-5">
-                        <div class="mb-4">
-                            <label for="orderSelect" class="form-label custom-form-label">구매 내역</label>
-                            <select name="orderSelect" id="orderSelect" class="form-select custom-form-control">
-                                <option value="">구매 내역을 선택하세요</option>
-                                <optgroup label="축구 경기">
-                                    <c:forEach var="match" items="${matchList}">
-                                        <option value="${match.inquiryID}">${match.title} - ${match.formattedCreatedDate}</option>
-                                    </c:forEach>
-                                </optgroup>
-                                <optgroup label="구매 상품">
-                                    <c:forEach var="product" items="${productList}">
-                                        <option value="${product.inquiryID}">${product.title} - ${product.formattedCreatedDate}</option>
-                                    </c:forEach>
-                                </optgroup>
-                            </select>
+                        <div class="text-center mb-4">
+                            <button id="viewPurchases" class="btn btn-outline-secondary btn-lg">내가 구매한 상품조회</button>
                         </div>
                         <form name="customerForm" id="customerForm" method="post" action="insert" enctype="multipart/form-data">
                             <div class="mb-4">
@@ -74,9 +61,8 @@
 
 <script>
 $(document).ready(function() {
-    $("#orderSelect").change(function() {
-        var selectedValue = $(this).val();
-        $("#referenceID").val(selectedValue);
+    $("#viewPurchases").click(function() {
+        window.open("/customerService/purchaseHistoryPopup", "purchaseHistoryPopup", "width=800,height=600,scrollbars=yes");
     });
 
     // Summernote 초기화

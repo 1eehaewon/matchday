@@ -407,8 +407,6 @@ public class TicketsCont {
         return response;
     }
 
-
-
     /**
      * 결제 취소 메서드
      * @param reservationid 예약 ID
@@ -511,7 +509,6 @@ public class TicketsCont {
 
         return null;
     }
-
 
     /**
      * 예약 목록 페이지로 이동
@@ -641,4 +638,3 @@ public class TicketsCont {
         }
     }
 }
-
