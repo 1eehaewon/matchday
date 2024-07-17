@@ -143,6 +143,16 @@ public class MembershipsCont {
         return "redirect:/memberships/list";
     }
 
+    @GetMapping("/delete")
+    public String delete(@RequestParam("membershipid") String membershipid) {
+        try {
+            membershipsDao.delete(membershipid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/memberships/list";
+    }
+
     private String uploadFile(String basePath, MultipartFile img) throws IOException {
         String originalFilename = img.getOriginalFilename();
         String filename = originalFilename;
