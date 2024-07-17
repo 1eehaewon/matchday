@@ -32,26 +32,44 @@
             flex-direction: column;
             justify-content: space-between;
         }
-        .carousel-control-prev, .carousel-control-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 5%;
-            z-index: 1;
-        }
-        .carousel-control-prev {
-            left: 300px;
-        }
-        .carousel-control-next {
-            right: 300px;
-        }
-        .carousel-item img {
-            width: 100%;
-            height: auto;
-        }
-        .carousel-indicators {
-            display: none;
-        }
+		#matchCarousel {
+		    position: relative; /* 캐러셀 자체를 상대적으로 위치시킴 */
+		}
+		
+		#matchCarousel .carousel-inner {
+		    position: relative; /* 내부 아이템들을 상대적으로 위치시킴 */
+		}
+		
+		#matchCarousel .carousel-control-prev,
+		#matchCarousel .carousel-control-next {
+		    position: absolute;
+		    top: 50%;
+		    transform: translateY(-50%);
+		    width: 50px; /* 버튼의 너비 조정 */
+		    height: 50px; /* 버튼의 높이 조정 */
+		    z-index: 2; /* 버튼이 다른 요소 위에 나타나도록 z-index 설정 */
+		    color: white; /* 버튼 색상 */
+		    background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+		    border-radius: 50%; /* 동그란 버튼 모양 */
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		}
+		
+		#matchCarousel .carousel-control-prev {
+		    left: 300px; /* 왼쪽에서 위치 조정 */
+		}
+		
+		#matchCarousel .carousel-control-next {
+		    right: 300px; /* 오른쪽에서 위치 조정 */
+		}
+		
+		#matchCarousel .carousel-control-prev-icon,
+		#matchCarousel .carousel-control-next-icon {
+		    width: 100%;
+		    height: 100%;
+		}
+
         .dropdown:hover .dropdown-menu {
             display: block;
         }
@@ -104,31 +122,36 @@
             z-index: 1;
         }
         .timer-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .timer-box {
-            background: none;
-            padding: 10px;
-            border-radius: 5px;
-            color: #fff;
-            text-align: center;
-        }
-        .timer-box .label {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        .timer-box .time {
-            background: #000;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 24px;
-            font-weight: bold;
-            display: inline-block;
-            min-width: 50px;
-            color: #fff;
-        }
+    display: flex; /* Flexbox를 사용하여 가로 정렬 */
+    justify-content: center; /* 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+		}
+		
+		.timer-box {
+		    background: none;
+		    padding: 10px;
+		    border-radius: 5px;
+		    color: #fff;
+		    text-align: center;
+		    margin: 0 5px; /* 간격 추가 */
+		}
+		
+		.timer-box .label {
+		    font-size: 14px;
+		    margin-bottom: 5px;
+		}
+		
+		.timer-box .time {
+		    background: #000;
+		    padding: 5px 10px;
+		    border-radius: 5px;
+		    font-size: 24px;
+		    font-weight: bold;
+		    display: inline-block;
+		    min-width: 50px;
+		    color: #fff;
+		}
+
     </style>
 </head>
 <body>
@@ -226,39 +249,58 @@
     
 
     <!-- 경기 일정 캐러셀 섹션 -->
-	<div id="matchCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
-	    <div class="carousel-inner">
-	        <c:forEach var="match" items="${matchList}" varStatus="status">
-			    <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
-			        <div class="container">
-			            <div class="match-schedule text-center p-4 rounded shadow position-relative" style="background-image: url('/storage/matchimg/backgroundimg.jpg'); background-size: cover; background-position: center;">
-			                <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"></div>
-			                <div class="content position-relative" style="z-index: 1;">
-			                    <h2 class="text-white mb-4">NEXT MATCH</h2>
-			                    <div class="countdown-timer mb-4" data-matchdate="${match.matchdate.time}"></div>
-			                    <div class="teams d-flex justify-content-around align-items-center my-4">
-			                        <div class="team text-center">
-			                            <img src="/storage/matchimg/${match.hometeamid}.jpg" alt="${match.hometeamid} 로고" class="team-logo mb-2">
-			                            <div class="team-name text-uppercase text-white">${match.hometeamid}</div>
-			                        </div>
-			                        <div class="vs fs-4 fw-bold text-white">VS</div>
-			                        <div class="team text-center">
-			                            <img src="/storage/matchimg/${match.awayteamid}.jpg" alt="${match.awayteamid} 로고" class="team-logo mb-2">
-			                            <div class="team-name text-uppercase text-white">${match.awayteamid}</div>
-			                        </div>
-			                    </div>
-			                    <div class="match-details text-white">
-			                        <div class="match-date mb-2"><i class="bi bi-calendar"></i> <fmt:formatDate value="${match.matchdate}" pattern="yyyy/MM/dd (E) HH:mm"/></div>
-			                        <div class="match-location mb-2"><i class="bi bi-geo-alt"></i> ${match.stadiumname}</div>
-			                    </div>
-			                </div>
-			            </div>
-			        </div>
-			    </div>
-			</c:forEach>
-	    </div>
-	    <!-- 캐러셀 제어 버튼 -->
-	    <a class="carousel-control-prev" href="#matchCarousel" role="button" data-bs-slide="prev">
+    <div id="matchCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <c:forEach var="match" items="${matchList}" varStatus="status">
+                <div class="carousel-item ${status.index == 0 ? 'active' : ''}">
+                    <div class="container">
+                        <div class="match-schedule text-center p-4 rounded shadow position-relative" style="background-image: url('/storage/matchimg/backgroundimg.jpg'); background-size: cover; background-position: center;">
+                            <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"></div>
+                            <div class="content position-relative" style="z-index: 1;">
+                                <h2 class="text-white mb-4">NEXT MATCH</h2>
+                                <div class="countdown-timer mb-4" data-matchdate="${match.matchdate.time}">
+                                    <div class="timer-container d-flex justify-content-center">
+									    <div class="timer-box mx-1 text-center">
+									        <div class="label">DAY</div>
+									        <div class="time day"></div>
+									    </div>
+									    <div class="timer-box mx-1 text-center">
+									        <div class="label">HOUR</div>
+									        <div class="time hour"></div>
+									    </div>
+									    <div class="timer-box mx-1 text-center">
+									        <div class="label">MINUTE</div>
+									        <div class="time minute"></div>
+									    </div>
+									    <div class="timer-box mx-1 text-center">
+									        <div class="label">SECOND</div>
+									        <div class="time second"></div>
+									    </div>
+									</div>
+                                </div>
+                                <div class="teams d-flex justify-content-around align-items-center my-4">
+                                    <div class="team text-center">
+                                        <img src="/storage/matchimg/${match.hometeamid}.jpg" alt="${match.hometeamid} 로고" class="team-logo mb-2">
+                                        <div class="team-name text-uppercase text-white">${match.hometeamid}</div>
+                                    </div>
+                                    <div class="vs fs-4 fw-bold text-white">VS</div>
+                                    <div class="team text-center">
+                                        <img src="/storage/matchimg/${match.awayteamid}.jpg" alt="${match.awayteamid} 로고" class="team-logo mb-2">
+                                        <div class="team-name text-uppercase text-white">${match.awayteamid}</div>
+                                    </div>
+                                </div>
+                                <div class="match-details text-white">
+                                    <div class="match-date mb-2"><i class="bi bi-calendar"></i> <fmt:formatDate value="${match.matchdate}" pattern="yyyy/MM/dd (E) HH:mm"/></div>
+                                    <div class="match-location mb-2"><i class="bi bi-geo-alt"></i> ${match.stadiumname}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+        <!-- 캐러셀 제어 버튼 -->
+        <a class="carousel-control-prev" href="#matchCarousel" role="button" data-bs-slide="prev">
 	        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 	        <span class="visually-hidden">Previous</span>
 	    </a>
@@ -266,8 +308,8 @@
 	        <span class="carousel-control-next-icon" aria-hidden="true"></span>
 	        <span class="visually-hidden">Next</span>
 	    </a>
-	</div>
-
+    </div>
+    
     <div class="container-fluid py-5" style="height: 200px;">
         <h2 class="text-center">Instagram📷</h2>
     </div>
@@ -394,57 +436,42 @@
     </div>
 </footer>
 <script>
-	$(document).ready(function() {
-	    function updateCountdown() {
-	        $('.countdown-timer').each(function() {
-	            var matchDate = new Date(parseInt($(this).data('matchdate'))); // Ensure the timestamp is parsed correctly
-	            var now = new Date().getTime();
-	            var distance = matchDate - now;
-	
-	            console.log('Match Date:', matchDate); // 추가된 콘솔 로그
-	            console.log('Distance:', distance); // 추가된 콘솔 로그
-	
-	            if (distance >= 0) {
-	                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-	                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-	                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-	                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-	
-	                console.log('Days:', days); // 추가된 콘솔 로그
-	                console.log('Hours:', hours); // 추가된 콘솔 로그
-	                console.log('Minutes:', minutes); // 추가된 콘솔 로그
-	                console.log('Seconds:', seconds); // 추가된 콘솔 로그
-	
-	                $(this).html(`
-	                    <div class="d-flex justify-content-center align-items-center timer-container">
-	                        <div class="timer-box mx-1 text-center">
-	                            <div class="label">DAY</div>
-	                            <div class="time">${days < 10 ? '0' + days : days}</div>
-	                        </div>
-	                        <div class="timer-box mx-1 text-center">
-	                            <div class="label">HOUR</div>
-	                            <div class="time">${hours < 10 ? '0' + hours : hours}</div>
-	                        </div>
-	                        <div class="timer-box mx-1 text-center">
-	                            <div class="label">MINUTE</div>
-	                            <div class="time">${minutes < 10 ? '0' + minutes : minutes}</div>
-	                        </div>
-	                        <div class="timer-box mx-1 text-center">
-	                            <div class="label">SECOND</div>
-	                            <div class="time">${seconds < 10 ? '0' + seconds : seconds}</div>
-	                        </div>
-	                    </div>
-	                `);
-	            } else {
-	                $(this).html("MATCH STARTED");
-	            }
-	        });
-	    }
-	
-	    setInterval(updateCountdown, 1000);
-	    updateCountdown(); // initial call to display immediately
-	});
+    $(document).ready(function() {
+        function updateCountdown() {
+            $('.countdown-timer').each(function() {
+                var matchDate = new Date(parseInt($(this).data('matchdate'))); // Ensure the timestamp is parsed correctly
+                var now = new Date().getTime();
+                var distance = matchDate - now;
 
+                console.log('Match Date:', matchDate.toString()); // 추가된 콘솔 로그
+                console.log('Current Date:', new Date(now).toString()); // 현재 날짜 추가 로그
+                console.log('Distance:', distance); // 추가된 콘솔 로그
+
+                if (distance >= 0) {
+                    var days = Math.ceil(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    console.log('Days:', days); // 추가된 콘솔 로그
+                    console.log('Hours:', hours); // 추가된 콘솔 로그
+                    console.log('Minutes:', minutes); // 추가된 콘솔 로그
+                    console.log('Seconds:', seconds); // 추가된 콘솔 로그
+
+                    $(this).find('.day').text(days < 10 ? '0' + days : days);
+                    $(this).find('.hour').text(hours < 10 ? '0' + hours : hours);
+                    $(this).find('.minute').text(minutes < 10 ? '0' + minutes : minutes);
+                    $(this).find('.second').text(seconds < 10 ? '0' + seconds : seconds);
+                } else {
+                    $(this).html("MATCH STARTED");
+                }
+            });
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // initial call to display immediately
+    });
 </script>
+
 </body>
 </html>
