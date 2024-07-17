@@ -23,8 +23,10 @@
         font-family: Arial, sans-serif;
         margin: 0; /* 여백을 없앰 */
     }
-    .container {
+    .container1 {
         display: flex;
+        margin-left: 390px; /* 왼쪽에 마진 추가 */
+        margin-top: 50px; /* 헤더와의 간격 추가 */
     }
     .membership-image {
         flex: 1;
@@ -89,7 +91,6 @@
         height: 20px;
         margin-right: 10px;
     }
-    /* 추가한 버튼 스타일 */
     .btn {
         padding: 8px 16px;
         border-radius: 4px;
@@ -106,22 +107,21 @@
         color: #fff;
         border: none;
     }
-    /* 공지사항 스타일 */
     .notice-section {
         margin-top: 250px;
         margin-left: auto;
         margin-right: auto;
-        text-align: center; /* 이미지 가운데 정렬 */
-        max-width: 600px; /* 섹션의 최대 너비 설정 */
+        text-align: center;
+        max-width: 600px;
     }
     .notice-section h2 {
         margin-bottom: 20px;
-        font-size: 42px; /* 글씨 크기 조정 */
-        font-weight: bold; /* 글씨 굵게 */
+        font-size: 42px;
+        font-weight: bold;
     }
     .notice-section li {
         margin-bottom: 20px;
-        font-size: 24px; /* 글씨 크기 조정 */
+        font-size: 24px;
     }
     .notice-section img {
         margin-top: 20px;
@@ -131,7 +131,7 @@
 </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container1" >
         <div class="membership-image">
             <img src="/storage/memberships/${memberships.filename}" alt="멤버쉽 클럽 로고">
         </div>

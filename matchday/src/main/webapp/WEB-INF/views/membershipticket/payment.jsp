@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
-    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script> <!-- Daum Postcode API 스크립트 추가 -->
     <script type="text/javascript">
         // 아임포트 관리자 콘솔에서 발급받은 가맹점 식별코드로 초기화
         IMP.init('imp05021463'); 
@@ -260,6 +260,41 @@ $(document).ready(function() {
                 alert('결제에 실패하였습니다.');
             }
         });
+    });
+
+    // 우편번호 찾기 버튼 클릭 이벤트 처리
+    $('#find-postcode').click(function() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                var extraAddr = '';
+
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    $('#extraAddress').val(extraAddr);
+                } else {
+                    $('#extraAddress').val('');
+                }
+
+                $('#postcode').val(data.zonecode);
+                $('#address').val(addr);
+                $('#detailAddress').focus();
+            }
+        }).open();
     });
 });
 </script>

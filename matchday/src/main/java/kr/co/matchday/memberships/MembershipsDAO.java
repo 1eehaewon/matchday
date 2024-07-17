@@ -1,6 +1,7 @@
 package kr.co.matchday.memberships;
 
 import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -46,5 +47,19 @@ public class MembershipsDAO {
     // 팀 이름 가져오기
     public List<String> getTeamNames() {
         return sqlSession.selectList("memberships.getTeamNames");
+    }
+
+    // 페이징을 위한 메서드 추가
+    public List<MembershipsDTO> listWithPaging(Map<String, Integer> params) {
+        return sqlSession.selectList("memberships.listWithPaging", params);
+    }
+
+    public int countMemberships() {
+        return sqlSession.selectOne("memberships.countMemberships");
+    }
+
+    // 검색 기능을 위한 메서드 추가
+    public List<MembershipsDTO> search(String membershipname) {
+        return sqlSession.selectList("memberships.search", "%" + membershipname + "%");
     }
 }

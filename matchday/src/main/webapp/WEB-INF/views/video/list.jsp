@@ -13,7 +13,7 @@
         </div>
     </div>
     
-    <!-- 검색 시작-->
+    <!-- 검색 시작 -->
     <div class="row justify-content-end mb-3"> <!-- 수정된 부분 -->
         <div class="col-sm-3"> <!-- 수정된 부분 -->
             <form method="get" action="search" class="form-inline">
@@ -26,11 +26,11 @@
             </form>
         </div>
     </div> 
-      <!-- 검색 끝 -->
+    <!-- 검색 끝 -->
       
     <div class="row">
         <c:forEach items="${list}" var="row" varStatus="vs">
-            <div class="col-sm-4 col-md-4 mb-4">
+            <div class="col-sm-4 col-md-4 mb-4 text-center"> <!-- 중앙 정렬을 위해 text-center 클래스 추가 -->
                 <c:choose>
                     <c:when test="${row.video_name != '-'}">
                         <a href="detail?video_code=${row.video_code}">
@@ -41,12 +41,13 @@
                         등록된 영상 없음!!<br>
                     </c:otherwise>
                 </c:choose>
-                <br>        
-                경기 : 
-                <a href="detail?video_code=${row.video_code}">${row.video_name}</a> 
                 <br>
-                경기 내용 : 
-                <p>${row.description}</p>               
+                <div style="margin-top: 20px; text-align: center;"> <!-- 제목과의 간격을 추가 및 중앙 정렬 -->
+                    <a href="detail?video_code=${row.video_code}">경기 : ${row.video_name}</a>
+                </div>
+                <div style="margin-top: 10px; text-align: center;"> <!-- 경기 내용과의 간격을 추가 및 중앙 정렬 -->
+                    <a href="detail?video_code=${row.video_code}">경기 내용 : ${row.description}</a>
+                </div>
             </div>
                                    
             <!-- 한줄에 3칸씩 -->

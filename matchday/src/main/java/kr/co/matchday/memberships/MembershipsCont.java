@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Date;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/memberships")
@@ -28,10 +29,22 @@ public class MembershipsCont {
     private MembershipsDAO membershipsDao;
 
     @RequestMapping("/list")
-    public ModelAndView list() {
+    public ModelAndView list(@RequestParam(defaultValue = "1") int page) {
+        int pageSize = 9;
+        int offset = (page - 1) * pageSize;
+
+        int totalRecords = membershipsDao.countMemberships();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        Map<String, Integer> params = new HashMap<>();
+        params.put("limit", pageSize);
+        params.put("offset", offset);
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("memberships/list");
-        mav.addObject("list", membershipsDao.list());
+        mav.addObject("list", membershipsDao.listWithPaging(params));
+        mav.addObject("currentPage", page);
+        mav.addObject("totalPages", totalPages);
         return mav;
     }
 
@@ -151,6 +164,16 @@ public class MembershipsCont {
             e.printStackTrace();
         }
         return "redirect:/memberships/list";
+    }
+
+    // 검색 기능 추가
+    @GetMapping("/search")
+    public ModelAndView search(@RequestParam(defaultValue = "") String membershipname) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("memberships/list");
+        mav.addObject("list", membershipsDao.search(membershipname));
+        mav.addObject("membershipname", membershipname); // 검색어
+        return mav;
     }
 
     private String uploadFile(String basePath, MultipartFile img) throws IOException {
