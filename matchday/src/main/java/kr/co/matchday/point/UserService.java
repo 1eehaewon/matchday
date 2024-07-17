@@ -1,7 +1,10 @@
 package kr.co.matchday.point;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +48,18 @@ public class UserService {
 			pointHistoryDao.addPointHistory(history);
 		}
 	}
+	
+	//총포인트계산
+	public static int calculateTotalPoints(SqlSession sqlSession, String userid) {
+        return sqlSession.selectOne("mypage.getTotalPoints", userid);
+    }
+
+    public static void updateTotalPoints(SqlSession sqlSession, String userid) {
+        int totalPoints = calculateTotalPoints(sqlSession, userid);
+        Map<String, Object> params = new HashMap<>();
+        params.put("userid", userid);
+        params.put("totalpoints", totalPoints);
+        sqlSession.update("mypage.updateTotalPoints", params);
+    }
 
 }// class end

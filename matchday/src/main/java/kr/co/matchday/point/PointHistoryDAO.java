@@ -31,15 +31,6 @@ public class PointHistoryDAO {
 	 //포인트 지급
 	 public void addPointHistory(PointHistoryDTO pointHistory) {
 	        sqlSession.insert("point.addPointHistory", pointHistory);
-	     // 총 포인트를 다시 계산하여 업데이트
-	        int totalPoints = sqlSession.selectOne("mypage.getTotalPoints", pointHistory.getUserid());
-	        Map<String, Object> params = new HashMap<>();
-	        params.put("userid", pointHistory.getUserid());
-	        params.put("totalpoints", totalPoints);
-	        sqlSession.update("mypage.updateTotalPoints", params);
-	        
-	     // 로그 추가
-//	        System.out.println("Total points: " + totalPoints);
 	    }   
 	 
 	 
