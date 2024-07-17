@@ -452,8 +452,8 @@ public class TicketsCont {
                     "https://api.iamport.kr/payments/cancel", entity, String.class);
 
             if (cancelResponse.getStatusCode() == HttpStatus.OK) {
-                // 결제 취소 성공 시 포인트 내역 삭제
-                ticketsService.deletePointHistoryByReservationId(reservationid);
+                // 결제 취소 성공 시 포인트 적립 취소 처리
+                ticketsService.cancelPointHistoryByReservationId(reservationid);
 
                 // 예약 상태 업데이트 (취소 처리)
                 ticketsService.updateReservationStatus(reservationid, "Cancelled");
@@ -472,7 +472,6 @@ public class TicketsCont {
 
         return response;
     }
-
 
     /**
      * 아임포트 API 토큰 획득 메서드

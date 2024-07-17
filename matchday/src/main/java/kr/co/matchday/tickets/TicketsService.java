@@ -241,13 +241,29 @@ public class TicketsService {
         return ticketsDao.getRateByCategoryId(pointcategoryid);
     }
     
-    /**
-     * 포인트 기록 삭제 메서드
-     * @param reservationid 예약 ID
-     */
     @Transactional
-    public void deletePointHistoryByReservationId(String reservationid) {
-        ticketsDao.deletePointHistoryByReservationId(reservationid);
+    public void cancelPointHistoryByReservationId(String reservationid) {
+        // reservationid로 기존 포인트 적립 내역 가져오기
+        PointHistoryDTO existingPointHistory = ticketsDao.getPointHistoryByReservationId(reservationid);
+        
+        if (existingPointHistory != null) {
+            // 기존 포인트 적립 내역의 금액을 음수로 설정하고 결제 취소 내역 추가
+            PointHistoryDTO cancelPointHistory = new PointHistoryDTO();
+            cancelPointHistory.setUserid(existingPointHistory.getUserid());
+            cancelPointHistory.setPointcategoryid(existingPointHistory.getPointcategoryid());
+            cancelPointHistory.setPointtype("적립취소");
+            cancelPointHistory.setReviewid(existingPointHistory.getReviewid());
+            cancelPointHistory.setPointsource("결제취소");
+            cancelPointHistory.setPointamount(-existingPointHistory.getPointamount());
+            cancelPointHistory.setReservationid(reservationid);
+            
+            System.out.println("Cancel Point History: " + cancelPointHistory);
+            
+            ticketsDao.insertPointHistory(cancelPointHistory);
+            System.out.println("Point history cancellation inserted successfully.");
+        } else {
+            System.out.println("No existing point history found for reservationid: " + reservationid);
+        }
     }
 
 }

@@ -173,9 +173,9 @@
 	    SELECT rate FROM pointmaster WHERE pointcategoryid = #{pointcategoryid}
 	</select>
     
-    <delete id="deletePointHistoryByReservationId" parameterType="String">
-	    DELETE FROM pointhistory WHERE reservationid = #{reservationid}
-	</delete>
+    <select id="getPointHistoryByReservationId" parameterType="string" resultType="kr.co.matchday.point.PointHistoryDTO">
+	    SELECT * FROM pointhistory WHERE reservationid = #{reservationid} AND pointtype = '적립'
+	</select>
 
     
 

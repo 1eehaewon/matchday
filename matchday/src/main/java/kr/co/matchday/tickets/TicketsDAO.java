@@ -271,12 +271,8 @@ public class TicketsDAO {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getRateByCategoryId", pointcategoryid);
     }
     
-    /**
-     * 예약 ID로 포인트 히스토리 삭제
-     * @param reservationid 예약 ID
-     */
-    public void deletePointHistoryByReservationId(String reservationid) {
-        sqlSession.delete("kr.co.matchday.tickets.TicketsDAO.deletePointHistoryByReservationId", reservationid);
+    public PointHistoryDTO getPointHistoryByReservationId(String reservationid) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getPointHistoryByReservationId", reservationid);
     }
 
 
