@@ -57,6 +57,14 @@
             margin-bottom: 10px;
         }
     }
+    .point-type-적립 {
+        color: blue;
+        font-weight: bold;
+    }
+    .point-type-사용, .point-type-적립취소 {
+        color: red;
+        font-weight: bold;
+    }
 </style>
 <div class="mypage-container">
     <!-- 사이드바 -->
@@ -87,7 +95,7 @@
                 <c:forEach var="history" items="${pointHistoryList}">
                     <tr>
                         <td>${history.pointcreationdate}</td>
-                        <td>${history.pointtype}</td>
+                         <td class="${history.pointtype eq '적립' ? 'point-type-적립' : (history.pointtype eq '사용' ? 'point-type-사용' : 'point-type-적립취소')}">${history.pointtype}</td>
                         <td>${history.pointamount}</td>
                         <td>${history.pointsource}</td>
                     </tr>

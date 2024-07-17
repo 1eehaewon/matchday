@@ -1,15 +1,18 @@
 package kr.co.matchday.admin;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -22,6 +25,9 @@ public class AdminCont {
 	@Autowired
 	AdminDAO adminDao;
 
+	@Autowired
+	AdminService adminService;
+	
 	// 관리자모드메인페이지
 	@GetMapping("/dashboard")
 	public String dashboard() {
@@ -29,11 +35,18 @@ public class AdminCont {
 	}
 
 	// 관리자모드회원관리페이지 users : jsp의 items명
+//	@GetMapping("/member")
+//	public String member(Model model) {
+//		List<AdminDTO> users = adminDao.selectAllUsers();
+//		model.addAttribute("users", users);
+//		return "/admin/member";
+//	}
+	//총금액추가
 	@GetMapping("/member")
 	public String member(Model model) {
-		List<AdminDTO> users = adminDao.selectAllUsers();
-		model.addAttribute("users", users);
-		return "/admin/member";
+	    List<Map<String, Object>> users = adminDao.getTotalSpentByUsers();
+	    model.addAttribute("users", users);
+	    return "/admin/member";
 	}
 
 	// 쿠폰등록페이지
@@ -120,5 +133,21 @@ public class AdminCont {
             redirectAttributes.addFlashAttribute("message", "포인트 삭제에 실패했습니다.");
         }
         return "redirect:/admin/point/setting";
+    }
+    
+    //회원삭제
+    @PostMapping("/deleteUsers")
+    public ResponseEntity<String> deleteUsers(@RequestParam(value = "userIds", required = false) String[] userIds) {
+        if (userIds == null || userIds.length == 0) {
+            return ResponseEntity.badRequest().body("삭제할 회원을 선택해주세요.");
+        }
+        
+        try {
+            adminService.deleteUsers(Arrays.asList(userIds));
+            return ResponseEntity.ok("회원 삭제가 완료되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 삭제 중 오류가 발생했습니다.");
+        }
     }
 }// class end

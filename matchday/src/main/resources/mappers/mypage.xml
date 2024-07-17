@@ -123,7 +123,7 @@
     <!-- 사용자의 총 포인트 계산 -->
     <select id="getTotalPoints" resultType="int" parameterType="String">
         SELECT
-            COALESCE(SUM(CASE WHEN pointtype = '적립' THEN pointamount ELSE 0 END), 0) -
+            COALESCE(SUM(CASE WHEN pointtype IN('적립', '적립취소') THEN pointamount ELSE 0 END), 0) -
             COALESCE(SUM(CASE WHEN pointtype = '사용' THEN pointamount ELSE 0 END), 0) AS totalpoints
         FROM
             pointhistory

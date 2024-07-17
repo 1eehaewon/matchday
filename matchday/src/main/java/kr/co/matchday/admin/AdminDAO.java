@@ -1,6 +1,7 @@
 package kr.co.matchday.admin;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,10 @@ public class AdminDAO {
 	@Autowired
 	SqlSession sqlSession;
 	
-	//회원정보 전체 불러오기
-	public List<AdminDTO> selectAllUsers() {
-        return sqlSession.selectList("admin.selectAllUsers"); 
-    }
+//	//회원정보 전체 불러오기
+//	public List<AdminDTO> selectAllUsers() {
+//        return sqlSession.selectList("admin.selectAllUsers"); 
+//    }
 	
 	//쿠폰등록하기
 	public void insertCoupon(CouponMasterDTO couponMasterDto) {
@@ -55,5 +56,15 @@ public class AdminDAO {
   	//포인트삭제
   	public int deletePoint(String pointcategoryid) {
     	return sqlSession.delete("admin.deletePoint", pointcategoryid);
+    }
+  	
+  	//회원총금액
+  	public List<Map<String, Object>> getTotalSpentByUsers() {
+  	    return sqlSession.selectList("admin.getTotalSpentByUsers");
+  	}
+  	
+  	//회원삭제
+  	public void deleteUserById(String userId) {
+        sqlSession.delete("admin.deleteUserById", userId);
     }
 }//class end
