@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.matches.MatchesDTO;
+import kr.co.matchday.point.PointHistoryDTO;
 
 @Mapper
 @Repository
@@ -257,5 +258,18 @@ public class TicketsDAO {
         System.out.println("Update result (Not Used): " + result);
         return result;
     }
+    
+    /**
+     * 포인트 적립 정보를 데이터베이스에 삽입하는 메서드
+     * @param pointHistoryDTO PointHistoryDTO 객체
+     */
+    public void insertPointHistory(PointHistoryDTO pointHistoryDTO) {
+        sqlSession.insert("kr.co.matchday.tickets.TicketsDAO.insertPointHistory", pointHistoryDTO);
+    }
+    
+    public double getRateByCategoryId(String pointcategoryid) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getRateByCategoryId", pointcategoryid);
+    }
+
 
 }

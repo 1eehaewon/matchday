@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.matches.MatchesDTO;
+import kr.co.matchday.point.PointHistoryDTO;
 
 @Service
 public class TicketsService {
@@ -226,5 +227,18 @@ public class TicketsService {
             System.out.println("Coupon usage update result (Not Used): " + result);
         }
     }
+    
+    /**
+     * 포인트 적립 정보를 데이터베이스에 삽입하는 메서드
+     * @param pointHistoryDTO PointHistoryDTO 객체
+     */
+    public void insertPointHistory(PointHistoryDTO pointHistoryDTO) {
+        ticketsDao.insertPointHistory(pointHistoryDTO);
+    }
+    
+    public double getRateByCategoryId(String pointcategoryid) {
+        return ticketsDao.getRateByCategoryId(pointcategoryid);
+    }
+
 }
 

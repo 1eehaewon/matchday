@@ -1,6 +1,7 @@
 package kr.co.matchday.tickets;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.matches.MatchesDTO;
+import kr.co.matchday.point.PointHistoryDTO;
+
 import org.mybatis.spring.SqlSessionTemplate;
 
 @Controller
@@ -357,6 +360,20 @@ public class TicketsCont {
                             System.out.println("쿠폰 사용 업데이트 실패: " + couponId);
                         }
                     }
+
+                    // 결제가 완료된 후 포인트 적립
+                    String pointcategoryid = "15"; // 예매적립 ID
+                    double rate = ticketsService.getRateByCategoryId(pointcategoryid); // rate 가져오기
+                    int pointsToAccumulate = (int) (paid_amount * rate); // 결제 금액의 rate 비율로 포인트 적립
+                    PointHistoryDTO pointHistoryDTO = new PointHistoryDTO();
+                    pointHistoryDTO.setUserid(userId);
+                    pointHistoryDTO.setPointcategoryid(pointcategoryid);
+                    pointHistoryDTO.setPointtype("적립");
+                    pointHistoryDTO.setPointsource("좌석예매 포인트 적립");
+                    pointHistoryDTO.setPointamount(pointsToAccumulate);
+                    pointHistoryDTO.setPointcreationdate(new Timestamp(System.currentTimeMillis()));
+                    pointHistoryDTO.setPointusedate(new Timestamp(System.currentTimeMillis()));
+                    ticketsService.insertPointHistory(pointHistoryDTO);
 
                     // 세션에 결제 정보 저장
                     session.setAttribute("serviceFee", requestParams.get("serviceFee"));

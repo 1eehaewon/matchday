@@ -223,9 +223,7 @@
         </a>
     </div><!-- div id="myCarousel" end -->
 
-    <div class="container-fluid py-5" style="height: 200px;">
-        <h2 class="text-center font-weight-bold">Matches🥅</h2>
-    </div>
+    
 
     <!-- 경기 일정 캐러셀 섹션 -->
 	<div id="matchCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
