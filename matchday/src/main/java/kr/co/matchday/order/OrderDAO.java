@@ -1,109 +1,57 @@
 package kr.co.matchday.order;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.co.matchday.admin.CouponMasterDTO;
 import kr.co.matchday.coupon.CouponDTO;
-import kr.co.matchday.mypage.MypageDTO;
-import kr.co.matchday.point.PointHistoryDTO;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class OrderDAO {
 
-	public OrderDAO() {
-		System.out.println("-----OrderDAO() 객체 생성됨");
-	}//end
-	
-	@Autowired
-	SqlSession sqlSession;
-	
-	// 새로운 주문 정보를 데이터베이스에 삽입하는 메서드
-	public void insert(OrderDTO orderDto) {
+    @Autowired
+    private SqlSession sqlSession;
+
+    // 주문 삽입 메소드
+    public void insert(OrderDTO orderDto) {
         sqlSession.insert("order.insert", orderDto);
-    }//insert end
-	
-	// 특정 사용자의 주문 목록을 데이터베이스에서 조회하는 메서드
-	public List<OrderDTO> list(String userid) {
+    }
+
+    // 사용자의 주문 목록 가져오는 메소드
+    public List<OrderDTO> list(String userid) {
         return sqlSession.selectList("order.listByUser", userid);
     }
-	
-	//사용자 ID로 사용자 정보를 가져오는 메서드
-	public Map<String, Object> getUserInfo(String userID) {
+
+    // 사용자의 정보 가져오는 메소드
+    public Map<String, Object> getUserInfo(String userID) {
         return sqlSession.selectOne("order.getUserInfo", userID);
     }
-	
-	//사용자 ID로 쿠폰 목록을 가져오는 메서드
-	public List<CouponDTO> getCouponsByUserId(String userid) {
+
+    // 사용자 ID로 쿠폰 목록 가져오는 메소드 (적용 구분이 Goods인 쿠폰만)
+    public List<CouponDTO> getCouponsByUserId(String userid) {
         Map<String, Object> params = new HashMap<>();
         params.put("userid", userid);
         params.put("applicableProduct", "Goods");
-        params.put("usage", "Not Used");
+        params.put("usage", "Unused"); // usage 값도 추가
         return sqlSession.selectList("order.getCouponsByUserId", params);
     }
-	
-	//쿠폰 ID로 할인율을 가져오는 메서드
-	public int getDiscountRateByCouponId(String couponid) {
+
+    // 쿠폰 ID로 할인율 가져오는 메소드
+    public int getDiscountRateByCouponId(String couponid) {
         return sqlSession.selectOne("order.getDiscountRateByCouponId", couponid);
     }
-	
-	//쿠폰의 사용 상태를 업데이트하는 메서드
-	public int updateCouponUsage(String couponid) {
-        System.out.println("쿠폰 사용 업데이트 시도: " + couponid);
-        int result = sqlSession.update("order.updateCouponUsage", couponid);
-        if (result > 0) {
-            System.out.println("쿠폰 사용 업데이트 성공: " + couponid);
-        } else {
-            System.out.println("쿠폰 사용 업데이트 실패: " + couponid);
-        }
-        return result;
-    }
-	
-	// 쿠폰 타입 ID로 쿠폰 마스터 정보를 가져오는 메서드
-    public CouponMasterDTO getCouponMasterById(String coupontypeid) {
-        return sqlSession.selectOne("coupon.getCouponMasterById", coupontypeid);
-    }
-	
-    
-    
-    
-    
-    // 사용자의 총 포인트를 조회하는 메서드
-    public List<MypageDTO> getTotalPointUserId(String userid) {
-        return sqlSession.selectList("order.getTotalPointUserId", userid);
-    }
-    /*
-    
-    
-    // 사용자의 포인트 이력을 조회하는 메서드
-    public List<PointHistoryDTO> getPointByUserId(String userid) {
-        return sqlSession.selectList("order.getPointByUserId", userid);
-    }
-    */
-    // 사용자의 포인트 이력을 추가하는 메서드
-    public void insertPointHistory(PointHistoryDTO pointHistoryDto) {
-        sqlSession.insert("point.insertPointHistory", pointHistoryDto);
-    }
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-}//class end
+    // 쿠폰 사용 업데이트 메소드
+    public int updateCouponUsage(String couponid) {
+        return sqlSession.update("order.updateCouponUsage", couponid);
+    }
+
+    // 주어진 날짜에 대한 최대 주문 ID 가져오는 메소드
+    public String getMaxOrderId(String date) {
+        return sqlSession.selectOne("order.getMaxOrderId", date);
+    }
+}

@@ -3,37 +3,33 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="order">
+<mapper namespace="kr.co.matchday.order.OrderDAO">
 
-	<!-- 굿즈 ID로 굿즈 정보 가져오기 -->
-    <select id="getGoodsById" parameterType="kr.co.matchday.order.OrderDTO">
-        SELECT * FROM 'order' WHERE goodsid = #{goodsid}
+    <!-- 주어진 날짜에 대한 최대 주문 ID 가져오기 -->
+    <select id="getMaxOrderId" resultType="String" parameterType="String">
+        SELECT MAX(orderid)
+        FROM `order`
+        WHERE orderid LIKE CONCAT('order', #{date}, '%')
     </select>
 
-	<!-- 사용자 ID로 사용자 정보 가져오기 -->
-    <select id="getUserInfo" parameterType="String" resultType="java.util.HashMap">
-        SELECT *
-        FROM users
-        WHERE userid = #{userid}
-    </select>
+    <!-- 주문 정보 삽입 -->
+    <insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
+        INSERT INTO `order` (orderid, userid, goodsid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, shippingstartdate, shippingstatus, recipientname, recipientemail, recipientphone, shippingaddress, shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode)
+        VALUES (#{orderid}, #{userid}, #{goodsid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, #{shippingstartdate}, #{shippingstatus}, #{recipientname}, #{recipientemail}, #{recipientphone}, #{shippingaddress}, #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode})
+    </insert>
 
-	<!-- 주문 정보 삽입 -->
-	<insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
-    INSERT INTO `order` (orderid, userid, goodsid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, 
-                         shippingstartdate, shippingenddate, shippingstatus, recipientname, recipientemail, recipientphone, shippingaddress, 
-                         shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode)
-    VALUES (#{orderid}, #{userid}, #{goodsid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, 
-            #{shippingstartdate}, #{shippingenddate}, #{shippingstatus}, #{recipientname}, #{recipientemail}, #{recipientphone}, #{shippingaddress}, 
-            #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode})
-	</insert>
-
-	<!-- 특정 사용자의 주문 목록을 데이터베이스에서 조회하는 SQL 쿼리 -->
+    <!-- 사용자 ID로 주문 목록 가져오기 -->
     <select id="listByUser" parameterType="String" resultType="kr.co.matchday.order.OrderDTO">
-        SELECT * FROM 'order' WHERE userid = #{userid}
+        SELECT * FROM `order` WHERE userid = #{userid}
     </select>
 
-	<!-- 사용자 ID로 쿠폰 목록 가져오기 -->
-    <select id="getCouponsByUserId" resultType="kr.co.matchday.coupon.CouponDTO">
+    <!-- 사용자 정보 가져오기 -->
+    <select id="getUserInfo" parameterType="String" resultType="Map">
+        SELECT * FROM users WHERE userid = #{userid}
+    </select>
+
+    <!-- 사용자 ID로 쿠폰 목록 가져오기 -->
+    <select id="getCouponsByUserId" resultType="kr.co.matchday.coupon.CouponDTO" parameterType="map">
         SELECT c.couponid, c.coupontypeid, c.userid, c.usage,
                cm.couponname, cm.startdate, cm.enddate, cm.applicableproduct, cm.discountrate
         FROM coupon c
@@ -44,7 +40,7 @@
     </select>
 
     <!-- 쿠폰 ID로 할인율 가져오기 -->
-    <select id="getDiscountRateByCouponId" parameterType="String" resultType="int">
+    <select id="getDiscountRateByCouponId" resultType="int" parameterType="String">
         SELECT discountrate
         FROM couponmaster
         WHERE coupontypeid = (SELECT coupontypeid FROM coupon WHERE couponid = #{couponid})
@@ -56,73 +52,4 @@
         SET `usage` = 'Used'
         WHERE couponid = #{couponid}
     </update>
-    
-    
-    
-    
-    
-    
-    
-   <select id="getTotalPointUserId" parameterType="String" resultType="kr.co.matchday.mypage.MypageDTO">
-    	SELECT * FROM users WHERE userid = #{userid}
-    </select>
-     
-    
-    
-    
-    
-    
-    <!--  사용자 ID로 해당 사용자의 포인트 이력 조회 
-	<select id="getPointByUserId" parameterType="String" resultType="kr.co.matchday.point.PointHistoryDTO">
-	    SELECT * FROM pointhistory WHERE userid = #{userid}
-	</select> -->
-	<!-- PointHistoryDTO를 이용해 포인트 이력 추가 -->
-	<insert id="insertPointHistory" parameterType="kr.co.matchday.point.PointHistoryDTO">
-	    INSERT INTO pointhistory (userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, pointusedate)
-	    VALUES (#{userid}, #{pointcategoryid}, #{pointtype}, #{reviewid}, #{pointsource}, #{pointamount}, #{pointcreationdate}, #{pointusedate})
-	</insert>
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- <select id="findById" parameterType="String">
-        SELECT * FROM order WHERE orderid = #{orderid}
-    </select>
-
-    <update id="update" parameterType="kr.co.matchday.order.OrderDTO">
-        UPDATE order
-        SET userid = #{userid}, goodsid = #{goodsid}, orderdate = #{orderdate}, orderstatus = #{orderstatus}, couponid = #{couponid}, 
-            usedpoints = #{usedpoints}, finalpaymentamount = #{finalpaymentamount}, shippingstartdate = #{shippingstartdate}, 
-            shippingenddate = #{shippingenddate}, shippingstatus = #{shippingstatus}, recipientname = #{recipientname}, 
-            shippingaddress = #{shippingaddress}, shippingrequest = #{shippingrequest}, paymentmethodcode = #{paymentmethodcode}, 
-            price = #{price}, quantity = #{quantity}, receiptmethodcode = #{receiptmethodcode}
-        WHERE orderid = #{orderid}
-    </update>
-
-    <delete id="deleteById" parameterType="String">
-        DELETE FROM order WHERE orderid = #{orderid}
-    </delete> -->
-
-
-
-
 </mapper>
