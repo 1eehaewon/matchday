@@ -29,7 +29,7 @@
     </select>
 
     <!-- 사용자 ID로 쿠폰 목록 가져오기 -->
-    <select id="getCouponsByUserId" resultType="kr.co.matchday.coupon.CouponDTO" parameterType="map">
+    <select id="getCouponsByUserId" resultType="kr.co.matchday.coupon.CouponDTO">
         SELECT c.couponid, c.coupontypeid, c.userid, c.usage,
                cm.couponname, cm.startdate, cm.enddate, cm.applicableproduct, cm.discountrate
         FROM coupon c

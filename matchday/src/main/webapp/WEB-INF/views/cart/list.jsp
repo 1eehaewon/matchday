@@ -343,7 +343,7 @@
 	        	<a href="/goods/list" class="shop_go_link"><em>&lt; 쇼핑 계속하기</em></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	        	<!-- <button type="button" class="buy-button" onclick="openPopup('/order/payment')">구매하기</button> 자바스크립트에 url -->
 	        	<%-- <a href="/order/payment?goodsid=${goodsDto.goodsid}"><button>구매하기</button></a> --%>
-	        	<button type="button" class="buy-button" onclick="proceedToPayment()">구매하기</button>
+	        	<button class="buy-button" onclick="proceedToPayment()">구매하기</button>
 	        </div>
 	    </div>
 	    <!-- order_wrap end-->
