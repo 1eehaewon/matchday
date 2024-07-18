@@ -177,16 +177,19 @@
 </head>
 <body>
 <div class="container">
-    <form>
-        <input type="hidden" name="userid" value="${sessionScope.userID}">
-        <input type="hidden" name="orderid" id="orderid" value="${order.orderid}">
-        <input type="hidden" name="goodsid" id="goodsid" value="${order.goodsid}">
-        <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
-        <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
-        <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
-        <input type="hidden" name="quantity" value="${order.quantity}">
-        <input type="hidden" name="price" value="${order.price}">
-    </form>
+    <!-- 숨겨진 필드로 goodsid 추가 -->
+    <form id="payment-form">
+	    <input type="hidden" name="userid" value="${sessionScope.userID}">
+	    <input type="hidden" name="orderid" id="orderid" value="${order.orderid}">
+	    <input type="hidden" name="goodsid" id="goodsid" value="${goods.goodsid}">
+	    <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
+	    <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
+	    <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
+	    <input type="hidden" name="quantity" id="quantity" value="${order.quantity}">
+	    <input type="hidden" name="price" id="price" value="${order.price}">
+	    <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
+	    <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
+	</form>
 
     <div class="order_tit">
         <h1>주문 및 결제</h1>
@@ -342,6 +345,10 @@
             var totalAmount = subtotalAmount + deliveryFee - discountAmount - points;
 
             $('#total-amount').text(totalAmount.toLocaleString() + '원');
+            $('#finalpaymentamount').val(totalAmount);
+            $('#usedpoints').val(points);
+            $('#price').val(subtotalAmount);
+
             return totalAmount;
         }
 
@@ -413,18 +420,22 @@
                         imp_uid: rsp.imp_uid,
                         merchant_uid: rsp.merchant_uid,
                         paid_amount: rsp.paid_amount,
-                        orderid: '${order.orderid}',
+                        goodsid: $('#goodsid').val(),
                         totalPrice: totalAmount,
                         recipientname: $('#recipientname').val(),
                         recipientemail: $('#recipientemail').val(),
                         recipientphone: $('#recipientphone').val(),
                         shippingaddress: $('#shippingaddress').val() + ' ' + $('#detailAddress').val(),
                         shippingrequest: $('#shippingrequest').val(),
+                        paymentmethodcode: $('#paymentmethodcode').val(),
                         couponid: couponId,
                         couponName: couponName,
                         deliveryFee: deliveryFee,
                         totalDiscount: totalDiscount,
-                        totalPaymentAmount: totalAmount
+                        totalPaymentAmount: totalAmount,
+                        usedpoints: points,
+                        finalpaymentamount: totalAmount,
+                        price: subtotalAmount
                     };
 
                     $.ajax({
@@ -453,5 +464,6 @@
         window.close();
     }
 </script>
+
 </body>
 </html>

@@ -105,6 +105,7 @@ public class OrderCont {
     }
 
 
+
     @PostMapping("/verifyPayment")
     @ResponseBody
     public Map<String, Object> verifyPayment(@RequestParam Map<String, String> requestParams, HttpSession session) {
@@ -123,10 +124,36 @@ public class OrderCont {
         String couponid = requestParams.get("couponid");
         String goodsid = requestParams.get("goodsid");
         String userId = (String) session.getAttribute("userID");
+        int usedpoints = Integer.parseInt(requestParams.getOrDefault("usedpoints", "0"));
+        int price = Integer.parseInt(requestParams.getOrDefault("price", "0"));
+
+        // Log important variables
+        System.out.println("imp_uid: " + imp_uid);
+        System.out.println("merchant_uid: " + merchant_uid);
+        System.out.println("paid_amount: " + paid_amount);
+        System.out.println("finalpaymentamount: " + finalpaymentamount);
+        System.out.println("goodsid: " + goodsid);
+        System.out.println("paymentmethodcode: " + paymentmethodcode);
+        System.out.println("couponid: " + couponid);
+        System.out.println("userId: " + userId);
+        System.out.println("usedpoints: " + usedpoints);
+        System.out.println("price: " + price);
 
         if (userId == null) {
             response.put("success", false);
             response.put("message", "세션에서 사용자 ID를 찾을 수 없습니다.");
+            return response;
+        }
+
+        if (goodsid == null || goodsid.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "상품 ID가 유효하지 않습니다.");
+            return response;
+        }
+
+        if (paymentmethodcode == null || paymentmethodcode.isEmpty()) {
+            response.put("success", false);
+            response.put("message", "결제 방법 코드가 유효하지 않습니다.");
             return response;
         }
 
@@ -152,6 +179,9 @@ public class OrderCont {
                 Map<String, Object> responseJson = (Map<String, Object>) paymentJson.get("response");
                 int amount = (Integer) responseJson.get("amount");
 
+                // Log the amount from the payment gateway
+                System.out.println("amount from payment gateway: " + amount);
+
                 if (amount == paid_amount) {
                     // 주문 ID 생성
                     String orderid = generateOrderId();
@@ -162,8 +192,12 @@ public class OrderCont {
                     orderDto.setGoodsid(goodsid);
                     orderDto.setOrderdate(new Timestamp(System.currentTimeMillis()));
                     orderDto.setOrderstatus("Completed");
-                    orderDto.setCouponid(couponid);
-                    orderDto.setUsedpoints(Integer.parseInt(requestParams.getOrDefault("usedpoints", "0")));
+                    if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
+                        orderDto.setCouponid(couponid);
+                    } else {
+                        orderDto.setCouponid(null);
+                    }
+                    orderDto.setUsedpoints(usedpoints);
                     orderDto.setFinalpaymentamount(finalpaymentamount);
                     orderDto.setShippingstartdate(new Timestamp(System.currentTimeMillis()));
                     orderDto.setShippingstatus("Pending");
@@ -173,9 +207,11 @@ public class OrderCont {
                     orderDto.setShippingaddress(shippingaddress);
                     orderDto.setShippingrequest(shippingrequest);
                     orderDto.setPaymentmethodcode(paymentmethodcode);
-                    orderDto.setPrice(Integer.parseInt(requestParams.getOrDefault("price", "0")));
+                    orderDto.setPrice(price);
                     orderDto.setQuantity(Integer.parseInt(requestParams.getOrDefault("quantity", "1")));
                     orderDto.setReceiptmethodcode("receiving02");
+
+                    System.out.println("OrderDTO: " + orderDto.toString()); // OrderDTO 내용 로그 출력
 
                     orderDao.insert(orderDto);
 
@@ -217,6 +253,8 @@ public class OrderCont {
 
         return response;
     }
+
+
 
     private String generateOrderId() {
         String prefix = "order";
