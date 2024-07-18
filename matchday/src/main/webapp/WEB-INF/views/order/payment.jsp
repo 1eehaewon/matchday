@@ -185,10 +185,11 @@
 	    <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
 	    <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
 	    <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
-	    <input type="hidden" name="quantity" id="quantity" value="${order.quantity}">
-	    <input type="hidden" name="price" id="price" value="${order.price}">
+	    <input type="hidden" name="quantity" id="quantity" value="${quantity}">
+	    <input type="hidden" name="price" id="price" value="${price}">
 	    <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
 	    <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
+	    <input type="hidden" name="totalPrice" id="total-price" value="${totalPrice}">
 	</form>
 
     <div class="order_tit">
@@ -200,49 +201,46 @@
         </ol>
     </div>
 
-    <!-- 주문상세내역 -->
-    <section class="order-section">
-        <h2>주문상세내역</h2>
-        <form>
-            <div class="order-details">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <table class="table table-hover">
-                            <thead class="table-active">
-                            <tr>
-                                <th class="text-center">상품 정보</th>
-                                <th class="text-center">사이즈</th>
-                                <th class="text-center">수량</th>
-                                <th class="text-center">가격</th>
-                                <th class="text-center">총 가격</th>
-                            </tr>
-                            </thead>
-                            <tbody class="text-center">
-                            <tr>
-                                <td>
-                                    <div class="product-image">
-                                        <c:if test="${not empty goods.filename}">
-                                            <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
-                                        </c:if>
-                                    </div>
-                                    <br>
-                                    <span class="productname-text">${goods.productname}</span>
-                                </td>
-                                <td class="size-text">${size}</td>
-                                <td class="quantity-text">${quantity}</td>
-                                <td class="price-text"><fmt:formatNumber value="${price}" pattern="#,###원" /></td>
-                                <td class="totalprice-text"><fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </form>
-        <div class="subtotal-amount">
-            <p id="subtotal-amount">총 결제 금액: <fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></p>
-        </div>
-    </section>
+ 	<!-- 주문상세내역 -->
+	<section class="order-section">
+	    <h2>주문상세내역</h2>
+	    <form>
+	        <div class="order-details">
+	            <div class="row">
+	                <div class="col-sm-12">
+	                    <table class="table table-hover">
+	                        <thead class="table-active">
+	                        <tr>
+	                            <th class="text-center">상품 정보</th>
+	                            <th class="text-center">사이즈</th>
+	                            <th class="text-center">수량</th>
+	                            <th class="text-center">가격</th>
+	                            <th class="text-center">총 가격</th>
+	                        </tr>
+	                        </thead>
+	                        <tbody class="text-center">
+	                        <tr>
+	                            <td>
+	                                <div class="product-image">
+	                                    <c:if test="${not empty goods.filename}">
+	                                        <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
+	                                    </c:if>
+	                                </div>
+	                                <br>
+	                                <span class="productname-text">${goods.productname}</span>
+	                            </td>
+	                            <td class="size-text">${size}</td>
+	                            <td class="quantity-text">${quantity}</td> <!-- 수량 값 표시 -->
+	                            <td class="price-text"><fmt:formatNumber value="${price}" pattern="#,###원" /></td>
+	                            <td class="totalprice-text"><fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></td>
+	                        </tr>
+	                        </tbody>
+	                    </table>
+	                </div>
+	            </div>
+	        </div>
+	    </form>
+	</section>
     <!-- 주문상세내역 end -->
 
     <!-- 주문자 정보 -->
@@ -334,128 +332,132 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        function updateTotalAmount() {
-            var subtotalAmount = parseInt('${totalPrice}', 10) || 0;
-            var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10) || 0;
-            var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
-            var points = parseInt($('#pointsToUse').val(), 10) || 0;
+$(document).ready(function() {
+    function updateTotalAmount() {
+        var subtotalAmount = parseInt($('#total-price').val(), 10) || 0;
+        var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10) || 0;
+        var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
+        var points = parseInt($('#pointsToUse').val(), 10) || 0;
 
-            var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
-            var totalAmount = subtotalAmount + deliveryFee - discountAmount - points;
+        var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
+        var totalAmount = subtotalAmount + deliveryFee - discountAmount - points;
 
-            $('#total-amount').text(totalAmount.toLocaleString() + '원');
-            $('#finalpaymentamount').val(totalAmount);
-            $('#usedpoints').val(points);
-            $('#price').val(subtotalAmount);
+        $('#total-amount').text(totalAmount.toLocaleString() + '원');
+        $('#finalpaymentamount').val(totalAmount);
+        $('#usedpoints').val(points);
+        $('#price').val(subtotalAmount);
 
-            return totalAmount;
-        }
+        return subtotalAmount; 
+    }
 
-        $('#couponid').change(function() {
-            updateTotalAmount();
-        });
-
-        $('#usePointsButton').click(function() {
-            updateTotalAmount();
-        });
-
+    $('#couponid').change(function() {
         updateTotalAmount();
+    });
 
-        $('#find-postcode').click(function() {
-            new daum.Postcode({
-                oncomplete: function(data) {
-                    var addr = '';
-                    var extraAddr = '';
+    $('#usePointsButton').click(function() {
+        updateTotalAmount();
+    });
 
-                    if (data.userSelectedType === 'R') {
-                        addr = data.roadAddress;
-                    } else {
-                        addr = data.jibunAddress;
-                    }
+    updateTotalAmount();
 
-                    if (data.userSelectedType === 'R') {
-                        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                            extraAddr += data.bname;
-                        }
-                        if (data.buildingName !== '' && data.apartment === 'Y') {
-                            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                        }
-                        if (extraAddr !== '') {
-                            extraAddr = ' (' + extraAddr + ')';
-                        }
-                        $('#extraAddress').val(extraAddr);
-                    } else {
-                        $('#extraAddress').val('');
-                    }
+    $('#find-postcode').click(function() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                var extraAddr = '';
 
-                    $('#postcode').val(data.zonecode);
-                    $('#shippingaddress').val(addr);
-                    $('#detailAddress').focus();
-                }
-            }).open();
-        });
-
-        $('#pay-button').click(function() {
-            var totalAmount = updateTotalAmount();
-            var couponId = $('#couponid').val();
-            var couponName = $('#couponid').find(':selected').text();
-            var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
-            var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
-            var points = $('#pointsToUse').val();
-
-            IMP.request_pay({
-                pg: 'html5_inicis',
-                pay_method: 'card',
-                merchant_uid: 'merchant_' + new Date().getTime(),
-                name: '상품 주문 결제',
-                amount: totalAmount,
-                buyer_email: $('#recipientemail').val(),
-                buyer_name: $('#recipientname').val(),
-                buyer_tel: $('#recipientphone').val(),
-                m_redirect_url: 'http://yourdomain.com/complete'
-            }, function(rsp) {
-                if (rsp.success) {
-                    var formData = {
-                        imp_uid: rsp.imp_uid,
-                        merchant_uid: rsp.merchant_uid,
-                        paid_amount: rsp.paid_amount,
-                        goodsid: $('#goodsid').val(),
-                        totalPrice: totalAmount,
-                        recipientname: $('#recipientname').val(),
-                        recipientemail: $('#recipientemail').val(),
-                        recipientphone: $('#recipientphone').val(),
-                        shippingaddress: $('#shippingaddress').val() + ' ' + $('#detailAddress').val(),
-                        shippingrequest: $('#shippingrequest').val(),
-                        paymentmethodcode: $('#paymentmethodcode').val(),
-                        couponid: couponId,
-                        couponName: couponName,
-                        deliveryFee: deliveryFee,
-                        totalDiscount: totalDiscount,
-                        totalPaymentAmount: totalAmount,
-                        usedpoints: points,
-                        finalpaymentamount: totalAmount,
-                        price: subtotalAmount
-                    };
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '/order/verifyPayment',
-                        data: formData,
-                        traditional: true,
-                        success: function(data) {
-                            if (data.success) {
-                                window.opener.location.href = data.redirectUrl;
-                                window.close();
-                            } else {
-                                alert('결제 검증에 실패했습니다.');
-                            }
-                        }
-                    });
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
                 } else {
-                    alert('결제에 실패하였습니다. 오류 내용 :' + rsp.error_msg);
+                    addr = data.jibunAddress;
                 }
-            });
+
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    $('#extraAddress').val(extraAddr);
+                } else {
+                    $('#extraAddress').val('');
+                }
+
+                $('#postcode').val(data.zonecode);
+                $('#shippingaddress').val(addr);
+                $('#detailAddress').focus();
+            }
+        }).open();
+    });
+
+    $('#pay-button').click(function() {
+        var subtotalAmount = updateTotalAmount();
+        var totalAmount = parseInt($('#finalpaymentamount').val(), 10) || 0;
+        var couponId = $('#couponid').val();
+        var couponName = $('#couponid').find(':selected').text();
+        var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
+        var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
+        var points = $('#pointsToUse').val();
+        var quantity = parseInt($('#quantity').val(), 10) || 1; // 수량 값 가져오기
+
+        IMP.request_pay({
+            pg: 'html5_inicis',
+            pay_method: 'card',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: '상품 주문 결제',
+            amount: totalAmount,
+            buyer_email: $('#recipientemail').val(),
+            buyer_name: $('#recipientname').val(),
+            buyer_tel: $('#recipientphone').val(),
+            m_redirect_url: 'http://yourdomain.com/complete'
+        }, function(rsp) {
+            if (rsp.success) {
+                var formData = {
+                    imp_uid: rsp.imp_uid,
+                    merchant_uid: rsp.merchant_uid,
+                    paid_amount: rsp.paid_amount,
+                    goodsid: $('#goodsid').val(),
+                    totalPrice: totalAmount,
+                    recipientname: $('#recipientname').val(),
+                    recipientemail: $('#recipientemail').val(),
+                    recipientphone: $('#recipientphone').val(),
+                    shippingaddress: $('#shippingaddress').val() + ' ' + $('#detailAddress').val(),
+                    shippingrequest: $('#shippingrequest').val(),
+                    paymentmethodcode: $('#paymentmethodcode').val(),
+                    couponid: couponId,
+                    couponName: couponName,
+                    deliveryFee: deliveryFee,
+                    totalDiscount: totalDiscount,
+                    totalPaymentAmount: totalAmount,
+                    usedpoints: points,
+                    finalpaymentamount: totalAmount,
+                    price: subtotalAmount,
+                    quantity: quantity // 수량 값 추가
+                };
+
+                console.log('formData:', formData); // 로그 메시지 추가
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/order/verifyPayment',
+                    data: formData,
+                    traditional: true,
+                    success: function(data) {
+                        if (data.success) {
+                            window.opener.location.href = data.redirectUrl;
+                            window.close();
+                        } else {
+                            alert('결제 검증에 실패했습니다.');
+                        }
+                    }
+                });
+            } else {
+                alert('결제에 실패하였습니다. 오류 내용 :' + rsp.error_msg);
+            }
         });
     });
 
@@ -463,6 +465,8 @@
         alert("결제가 취소되었습니다.");
         window.close();
     }
+});
+
 </script>
 
 </body>

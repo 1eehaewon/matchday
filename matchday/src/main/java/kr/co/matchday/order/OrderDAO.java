@@ -18,8 +18,11 @@ public class OrderDAO {
 
     // 주문 삽입 메소드
     public void insert(OrderDTO orderDto) {
+        System.out.println("Preparing to insert order: " + orderDto.toString());
         sqlSession.insert("kr.co.matchday.order.OrderDAO.insert", orderDto);
+        System.out.println("Order inserted in database.");
     }
+
 
     // 사용자의 주문 목록 가져오는 메소드
     public List<OrderDTO> list(String userid) {

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -57,13 +58,11 @@ public class OrderCont {
                           @RequestParam(value = "couponid", required = false) String couponid,
                           @RequestParam(value = "usedpoints", required = false, defaultValue = "0") int usedpoints,
                           HttpSession session, Model model) {
-        // 세션에서 사용자 ID 가져오기
         String userid = (String) session.getAttribute("userID");
         if (userid == null) {
             return "redirect:/member/login";
         }
 
-        // 상품 정보 가져오기
         GoodsDTO goods = goodsDao.detail(goodsid);
         if (goods == null) {
             model.addAttribute("error", "상품 정보를 찾을 수 없습니다.");
@@ -77,11 +76,9 @@ public class OrderCont {
         model.addAttribute("couponid", couponid);
         model.addAttribute("usedpoints", usedpoints);
 
-        // 사용자 쿠폰 목록 가져오기
         List<CouponDTO> couponList = orderDao.getCouponsByUserId(userid);
         model.addAttribute("couponList", couponList);
 
-        // 할인율 계산
         int discountRate = 0;
         if (couponid != null && !couponid.isEmpty()) {
             try {
@@ -93,7 +90,6 @@ public class OrderCont {
         }
         model.addAttribute("discountRate", discountRate);
 
-        // 사용자 포인트 정보 가져오기
         MypageDTO mypageDto = mypageDao.getUserById(userid);
         if (mypageDto == null) {
             model.addAttribute("error", "사용자 정보를 찾을 수 없습니다.");
@@ -104,13 +100,11 @@ public class OrderCont {
         return "order/payment";
     }
 
-
-
     @PostMapping("/verifyPayment")
     @ResponseBody
     public Map<String, Object> verifyPayment(@RequestParam Map<String, String> requestParams, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-
+        
         String imp_uid = requestParams.get("imp_uid");
         String merchant_uid = requestParams.get("merchant_uid");
         int paid_amount = Integer.parseInt(requestParams.getOrDefault("paid_amount", "0"));
@@ -126,6 +120,7 @@ public class OrderCont {
         String userId = (String) session.getAttribute("userID");
         int usedpoints = Integer.parseInt(requestParams.getOrDefault("usedpoints", "0"));
         int price = Integer.parseInt(requestParams.getOrDefault("price", "0"));
+        int quantity = Integer.parseInt(requestParams.getOrDefault("quantity", "1")); // 수량 값 가져오기
 
         // Log important variables
         System.out.println("imp_uid: " + imp_uid);
@@ -138,6 +133,7 @@ public class OrderCont {
         System.out.println("userId: " + userId);
         System.out.println("usedpoints: " + usedpoints);
         System.out.println("price: " + price);
+        System.out.println("quantity: " + quantity); // 수량 로그 메시지 추가
 
         if (userId == null) {
             response.put("success", false);
@@ -179,11 +175,7 @@ public class OrderCont {
                 Map<String, Object> responseJson = (Map<String, Object>) paymentJson.get("response");
                 int amount = (Integer) responseJson.get("amount");
 
-                // Log the amount from the payment gateway
-                System.out.println("amount from payment gateway: " + amount);
-
                 if (amount == paid_amount) {
-                    // 주문 ID 생성
                     String orderid = generateOrderId();
 
                     OrderDTO orderDto = new OrderDTO();
@@ -208,12 +200,21 @@ public class OrderCont {
                     orderDto.setShippingrequest(shippingrequest);
                     orderDto.setPaymentmethodcode(paymentmethodcode);
                     orderDto.setPrice(price);
-                    orderDto.setQuantity(Integer.parseInt(requestParams.getOrDefault("quantity", "1")));
+                    orderDto.setQuantity(quantity); // 수량 값 설정
                     orderDto.setReceiptmethodcode("receiving02");
 
                     System.out.println("OrderDTO: " + orderDto.toString()); // OrderDTO 내용 로그 출력
 
-                    orderDao.insert(orderDto);
+                    try {
+                        orderDao.insert(orderDto);
+                        System.out.println("Order inserted successfully");
+                    } catch (Exception e) {
+                        System.err.println("Error inserting order: " + e.getMessage());
+                        e.printStackTrace();
+                        response.put("success", false);
+                        response.put("message", "Order insertion failed.");
+                        return response;
+                    }
 
                     if (couponid != null && !couponid.equals("0")) {
                         orderDao.updateCouponUsage(couponid);
