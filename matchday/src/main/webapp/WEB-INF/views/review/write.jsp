@@ -283,7 +283,7 @@ function validateForm() { //유효성 검사
     }
 	
     alert("리뷰가 작성 되었습니다.");
-    window.close();
+    //window.close();
     
     return true;
     
