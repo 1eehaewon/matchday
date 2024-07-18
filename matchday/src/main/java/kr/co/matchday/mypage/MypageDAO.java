@@ -27,4 +27,10 @@ public class MypageDAO {
 	public void updateUserGradeToF(String userID) {
 		sqlSession.update("mypage.updateUserGradeToF", userID);
 	}
+	
+	// 사용자의 총 포인트 조회
+    public int getTotalPoints(String userid) {
+        return sqlSession.selectOne("mypage.getTotalPoints", userid);
+    }
+    
 }//class end

@@ -474,6 +474,7 @@ table tr:hover {
 				   			${goodsDto.deliveryreturnsexchangesinfo}	    	
 				   		</div>
 				    	<div id="info04" class="tabcont"> <!-- 리뷰 내용 -->
+				    	<%-- <form id="" method="post" action="${pageContext.request.contextPath}/review/insert"> --%>
 							<div class="review">
 								<div class="review-tabs">
 									<button class="tab-button active" onclick="showTab('review')">상품후기</button>
@@ -499,17 +500,18 @@ table tr:hover {
 							                    <td>${review.rating}점</td>
 							                    <td>${review.title}</td>
 							                    <td>${review.userid}</td>
-							                    <td><fmt:formatDate value="${review.reviewdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></td>
+							                    <td>${review.reviewdate}</td>
+							                    <%-- <td><fmt:formatDate value="${review.reviewdate}" pattern="yyyy년 MM월 dd일 (E) HH:mm"/></td> --%>
 							                    <td>
-							                    	<button>수정</button>
-							                    	<button>삭제</button>
+							                    	<input type="button" value="리뷰수정" class="btn btn-success">
+							                    	<input type="button" value="리뷰삭제" onclick="review_delete()" class="btn btn-danger">
 							                    </td>
 							                </tr>
 							                <tr id="review${review.reviewid}" class="review-details">
 							                <!-- <tr id="review${review.reviewid}" class="review-details" style="display: none;"> -->
 							                    <td colspan="5">
 							                        <div class="review-content-wrapper">
-								                        <!-- <img src="${pageContext.request.contextPath}/storage/review/이미지" alt="Review Image" class="review-image"> -->
+								                        <img src="${pageContext.request.contextPath}/storage/review/${review.filename}" alt="Review Image" class="review-image">
 								                        <div class="review-content">${review.content}</div>
 								                        <div class="review-comments">
 								                        	<div class="review-comments-top">
@@ -543,7 +545,8 @@ table tr:hover {
 							        <a href="/review/list">상품전체보기(리뷰리스트로 이동?)</a>
 							    </div>
 							    
-							</div> <!-- review end -->				            
+							</div> <!-- review end -->
+							<!-- </form> -->				            
 					    </div> <!-- 리뷰 내용 -->
 					    
 		    	</div> <!-- 상세보기 내용 -->
@@ -658,9 +661,38 @@ table tr:hover {
 	    	}
 	    	
 		    if (isLoggedIn()) {
+		    	/*
+		    	var form = document.createElement("form");
+		        form.method = "POST";
+		        form.action = url;
+		        form.target = "popupWindow";
 
+		        var inputSize = document.createElement("input");
+		        inputSize.type = "hidden";
+		        inputSize.name = "size";
+		        inputSize.value = selectSize;
+		        form.appendChild(inputSize);
+
+		        var inputPrice = document.createElement("input");
+		        inputPrice.type = "hidden";
+		        inputPrice.name = "price";
+		        inputPrice.value = price;
+		        form.appendChild(inputPrice);
+
+		        var inputQuantity = document.createElement("input");
+		        inputQuantity.type = "hidden";
+		        inputQuantity.name = "quantity";
+		        inputQuantity.value = quantity;
+		        form.appendChild(inputQuantity);
+
+		        var inputTotalPrice = document.createElement("input");
+		        inputTotalPrice.type = "hidden";
+		        inputTotalPrice.name = "totalPrice";
+		        inputTotalPrice.value = totalPrice;
+		        form.appendChild(inputTotalPrice);
+		        */
 		    	window.open(url+"&size="+selectSize+"&price="+price+"&quantity="+quantity+"&totalPrice="+totalPrice, "popupWindow", "width=1200,height=800,scrollbars=yes");
-		    	
+		    	 
 		    } else {
 		        // 로그인이 되어있지 않으면 팝업을 열지 않음
 		        alert("로그인이 필요합니다.");
@@ -808,8 +840,8 @@ table tr:hover {
             reviewDetails.style.display = 'none';
         }
     }*/
-    function toggleReviewDetails(reviewId) {
-        var reviewDetails = document.getElementById(reviewId);
+    function toggleReviewDetails(reviewid) {
+        var reviewDetails = document.getElementById(reviewid);
         if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
             reviewDetails.style.display = 'block'; // Changed display to 'table-row' for table row visibility
         } else {
@@ -831,6 +863,15 @@ table tr:hover {
             return; // 팝업을 열지 않고 함수 종료
         }
     }//writeopenPopup(url) end
+    
+ 	// 리뷰 삭제 함수
+    function review_delete(){
+        if(confirm("리뷰가 영구히 삭제됩니다\n진행할까요?")){
+            document.goodsfrm.action = "/goods/reviewdelete";
+            document.goodsfrm.submit();
+        } // if end
+    } // review_delete() end
+    
     
     
 </script>

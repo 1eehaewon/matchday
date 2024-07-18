@@ -57,11 +57,25 @@
         WHERE couponid = #{couponid}
     </update>
     
-    <!-- 사용자 ID로 해당 사용자의 포인트 이력 조회 -->
+    
+    
+    
+    
+    
+    
+   <select id="getTotalPointUserId" parameterType="String" resultType="kr.co.matchday.mypage.MypageDTO">
+    	SELECT * FROM users WHERE userid = #{userid}
+    </select>
+     
+    
+    
+    
+    
+    
+    <!--  사용자 ID로 해당 사용자의 포인트 이력 조회 
 	<select id="getPointByUserId" parameterType="String" resultType="kr.co.matchday.point.PointHistoryDTO">
 	    SELECT * FROM pointhistory WHERE userid = #{userid}
-	</select>
-
+	</select> -->
 	<!-- PointHistoryDTO를 이용해 포인트 이력 추가 -->
 	<insert id="insertPointHistory" parameterType="kr.co.matchday.point.PointHistoryDTO">
 	    INSERT INTO pointhistory (userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, pointusedate)

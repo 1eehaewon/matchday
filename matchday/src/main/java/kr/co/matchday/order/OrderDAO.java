@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.matchday.admin.CouponMasterDTO;
 import kr.co.matchday.coupon.CouponDTO;
+import kr.co.matchday.mypage.MypageDTO;
 import kr.co.matchday.point.PointHistoryDTO;
 
 @Repository
@@ -68,20 +69,28 @@ public class OrderDAO {
         return sqlSession.selectOne("coupon.getCouponMasterById", coupontypeid);
     }
 	
+    
+    
+    
+    
+    // 사용자의 총 포인트를 조회하는 메서드
+    public List<MypageDTO> getTotalPointUserId(String userid) {
+        return sqlSession.selectList("order.getTotalPointUserId", userid);
+    }
+    /*
+    
+    
     // 사용자의 포인트 이력을 조회하는 메서드
     public List<PointHistoryDTO> getPointByUserId(String userid) {
         return sqlSession.selectList("order.getPointByUserId", userid);
     }
-
-    
-    
-    
+    */
     // 사용자의 포인트 이력을 추가하는 메서드
     public void insertPointHistory(PointHistoryDTO pointHistoryDto) {
         sqlSession.insert("point.insertPointHistory", pointHistoryDto);
     }
 	
-	
+
 	
 	
 	

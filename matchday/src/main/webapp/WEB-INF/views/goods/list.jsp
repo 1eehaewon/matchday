@@ -203,9 +203,9 @@
     <div class="row justify-content-end">
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">기본상품순</button>
+                <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">최신등록순</button>
                 <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#">기본상품순</a> 
+                    <!-- <a class="dropdown-item" href="#">기본상품순</a> --> 
                     <a class="dropdown-item" href="#" id="latestItems">최신등록순</a> 
                     <a class="dropdown-item" href="#">높은가격순</a> 
                     <a class="dropdown-item" href="#">낮은가격순</a>
@@ -442,16 +442,6 @@ document.addEventListener('DOMContentLoaded', function() {
       
 }); //document.addEventListener('DOMContentLoaded', function() end
 
-/* left 멤버쉽 */
-document.addEventListener('DOMContentLoaded', () => {
-    const subcategoryList = document.querySelector('.subcategory-list');
-    const listBtn = document.querySelector('.listBtn');
-
-    categoryHeader.addEventListener('click', () => {
-        subcategoryList.classList.toggle('show');
-        listBtn.style.transform = subcategoryList.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
-    });
-});/* left 멤버쉽 end */
 
 
 </script>

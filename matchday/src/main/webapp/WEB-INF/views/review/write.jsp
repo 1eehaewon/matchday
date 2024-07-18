@@ -18,6 +18,13 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/jquery-3.7.1.min.js"></script>
   <link href="/css/styles.css" rel="stylesheet" type="text/css">
+  <!-- Summernote CSS
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+   Summernote JS
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+  <script src="/js/script.js"></script>
+   Summernote 한국어 설정 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/lang/summernote-ko-KR.min.js"></script>-->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,8 +32,8 @@
             padding: 20px;
         }
         .board_write_popup {
-        	width:600px;
-            max-width: 800px;
+        width: 700px;
+        	max-width: 100%;
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
@@ -47,16 +54,7 @@
 	        text-align: center;
 	        margin-bottom: 20px;
 	    }
-	    
-	    .item_photo_box {
-	        display: inline-block;
-	    }
-	    
-	    .item_photo_box img {
-	        max-width: 100%;
-	        height: auto;
-	    }
-	    
+
 	    /* 상품명 스타일 */
 	    .productname {
 	        font-size: 24px; /* 원하는 크기로 조정 */
@@ -113,6 +111,25 @@
             background-color: #0056b3;
             border-color: #0056b3;
         }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .board_write_table th, .board_write_table td {
+                width: auto;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .board_write_table th, .board_write_table td {
+                display: block;
+                width: 100%;
+                text-align: left;
+            }
+            .write_editor textarea {
+                height: 200px;
+            }
+        }
+        
     </style>
 </head>
 <body class="body-board body-popup-goods-board-write pc">
@@ -120,34 +137,20 @@
         <div class="ly_tit">
             <h2>상품 후기 쓰기</h2>
         </div>
-        
-         <%-- <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
-	        <input type="hidden" name="goodsid" value="${param.goodsid}" />
-	        <label for="title">제목:</label>
-	        <input type="text" name="title" id="title" placeholder="제목을 입력하세요" />
-	        <br/>
-	        <label for="content">내용:</label>
-	        <textarea name="content" id="content" placeholder="리뷰를 작성하세요"></textarea>
-	        <br/>
-	        <input type="submit" value="리뷰 작성"/>
-    	</form>
- --%>
+
         <div class="ly_cont">
             <form name="reviewfrm" id="reviewfrm" action="/review/insert" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
                 <input type="hidden" name="reviewid" id="reviewid" value="">
+                <input type="hidden" name="grantedpoints" id="grantedpoints" value="100">
                 <div class="scroll_box">
                     <div class="top_item_photo_info">
-                        <div class="item_photo_box">
-                            <img src="<c:url value='/images/서울 홈 유니폼(앞).jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
-                            <!-- <img src="<c:url value='/images/${param.goodsid}.jpg' />" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
-                            <img src="${pageContext.request.contextPath}/storage/goods/${goodsDto.filename}" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle"> -->
-                        </div>
-                        <br>
                         <c:forEach items="${goodsList}" var="goods">
-				            <c:if test="${goods.goodsid eq param.goodsid}">
-				                <h5 class="productname">${goods.productname}</h5>
-				            </c:if>
+                        <c:if test="${goods.goodsid eq param.goodsid}">
+                            <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" width="300" alt="${param.goodsid} 상품 이미지" title="${param.goodsid} 상품 이미지" class="middle">
+                        	<br> 
+				            <h5 class="productname">${goods.productname}</h5>
+				        </c:if>
 				        </c:forEach>    
                     </div>
                     <!-- //top_item_photo_info -->
@@ -184,21 +187,22 @@
                                             <input type="checkbox" name="isSecret" value="y" id="secret">
                                             <label for="secret" class="check_s">비밀글</label>
                                         </div> -->
-                                        <textarea title="내용 입력" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
+                                        <!-- <textarea title="내용 입력" class="form-control summernote" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea> -->
+                                    	<textarea title="내용 입력" class="form-control" name="content" id="content" rows="5" placeholder="내용을 입력하세요"></textarea>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">파일</th>
                                     <td id="uploadBox">
 	                                    <div class="file_upload_sec" id="uploadSection">
-										    <input type="file" id="img" name="upfiles[]" class="file" title="찾아보기">
+										    <input type="file" id="img" name="img" class="form-control" title="찾아보기">
 										    <div class="btn_upload_box">
 										        <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
 										    </div>
 										</div>
                                     </td>
                                     
-                                    <!-- <td id="uploadBox">
+                                     <!--<td id="uploadBox">
                                         <div class="file_upload_sec">
                                             <label for="img"><input type="text" class="file_text form-control" readonly="readonly" placeholder="파일 첨부하기"></label>
                                             <div class="btn_upload_box">
@@ -214,45 +218,28 @@
                                 <tr>
 								    <th scope="row">평점</th>
 								    <td>
-								    <form>
-								    <label>
-								        <input type="radio" name="rating" value="1">
-								        1점
-								    </label>
-								    <label>
-								        <input type="radio" name="rating" value="2">
-								        2점
-								    </label>
-								    <label>
-								        <input type="radio" name="rating" value="3">
-								        3점
-								    </label>
-								    <label>
-								        <input type="radio" name="rating" value="4">
-								        4점
-								    </label>
-								    <label>
-								        <input type="radio" name="rating" value="5">
-								        5점
-								    </label>
-									</form>
+								  
+									    <label> <input type="radio" name="rating" value="1"> 1점 </label>
+									    <label> <input type="radio" name="rating" value="2"> 2점 </label>
+										<label> <input type="radio" name="rating" value="3"> 3점 </label>
+										<label> <input type="radio" name="rating" value="4"> 4점 </label>
+										<label> <input type="radio" name="rating" value="5"> 5점 </label>
+									
 								<br>
 								        <small class="text-muted">1점부터 5점까지의 점수 중 하나를 선택해주세요.</small>
 								</td>
 								</tr>
-
-
                             </tbody>
                         </table>
                     </div>
                     <!-- //board_write_box -->
                 </div>
                 <!-- //scroll_box -->
+                <br>
                 <div class="btn_center_box">
+                <input type="submit" value="등록" onclick="return validateForm()" class="btn btn-primary btn_ly_write_ok">
                 <a href="javascript:window.close()" class="btn btn-secondary btn_ly_cancel"><strong>취소</strong></a>
                 <!-- <a href="" class="btn btn-primary btn_ly_write_ok"><strong>등록</strong></a> -->
-               
-                <input type="submit" value="등록" onclick="return validateForm()" class="btn btn-primary btn_ly_write_ok">
        
  	           </div>
             </form>  
@@ -294,13 +281,14 @@ function validateForm() { //유효성 검사
         alert('평점을 선택해주세요.');
         return false;
     }
-
+	
+    alert("리뷰가 작성 되었습니다.");
+    window.close();
+    
     return true;
+    
 }//validateForm() end
 
-var uploadSection = document.getElementById('uploadSection');
-var addUploadBtn = document.getElementById('addUploadBtn');
-var uploadCount = 1;
 document.addEventListener('DOMContentLoaded', function() {
     var reviewId = generateUniqueReviewId(); // 리뷰 아이디 생성 함수 호출
     document.getElementById('reviewid').value = reviewId; // 리뷰 아이디 입력란에 설정
@@ -339,7 +327,7 @@ function handleRatingClick(rating) {
             radios[i].checked = false;
         }
     }
-}
+}////평점 클릭 처리 함수 end
 
 //파일 선택란에 추가 버튼 누를시 파일선택 버튼과 삭제버튼 생성
 var uploadSection = document.getElementById('uploadSection');
@@ -350,7 +338,7 @@ addUploadBtn.addEventListener('click', function() {
     var newInput = document.createElement('input');
     newInput.type = 'file';
     newInput.id = 'img' + uploadCount;
-    newInput.name = 'upfiles[]';
+    newInput.name = 'img';
     newInput.className = 'file';
     newInput.title = '찾아보기';
 
@@ -376,9 +364,49 @@ addUploadBtn.addEventListener('click', function() {
 
 
 
+/*
+document.addEventListener('DOMContentLoaded', function() { 
+	// Summernote 초기화
+    $('.summernote').summernote({
+        height: 300,
+        lang: 'ko-KR',
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                sendFile(files[0]);
+            }
+        }
+    }); //summernote end
+
+    function sendFile(file) {
+        var data = new FormData();
+        data.append("file", file);
+        $.ajax({
+            url: '/review/uploadImage',
+            method: 'POST',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                $('.summernote').summernote('insertImage', url);
+            },
+            error: function() {
+                alert('이미지 업로드 중 오류가 발생하였습니다.');
+            }
+        });
+    }// sendFile end
+});
+*/
+
 
 </script>
-
-
 
 </html>

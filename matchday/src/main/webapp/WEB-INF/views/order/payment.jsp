@@ -115,6 +115,13 @@
 	    margin-bottom: 10px;
 	}
 	
+	.subtotal-amount {
+	    text-align: right;
+	    font-weight: bold;
+	    font-size: 18px;
+	    margin-bottom: 20px;
+	}
+	
 	.total-amount {
 	    text-align: right;
 	    font-weight: bold;
@@ -169,9 +176,7 @@
 	    font-size: 16px;
 	}
 	
-	.checkout-button button:hover {
-	    background-color: #45a049;
-	}
+	
 	
 	
 	
@@ -185,14 +190,17 @@
 </head>
 <body>
 <div class="container">
-	<form id="Orderfrm" name="Orderfrm" method="post" action="/order/insert">
+	<form>
 		<input type="hidden" name="userid" value="${sessionScope.userID}">
 		<input type="hidden" name="orderid" id="orderid" value="">
 		<input type="hidden" name="goodsid" id="goodsid" value="${param.goodsid}">
 		<input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
 		<input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
 		<input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
-				
+		<input type="hidden" name="quantity" value="${quantity}">
+		<input type="hidden" name="price" value="${price}">
+	</form>
+	
 	<div class="order_tit">
 		<h1>주문 및 결제</h1>
 		<ol>
@@ -201,51 +209,53 @@
 			<li><span>03</span> 주문완료</li>
 		</ol>
 	</div>
-
+	
 		<!-- 주문상세내역 -->
 		<section class="order-section">
 			<h2>주문상세내역</h2>
-			<div class="order-details">
-				<!-- 장바구니 상품리스트 시작 -->
-				<div class="row">
-					<div class="col-sm-12">
-						<table class="table table-hover">
-							<thead class="table-active">
-								<tr>
-									<th class="text-center">상품 정보</th>
-									<th class="text-center">사이즈</th>
-									<th class="text-center">수량</th>
-									<th class="text-center">가격</th>
-									<th class="text-center">총 가격</th>
-								</tr>
-							</thead>
-							<tbody class="text-center">
-							<c:forEach items="${goodsList}" var="goods">
-						    <c:if test="${goods.goodsid eq param.goodsid}">
-						        <tr>
-						            <td>
-						                <div class="product-image">
-						                    <c:if test="${not empty goods.filename}">
-						                            <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
-						                    </c:if>
-						                </div>
-						                <br>
-						                <span class="productname-text">${goods.productname}</span>
-						            </td>
-						            <td class="size-text">${size}</td>
-						            <td class="quantity-text">${quantity}</td>
-						            <td class="price-text"><fmt:formatNumber value="${price}" pattern="#,###원" /></td>
-						            <td class="totalprice-text"><fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></td>
-						        </tr>
-						    </c:if>
-							</c:forEach>
-							</tbody>
-						</table>
-					</div> <!-- col end -->
-				</div> <!-- row end -->
-			</div> <!-- order-details end -->
-			<div class="total-amount">
-				<p>총 결제 금액: <fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></p>
+			<form>
+				<div class="order-details">
+					<!-- 장바구니 상품리스트 시작 -->
+					<div class="row">
+						<div class="col-sm-12">
+							<table class="table table-hover">
+								<thead class="table-active">
+									<tr>
+										<th class="text-center">상품 정보</th>
+										<th class="text-center">사이즈</th>
+										<th class="text-center">수량</th>
+										<th class="text-center">가격</th>
+										<th class="text-center">총 가격</th>
+									</tr>
+								</thead>
+								<tbody class="text-center">
+									<c:forEach items="${goodsList}" var="goods">
+									    <c:if test="${goods.goodsid eq param.goodsid}">
+									        <tr>
+									            <td>
+									                <div class="product-image">
+									                    <c:if test="${not empty goods.filename}">
+									                            <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
+									                    </c:if>
+									                </div>
+									                <br>
+									                <span class="productname-text">${goods.productname}</span>
+									            </td>
+									            <td class="size-text">${size}</td>
+									            <td class="quantity-text">${quantity}</td>
+									            <td class="price-text"><fmt:formatNumber value="${price}" pattern="#,###원" /></td>
+									            <td class="totalprice-text"><fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></td>
+									        </tr>
+									    </c:if>
+									</c:forEach>
+								</tbody>
+							</table>
+						</div> <!-- col end -->
+					</div> <!-- row end -->
+				</div> <!-- order-details end -->
+			</form>
+			<div class="subtotal-amount">
+				<p id="subtotal-amount">총 결제 금액: <fmt:formatNumber value="${totalPrice}" pattern="#,###원" /></p>
 			</div>
 		</section>
 		<!-- 주문상세내역 end -->
@@ -253,28 +263,43 @@
 		<!-- 주문자 정보 -->
 		<section class="customer-section">
 			<h2>주문자 정보</h2>
-
-				<label for="name">이름</label>
-				<input type="text" id="recipientname" name="recipientname" class="form-control" required>
-				<label for="email">이메일</label>
-				<input type="email" id="recipientemail" name="recipientemail" class="form-control" required>
-				<label for="phone">전화번호</label>
-				<input type="tel" id="recipientphone" name="recipientphone" class="form-control" required>
-
+			<form id="order-form">
+				<div class="mb-3">
+					<label for="name" class="form-label">이름</label>
+					<input type="text" id="recipientname" name="recipientname" class="form-control" required>
+				</div>
+				<div class="mb-3">
+					<label for="email" class="form-label">이메일</label>
+					<input type="email" id="recipientemail" name="recipientemail" class="form-control" required>
+				</div>
+				<div class="mb-3">
+					<label for="phone" class="form-label">전화번호</label>
+					<!-- <input type="tel" id="recipientphone" name="recipientphone" class="form-control" required> -->
+					<input type="text" id="recipientphone" name="recipientphone" class="form-control" required>
+				</div>
+			</form>
 		</section>
 
 		<!-- 배송 정보 -->
 		<section class="delivery-section">
 			<h2>배송 정보</h2>
-				<label for="postcode" class="form-label">우편번호</label>
-				<input type="text" class="form-control" id="postcode" readonly>
-				<button type="button" class="btn btn-primary mt-2" id="find-postcode">우편번호 찾기</button>
-				<label for="shippingaddress" class="form-label">배송 주소</label>
-				<input type="text" class="form-control" id="shippingaddress" name="shippingaddress" readonly>
-				<label for="detailAddress" class="form-label">상세주소</label>
-				<input type="text" class="form-control" id="detailAddress" required>
+			<form id="delivery-form">
+				<div class="mb-3">
+					<label for="postcode" class="form-label">우편번호</label>
+					<input type="text" class="form-control" id="postcode" readonly>
+					<button type="button" class="btn btn-primary mt-2" id="find-postcode">우편번호 찾기</button>
+				</div>
+				<div class="mb-3">
+					<label for="shippingaddress" class="form-label">배송 주소</label>
+					<input type="text" class="form-control" id="shippingaddress" name="shippingaddress" readonly>
+				</div>
+					<div class="mb-3">
+					<label for="detailAddress" class="form-label">상세주소</label>
+					<input type="text" class="form-control" id="detailAddress">
+				</div>
+				<div class="mb-3">
 				<label for="shippingrequest">배송 시 요청 사항</label>
-				<select id="shippingrequest" class="form-select">
+				<select id="shippingrequest" name="shippingrequest" class="form-select">
 					<option value="배송 시 요청사항을 선택해주세요">배송 시 요청사항을 선택해주세요</option>
 					<option value="부재 시 경비실에 맡겨주세요">부재 시 경비실에 맡겨주세요</option>
 					<option value="부재 시 택배함에 넣어주세요">부재 시 택배함에 넣어주세요</option>
@@ -284,44 +309,48 @@
 					<option value="빠른 배송 부탁 드립니다">빠른 배송 부탁 드립니다</option>
 					<option value="">직접 입력</option>
 				</select>
-				<textarea name="" id="" onkeyup="" rows="5" maxlength="50" placeholder="최대 50까지 입력 가능합니다." style="display: none;"></textarea>
+				<textarea name="shippingrequest" id="" onkeyup="" rows="5" maxlength="50" placeholder="최대 50까지 입력 가능합니다." style="display: none;"></textarea>
+				</div>
+			</form>
 		</section> <!-- delivery-section end -->
 
 		<!-- 할인 혜택 -->
 		<section class="discount-section">
-		<h2>할인 혜택</h2>
-		
-		<!-- 쿠폰 선택 -->
-		<label for="couponid">쿠폰 선택</label>
-		<select id="couponid" name="couponid" class="form-select" onchange="updateTotalAmount()">
-		    <option value="">쿠폰 선택</option>
-		    <c:forEach items="${couponList}" var="coupon">
-		        <option value="${coupon.couponid}" data-discount="${coupon.discountrate}">
-		            ${coupon.couponname} ${coupon.discountrate}% (${coupon.startdate} ~ ${coupon.enddate})
-		        </option>
-		    </c:forEach>
-		</select>     
-		              
-        <br>
-        
-        <!-- 포인트 정보 -->
-        <c:forEach var="pointHistory" items="${pointHistoryList}">
-	        <label for="point">보유 포인트 : ${pointHistory.pointamount}point</label>
-	        사용할 포인트
-	        <input type="number" id="usedpoints" name="usedpoints" min="0" max="${pointHistory.pointamount}" value="0" class="form-control" oninput="updateTotalAmount()">
-        </c:forEach>
-        <button type="button" onclick="usePoints()">포인트 사용</button> <!-- 온클릭 -> 총 결제 금액에 더하기 (인풋에 쓰면 바로 총결제 금액에 더하기 가능 ?) -->
-        <button type="submit">포인트 사용</button>
-        
-    
+			<h2>할인 혜택</h2>
+			<form id="discount-form">
+				<!-- 쿠폰 선택 -->
+				<label for="couponid" class="form-label">쿠폰 선택</label>
+				<input type="hidden" id="discount" value="${coupon.discountrate}">
+				<select id="couponid" name="couponid" class="form-select">
+				    <option value="">쿠폰 선택</option>
+				    <c:forEach items="${couponList}" var="coupon">
+				        <option value="${coupon.couponid}" data-discount="${coupon.discountrate}">
+				            ${coupon.couponname} ${coupon.discountrate}% (${coupon.startdate} ~ ${coupon.enddate})
+				        </option>
+				    </c:forEach>
+				</select>     
+				<br>
+		        <!-- 포인트 정보 -->
+		        <label for="point" id="usedpoints" class="form-label">보유 포인트 : ${totalpoints} point</label>
+		        <label for="point" id="usedpoints" class="form-label">사용할 포인트 :
+		        <input type="number" id="usedpoints" name="usedpoints" min="0" max="${totalpoints}" value="" placeholder="0 point" class="form-label">
+		        </label>      
+		        <button type="button">포인트 사용</button>
+		        <button type="submit">포인트 사용</button>
+	        </form>        
   		</section> <!-- discount-section end -->
-
+  		
+  		
 		<div class="total-amount">
-		        <br>
-		        배송비 : <span id="shipping-fee">3500</span>원 (100,000원 이상 구매 시 무료)
-		        <br>
-		        <!-- <p id="final-total-price">최종 결제 금액: 0</p>  -->
-		        <p id="finaltotalprice">최종 결제 금액: <fmt:formatNumber value="${totalPrice + shippingFee}" pattern="#,###원" /></p> 
+	        <br>
+	        배송비 : <span id="delivery-fee">0</span> (100,000원 이상 구매 시 무료)
+	        <br>
+	        <!-- <p id="final-total-price">최종 결제 금액: 0</p>  -->
+	        <!--<p id="finaltotalprice">최종 결제 금액: <fmt:formatNumber value="${totalPrice + shippingFee}" pattern="#,###원" /></p> -->
+			<%-- 최종 결제 금액 : <input type="number" name="finalpaymentamount" id="total-amount" value="${totalPrice + shippingFee}" pattern="#,###원" readonly> --%>
+			<!-- 최종 결제 금액 : <input type="number" name="finalpaymentamount" id="total-amount" value="" readonly> -->
+			최종 결제 금액 : <span id="total-amount">0원</span>
+			<!-- <input type="number" name="finalpaymentamount" id="total-amount" readonly> -->
 		</div>
 		
             
@@ -329,11 +358,11 @@
             
 
         <div class="checkout-button">
-        <button type="submit" id="pay-button">결제하기</button>
+        	<!-- <button type="submit" id="pay-button">결제하기</button> -->
             <button type="button" id="pay-button">결제하기</button>
-            <button type="button" onclick="closePopup()">결제취소</button>
+            <button type="button" class="btn btn-danger" onclick="closePopup()">결제취소</button>
         </div>
- 	</form>
+
         
 </div><!-- container end -->
 
@@ -342,249 +371,292 @@
 
 <script>
 
-//페이지 로드될 때 실행되는 함수
-document.addEventListener('DOMContentLoaded', function() {
-    generateOrderId(); // 주문서 페이지가 로드될 때 orderid 생성
- 	// 쿠폰 선택 이벤트
-    document.getElementById('couponid').addEventListener('change', updateTotalAmount);
+$(document).ready(function() {
 
-    // 포인트 입력 이벤트
-    document.getElementById('usedpoints').addEventListener('input', updateTotalAmount);
+	generateOrderId(); // 주문서 페이지가 로드될 때 orderid 생성
+	// 주문서 페이지 로드 시 실행되는 함수
+	function generateOrderId() {
+	    var prefix = 'order'; // order라는 prefix를 사용
+	    var num;
+	    var existingIds = []; // 기존 orderid 리스트 (실제 사용 데이터를 가져와야 함)
 
-    // 결제 버튼 클릭 이벤트
-    document.getElementById('pay-button').addEventListener('click', function(event) {
-        event.preventDefault(); // 기본 제출 동작 방지
-        //processPayment();
-    });
+	    // 기존 orderid들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
+	    // 이 예제에서는 sessionScope.userID로 이미 로그인한 사용자의 주문 목록을 가져온다고 가정
+	    <c:forEach items="${orderList}" var="order">
+	        existingIds.push('${order.orderid}');
+	    </c:forEach>
 
-    // 우편번호 찾기 이벤트
-    //document.getElementById('find-postcode').addEventListener('click', findPostcode);
+	    // 중복되지 않는 orderid 생성
+	    do {
+	        num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
+	        var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
+	    } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
 
-// 주문서 페이지 로드 시 실행되는 함수
-function generateOrderId() {
-    var prefix = 'order'; // order라는 prefix를 사용
-    var num;
-    var existingIds = []; // 기존 orderid 리스트 (실제 사용 데이터를 가져와야 함)
+	    // 생성된 orderid를 hidden input 필드에 설정
+	    document.getElementById('orderid').value = newId;
+	}
 
-    // 기존 orderid들을 배열에 추가 (실제로는 서버에서 기존 데이터를 가져와야 함)
-    // 이 예제에서는 sessionScope.userID로 이미 로그인한 사용자의 주문 목록을 가져온다고 가정
-    <c:forEach items="${orderList}" var="order">
-        existingIds.push('${order.orderid}');
-    </c:forEach>
-
-    // 중복되지 않는 orderid 생성
-    do {
-        num = generateRandomNumber(); // 랜덤 숫자 생성 함수 호출
-        var newId = prefix + num.toString().padStart(3, '0'); // 3자리 숫자로 포맷
-    } while (existingIds.includes(newId)); // 생성된 아이디가 기존 아이디들과 중복되는지 확인
-
-    // 생성된 orderid를 hidden input 필드에 설정
-    document.getElementById('orderid').value = newId;
-}
-
-// 랜덤 숫자 생성 함수
-function generateRandomNumber() {
-    return Math.floor(Math.random() * 999) + 1; // 1부터 999 사이의 랜덤 숫자 생성
-}
-
-
-//주소 찾기 API 호출 함수
-$('#find-postcode').click(function() {
-    new daum.Postcode({
-        oncomplete: function(data) {
-            var addr = ''; // 주소 변수
-            var extraAddr = ''; // 참고항목 변수
-
-            // 도로명 주소를 선택했을 경우
-            if (data.userSelectedType === 'R') {
-                addr = data.roadAddress;
-            } else { // 지번 주소를 선택했을 경우
-                addr = data.jibunAddress;
-            }
-
-            // 참고항목 설정
-            if (data.userSelectedType === 'R') {
-                if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                    extraAddr += data.bname;
-                }
-                if (data.buildingName !== '' && data.apartment === 'Y') {
-                    extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                }
-                if (extraAddr !== '') {
-                    extraAddr = ' (' + extraAddr + ')';
-                }
-                $('#extraAddress').val(extraAddr);
-            } else {
-                $('#extraAddress').val('');
-            }
-
-            $('#postcode').val(data.zonecode); // 우편번호 설정
-            $('#shippingaddress').val(addr); // 주소 설정
-            $('#detailAddress').focus(); // 상세주소 입력 필드로 포커스 이동
-        }
-    }).open();
-}); //주소 찾기 API 호출 함수 end
-
-//포인트 사용 버튼 클릭 시 호출되는 함수
-function usePoints() {
-    var usedPoints = parseFloat(document.getElementById('usedpoints').value) || 0; // 입력된 포인트
-    var maxPoints = parseFloat(document.getElementById('usedpoints').getAttribute('max')); // 최대 사용 가능 포인트
-
-    var finalTotalPrice = parseFloat(document.getElementById('finaltotalprice').innerText.replace(/[^0-9.-]+/g,"")); // 최종 결제 금액
-
-    if (usedPoints < 0 || isNaN(usedPoints)) {
-        alert('잘못된 포인트 입력입니다.');
-        document.getElementById('usedpoints').value = 0;
-        return;
+	// 랜덤 숫자 생성 함수
+	function generateRandomNumber() {
+	    return Math.floor(Math.random() * 999) + 1; // 1부터 999 사이의 랜덤 숫자 생성
+	}
+	
+    /* function updateTotalAmount() {
+        var subtotalAmount = updateSubtotalAmount();
+        var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10);
+        var discount = parseInt($('#discount').text().replace(/[^0-9]/g, ''), 10);
+        var totalAmount = subtotalAmount - discount;
+        $('#total-amount').text(totalAmount.toLocaleString() + '원');
+        return totalAmount;
     }
 
-    if (usedPoints > maxPoints) {
-        alert('최대 사용 가능 포인트를 초과하였습니다.');
-        document.getElementById('usedpoints').value = maxPoints; // 최대 사용 가능 포인트로 설정
-        usedPoints = maxPoints;
-    }
+    function updateDeliveryFee() {
+        var deliveryOption = $('input[name="deliveryOption"]:checked').val();
+        var deliveryFee = deliveryOption === '#delivery-fee' ? 3500 : 0;
 
-    if (usedPoints > finalTotalPrice) {
-        alert('최종 결제 금액을 초과하여 포인트를 사용할 수 없습니다.');
-        document.getElementById('usedpoints').value = finalTotalPrice; // 최종 결제 금액으로 설정
-        usedPoints = finalTotalPrice;
-    }
+        $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
 
-    updateTotalAmount(); // 총 결제 금액 업데이트
-}
-
-//최종 결제 금액 업데이트 함수
-function updateTotalAmount() {
-    var totalPrice = parseFloat(${totalPrice}); // 상품 총 금액
-    var finalTotalPrice = totalPrice;
-
-    // 쿠폰 할인 적용
-    var couponSelect = document.getElementById('couponid');
-    var couponDiscount = 0;
-    if (couponSelect.value) {
-        couponDiscount = parseFloat(couponSelect.options[couponSelect.selectedIndex].getAttribute('data-discount')) || 0;
-    }
-    finalTotalPrice *= (1 - couponDiscount / 100);
-
-    // 사용 포인트 적용
-    var usedPoints = parseFloat(document.getElementById('usedpoints').value) || 0;
- 	// 최종 결제 금액 보다 사용 포인트가 더 클 경우, 최종 결제 금액으로 설정
-    if (usedPoints > finalTotalPrice) {
-        document.getElementById('usedpoints').value = finalTotalPrice;
-        usedPoints = finalTotalPrice;
-    }
-
-    finalTotalPrice -= usedPoints;
-
-    // 배송비 적용
-    var shippingFee = (finalTotalPrice >= 100000) ? 0 : 3500;
-    finalTotalPrice += shippingFee;
-
-    // 배송비 업데이트
-    document.getElementById('shipping-fee').innerText = shippingFee.toLocaleString(); // 배송비에 천 단위 구분자 적용
-
-    // 최종 결제 금액 업데이트
-    //document.getElementById('finaltotalprice').innerText = '최종 결제 금액: ' + finalTotalPrice.toLocaleString() + '원';
-
- 	// 최종 결제 금액 업데이트
-    var formattedFinalTotalPrice = finalTotalPrice.toLocaleString() + '원'; // 천 단위 구분자와 원 추가
-    document.getElementById('finaltotalprice').innerText = '최종 결제 금액: ' + formattedFinalTotalPrice;
-}
-
-// 초기 총 결제 금액 업데이트
-document.addEventListener('DOMContentLoaded', updateTotalAmount);
-
-//결제 처리 함수
-$('#pay-button').click(function() {
-	// 최종 결제 금액 업데이트
-    updateTotalAmount();
-
-    var finalTotalPrice = parseFloat(document.getElementById('finaltotalprice').innerText.replace(/[^0-9.-]+/g,""));
-
-    /*var couponId = $('#coupon-select').val(); // 쿠폰 ID 가져오기 */
-
-    IMP.request_pay({
-        pg: 'html5_inicis',
-        pay_method: 'card',
-        merchant_uid: 'merchant_' + new Date().getTime(),
-        name: '상품 주문 결제',
-        amount: finalTotalPrice, 
-        buyer_email: $('#recipientemail').val(),
-        buyer_name: $('#recipientname').val(),
-        buyer_tel: $('#recipientphone').val(),
-        m_redirect_url: 'http://yourdomain.com/complete'
-    }, function(rsp) {
-        if (rsp.success) {
-            var formData = {
-                imp_uid: rsp.imp_uid,
-                merchant_uid: rsp.merchant_uid,
-                paid_amount: rsp.paid_amount,
-                orderid: '${order.orderid}',
-                finalpaymentamount: ${'finalpaymentamount'}.val(),
-                recipientname: $('#recipientname').val(),
-                recipientemail: $('#recipientemail').val(),
-                recipientphone: $('#recipientphone').val(),
-                shippingaddress: $('#shippingaddress').val() + ' ' + $('#detailAddress').val(),
-                shippingrequest: $('#shippingrequest').val(),
-                couponid: $('#couponid').val(),
-                usedpoints: $('#usedpoints').val()
-            };
-
-            $.ajax({
-                type: 'POST',
-                url: '/order/payment',
-                data: formData,
-                traditional: true,
-                success: function(data) {
-                    if (data.success) {
-                        window.location.href = '/order/confirmation?orderid=' + data.orderid;
-                    } else {
-                        alert('결제 검증에 실패했습니다.');
-                    }
-                }
-            });
+        if (deliveryOption === '#delivery-fee') {
+            $('#delivery-address').show();
         } else {
-            alert('결제에 실패하였습니다. 오류 내용 :' + rsp.error_msg);
+            $('#delivery-address').hide();
         }
-    });
-});
+        updateTotalAmount();
+    }
 
-/* $('#cancel-button').click(function() {
-    var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
-    if (impUid) {
-        $.ajax({
-            url: '/order/cancelPayment',
-            type: 'DELETE',
-            data: { imp_uid: impUid },
-            success: function(response) {
-                if (response.success) {
-                    alert("결제가 취소되었습니다.");
-                } else {
-                    alert("결제 취소에 실패했습니다: " + response.message);
+    function updateDiscount() {
+        var selectedCoupon = $('#coupon-select').find(':selected');
+        var discountRate = selectedCoupon.data('discount') || 0;
+
+        var subtotalAmount = updateSubtotalAmount();
+        var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
+        
+        $('#discount').text(totalDiscount.toLocaleString() + '원');
+        updateTotalAmount();
+    } */
+    
+ // Update total amount considering discounts and delivery fee
+    function updateTotalAmount() {
+        var subtotalAmount = parseInt('${totalPrice}', 10);
+        var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10);
+        var discount = parseInt($('#discount').text().replace(/[^0-9]/g, ''), 10);
+        var points = parseInt($('#usedpoints').val() || '0', 10);
+        var totalAmount = subtotalAmount + deliveryFee - discount - points;
+        $('#total-amount').text(totalAmount.toLocaleString() + '원');
+        return totalAmount;
+    }
+
+    function updateDeliveryFee() {
+        var deliveryFee = 0; // 기본 배송비는 0원
+        var subtotalAmount = parseInt('${totalPrice}', 10);
+        
+        // 총 결제 금액이 100,000원 미만일 때만 배송비 추가
+        if (subtotalAmount < 100000) {
+            deliveryFee = 3500;
+        }
+
+        $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
+        updateTotalAmount();
+    }
+
+    function updateDiscount() {
+        var selectedCoupon = $('#couponid').find(':selected');
+        var discountRate = selectedCoupon.data('discount') || 0;
+        var subtotalAmount = parseInt('${totalPrice}', 10);
+        var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
+
+        $('#discount').text(discountAmount.toLocaleString() + '원');
+        updateTotalAmount();
+    }
+
+    $('#couponid').change(function() {
+        updateDiscount();
+    });
+
+    $('#usedpoints').change(function() {
+        updateTotalAmount();
+    });
+
+    updateDeliveryFee();
+    updateTotalAmount();
+    updateDiscount();
+
+  //주소 찾기 API 호출 함수
+    $('#find-postcode').click(function() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                // 도로명 주소를 선택했을 경우
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else { // 지번 주소를 선택했을 경우
+                    addr = data.jibunAddress;
                 }
-            },
-            error: function(error) {
-                alert("결제 취소 요청 중 오류가 발생했습니다.");
+
+                // 참고항목 설정
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    $('#extraAddress').val(extraAddr);
+                } else {
+                    $('#extraAddress').val('');
+                }
+
+                $('#postcode').val(data.zonecode); // 우편번호 설정
+                $('#shippingaddress').val(addr); // 주소 설정
+                $('#detailAddress').focus(); // 상세주소 입력 필드로 포커스 이동
+            }
+        }).open();
+    }); //주소 찾기 API 호출 함수 end
+
+    /* $('.delivery-option').change(function() {
+        updateDeliveryFee();
+    });
+
+    $('#coupon-select').change(function() {
+        updateDiscount();
+    });
+
+    updateDeliveryFee();
+    updateSubtotalAmount();
+    updateDiscount();
+    updateCancellationDeadline(); */
+
+  	//결제 처리 함수
+    $('#pay-button').click(function() {
+        var totalAmount = updateTotalAmount(); // 최종 결제 금액 업데이트
+       /*  var couponId = $('#coupon-select').val();
+        var couponName = $('#coupon-select').find(':selected').text();
+        var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
+        var totalDiscount = $('#discount').text().replace(/[^0-9]/g, ''); */
+        var couponId = $('#couponid').val();
+        var couponName = $('#couponid').find(':selected').text();
+        var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
+        var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
+        var points = $('#usedpoints').val();
+        
+        IMP.request_pay({
+            pg: 'html5_inicis',
+            pay_method: 'card',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: '상품 주문 결제',
+            amount: totalAmount,
+            buyer_email: $('#recipientemail').val(),
+            buyer_name: $('#recipientname').val(),
+            buyer_tel: $('#recipientphone').val(),
+            m_redirect_url: 'http://yourdomain.com/complete' // 성공 시 이동할 URL 설정
+        }, function(rsp) {
+            if (rsp.success) {
+                var formData = {
+                    imp_uid: rsp.imp_uid,
+                    merchant_uid: rsp.merchant_uid,
+                    paid_amount: rsp.paid_amount,
+                    orderid: '${order.orderid}',
+                    totalPrice: totalPrice,
+                    recipientname: $('#recipientname').val(),
+                    recipientemail: $('#recipientemail').val(),
+                    recipientphone: $('#recipientphone').val(),
+                    shippingaddress: $('#shippingaddress').val() + ' ' + $('#detailAddress').val(),
+                    shippingrequest: $('#shippingrequest').val(),
+                    couponid: couponId,
+                    couponName: couponName,
+                    deliveryFee: deliveryFee,
+                    totalDiscount: totalDiscount,
+                    totalPaymentAmount: totalAmount
+                    //couponid: $('#couponid').val(),
+                    //usedpoints: $('#usedpoints').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/order/payment',
+                    data: formData,
+                    traditional: true,
+                    success: function(data) {
+                        if (data.success) {
+                            window.opener.location.href = data.redirectUrl;
+                            window.close();
+                         	// 결제 완료 후 화면 이동
+                            //window.location.href = '/order/confirmation?orderid=' + data.orderid;
+                        } else {
+                            alert('결제 검증에 실패했습니다.');
+                        }
+                    }
+                });
+            } else {
+                alert('결제에 실패하였습니다. 오류 내용 :' + rsp.error_msg);
             }
         });
-    }
-}); */
+    });
+/*
+    $('#cancel-button').click(function() {
+        var impUid = prompt("취소할 결제의 imp_uid를 입력하세요:");
+        if (impUid) {
+            $.ajax({
+                url: '/order/cancelPayment',
+                type: 'DELETE',
+                data: { imp_uid: impUid },
+                success: function(response) {
+                    if (response.success) {
+                        alert("결제가 취소되었습니다.");
+                    } else {
+                        alert("결제 취소에 실패했습니다: " + response.message);
+                    }
+                },
+                error: function(error) {
+                    alert("결제 취소 요청 중 오류가 발생했습니다.");
+                }
+            });
+        }
+    });
+*/
+/*
+    // WebSocket 연결 설정
+    var socket = new SockJS('/ws');
+    var stompClient = Stomp.over(socket);
+    var userId = "${sessionScope.userID}";
+
+    stompClient.connect({}, function(frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/seatSelected', function(message) {
+            var seatMessage = JSON.parse(message.body);
+            if (seatMessage.userId !== userId && seatMessage.status === 'selected') {
+                seats = seats.filter(function(seat) {
+                    return seat !== seatMessage.seatId;
+                });
+                alert('다른 회원이 구매진행중인 좌석이 있습니다. 다시 선택해주세요.');
+                window.location.href = '/tickets/seatmap?matchid=${param.matchid}&section=${param.section}&stadiumid=${param.stadiumid}';
+            }
+        });
+    });
+*/
 
 
-
-
-
-
-
-
-
-
-	// 결제 취소 버튼 클릭 이벤트
-	function closePopup() {
-		alert("결제가 취소되었습니다.");
-	    window.close();
-	}
 });
+
+
+
+
+
+
+
+
+
+
+//결제 취소 버튼 클릭 이벤트
+function closePopup() {
+	alert("결제가 취소되었습니다.");
+    window.close();
+}
 </script>
 
 

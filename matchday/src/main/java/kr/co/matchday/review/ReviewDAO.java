@@ -33,10 +33,14 @@ public class ReviewDAO {
         sqlSession.update("review.update", reviewDto);
     }//update end
 
-    public void delete(String reviewid) {
-        sqlSession.delete("review.delete", reviewid);
+    public void reviewdelete(String reviewid) {
+        sqlSession.delete("review.reviewdelete", reviewid);
     }//delete end
 
+    public String filename(String reviewid) {
+	    return sqlSession.selectOne("review.filename", reviewid);
+	}//filename end
+    
     // 모든 리뷰 목록 조회
     public List<ReviewDTO> getAllReviews() {
         return sqlSession.selectList("review.getAllReviews");
