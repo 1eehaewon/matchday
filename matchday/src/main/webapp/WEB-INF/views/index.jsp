@@ -349,33 +349,10 @@
     </div>
 
     <div class="container">
-        <div class="row justify-content-center">
-            <c:forEach items="${videoList}" var="row" varStatus="vs">
-                <div class="col-sm-4 col-md-4 mb-4">
-                    <c:choose>
-                        <c:when test="${row.video_name != '-'}">
-                            <a href="detail?video_code=${row.video_code}">
-                                <iframe width="100%" height="230" src="${row.video_url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            등록된 영상 없음!!<br>
-                        </c:otherwise>
-                    </c:choose>
-                    <br>
-                    경기 :
-                    <a href="detail?video_code=${row.video_code}">${row.video_name}</a>
-                </div>
-
-                <!-- 한 줄에 3칸씩 -->
-                <c:if test="${vs.count % 3 == 0}">
-                    </div><!-- row end -->
-                    <div style="height: 20px;"></div> <!-- 간격을 줄 div 추가 -->
-                    <div class="row justify-content-center">
-                </c:if>
-            </c:forEach>
-        </div><!-- row end -->
-    </div><!-- container end -->
+        <div class="row justify-content-center" id="recentVideoList">
+            <!-- 최근 3개의 비디오가 여기에 동적으로 추가됩니다. -->
+        </div>
+    </div>
 
     <hr style="border-top: 4px solid #ccc; width: 100%; margin: 20px 0;">    
 
@@ -470,6 +447,35 @@
 
         setInterval(updateCountdown, 1000);
         updateCountdown(); // initial call to display immediately
+
+        // 최근 비디오 3개를 가져와서 출력
+        $.ajax({
+            url: '/video/recentVideos',
+            method: 'GET',
+            success: function(data) {
+                var videoList = $('#recentVideoList');
+                videoList.empty();
+                data.forEach(function(video) {
+                    var videoHtml = '<div class="col-sm-4 col-md-4 mb-4 text-center">';
+                    if (video.video_name !== '-') {
+                        videoHtml += '<a href="detail?video_code=' + video.video_code + '">';
+                        videoHtml += '<iframe width="100%" height="315" src="' + video.video_url + '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+                        videoHtml += '</a>';
+                    } else {
+                        videoHtml += '등록된 영상 없음!!<br>';
+                    }
+                    videoHtml += '<br><div style="margin-top: 20px; text-align: center;">';
+                    videoHtml += '<a href="detail?video_code=' + video.video_code + '">경기 : ' + video.video_name + '</a>';
+                    videoHtml += '</div><div style="margin-top: 10px; text-align: center;">';
+                    videoHtml += '<a href="detail?video_code=' + video.video_code + '">경기 내용 : ' + video.description + '</a>';
+                    videoHtml += '</div></div>';
+                    videoList.append(videoHtml);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching recent videos:', error);
+            }
+        });
     });
 </script>
 

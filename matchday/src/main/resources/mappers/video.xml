@@ -56,5 +56,11 @@
         SELECT COUNT(*) FROM video
     </select>
     
+    <select id="getRecentVideos" resultType="kr.co.matchday.video.VideoDTO">
+    SELECT video_code, video_name, description, video_url, regdate
+    FROM video
+    ORDER BY regdate DESC
+    LIMIT 3
+</select>
 
 </mapper>

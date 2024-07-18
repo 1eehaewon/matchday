@@ -45,4 +45,8 @@ public class VideoDAO {
         return sqlSession.selectOne("video.countVideos");
     }
     
+    public List<VideoDTO> getRecentVideos() {
+        return sqlSession.selectList("video.getRecentVideos");
+    }
+    
 }//class end
