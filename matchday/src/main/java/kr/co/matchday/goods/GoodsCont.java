@@ -314,27 +314,7 @@ public class GoodsCont {
         return "redirect:/goods/list";
     }//delete end
 
-    @PostMapping("/reviewdelete")
-    public String reviewdelete(HttpServletRequest req,@RequestParam("goodsid") String goodsid) {
-        String reviewid = req.getParameter("reviewid");
-        goodsid = req.getParameter("goodsid");
-        
-        String filename = reviewDao.filename(reviewid); // 삭제하고자 하는 파일명 가져오기
-
-        if (filename != null && !filename.equals("-")) { // 첨부된 파일 삭제하기
-            ServletContext application = req.getSession().getServletContext();
-            String path = application.getRealPath("/storage/review");
-            File file = new File(path + "\\" + filename);
-            if (file.exists()) {
-                file.delete();
-            }//if end
-        }//if end
-
-        reviewDao.reviewdelete(reviewid); // 테이블 행 삭제						
-
-        return "redirect:/goods/detail";
-    }//reviewdelete end
-    
+      
     
     @GetMapping("/filename/{goodsid}")
     public String getFilename(@PathVariable String goodsid) {
