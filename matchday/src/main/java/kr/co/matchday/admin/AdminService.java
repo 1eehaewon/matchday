@@ -12,9 +12,9 @@ public class AdminService {
 	AdminDAO adminDao;
 
 	@Transactional
-	public void deleteUsers(List<String> userIds) {
+	public void suspendUsers(List<String> userIds) {
 		for (String userId : userIds) {
-			adminDao.deleteUserById(userId);
+			adminDao.suspendUserById(userId);
 		}
 	}
 }// class end

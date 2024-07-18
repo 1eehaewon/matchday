@@ -1,5 +1,7 @@
 package kr.co.matchday.login;
 
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,6 +24,11 @@ public class LoginDAO {
 
         int count = sqlSession.selectOne("login.validateUser", loginDTO);
         return count == 1;
+    }
+    
+    public void logLoginHistory(String userid, String ipAddress) {
+        // loginhistory 테이블에 로그 추가
+        sqlSession.insert("login.insertLoginHistory", Map.of("userid", userid, "ipaddress", ipAddress));
     }
     
     //탈퇴한회원 로그인

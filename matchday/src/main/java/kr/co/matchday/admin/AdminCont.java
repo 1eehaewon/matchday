@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -135,19 +136,41 @@ public class AdminCont {
         return "redirect:/admin/point/setting";
     }
     
-    //회원삭제
-    @PostMapping("/deleteUsers")
-    public ResponseEntity<String> deleteUsers(@RequestParam(value = "userIds", required = false) String[] userIds) {
+    //회원정지
+    @PostMapping("/suspendUsers")
+    public ResponseEntity<String> suspendUsers(@RequestParam(value = "userIds", required = false) String[] userIds) {
         if (userIds == null || userIds.length == 0) {
-            return ResponseEntity.badRequest().body("삭제할 회원을 선택해주세요.");
+            return ResponseEntity.badRequest().body("정지할 회원을 선택해주세요.");
         }
         
         try {
-            adminService.deleteUsers(Arrays.asList(userIds));
-            return ResponseEntity.ok("회원 삭제가 완료되었습니다.");
+            adminService.suspendUsers(Arrays.asList(userIds));
+            return ResponseEntity.ok("회원 정지가 완료되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 삭제 중 오류가 발생했습니다.");
         }
+    }//suspendUsers() end
+    
+    //각회원정보
+    @GetMapping
+    public String getUserActivity(@RequestParam("userid") String userId, Model model) {
+        Map<String, Object> userActivity = adminDao.getUserActivity(userId);
+        
+        List<Map<String, Object>> pointHistory = adminDao.getPointHistory(userId);
+        List<Map<String, Object>> purchaseHistory = adminDao.getPurchaseHistory(userId);
+        
+        userActivity.put("pointHistory", pointHistory);
+        userActivity.put("purchaseHistory", purchaseHistory);
+        
+        model.addAttribute("userActivity", userActivity);
+        return "admin/userActivity";
+    }
+    
+    
+    //매출현황
+    @GetMapping("/chart")
+    public String chart() {
+    	return "admin/chart";
     }
 }// class end

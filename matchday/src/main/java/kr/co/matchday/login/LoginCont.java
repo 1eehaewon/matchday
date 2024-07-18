@@ -2,13 +2,13 @@ package kr.co.matchday.login;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.point.UserService;
 
@@ -29,7 +29,7 @@ public class LoginCont {
 
 	@PostMapping("/login.do") //파라미터 두개면 RequestParam
 	public ModelAndView login(@RequestParam("userID") String userID, @RequestParam("password") String password,
-			HttpSession session) {
+			HttpSession session, HttpServletRequest request) {
 		boolean isValidUser = loginDao.validateUser(userID, password);
 
 		ModelAndView modelAndView = new ModelAndView();
@@ -42,8 +42,16 @@ public class LoginCont {
 			modelAndView.addObject("alert", true); // alert 창을 띄우기 위한 플래그
 			return modelAndView;
 		}
-
-		if (isValidUser) {
+		if ("X".equals(grade)) {
+			modelAndView.setViewName("/member/login"); // 로그인 페이지로 리다이렉트
+			modelAndView.addObject("errorMessage", "정지된 회원입니다.");
+			modelAndView.addObject("alert", true); // alert 창을 띄우기 위한 플래그
+			return modelAndView;
+		}
+		if (isValidUser) { //로그인성공시
+			
+			String ipAddress = request.getRemoteAddr();
+	        loginDao.logLoginHistory(userID, ipAddress); // 로그인 성공 시 loginhistory 테이블에 로그 추가
 			session.setAttribute("userID", userID); // 로그인 성공 시 세션에 사용자 정보 저장
 			session.setAttribute("grade", grade); // 세션에 사용자 등급 저장(M,A,F)
 			modelAndView.setViewName("redirect:/home.do"); // 메인 페이지로 리다이렉트

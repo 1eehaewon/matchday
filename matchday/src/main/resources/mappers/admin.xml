@@ -18,9 +18,11 @@
 	<!-- 쿠폰등록하기 -->
 	<insert id="insertCoupon"
 		parameterType="kr.co.matchday.admin.CouponMasterDTO">
-		INSERT INTO couponmaster (coupontypeid, couponname, discountrate,
+		INSERT INTO couponmaster (coupontypeid, couponname,
+		discountrate,
 		issuecount, startdate, enddate, applicableproduct)
-		VALUES (#{coupontypeid}, #{couponname}, #{discountrate}, #{issuecount},
+		VALUES
+		(#{coupontypeid}, #{couponname}, #{discountrate}, #{issuecount},
 		#{startdate}, #{enddate}, #{applicableproduct})
 	</insert>
 
@@ -28,14 +30,16 @@
 	<!-- 쿠폰 전체 목록 가져오기 -->
 	<select id="selectAllCoupons"
 		resultType="kr.co.matchday.admin.CouponMasterDTO">
-		SELECT coupontypeid, couponname, discountrate, issuecount, startdate,
+		SELECT coupontypeid, couponname, discountrate, issuecount,
+		startdate,
 		enddate, applicableproduct
 		FROM couponmaster
 	</select>
 
 	<select id="getCouponById" parameterType="String"
 		resultType="kr.co.matchday.admin.CouponMasterDTO">
-		SELECT * FROM couponmaster WHERE coupontypeid = #{coupontypeid}
+		SELECT * FROM couponmaster WHERE coupontypeid =
+		#{coupontypeid}
 	</select>
 
 	<update id="updateCoupon"
@@ -44,33 +48,40 @@
 		SET couponname = #{couponname},
 		discountrate = #{discountrate},
 		issuecount = #{issuecount},
-		startdate = #{startdate},
+		startdate =
+		#{startdate},
 		enddate = #{enddate},
-		applicableproduct = #{applicableproduct}
+		applicableproduct =
+		#{applicableproduct}
 		WHERE coupontypeid = #{coupontypeid}
 	</update>
 
 	<delete id="deleteCoupon" parameterType="String">
-		DELETE FROM couponmaster WHERE coupontypeid = #{coupontypeid}
+		DELETE FROM couponmaster
+		WHERE coupontypeid = #{coupontypeid}
 	</delete>
 
 	<!-- 포인트마스터 -->
 	<!-- 포인트 유형 목록 가져오기 -->
 	<select id="getPointCategories"
 		resultType="kr.co.matchday.admin.PointMasterDTO">
-		SELECT pointcategoryid, pointcategoryname, accumulatedpoints, rate
+		SELECT pointcategoryid, pointcategoryname,
+		accumulatedpoints, rate
 		FROM pointmaster
 	</select>
 
 	<!-- 포인트 유형 추가 -->
 	<insert id="createPoint"
 		parameterType="kr.co.matchday.admin.PointMasterDTO">
-		INSERT INTO pointmaster (pointcategoryname, accumulatedpoints, rate)
-		VALUES (#{pointcategoryname}, #{accumulatedpoints}, #{rate})
+		INSERT INTO pointmaster (pointcategoryname,
+		accumulatedpoints, rate)
+		VALUES (#{pointcategoryname},
+		#{accumulatedpoints}, #{rate})
 	</insert>
 
 	<delete id="deletePoint" parameterType="String">
-		DELETE FROM pointmaster WHERE pointcategoryid = #{pointcategoryid}
+		DELETE FROM pointmaster
+		WHERE pointcategoryid = #{pointcategoryid}
 	</delete>
 
 	<!-- 회원사용총금액가져오기 -->
@@ -81,8 +92,52 @@
 		u.email,
 		u.grade,
 		u.joinDate,
-		COALESCE(t.totalTicketAmount, 0) + COALESCE(m.totalMembershipAmount, 0) +
-		COALESCE(o.totalOrderAmount, 0) AS totalSpent
+		COALESCE(t.totalTicketAmount, 0) +
+		COALESCE(m.totalMembershipAmount, 0) +
+		COALESCE(o.totalOrderAmount, 0)
+		AS totalSpent
+		FROM
+		users u
+		LEFT JOIN
+		(SELECT userid,
+		SUM(finalpaymentamount) as totalTicketAmount FROM tickets
+		GROUP BY
+		userid) t ON u.userid = t.userid
+		LEFT JOIN
+		(SELECT um.userid,
+		SUM(m.price) as totalMembershipAmount FROM usermemberships
+		um JOIN
+		memberships m ON um.membershipid = m.membershipid GROUP BY
+		um.userid) m
+		ON u.userid = m.userid
+		LEFT JOIN
+		(SELECT userid, SUM(finalpaymentamount)
+		as totalOrderAmount FROM `order`
+		GROUP BY userid) o ON u.userid =
+		o.userid;
+	</select>
+
+	<!-- 회원 정지 -->
+	<update id="suspendUser">
+		UPDATE users
+		SET grade = 'X'
+		WHERE userid = #{userid}
+	</update>
+
+	<!-- 회원 상세 -->
+	<select id="getUserActivity" resultType="map">
+		SELECT
+		u.userid,
+		(SELECT COUNT(*) FROM loginhistory WHERE userid = u.userid) AS loginCount,
+		(SELECT MAX(logindate) FROM loginhistory WHERE userid = u.userid) AS
+		lastLoginDate,
+		(SELECT MAX(ipaddress) FROM loginhistory WHERE userid = u.userid) AS
+		lastLoginIp,
+		(SELECT COUNT(*) FROM review WHERE userid = u.userid) AS reviewCount,
+		(SELECT COUNT(*) FROM inquiries WHERE userid = u.userid) AS inquiryCount,
+		COALESCE(t.totalTicketAmount, 0) + COALESCE(m.totalMembershipAmount,
+		0) + COALESCE(o.totalOrderAmount, 0) AS totalSpent,
+		u.totalpoints
 		FROM
 		users u
 		LEFT JOIN
@@ -94,13 +149,50 @@
 		um.userid) m ON u.userid = m.userid
 		LEFT JOIN
 		(SELECT userid, SUM(finalpaymentamount) as totalOrderAmount FROM `order`
-		GROUP BY userid) o ON u.userid = o.userid;
+		GROUP BY userid) o ON u.userid = o.userid
+		WHERE u.userid = #{userId}
+	</select>
+	<select id="getPointHistory" resultType="map">
+		SELECT
+		pointcreationdate,
+		pointtype,
+		pointamount,
+		pointsource
+		FROM pointhistory
+		WHERE userid = #{userId}
 	</select>
 	
-	<!-- 회원 삭제 -->
-    <delete id="deleteUserById">
-        DELETE FROM users
-        WHERE userid = #{userId}
-    </delete>
+	<!-- 사용자구매내역 -->
+	<select id="getPurchaseHistory" resultType="map">
+        SELECT 
+            'order' AS type,
+            o.goodsid AS itemName,
+            o.finalpaymentamount AS amount,
+            o.quantity AS quantity,
+            o.orderdate AS date
+        FROM `order` o
+        JOIN goods g ON o.goodsid = g.goodsid
+        WHERE o.userid = #{userId}
+        UNION ALL
+        SELECT 
+            'ticket' AS type,
+            t.matchid AS itemName,
+            t.finalpaymentamount AS amount,
+            t.quantity AS quantity,
+            t.reservationdate AS date
+        FROM tickets t
+        JOIN matches m ON t.matchid = m.matchid
+        WHERE t.userid = #{userId}
+        UNION ALL
+        SELECT 
+            'membership' AS type,
+            um.membershipid AS itemName,
+            mb.price AS amount,
+            NULL AS quantity,
+            um.purchasedate AS date
+        FROM usermemberships um
+        JOIN memberships mb ON um.membershipid = mb.membershipid
+        WHERE um.userid = #{userId}
+    </select>
 </mapper>
 

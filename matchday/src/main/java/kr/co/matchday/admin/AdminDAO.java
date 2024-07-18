@@ -63,8 +63,22 @@ public class AdminDAO {
   	    return sqlSession.selectList("admin.getTotalSpentByUsers");
   	}
   	
-  	//회원삭제
-  	public void deleteUserById(String userId) {
-        sqlSession.delete("admin.deleteUserById", userId);
+  	//회원정지
+  	public void suspendUserById(String userId) {
+        sqlSession.delete("admin.suspendUser", userId);
     }
+  	
+  	//각회원정보
+  	public Map<String, Object> getUserActivity(String userId) {
+        return sqlSession.selectOne("admin.getUserActivity", userId);
+    }
+  	
+  	public List<Map<String, Object>> getPointHistory(String userId) {
+  	    return sqlSession.selectList("admin.getPointHistory", userId);
+  	}
+  	
+  	public List<Map<String, Object>> getPurchaseHistory(String userId) {
+        return sqlSession.selectList("admin.getPurchaseHistory", userId);
+    }
+  	
 }//class end
