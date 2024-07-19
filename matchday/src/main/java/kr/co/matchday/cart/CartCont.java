@@ -1,7 +1,9 @@
 package kr.co.matchday.cart;
 
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.goods.GoodsDAO;
 import kr.co.matchday.goods.GoodsDTO;
+import kr.co.matchday.mypage.MypageDAO;
+import kr.co.matchday.mypage.MypageDTO;
+import kr.co.matchday.coupon.CouponDTO;
+import kr.co.matchday.order.OrderDAO;
 
 @Controller
 @RequestMapping("/cart")
@@ -29,26 +35,29 @@ public class CartCont {
 
 	@Autowired
     private GoodsDAO goodsDao;
+
+    @Autowired
+    private OrderDAO orderDao;
+    
+    @Autowired
+    private MypageDAO mypageDao;
 	
     @PostMapping("/insert")
     public String insert(@ModelAttribute CartDTO cartDto, HttpSession session) {
-        // 로그인된 사용자 정보 가져오기
         String userid = (String) session.getAttribute("userID");
         if (userid == null) {
-            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+            return "redirect:/member/login";
         }
         cartDto.setUserid(userid);
-
-        // 장바구니에 상품 추가
         cartDao.insert(cartDto);
         return "redirect:/cart/list";
-    }//insert end
+    }
 
     @GetMapping("/list")
     public String showCartList(Model model, HttpSession session) {
         String userid = (String) session.getAttribute("userID");
         if (userid == null) {
-            return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+            return "redirect:/member/login";
         }
         
         List<GoodsDTO> goodsList = goodsDao.list();
@@ -56,14 +65,8 @@ public class CartCont {
         model.addAttribute("goodsList", goodsList);
         model.addAttribute("cartList", cartList);
         return "cart/list";
-    }//list end
-	
-    /*@GetMapping("/delete")
-    public String deleteItem(@RequestParam("cartid") int cartid) {
-        cartDao.delete(cartid);
-        return "redirect:/cart/list";
-    }//delete end*/
-	
+    }
+
     @GetMapping("/delete")
     public String deleteItems(@RequestParam("cartid") List<Integer> cartid) {
         for (int id : cartid) {
@@ -71,7 +74,44 @@ public class CartCont {
         }
         return "redirect:/cart/list";
     }
-    
-    
-    
-}//class end
+
+    @GetMapping("/cartPayment")
+    public String cartPayment(
+            @RequestParam("goodsid") String goodsid,
+            @RequestParam("size") String size,
+            @RequestParam("quantity") String quantity,
+            @RequestParam("price") String price,
+            @RequestParam("totalPrice") String totalPrice,
+            HttpSession session, Model model) {
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login";
+        }
+
+        List<String> goodsidList = Arrays.asList(goodsid.split(","));
+        List<String> sizeList = Arrays.asList(size.split(","));
+        List<Integer> quantityList = Arrays.asList(quantity.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> priceList = Arrays.asList(price.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> totalPriceList = Arrays.asList(totalPrice.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+
+        List<GoodsDTO> goodsList = goodsidList.stream().map(goodsDao::detail).collect(Collectors.toList());
+
+        model.addAttribute("goodsList", goodsList);
+        model.addAttribute("sizeList", sizeList);
+        model.addAttribute("quantityList", quantityList);
+        model.addAttribute("priceList", priceList);
+        model.addAttribute("totalPriceList", totalPriceList);
+
+        List<CouponDTO> couponList = orderDao.getCouponsByUserId(userid);
+        model.addAttribute("couponList", couponList);
+
+        MypageDTO mypageDto = mypageDao.getUserById(userid);
+        if (mypageDto == null) {
+            model.addAttribute("error", "사용자 정보를 찾을 수 없습니다.");
+            return "error";
+        }
+        model.addAttribute("totalpoints", mypageDto.getTotalpoints());
+
+        return "cart/cartPayment";
+    }
+}

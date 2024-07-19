@@ -2,6 +2,8 @@ package kr.co.matchday.order;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.cart.CartDAO;
+import kr.co.matchday.cart.CartDTO;
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.goods.GoodsDAO;
 import kr.co.matchday.goods.GoodsDTO;
@@ -45,6 +49,9 @@ public class OrderCont {
 
     @Autowired
     private MypageDAO mypageDao;
+    
+    @Autowired
+    private CartDAO cartDao;
 
     @Autowired
     private Environment env;
@@ -116,24 +123,15 @@ public class OrderCont {
         String shippingrequest = requestParams.get("shippingrequest");
         String paymentmethodcode = requestParams.get("paymentmethodcode");
         String couponid = requestParams.get("couponid");
-        String goodsid = requestParams.get("goodsid");
         String userId = (String) session.getAttribute("userID");
         int usedpoints = Integer.parseInt(requestParams.getOrDefault("usedpoints", "0"));
-        int price = Integer.parseInt(requestParams.getOrDefault("price", "0"));
-        int quantity = Integer.parseInt(requestParams.getOrDefault("quantity", "1")); // 수량 값 가져오기
 
-        // Log important variables
-        System.out.println("imp_uid: " + imp_uid);
-        System.out.println("merchant_uid: " + merchant_uid);
-        System.out.println("paid_amount: " + paid_amount);
-        System.out.println("finalpaymentamount: " + finalpaymentamount);
-        System.out.println("goodsid: " + goodsid);
-        System.out.println("paymentmethodcode: " + paymentmethodcode);
-        System.out.println("couponid: " + couponid);
-        System.out.println("userId: " + userId);
-        System.out.println("usedpoints: " + usedpoints);
-        System.out.println("price: " + price);
-        System.out.println("quantity: " + quantity); // 수량 로그 메시지 추가
+        // 상품별 정보 가져오기
+        List<String> goodsidList = Arrays.asList(requestParams.get("goodsid").split(","));
+        List<String> quantities = Arrays.asList(requestParams.get("quantity").split(","));
+        List<String> sizes = Arrays.asList(requestParams.get("size").split(","));
+        List<String> prices = Arrays.asList(requestParams.get("price").split(","));
+        List<String> totalPrices = Arrays.asList(requestParams.get("totalPrice").split(","));
 
         if (userId == null) {
             response.put("success", false);
@@ -141,7 +139,7 @@ public class OrderCont {
             return response;
         }
 
-        if (goodsid == null || goodsid.isEmpty()) {
+        if (goodsidList.isEmpty()) {
             response.put("success", false);
             response.put("message", "상품 ID가 유효하지 않습니다.");
             return response;
@@ -178,42 +176,58 @@ public class OrderCont {
                 if (amount == paid_amount) {
                     String orderid = generateOrderId();
 
-                    OrderDTO orderDto = new OrderDTO();
-                    orderDto.setOrderid(orderid);
-                    orderDto.setUserid(userId);
-                    orderDto.setGoodsid(goodsid);
-                    orderDto.setOrderdate(new Timestamp(System.currentTimeMillis()));
-                    orderDto.setOrderstatus("Completed");
-                    if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
-                        orderDto.setCouponid(couponid);
-                    } else {
-                        orderDto.setCouponid(null);
-                    }
-                    orderDto.setUsedpoints(usedpoints);
-                    orderDto.setFinalpaymentamount(finalpaymentamount);
-                    orderDto.setShippingstartdate(new Timestamp(System.currentTimeMillis()));
-                    orderDto.setShippingstatus("Pending");
-                    orderDto.setRecipientname(recipientname);
-                    orderDto.setRecipientemail(recipientemail);
-                    orderDto.setRecipientphone(recipientphone);
-                    orderDto.setShippingaddress(shippingaddress);
-                    orderDto.setShippingrequest(shippingrequest);
-                    orderDto.setPaymentmethodcode(paymentmethodcode);
-                    orderDto.setPrice(price);
-                    orderDto.setQuantity(quantity); // 수량 값 설정
-                    orderDto.setReceiptmethodcode("receiving02");
+                    for (int i = 0; i < goodsidList.size(); i++) {
+                        OrderDTO orderDto = new OrderDTO();
+                        orderDto.setOrderid(orderid);
+                        orderDto.setUserid(userId);
+                        orderDto.setGoodsid(goodsidList.get(i));
+                        orderDto.setOrderdate(new Timestamp(System.currentTimeMillis()));
+                        orderDto.setOrderstatus("Completed");
+                        if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
+                            orderDto.setCouponid(couponid);
+                        } else {
+                            orderDto.setCouponid(null);
+                        }
+                        orderDto.setUsedpoints(usedpoints);
+                        orderDto.setFinalpaymentamount(finalpaymentamount); // 최종 결제 금액 설정
+                        orderDto.setShippingstartdate(new Timestamp(System.currentTimeMillis()));
+                        orderDto.setShippingstatus("Pending");
+                        orderDto.setRecipientname(recipientname);
+                        orderDto.setRecipientemail(recipientemail);
+                        orderDto.setRecipientphone(recipientphone);
+                        orderDto.setShippingaddress(shippingaddress);
+                        orderDto.setShippingrequest(shippingrequest);
+                        orderDto.setPaymentmethodcode(paymentmethodcode);
 
-                    System.out.println("OrderDTO: " + orderDto.toString()); // OrderDTO 내용 로그 출력
+                        int quantity = Integer.parseInt(quantities.get(i));
+                        int price = Integer.parseInt(prices.get(i));
+                        int totalPrice = Integer.parseInt(totalPrices.get(i));
+                        orderDto.setPrice(price); // 개당 가격 설정
+                        orderDto.setQuantity(quantity);
+                        orderDto.setTotalprice(totalPrice); // 개당 가격 * 수량 설정
+                        orderDto.setReceiptmethodcode("receiving02");
 
-                    try {
-                        orderDao.insert(orderDto);
-                        System.out.println("Order inserted successfully");
-                    } catch (Exception e) {
-                        System.err.println("Error inserting order: " + e.getMessage());
-                        e.printStackTrace();
-                        response.put("success", false);
-                        response.put("message", "Order insertion failed.");
-                        return response;
+                        List<OrderdetailDTO> orderDetails = new ArrayList<>();
+                        OrderdetailDTO orderDetail = new OrderdetailDTO();
+                        orderDetail.setGoodsid(goodsidList.get(i));
+                        orderDetail.setSize(sizes.get(i));
+                        orderDetail.setQuantity(quantity);
+                        orderDetail.setPrice(price); // 개당 가격 설정
+                        orderDetail.setTotalamount(price * quantity); // 개당 가격 * 수량 설정
+                        orderDetails.add(orderDetail);
+
+                        orderDto.setOrderDetails(orderDetails);
+
+                        try {
+                            orderDao.insert(orderDto);
+                            System.out.println("Order and Order details inserted successfully");
+                        } catch (Exception e) {
+                            System.err.println("Error inserting order: " + e.getMessage());
+                            e.printStackTrace();
+                            response.put("success", false);
+                            response.put("message", "Order insertion failed.");
+                            return response;
+                        }
                     }
 
                     if (couponid != null && !couponid.equals("0")) {
@@ -223,9 +237,9 @@ public class OrderCont {
                     MypageDTO mypageDto = mypageDao.getUserById(userId);
                     if (mypageDto != null) {
                         int totalpoints = mypageDto.getTotalpoints();
-                        if (totalpoints >= orderDto.getUsedpoints()) {
-                            int remainingPoints = totalpoints - orderDto.getUsedpoints();
-                            // 포인트 차감 로직 추가 필요시 작성
+                        if (totalpoints >= usedpoints) {
+                            int remainingPoints = totalpoints - usedpoints;
+                            // 포인트 업데이트 로직 필요 (mypageDao.updatePoints 등)
                         } else {
                             response.put("success", false);
                             response.put("message", "사용 가능한 포인트가 부족합니다.");
@@ -254,8 +268,6 @@ public class OrderCont {
 
         return response;
     }
-
-
 
     private String generateOrderId() {
         String prefix = "order";
@@ -295,4 +307,57 @@ public class OrderCont {
         }
         return null;
     }
+    
+    /*
+    @GetMapping("/cartPayment")
+    public String cartPayment(@RequestParam("goodsid") String goodsid,
+                              @RequestParam("size") String size,
+                              @RequestParam("quantity") int quantity,
+                              @RequestParam("price") int price,
+                              @RequestParam("totalPrice") int totalPrice,
+                              @RequestParam(value = "couponid", required = false) String couponid,
+                              @RequestParam(value = "usedpoints", required = false, defaultValue = "0") int usedpoints,
+                              HttpSession session, Model model) {
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login";
+        }
+
+        GoodsDTO goods = goodsDao.detail(goodsid);
+        if (goods == null) {
+            model.addAttribute("error", "상품 정보를 찾을 수 없습니다.");
+            return "error";
+        }
+        model.addAttribute("goods", goods);
+        model.addAttribute("size", size);
+        model.addAttribute("quantity", quantity);
+        model.addAttribute("price", price);
+        model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("couponid", couponid);
+        model.addAttribute("usedpoints", usedpoints);
+
+        List<CouponDTO> couponList = orderDao.getCouponsByUserId(userid);
+        model.addAttribute("couponList", couponList);
+
+        int discountRate = 0;
+        if (couponid != null && !couponid.isEmpty()) {
+            try {
+                discountRate = orderDao.getDiscountRateByCouponId(couponid);
+            } catch (Exception e) {
+                model.addAttribute("error", "유효하지 않은 쿠폰입니다.");
+                return "error";
+            }
+        }
+        model.addAttribute("discountRate", discountRate);
+
+        MypageDTO mypageDto = mypageDao.getUserById(userid);
+        if (mypageDto == null) {
+            model.addAttribute("error", "사용자 정보를 찾을 수 없습니다.");
+            return "error";
+        }
+        model.addAttribute("totalpoints", mypageDto.getTotalpoints());
+
+        return "cart/cartPayment"; // 여기서 cart/cartPayment로 이동하도록 설정
+    }
+    */
 }

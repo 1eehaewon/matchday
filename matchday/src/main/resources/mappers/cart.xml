@@ -5,7 +5,7 @@
 
 <mapper namespace="cart">
 
-	<insert id="insert" parameterType="kr.co.matchday.cart.CartDTO">
+    <insert id="insert" parameterType="kr.co.matchday.cart.CartDTO">
         INSERT INTO cart (userid, goodsid, quantity, unitprice, totalprice, size)
         VALUES (#{userid}, #{goodsid}, #{quantity}, #{unitprice}, #{totalprice}, #{size})
     </insert>
@@ -18,11 +18,20 @@
         DELETE FROM cart WHERE cartid = #{cartid}
     </delete>
 
-	<delete id="deleteMultiple" parameterType="list">
+    <delete id="deleteMultiple" parameterType="list">
         DELETE FROM cart WHERE cartid IN
         <foreach item="cartid" collection="list" open="(" separator="," close=")">
             #{cartid}
         </foreach>
     </delete>
+    
+    <!-- 장바구니에서 선택된 항목 조회 -->
+    <select id="getCartItems" parameterType="java.util.List" resultType="kr.co.matchday.cart.CartDTO">
+        SELECT * FROM cart
+        WHERE cartid IN
+        <foreach item="cartid" collection="list" open="(" separator="," close=")">
+            #{cartid}
+        </foreach>
+    </select>
 
 </mapper>

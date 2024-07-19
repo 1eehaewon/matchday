@@ -14,6 +14,7 @@ public class OrderdetailDTO {
 	private int orderdetailid;	//주문 상세 ID
     private String orderid;	// 주문 ID
     private String goodsid; //굿즈 ID
+    private String size;    // 사이즈
     private int quantity;	// 수량
     private int price;	// 가격
     private int totalamount;	// 총 결제 금액
@@ -23,9 +24,4 @@ public class OrderdetailDTO {
     private String canceldate;	// 취소 일자
     private String exchangedate;	// 교환 일자
     private String refunddate;	// 환불 일자
-    /*
-    private Timestamp cancelDate;
-    private Timestamp exchangeDate;
-    private Timestamp refundDate;
-	*/
 }//class end

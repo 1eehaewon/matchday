@@ -1,7 +1,7 @@
 package kr.co.matchday.order;
 
 import java.sql.Timestamp;
-
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,22 +11,17 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-
 public class OrderDTO {
-
-	private String orderid; // 주문 ID
+    private String orderid; // 주문 ID
     private String userid; // 사용자 ID
-    private String goodsid; //굿즈 ID
+    private String goodsid; // 굿즈 ID
     private Timestamp orderdate; // 주문 날짜
-    /*private Timestamp orderdate; // 주문 날짜*/
     private String orderstatus; // 주문 상태 ('Pending', 'Completed')
     private String couponid; // 쿠폰 ID
     private int usedpoints; // 사용한 포인트
     private int finalpaymentamount; // 최종 결제 금액
     private Timestamp shippingstartdate; // 배송 시작 날짜
     private Timestamp shippingenddate; // 배송 종료 날짜
-    /*private Timestamp shippingstartdate; // 배송 시작 날짜
-    private Timestamp shippingenddate; // 배송 종료 날짜*/
     private String shippingstatus; // 배송 상태 ('Pending', 'Completed')
     private String recipientname; // 수령인 이름
     private String recipientemail; // 수령인 이메일
@@ -37,5 +32,6 @@ public class OrderDTO {
     private int price; // 가격
     private int quantity; // 수량
     private String receiptmethodcode; // 수령 방법 코드
-	
-}//class end
+    private int totalprice; // 총 결제 금액
+    private List<OrderdetailDTO> orderDetails; // 주문 상세 목록
+}

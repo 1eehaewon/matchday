@@ -179,18 +179,19 @@
 <div class="container">
     <!-- 숨겨진 필드로 goodsid 추가 -->
     <form id="payment-form">
-	    <input type="hidden" name="userid" value="${sessionScope.userID}">
-	    <input type="hidden" name="orderid" id="orderid" value="${order.orderid}">
-	    <input type="hidden" name="goodsid" id="goodsid" value="${goods.goodsid}">
-	    <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
-	    <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
-	    <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
-	    <input type="hidden" name="quantity" id="quantity" value="${quantity}">
-	    <input type="hidden" name="price" id="price" value="${price}">
-	    <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
-	    <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
-	    <input type="hidden" name="totalPrice" id="total-price" value="${totalPrice}">
-	</form>
+        <input type="hidden" name="userid" value="${sessionScope.userID}">
+        <input type="hidden" name="orderid" id="orderid" value="${order.orderid}">
+        <input type="hidden" name="goodsid" id="goodsid" value="${goods.goodsid}">
+        <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
+        <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
+        <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
+        <input type="hidden" name="quantity" id="quantity" value="${quantity}">
+        <input type="hidden" name="price" id="price" value="${price}">
+        <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
+        <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
+        <input type="hidden" name="totalPrice" id="total-price" value="${totalPrice}">
+        <input type="hidden" name="size" id="size" value="${size}"> <!-- 사이즈 필드 추가 -->
+    </form>
 
     <div class="order_tit">
         <h1>주문 및 결제</h1>
@@ -322,7 +323,7 @@
         <br>
         배송비 : <span id="delivery-fee">0</span> (100,000원 이상 구매 시 무료)
         <br>
-        최종 결제 금액 : <span id="total-amount">${totalPrice}원</span>
+        최종 결제 금액 : <span id="final-amount">${finalpaymentamount}원</span>
     </div>
 
     <div class="checkout-button">
@@ -334,20 +335,19 @@
 <script>
 $(document).ready(function() {
     function updateTotalAmount() {
-        var subtotalAmount = parseInt($('#total-price').val(), 10) || 0;
+        var totalPrice = parseInt($('#total-price').val(), 10) || 0;
         var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10) || 0;
         var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
         var points = parseInt($('#pointsToUse').val(), 10) || 0;
 
-        var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
-        var totalAmount = subtotalAmount + deliveryFee - discountAmount - points;
+        var discountAmount = Math.floor(totalPrice * (discountRate / 100));
+        var finalPaymentAmount = totalPrice - discountAmount - points;
 
-        $('#total-amount').text(totalAmount.toLocaleString() + '원');
-        $('#finalpaymentamount').val(totalAmount);
+        $('#final-amount').text(finalPaymentAmount.toLocaleString() + '원');
+        $('#finalpaymentamount').val(finalPaymentAmount);
         $('#usedpoints').val(points);
-        $('#price').val(subtotalAmount);
 
-        return subtotalAmount; 
+        return totalPrice; 
     }
 
     $('#couponid').change(function() {
@@ -395,21 +395,22 @@ $(document).ready(function() {
     });
 
     $('#pay-button').click(function() {
-        var subtotalAmount = updateTotalAmount();
-        var totalAmount = parseInt($('#finalpaymentamount').val(), 10) || 0;
+        var totalPrice = updateTotalAmount();
+        var finalPaymentAmount = parseInt($('#finalpaymentamount').val(), 10) || 0;
         var couponId = $('#couponid').val();
         var couponName = $('#couponid').find(':selected').text();
         var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
         var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
         var points = $('#pointsToUse').val();
         var quantity = parseInt($('#quantity').val(), 10) || 1; // 수량 값 가져오기
+        var size = $('#size').val(); // 사이즈 값 가져오기
 
         IMP.request_pay({
             pg: 'html5_inicis',
             pay_method: 'card',
             merchant_uid: 'merchant_' + new Date().getTime(),
             name: '상품 주문 결제',
-            amount: totalAmount,
+            amount: finalPaymentAmount,
             buyer_email: $('#recipientemail').val(),
             buyer_name: $('#recipientname').val(),
             buyer_tel: $('#recipientphone').val(),
@@ -421,7 +422,7 @@ $(document).ready(function() {
                     merchant_uid: rsp.merchant_uid,
                     paid_amount: rsp.paid_amount,
                     goodsid: $('#goodsid').val(),
-                    totalPrice: totalAmount,
+                    totalPrice: totalPrice,
                     recipientname: $('#recipientname').val(),
                     recipientemail: $('#recipientemail').val(),
                     recipientphone: $('#recipientphone').val(),
@@ -432,11 +433,12 @@ $(document).ready(function() {
                     couponName: couponName,
                     deliveryFee: deliveryFee,
                     totalDiscount: totalDiscount,
-                    totalPaymentAmount: totalAmount,
+                    totalPaymentAmount: finalPaymentAmount,
                     usedpoints: points,
-                    finalpaymentamount: totalAmount,
-                    price: subtotalAmount,
-                    quantity: quantity // 수량 값 추가
+                    finalpaymentamount: finalPaymentAmount,
+                    price: parseInt($('#price').val(), 10),
+                    quantity: quantity, // 수량 값 추가
+                    size: size // 사이즈 값 추가
                 };
 
                 console.log('formData:', formData); // 로그 메시지 추가
@@ -466,8 +468,6 @@ $(document).ready(function() {
         window.close();
     }
 });
-
 </script>
-
 </body>
 </html>
