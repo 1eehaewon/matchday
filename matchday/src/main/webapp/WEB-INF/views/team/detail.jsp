@@ -3,6 +3,13 @@
 
 <%@ include file="../header.jsp" %>
 
+<script>
+   function teamDelete(teamname) { 
+      if (confirm("팀을 삭제할까요?")) {
+         location.href = "/team/delete?teamname=" + teamname;
+      }
+   } 
+</script>
 
 <!-- 본문 시작 detail.jsp -->
 <main>
@@ -60,6 +67,7 @@
    <div class="text-right" style="margin-right: 10px; text-align: right">
       <button class="btn btn-primary" onclick="location.href='/player/write'">선수등록</button>
       <button class="btn btn-primary" onclick="location.href='/team/update?teamname=${team.teamname}'">팀 정보 수정</button>
+      <button type="button" class="btn btn-danger" onclick="teamDelete('${team.teamname}')">팀 삭제</button>
    </div>
  </c:if>
 </main>

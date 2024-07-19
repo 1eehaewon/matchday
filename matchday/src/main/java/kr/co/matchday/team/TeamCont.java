@@ -181,5 +181,27 @@ public class TeamCont {
         
     }//update() end
     
+    
+    @GetMapping("/delete")
+    public String delete(@RequestParam("teamname") String teamname, HttpServletRequest req) {
+        
+      //삭제하고자 하는 파일명 가져오기
+        String filename=teamDao.filename(teamname);
+        
+        //첨부된 파일 삭제하기
+        if(filename != null && !filename.equals("-")) {
+            ServletContext application=req.getSession().getServletContext();
+            String path=application.getRealPath("/storage/teams");  //실제 물리적인 경로
+            File file=new File(path + "\\" + filename);
+            if(file.exists()) {
+                file.delete();
+            }//if end
+        }//if end
+        
+        teamDao.delete(teamname); //테이블 행 삭제
+        
+        return "redirect:/team/list";
+    }//delete() end
+    
 
 }//class end

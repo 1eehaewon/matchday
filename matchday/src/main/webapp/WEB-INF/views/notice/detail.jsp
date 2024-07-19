@@ -49,15 +49,17 @@
                   <c:if test="${sessionScope.grade == 'M'}">
                     <div class="text-center">
                         <input type="hidden" name="noticeid" value="${notice.noticeid}">
-                        <button type="button" class="btn btn-success mr-2" onclick="location.href='update?noticeid=${notice.noticeid}'">공지사항 수정</button>
-                        <button type="button" class="btn btn-danger" onclick="noticeDelete(${notice.noticeid})">공지사항 삭제</button>
+                        <button type="button" class="btn btn-success mr-2" onclick="location.href='update?noticeid=${notice.noticeid}'">글 수정</button>
+                        <button type="button" class="btn btn-danger" onclick="noticeDelete(${notice.noticeid})">글 삭제</button>
                     </div>
-                        <div class="d-flex justify-content-center align-items-center mt-3">
+                  </c:if>
+                    <c:if test="${sessionScope.grade == 'M' && notice.category == 'Event'}">
+                      <div class="d-flex justify-content-center align-items-center mt-3">
                         <label for="numWinners" class="mr-2">추첨 인원:</label>
                         <input type="number" id="numWinners" class="form-control mr-2" placeholder="추첨할 인원 수를 입력하세요" min="1" style="width: 200px;">
                         <button type="button" class="btn btn-primary" id="drawButton">추첨</button>
-                    </div>
-                  </c:if>
+                      </div>
+                    </c:if>
                 </div>
             </div>
         </div>

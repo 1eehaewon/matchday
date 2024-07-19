@@ -45,5 +45,14 @@ public class TeamDAO {
     }
     
     
+    public void delete(String teamname) {
+        sqlSession.delete("team.delete", teamname);
+    }//delete() end
+    
+    
+    public String filename(String teamname) {
+        return sqlSession.selectOne("team.filename", teamname);
+    }//filename() end
+    
     
 }

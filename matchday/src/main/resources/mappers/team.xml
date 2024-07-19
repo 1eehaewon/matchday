@@ -39,6 +39,19 @@
         WHERE teamname LIKE #{keyword}
         ORDER BY teamname DESC
     </select>
+    
+    
+    <delete id="delete" parameterType="String">
+        DELETE FROM teams
+        WHERE teamname = #{teamname}
+    </delete>
+    
+    
+    <select id="filename" resultType="String" parameterType="String">
+        SELECT filename
+        FROM teams
+        WHERE teamname = #{teamname}
+    </select>
 
 
 

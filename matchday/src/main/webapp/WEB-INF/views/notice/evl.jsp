@@ -29,6 +29,9 @@
                 <table class="table table-hover shadow rounded">
                     <thead class="table-success">
                         <tr>
+                            <c:if test="${sessionScope.grade == 'M'}">
+                                <th style="width: 8%;">글 번호</th>
+                            </c:if>
                             <th>제목</th>
                             <th style="width: 20%;">작성자</th>
                             <th style="width: 20%;">작성일</th>
@@ -37,6 +40,9 @@
                     <tbody>
                         <c:forEach items="${evl}" var="row" varStatus="vs">
                             <tr onclick="location.href='detail?noticeid=${row.noticeid}'" style="cursor: pointer;">
+                                <c:if test="${sessionScope.grade == 'M'}">
+                                    <td>${row.noticeid}</td>
+                                </c:if>
                                 <td>${row.title}</td>
                                 <td>${row.userid}</td>
                                 <td><fmt:formatDate value="${row.createddate}" pattern="yyyy-MM-dd"/></td>
