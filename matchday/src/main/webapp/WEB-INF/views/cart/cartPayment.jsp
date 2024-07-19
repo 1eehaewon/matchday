@@ -352,7 +352,7 @@ $(document).ready(function() {
         $('#finalpaymentamount').val(finalPaymentAmount);
         $('#usedpoints').val(points);
 
-        return totalPrice;
+        return {totalPrice, discountAmount, finalPaymentAmount};
     }
 
     $('#couponid').change(function() {
@@ -400,16 +400,31 @@ $(document).ready(function() {
     });
 
     $('#pay-button').click(function() {
-        var totalPrice = updateTotalAmount();
-        var finalPaymentAmount = parseInt($('#finalpaymentamount').val(), 10) || 0;
+        var amounts = updateTotalAmount();
+        var totalPrice = amounts.totalPrice;
+        var discountAmount = amounts.discountAmount;
+        var finalPaymentAmount = amounts.finalPaymentAmount;
         var couponId = $('#couponid').val();
         var couponName = $('#couponid').find(':selected').text();
         var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
         var points = $('#pointsToUse').val();
-        var sizeList = ${fn:escapeXml(sizeList)};
-        var quantityList = ${fn:escapeXml(quantityList)};
-        var priceList = ${fn:escapeXml(priceList)};
-        var goodsidList = ${fn:escapeXml(goodsidList)};
+
+        var sizeList = [];
+        var quantityList = [];
+        var priceList = [];
+        var goodsidList = [];
+
+        $(".product-row").each(function() {
+            sizeList.push($(this).find('.goods-size').text());
+            quantityList.push($(this).find('.goods-quantity').text());
+            priceList.push($(this).find('.goods-price').text());
+            goodsidList.push($(this).find('.goods-id').text());
+        });
+
+        console.log("sizeList: ", sizeList);
+        console.log("quantityList: ", quantityList);
+        console.log("priceList: ", priceList);
+        console.log("goodsidList: ", goodsidList);
 
         IMP.request_pay({
             pg: 'html5_inicis',
@@ -427,10 +442,10 @@ $(document).ready(function() {
                     imp_uid: rsp.imp_uid,
                     merchant_uid: rsp.merchant_uid,
                     paid_amount: rsp.paid_amount,
-                    goodsidList: JSON.stringify(goodsidList),
-                    sizeList: JSON.stringify(sizeList),
-                    quantityList: JSON.stringify(quantityList),
-                    priceList: JSON.stringify(priceList),
+                    goodsidList: goodsidList,
+                    sizeList: sizeList,
+                    quantityList: quantityList,
+                    priceList: priceList,
                     totalPrice: totalPrice,
                     recipientname: $('#recipientname').val(),
                     recipientemail: $('#recipientemail').val(),
@@ -452,7 +467,8 @@ $(document).ready(function() {
                 $.ajax({
                     type: 'POST',
                     url: '/order/verifyPayment',
-                    data: formData,
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
                     traditional: true,
                     success: function(data) {
                         if (data.success) {

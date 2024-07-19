@@ -118,8 +118,8 @@ public class OrderCont {
         
         String imp_uid = requestParams.get("imp_uid");
         String merchant_uid = requestParams.get("merchant_uid");
-        int paid_amount = Integer.parseInt(requestParams.getOrDefault("paid_amount", "0"));
-        int finalpaymentamount = Integer.parseInt(requestParams.getOrDefault("finalpaymentamount", "0"));
+        int paid_amount = parseInteger(requestParams.get("paid_amount"), 0);
+        int finalpaymentamount = parseInteger(requestParams.get("finalpaymentamount"), 0);
         String recipientname = requestParams.get("recipientname");
         String recipientemail = requestParams.get("recipientemail");
         String recipientphone = requestParams.get("recipientphone");
@@ -128,9 +128,8 @@ public class OrderCont {
         String paymentmethodcode = requestParams.get("paymentmethodcode");
         String couponid = requestParams.get("couponid");
         String userId = (String) session.getAttribute("userID");
-        int usedpoints = Integer.parseInt(requestParams.getOrDefault("usedpoints", "0"));
+        int usedpoints = parseInteger(requestParams.get("usedpoints"), 0);
 
-        // 상품별 정보 가져오기
         List<String> goodsidList = Arrays.asList(requestParams.get("goodsid").split(","));
         List<String> quantities = Arrays.asList(requestParams.get("quantity").split(","));
         List<String> sizes = Arrays.asList(requestParams.get("size").split(","));
@@ -179,13 +178,14 @@ public class OrderCont {
 
                 if (amount == paid_amount) {
                     String orderid = generateOrderId();
+                    String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
                     for (int i = 0; i < goodsidList.size(); i++) {
                         OrderDTO orderDto = new OrderDTO();
                         orderDto.setOrderid(orderid);
                         orderDto.setUserid(userId);
                         orderDto.setGoodsid(goodsidList.get(i));
-                        orderDto.setOrderdate(orderid);
+                        orderDto.setOrderdate(currentDate); // 결제 날짜 설정
                         orderDto.setOrderstatus("Completed");
                         if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
                             orderDto.setCouponid(couponid);
@@ -193,8 +193,7 @@ public class OrderCont {
                             orderDto.setCouponid(null);
                         }
                         orderDto.setUsedpoints(usedpoints);
-                        orderDto.setFinalpaymentamount(finalpaymentamount); // 최종 결제 금액 설정
-                        orderDto.setShippingstartdate(new Timestamp(System.currentTimeMillis()));
+                        orderDto.setFinalpaymentamount(finalpaymentamount);
                         orderDto.setShippingstatus("Pending");
                         orderDto.setRecipientname(recipientname);
                         orderDto.setRecipientemail(recipientemail);
@@ -203,12 +202,12 @@ public class OrderCont {
                         orderDto.setShippingrequest(shippingrequest);
                         orderDto.setPaymentmethodcode(paymentmethodcode);
 
-                        int quantity = Integer.parseInt(quantities.get(i));
-                        int price = Integer.parseInt(prices.get(i));
-                        int totalPrice = Integer.parseInt(totalPrices.get(i));
-                        orderDto.setPrice(price); // 개당 가격 설정
+                        int quantity = parseInteger(quantities.get(i), 1);
+                        int price = parseInteger(prices.get(i), 0);
+                        int totalPrice = parseInteger(totalPrices.get(i), 0);
+                        orderDto.setPrice(price);
                         orderDto.setQuantity(quantity);
-                        orderDto.setTotalprice(totalPrice); // 개당 가격 * 수량 설정
+                        orderDto.setTotalprice(totalPrice);
                         orderDto.setReceiptmethodcode("receiving02");
 
                         List<OrderdetailDTO> orderDetails = new ArrayList<>();
@@ -216,8 +215,8 @@ public class OrderCont {
                         orderDetail.setGoodsid(goodsidList.get(i));
                         orderDetail.setSize(sizes.get(i));
                         orderDetail.setQuantity(quantity);
-                        orderDetail.setPrice(price); // 개당 가격 설정
-                        orderDetail.setTotalamount(price * quantity); // 개당 가격 * 수량 설정
+                        orderDetail.setPrice(price);
+                        orderDetail.setTotalamount(price * quantity);
                         orderDetails.add(orderDetail);
 
                         orderDto.setOrderDetails(orderDetails);
@@ -271,6 +270,14 @@ public class OrderCont {
         }
 
         return response;
+    }
+
+    private int parseInteger(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private String generateOrderId() {
@@ -343,32 +350,22 @@ public class OrderCont {
                 cal.add(Calendar.DATE, 3);
                 orderDto.setCancelDeadline(cal.getTime());
             }
-/*            
-            // 배송 종료 일자를 설정 (임의로 배송 시작 날짜의 3일 후로 설정)
-            if (orderDto.getShippingstartdate() != null) {
-                Calendar shippingCal = Calendar.getInstance();
-                shippingCal.setTime(orderDto.getShippingstartdate());
-                shippingCal.add(Calendar.DATE, 3);
-                orderDto.setShippingenddate(new Timestamp(shippingCal.getTimeInMillis()));
-            }
-*/            
-            // 주문 상세 정보를 가져와서 설정
-            List<OrderdetailDTO> orderDetailList = orderDao.getOrderDetailByOrderId(orderDto.getOrderid());
-            orderDto.setOrderDetails(orderDetailList);
         }
 
         ModelAndView mav = new ModelAndView("order/orderList");
         mav.addObject("order", order);
         
         List<GoodsDTO> goodsList = goodsDao.list();
-        model.addAttribute("goodsList", goodsList);
      
+        model.addAttribute("goodsList", goodsList);
+
+        
         return mav;
     }
     
     //결제 상세 정보
     @GetMapping("/orderDetail")
-    public ModelAndView reservationDetail(@RequestParam("orderid") String orderid, HttpSession session, Model model) {
+    public ModelAndView reservationDetail(@RequestParam("orderid") String orderid, HttpSession session) {
         ModelAndView mav = new ModelAndView("order/orderDetail");
 
         // 주문 정보 조회
@@ -378,14 +375,11 @@ public class OrderCont {
             mav.addObject("message", "주문을 찾을 수 없습니다. ID: " + orderid);
             return mav;
         }
-        
-        List<GoodsDTO> goodsList = goodsDao.list();
-        model.addAttribute("goodsList", goodsList);
-        
-        // 주문 상세 정보를 가져와서 설정
-        List<OrderdetailDTO> orderDetailList = orderDao.getOrderDetailByOrderId(order.getOrderid());
-        order.setOrderDetails(orderDetailList);
-        
+
+        // 티켓 상세 정보 조회
+        //List<TicketsDetailDTO> details = ticketsService.getTicketDetailsByReservationId(reservationid);
+        //reservation.setDetails(details);
+
         // 주문 날짜를 Date 객체로 변환하고 취소 마감시간을 설정하는 로직
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date orderDate = null;
@@ -404,26 +398,6 @@ public class OrderCont {
             order.setCancelDeadline(cal.getTime());
         }
         
-        // 배송 시작 일자를 주문 날짜의 하루 후로 설정
-        if (orderDate != null) {
-            Calendar shippingStartCal = Calendar.getInstance();
-            shippingStartCal.setTime(orderDate);
-            shippingStartCal.add(Calendar.DATE, 1); // 주문 날짜의 하루 후
-            order.setShippingstartdate(new Timestamp(shippingStartCal.getTimeInMillis()));
-
-            // 배송 종료 일자를 설정 (배송 시작 날짜의 3일 후로 설정)
-            shippingStartCal.add(Calendar.DATE, 3); // 배송 시작 날짜의 3일 후
-            order.setShippingenddate(new Timestamp(shippingStartCal.getTimeInMillis()));
-        }
-        /*
-        // 배송 종료 일자를 설정 (임의로 배송 시작 날짜의 3일 후로 설정)
-        if (order.getShippingstartdate() != null) {
-            Calendar shippingCal = Calendar.getInstance();
-            shippingCal.setTime(order.getShippingstartdate());
-            shippingCal.add(Calendar.DATE, 3);
-            order.setShippingenddate(new Timestamp(shippingCal.getTimeInMillis()));
-        }
-        */
         // 결제 내역 설정
         int serviceFee = session.getAttribute("serviceFee") != null ? Integer.parseInt(session.getAttribute("serviceFee").toString()) : 0;
         int deliveryFee = session.getAttribute("deliveryFee") != null ? Integer.parseInt(session.getAttribute("deliveryFee").toString()) : 0;
