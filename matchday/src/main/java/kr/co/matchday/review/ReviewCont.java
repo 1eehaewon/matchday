@@ -2,7 +2,6 @@ package kr.co.matchday.review;
 
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.goods.GoodsDAO;
 import kr.co.matchday.goods.GoodsDTO;
+import kr.co.matchday.order.OrderDTO;
 
 @Controller
 @RequestMapping("/review")
@@ -38,7 +38,7 @@ public class ReviewCont {
     private GoodsDAO goodsDao;
 
     @GetMapping("/write")
-    public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model, HttpSession session) {
+    public String write(@ModelAttribute("reviewDto") ReviewDTO reviewDto, Model model, HttpSession session, @RequestParam("goodsid") String goodsid) {
         // 로그인된 사용자 정보 가져오기
         String userid = (String) session.getAttribute("userID");
         if (userid == null) {
@@ -47,6 +47,10 @@ public class ReviewCont {
 
         List<GoodsDTO> goodsList = goodsDao.list();
         model.addAttribute("goodsList", goodsList);
+        
+        List<OrderDTO> orderList = reviewDao.getOrderListByGoodsId(goodsid, userid);
+        model.addAttribute("orderList", orderList);
+        
         return "review/write";
     }
 
@@ -69,16 +73,22 @@ public class ReviewCont {
     @ResponseBody
     public String insert(@ModelAttribute ReviewDTO reviewDto, HttpSession session,
                          @RequestParam("img") List<MultipartFile> imgs,
-                         HttpServletRequest req) {
+                         HttpServletRequest req, @RequestParam("orderid") String orderid) {
         // 로그인된 사용자 정보 가져오기
         String userid = (String) session.getAttribute("userID");
         if (userid == null) {
             return "redirect:/member/login"; // 로그인 페이지로 리디렉션
         }
 
-        // 기타 필요한 정보 설정 (userid, matchid, goodsid)
+        // 특정 orderid에 대해 이미 리뷰가 있는지 확인
+        if (reviewDao.hasReviewForOrder(orderid)) {
+            return "duplicate"; // 이미 리뷰가 존재하는 경우 "duplicate" 메시지 반환
+        }
+
+        // 기타 필요한 정보 설정 (userid, matchid, goodsid, orderid)
         reviewDto.setUserid(userid);
         reviewDto.setGoodsid(req.getParameter("goodsid"));
+        reviewDto.setOrderid(orderid); // orderid 설정
 
         // 리뷰 날짜 설정
         reviewDto.setReviewdate(new Timestamp(System.currentTimeMillis())); // Timestamp로 설정

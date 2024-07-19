@@ -8,6 +8,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.matchday.order.OrderDTO;
+
 @Repository
 public class ReviewDAO {
 
@@ -55,4 +57,15 @@ public class ReviewDAO {
         sqlSession.insert("review.insertPointHistory", paramMap);
     }
     
+    public List<OrderDTO> getOrderListByGoodsId(String goodsid, String userid) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("goodsid", goodsid);
+        paramMap.put("userid", userid);
+        return sqlSession.selectList("review.getOrderListByGoodsId", paramMap);
+    }
+
+    public boolean hasReviewForOrder(String orderid) {
+        int count = sqlSession.selectOne("review.countReviewByOrderId", orderid);
+        return count > 0;
+    }
 }

@@ -148,6 +148,17 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th scope="row">주문 ID</th>
+                                    <td>
+                                        <select name="orderid" id="orderid" class="form-control">
+                                            <option value="">주문 번호를 확인하세요</option>
+                                            <c:forEach items="${orderList}" var="order">
+                                                <option value="${order.orderid}">${order.orderid}</option>
+                                            </c:forEach>
+                                        </select>
+                                    </td>
+                                </tr>              
+                                <tr>
                                     <th scope="row">제목</th>
                                     <td>
                                         <input type="text" name="title" id="title" class="form-control write_title" placeholder="제목 입력">
@@ -207,8 +218,12 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        alert('리뷰가 작성되었습니다.');
-                        window.close(); // 리뷰 작성 후 창 닫기
+                        if (response === "success") {
+                            alert('리뷰가 작성되었습니다.');
+                            window.close(); // 리뷰 작성 후 창 닫기
+                        } else if (response === "duplicate") {
+                            alert('해당 주문에 대해 이미 리뷰가 작성되었습니다.');
+                        }
                     },
                     error: function(xhr, status, error) {
                         alert('리뷰 작성에 실패했습니다. 다시 시도해주세요.');
@@ -318,4 +333,3 @@
     </script>
 </body>
 </html>
-
