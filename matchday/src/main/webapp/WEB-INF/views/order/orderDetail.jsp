@@ -21,6 +21,18 @@
     .table th, .table td {
         word-wrap: break-word;
     }
+    
+    .table table-bordered{
+    	width: 100%;
+        table-layout: fixed;
+    }
+    
+    .table table-bordered th, .table table-bordered td{
+    	text-align: center;
+        vertical-align: middle;
+        font-size: 19px; /* 글자 크기 증가 */
+    }
+    
     .btn-group {
         display: flex;
         justify-content: center;
@@ -69,6 +81,41 @@
                     <th>배송 요청사항</th>
                     <td>${order.shippingrequest}</td>
                 </tr>
+                <tr>
+                    <th>배송 시작 일자</th>
+                    <td>${order.shippingstartdate}</td>
+                </tr>
+                <tr>
+                    <th>배송 종료 일자</th>
+                    <td>${order.shippingenddate}</td>
+                </tr>
+                <tr>
+                    <th>배송 상태</th>
+                    <td>
+                        <c:set var="currentDate" value="<%= new java.util.Date() %>" />
+                        <c:choose>
+                            <c:when test="${currentDate.after(order.shippingenddate)}">
+                                배송완료
+                            </c:when>
+                            <c:otherwise>
+                                배송중
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <%-- <td>
+                    	<c:choose>
+                            <c:when test="${order.shippingstatus == 'Completed'}">
+                                배송완료
+                            </c:when>
+                            <c:when test="${order.shippingstatus == 'Pending'}">
+                                배송중
+                            </c:when>
+                            <c:otherwise>
+                                ${order.shippingstatus}
+                            </c:otherwise>
+                        </c:choose>
+                    </td> --%>
+                </tr>
             </table>
         </div>
     </div>
@@ -80,14 +127,10 @@
         <div class="card-body">
             <table class="table table-bordered">
                 <tr>
-                    <th>배송일?</th>
-                    <td>${reservation.reservationdate}</td>
-                </tr>
-                <tr>
                     <th>현재상태</th>
                     <td>
                         <c:choose>
-                            <c:when test="${order.orderstatus == 'Confirmed'}">
+                            <c:when test="${order.orderstatus == 'Completed'}">
                                 주문완료
                             </c:when>
                             <c:when test="${order.orderstatus == 'Cancelled'}">
@@ -102,14 +145,14 @@
                 <tr>
                     <th>결제수단</th>
                     <td>
-                       <%--  <c:choose>
-                            <c:when test="${order.paymentmethodname == 'card'}">
-                                카드
-                            </c:when>
-                            <c:otherwise>
-                                ${order.paymentmethodname}
-                            </c:otherwise>
-                        </c:choose> --%>
+	                    <c:choose>
+	                       <c:when test="${order.paymentmethodcode == 'pay01'}">
+	                           카드
+	                       </c:when>
+	                       <c:otherwise>
+	                           ${order.paymentmethodcode}
+	                       </c:otherwise>
+	                    </c:choose> 
                     </td>
                 </tr>
                 <tr>
@@ -122,7 +165,19 @@
                 </tr>
                 <tr>
                     <th>사용한 쿠폰</th>
-                    <td>${couponid}</td>
+                    <td>
+                    	<c:choose>
+                            <c:when test="${order.couponid == order.couponid}">
+                                ${order.couponid}
+                            </c:when>
+                            <c:when test="${order.couponid == null}">
+                                사용안함
+                            </c:when>
+                            <c:otherwise>
+                                ${order.couponid}
+                            </c:otherwise>
+                        </c:choose>
+                    ${order.couponid}</td>
                 </tr>
                 <tr>
                     <th>사용한 포인트</th>
@@ -134,7 +189,11 @@
                 </tr>
                 <tr>
                     <th>총 결제금액</th>
-                    <td>${finalpaymentamount}원</td>
+                    <td>
+                    	<c:forEach items="${order.orderDetails}" var="orderDetail">
+                    		<fmt:formatNumber value="${orderDetail.totalamount}" pattern="#,###원"/>
+                    	</c:forEach>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -148,19 +207,33 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>주문 ID</th>
-                        <th>상품명</th>
-                        <th>상품 사이즈</th>
-                        <th>상품 수량</th>
+                        <th style="text-align: center; vertical-align: middle;">상품명</th>
+                        <th style="text-align: center; vertical-align: middle;">상품 사이즈</th>
+                        <th style="text-align: center; vertical-align: middle;">상품 수량</th>
+                        <th style="text-align: center; vertical-align: middle;">상품 가격</th>
+                        <th style="text-align: center; vertical-align: middle;">상품 총 가격</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach var="detail" items="${reservation.details}">
+                    <c:forEach items="${order.orderDetails}" var="orderDetail">
                         <tr>
-                            <td>${detail.seatid}</td>
-                            <td>${detail.price}원</td>
-                            <td>${detail.price}원</td>
-                            <td>${detail.price}원</td>
+                        	<td style="text-align: center; vertical-align: middle; font-size: 21px;">
+	               			<c:forEach items="${goodsList}" var="goods">
+	                            <c:if test="${order.goodsid eq goods.goodsid}">
+	                              <c:if test="${not empty goods.filename}">
+	                              	<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
+	                              	<img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 50px; height: 50px; object-fit: cover;">
+	                              	</a>
+	                              </c:if>
+	                             <br>
+	                            	<span>${goods.productname}</span>
+	                            </c:if>
+                            </c:forEach>
+	                		</td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;">${orderDetail.size}</td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;">${orderDetail.quantity}개</td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;"><fmt:formatNumber value="${orderDetail.price}" pattern="#,###원"/></td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;"><fmt:formatNumber value="${orderDetail.totalamount}" pattern="#,###원"/></td>
                         </tr>
                     </c:forEach>
                 </tbody>

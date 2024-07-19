@@ -76,4 +76,11 @@
         JOIN paymentmethods p ON o.paymentmethodcode = p.paymentmethodcode
         WHERE o.orderid = #{orderid}
     </select>
+    
+     <!-- 주문 ID로 주문 상세 정보 조회 -->
+    <select id="getOrderDetailByOrderId" resultType="kr.co.matchday.order.OrderdetailDTO">
+        SELECT * FROM orderdetail WHERE orderid = #{orderid}
+    </select>
+    
+    
 </mapper>

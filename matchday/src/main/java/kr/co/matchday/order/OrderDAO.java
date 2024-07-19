@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import kr.co.matchday.coupon.CouponDTO;
+import kr.co.matchday.tickets.TicketsDetailDTO;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,5 +83,10 @@ public class OrderDAO {
     //주문 ID로 주문 정보 가져오기
     public OrderDTO getOrderById(String orderid) {
         return sqlSession.selectOne("kr.co.matchday.order.OrderDAO.getOrderById", orderid);
+    }
+    
+    //주문 ID로 주문 상세 정보 가져오기
+    public List<OrderdetailDTO> getOrderDetailByOrderId(String orderid) {
+        return sqlSession.selectList("kr.co.matchday.order.OrderDAO.getOrderDetailByOrderId", orderid);
     }
 }

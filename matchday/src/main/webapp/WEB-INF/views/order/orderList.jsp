@@ -118,7 +118,11 @@
 	                            </c:if>
                             </c:forEach>
 	                		</td>
-	                		<td></td>
+	                		<td>
+	                		<c:forEach items="${order.orderDetails}" var="orderDetail">
+	                			${orderDetail.size}
+	                		</c:forEach>
+	                		</td>
 	                		<td>${order.quantity}개</td>
 	                		<td><fmt:formatNumber value="${order.finalpaymentamount}" pattern="#,###원"/></td>
 	                		<td><fmt:formatDate value="${order.cancelDeadline}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
@@ -132,4 +136,7 @@
         </div>
     </div>
 </div>
+<script>
+	console.log(vsdfs${orderdetailList}d);
+</script>
 <%@ include file="../footer.jsp" %>
