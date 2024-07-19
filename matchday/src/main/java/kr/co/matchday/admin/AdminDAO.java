@@ -81,4 +81,8 @@ public class AdminDAO {
         return sqlSession.selectList("admin.getPurchaseHistory", userId);
     }
   	
+ // 일별 매출을 가져오는 메서드
+    public List<Map<String, Object>> getDailySales() {
+        return sqlSession.selectList("admin.getDailySales");
+    }
 }//class end

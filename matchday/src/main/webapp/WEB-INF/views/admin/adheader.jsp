@@ -13,6 +13,9 @@
 <meta name="description" content="" />
 <meta name="author" content="" />
 <title>관리자페이지</title>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
+<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <link
 	href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"
 	rel="stylesheet" />
@@ -91,16 +94,11 @@
 							</nav>
 						</div>
 
-
-						<div class="sb-sidenav-menu-heading">Addons</div>
-						<a class="nav-link" href="charts.html">
+						<div class="sb-sidenav-menu-heading">통계</div>
+						<a class="nav-link" href="/admin/chart">
 							<div class="sb-nav-link-icon">
 								<i class="fas fa-chart-area"></i>
-							</div> Charts
-						</a> <a class="nav-link" href="/admin/tables">
-							<div class="sb-nav-link-icon">
-								<i class="fas fa-table"></i>
-							</div> Tables
+							</div> 매출현황
 						</a>
 					</div>
 				</div>

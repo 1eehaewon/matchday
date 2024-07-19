@@ -29,7 +29,7 @@
 			id="sidebarToggle" href="#!">
 			<i class="fas fa-bars"></i>
 		</button>
-		
+
 		<ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
 			<li class="nav-item dropdown"><a
 				class="nav-link dropdown-toggle" id="navbarDropdown" href="#"
@@ -91,13 +91,12 @@
 							</nav>
 						</div>
 
-
 						<div class="sb-sidenav-menu-heading">통계</div>
 						<a class="nav-link" href="/admin/chart">
 							<div class="sb-nav-link-icon">
 								<i class="fas fa-chart-area"></i>
 							</div> 매출현황
-						</a> 
+						</a>
 					</div>
 				</div>
 				<div class="sb-sidenav-footer">

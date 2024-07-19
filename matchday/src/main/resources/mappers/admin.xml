@@ -194,5 +194,48 @@
         JOIN memberships mb ON um.membershipid = mb.membershipid
         WHERE um.userid = #{userId}
     </select>
+    
+    <!-- 일별매출 차트 -->
+    <select id="getDailySales" resultType="map">
+        SELECT
+            d.date,
+            COALESCE(SUM(o.total_order_amount), 0) +
+            COALESCE(SUM(m.total_membership_amount), 0) +
+            COALESCE(SUM(t.total_ticket_amount), 0) AS total_sales
+        FROM (
+            SELECT CURDATE() AS date
+            UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
+            UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
+            UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
+            UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
+            UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
+            UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
+        ) AS d
+        LEFT JOIN (
+            SELECT
+                DATE(orderdate) AS date,
+                SUM(finalpaymentamount) AS total_order_amount
+            FROM `order`
+            GROUP BY DATE(orderdate)
+        ) o ON d.date = o.date
+        LEFT JOIN (
+            SELECT
+                DATE(purchasedate) AS date,
+                SUM(m.price) AS total_membership_amount
+            FROM usermemberships um
+            JOIN memberships m ON um.membershipid = m.membershipid
+            GROUP BY DATE(purchasedate)
+        ) m ON d.date = m.date
+        LEFT JOIN (
+            SELECT
+                DATE(reservationdate) AS date,
+                SUM(finalpaymentamount) AS total_ticket_amount
+            FROM tickets
+            GROUP BY DATE(reservationdate)
+        ) t ON d.date = t.date
+        GROUP BY d.date
+        ORDER BY d.date;
+    </select>
+
 </mapper>
 

@@ -1,10 +1,10 @@
 package kr.co.matchday.admin;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.gson.Gson;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/admin")
@@ -172,5 +176,17 @@ public class AdminCont {
     @GetMapping("/chart")
     public String chart() {
     	return "admin/chart";
+    }
+    
+    @GetMapping("/chart/daily")
+    public void getDailySales(HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        List<Map<String, Object>> salesData = adminDao.getDailySales();
+        
+        Gson gson = new Gson();
+        String json = gson.toJson(salesData);
+        response.getWriter().write(json);
     }
 }// class end
