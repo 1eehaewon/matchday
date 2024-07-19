@@ -85,4 +85,14 @@ public class AdminDAO {
     public List<Map<String, Object>> getDailySales() {
         return sqlSession.selectList("admin.getDailySales");
     }
+    
+    //항목별 비율 가져오는 메서드
+    public Map<String, Object> getItemSales() {
+        return sqlSession.selectOne("admin.getItemSales");
+    }
+    
+    //월별 티켓판매량
+    public List<Map<String, Object>> getMonthlyTicketSales() {
+        return sqlSession.selectList("admin.getMonthlyTicketSales");
+    }
 }//class end

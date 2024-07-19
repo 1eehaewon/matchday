@@ -237,5 +237,34 @@
         ORDER BY d.date;
     </select>
 
+	<!-- 항목별 비율 차트 -->
+	<select id="getItemSales" resultType="map">
+        SELECT
+        (SELECT SUM(finalpaymentamount) FROM `order`) AS total_order_amount,
+        (SELECT SUM(m.price)
+         FROM usermemberships um
+         JOIN memberships m ON um.membershipid = m.membershipid) AS total_membership_amount,
+        (SELECT SUM(finalpaymentamount) FROM tickets) AS total_ticket_amount;
+    </select>
+    
+     <!-- 월별 티켓 판매 수 쿼리 -->
+    <select id="getMonthlyTicketSales" resultType="map">
+        SELECT
+            m.month,
+            COALESCE(SUM(t.quantity), 0) AS ticket_sales
+        FROM
+            (
+                SELECT DATE_FORMAT(CURDATE() - INTERVAL (a.a + b.a * 10) MONTH, '%Y-%m') AS month
+                FROM (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a
+                CROSS JOIN (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b
+                WHERE DATE_FORMAT(CURDATE() - INTERVAL (a.a + b.a * 10) MONTH, '%Y-%m') >= DATE_FORMAT(CURDATE() - INTERVAL 11 MONTH, '%Y-%m')
+            ) m
+        LEFT JOIN (
+            SELECT DATE_FORMAT(reservationdate, '%Y-%m') AS month, quantity
+            FROM tickets
+        ) t ON m.month = t.month
+        GROUP BY m.month
+        ORDER BY m.month;
+    </select>
 </mapper>
 

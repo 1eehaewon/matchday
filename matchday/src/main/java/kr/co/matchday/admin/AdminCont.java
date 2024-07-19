@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
@@ -188,5 +189,19 @@ public class AdminCont {
         Gson gson = new Gson();
         String json = gson.toJson(salesData);
         response.getWriter().write(json);
+    }
+    
+    //항목별 비율
+    @GetMapping("/chart/itemSales")
+    public ResponseEntity<Map<String, Object>> getItemSales() {
+        Map<String, Object> itemSales = adminDao.getItemSales();
+        return ResponseEntity.ok(itemSales);
+    }
+    
+    //월별 티켓판매량
+    @GetMapping("/chart/monthly-ticket-sales")
+    @ResponseBody
+    public List<Map<String, Object>> getMonthlyTicketSales() {
+        return adminDao.getMonthlyTicketSales();
     }
 }// class end
