@@ -39,11 +39,17 @@
     }
     .table th, .table td {
         border: 1px solid #ccc;
-        padding: 8px;
+        padding: 12px; /* 셀 안의 여백 */
         text-align: center;
+        vertical-align: middle;
     }
     .table th {
+    	font-size: 16px;
         background-color: #f0f0f0;
+        font-weight: bold;
+    }
+    .table td {
+		font-size: 19px; /* 글자 크기 증가 */
     }
     .badge {
         display: inline-block;
@@ -84,8 +90,10 @@
                     <tr>
                         <th>주문일</th>
                         <th>주문번호</th>
-                        <th>상품명</th>
-                        <th>사이즈/수량</th>
+                        <th>굿즈ID</th>
+                        <th>구매한 상품</th>
+                        <th>사이즈</th>
+                        <th>수량</th>
                         <th>결제 금액</th>
                         <th>취소가능일</th>
                         <th>현재상태</th>
@@ -96,16 +104,27 @@
 	                	<tr>
 	                		<td>${order.orderdate}</td>
 	                		<td><a href="/order/orderDetail?orderid=${order.orderid}" class="link-primary">${order.orderid}</a></td>
-	                		<c:forEach items="${goodsList}" var="goods">
-	                		<c:if test="${goods.goodsid eq order.goodsid}">
-                                    <td>${goods.productname}</td>
-                                    </c:if>
-	                		</c:forEach>
-                                    <td>${order.size} / ${order.quantity}</td>
-                                
-	                		<td><fmt:formatNumber value="${order.finalpaymentamount}" pattern="#,###원" /></td>
+	                		<td>${order.goodsid}</td>
+	                		<td>
+	               			<c:forEach items="${goodsList}" var="goods">
+	                            <c:if test="${order.goodsid eq goods.goodsid}">
+	                              <c:if test="${not empty goods.filename}">
+	                              	<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
+	                              	<img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 50px; height: 50px; object-fit: cover;">
+	                              	</a>
+	                              </c:if>
+	                             <br>
+	                            	<span>${goods.productname}</span>
+	                            </c:if>
+                            </c:forEach>
+	                		</td>
 	                		<td></td>
-	                		<td></td>
+	                		<td>${order.quantity}개</td>
+	                		<td><fmt:formatNumber value="${order.finalpaymentamount}" pattern="#,###원"/></td>
+	                		<td><fmt:formatDate value="${order.cancelDeadline}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+	                		<td>
+	                			<span class="badge ${order.orderstatus == 'Pending' ? 'badge-success' : 'badge-danger'}">${order.orderstatus == 'Completed' ? '결제완료' : '결제취소'}</span>
+	                		</td>
 	                	</tr>
 	                </c:forEach>
                 </tbody>
@@ -113,9 +132,4 @@
         </div>
     </div>
 </div>
-
-<!-- <a href="/orderlist?goodsid=12345&size=M&quantity=2&price=100&totalPrice=200&couponid=COUPON123&usedpoints=10">
-    Order Now
-</a> -->
-
 <%@ include file="../footer.jsp" %>

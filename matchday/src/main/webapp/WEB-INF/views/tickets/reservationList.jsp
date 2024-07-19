@@ -71,6 +71,7 @@
             <li class="list-group-item"><a href="/member/mypage/coupon">쿠폰함</a></li>
             <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
             <li class="list-group-item active"><a href="/tickets/reservationList">나의 예매내역</a></li>
+            <li class="list-group-item"><a href="/order/orderList">나의 주문내역</a></li>
             <li class="list-group-item"><a href="/membershipticket/membershippaymentlist">멤버쉽 구매내역</a></li>
         </ul>
     </div>
