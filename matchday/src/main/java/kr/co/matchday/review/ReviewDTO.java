@@ -18,8 +18,7 @@ public class ReviewDTO {
 	private String userid;	// 회원 ID
     private String matchid; // 경기 ID
     private String goodsid; // 굿즈 ID
-    //private Timestamp reviewdate; // 리뷰 작성 날짜
-    private String reviewdate; // 리뷰 작성 날짜
+    private Timestamp reviewdate; // 리뷰 작성 날짜
     private String title; // 리뷰 제목
     private String content; // 리뷰 내용
     private int rating; // 평점

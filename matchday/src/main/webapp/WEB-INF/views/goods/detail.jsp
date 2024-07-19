@@ -464,18 +464,18 @@ table tr:hover {
                         <div id="review" class="tab-content active">
                             <table>
                                 <thead>
-                                    <tr>
+                                      <tr>
                                         <th>평점</th>
                                         <th>제목</th>
                                         <th>작성자</th>
                                         <th>작성일</th>
-                                        <th>수정/삭제</th>
+                                        <th>리뷰 삭제</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <c:forEach items="${reviewList}" var="review">
                                         <c:if test="${review.goodsid == goodsDto.goodsid}">
-                                            <tr>
+                                            <tr onclick="toggleReviewDetails('review${review.reviewid}')">
                                                 <td>${review.rating}점</td>
                                                 <td>${review.title}</td>
                                                 <td>${review.userid}</td>
