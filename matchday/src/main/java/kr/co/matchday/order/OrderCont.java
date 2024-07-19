@@ -118,8 +118,8 @@ public class OrderCont {
         
         String imp_uid = requestParams.get("imp_uid");
         String merchant_uid = requestParams.get("merchant_uid");
-        int paid_amount = Integer.parseInt(requestParams.getOrDefault("paid_amount", "0"));
-        int finalpaymentamount = Integer.parseInt(requestParams.getOrDefault("finalpaymentamount", "0"));
+        int paid_amount = parseInteger(requestParams.get("paid_amount"), 0);
+        int finalpaymentamount = parseInteger(requestParams.get("finalpaymentamount"), 0);
         String recipientname = requestParams.get("recipientname");
         String recipientemail = requestParams.get("recipientemail");
         String recipientphone = requestParams.get("recipientphone");
@@ -128,7 +128,7 @@ public class OrderCont {
         String paymentmethodcode = requestParams.get("paymentmethodcode");
         String couponid = requestParams.get("couponid");
         String userId = (String) session.getAttribute("userID");
-        int usedpoints = Integer.parseInt(requestParams.getOrDefault("usedpoints", "0"));
+        int usedpoints = parseInteger(requestParams.get("usedpoints"), 0);
 
         List<String> goodsidList = Arrays.asList(requestParams.get("goodsid").split(","));
         List<String> quantities = Arrays.asList(requestParams.get("quantity").split(","));
@@ -202,9 +202,9 @@ public class OrderCont {
                         orderDto.setShippingrequest(shippingrequest);
                         orderDto.setPaymentmethodcode(paymentmethodcode);
 
-                        int quantity = Integer.parseInt(quantities.get(i));
-                        int price = Integer.parseInt(prices.get(i));
-                        int totalPrice = Integer.parseInt(totalPrices.get(i));
+                        int quantity = parseInteger(quantities.get(i), 1);
+                        int price = parseInteger(prices.get(i), 0);
+                        int totalPrice = parseInteger(totalPrices.get(i), 0);
                         orderDto.setPrice(price);
                         orderDto.setQuantity(quantity);
                         orderDto.setTotalprice(totalPrice);
@@ -270,6 +270,14 @@ public class OrderCont {
         }
 
         return response;
+    }
+
+    private int parseInteger(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private String generateOrderId() {
