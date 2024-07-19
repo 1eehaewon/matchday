@@ -15,10 +15,10 @@
         <div class="row">
             <div class="col-md-8 mx-auto">
                  <c:choose>
-                    <c:when test="${notice.category == 'notice'}">
+                    <c:when test="${notice.category == 'Notice'}">
                         <h3 class="text-center mb-4">공지사항</h3>
                     </c:when>
-                    <c:when test="${notice.category == 'event'}">
+                    <c:when test="${notice.category == 'Event'}">
                         <h3 class="text-center mb-4">이벤트</h3>
                     </c:when>
                     <c:otherwise>

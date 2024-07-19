@@ -189,13 +189,13 @@ public class NoticeCont {
         String imageUrl = "";
         try {
             // 프로젝트 경로를 기반으로 저장 경로 설정
-            String uploadDir = new File("src/main/webapp/storage").getAbsolutePath();
+            String uploadDir = new File("src/main/webapp/storage/notice").getAbsolutePath();
             String fileName = file.getOriginalFilename();
             File dest = new File(uploadDir + File.separator + fileName);
             file.transferTo(dest);
 
             // 이미지 URL 설정 (웹 서버의 경로로 맞춰야 함)
-            imageUrl = "/storage/" + fileName;
+            imageUrl = "/storage/notice/" + fileName;
         } catch (IOException e) {
             e.printStackTrace();
         }
