@@ -60,4 +60,26 @@ public class OrderDAO {
     public String getMaxOrderId(String date) {
         return sqlSession.selectOne("kr.co.matchday.order.OrderDAO.getMaxOrderId", date);
     }
+    
+    /*
+    //사용자 ID로 주문 정보 가져오기
+    public List<Map<String, Object>> getOrderByUserId(String userid) {
+        List<Map<String, Object>> order = sqlSession.selectList("kr.co.matchday.order.OrderDAO.getOrderByUserId", userid);
+        if (order == null || order.isEmpty()) {
+            System.out.println("No order found for userId: " + userid);
+        } else {
+            System.out.println("order found: " + order.size());
+        }
+        return order;
+    }
+*/
+ // OrderDAO.java
+    public List<OrderDTO> getOrderByUserId(String userid) {
+        return sqlSession.selectList("kr.co.matchday.order.OrderDAO.getOrderByUserId", userid);
+    }
+
+    //주문 ID로 주문 정보 가져오기
+    public OrderDTO getOrderById(String orderid) {
+        return sqlSession.selectOne("kr.co.matchday.order.OrderDAO.getOrderById", orderid);
+    }
 }

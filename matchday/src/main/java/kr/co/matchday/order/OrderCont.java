@@ -1,9 +1,11 @@
 package kr.co.matchday.order;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.cart.CartDAO;
@@ -181,7 +185,7 @@ public class OrderCont {
                         orderDto.setOrderid(orderid);
                         orderDto.setUserid(userId);
                         orderDto.setGoodsid(goodsidList.get(i));
-                        orderDto.setOrderdate(new Timestamp(System.currentTimeMillis()));
+                        orderDto.setOrderdate(orderid);
                         orderDto.setOrderstatus("Completed");
                         if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
                             orderDto.setCouponid(couponid);
@@ -306,6 +310,106 @@ public class OrderCont {
             e.printStackTrace();
         }
         return null;
+    }
+    
+  //Mypage 결제 내역
+    @GetMapping("/orderList")
+    public ModelAndView orderList(HttpSession session,Model model) {
+        String userId = (String) session.getAttribute("userID");
+        if (userId == null) {
+            System.out.println("User ID not found in session.");
+            return new ModelAndView("redirect:/login"); // 로그인 페이지로 리다이렉트
+        }
+
+        System.out.println("Fetching orders for userId: " + userId);
+        List<OrderDTO> order = orderDao.getOrderByUserId(userId);
+
+        // 주문 날짜를 Date 객체로 변환하고 취소 마감시간을 설정하는 로직
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat outputFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        
+        for (OrderDTO orderDto : order) {
+            Date orderDate = null;
+            try {
+            	// 주문 날짜를 Date 객체로 변환
+                orderDate = formatter.parse(orderDto.getOrderdate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            // 취소 마감시간 설정 (임의로 3일 후로 설정)
+            Calendar cal = Calendar.getInstance();
+            if (orderDate != null) {
+                cal.setTime(orderDate);
+                cal.add(Calendar.DATE, 3);
+                orderDto.setCancelDeadline(cal.getTime());
+            }
+        }
+
+        ModelAndView mav = new ModelAndView("order/orderList");
+        mav.addObject("order", order);
+        
+        List<GoodsDTO> goodsList = goodsDao.list();
+     
+        model.addAttribute("goodsList", goodsList);
+
+        
+        return mav;
+    }
+    
+    //결제 상세 정보
+    @GetMapping("/orderDetail")
+    public ModelAndView reservationDetail(@RequestParam("orderid") String orderid, HttpSession session) {
+        ModelAndView mav = new ModelAndView("order/orderDetail");
+
+        // 주문 정보 조회
+        OrderDTO order = orderDao.getOrderById(orderid);
+        if (order == null) {
+            mav.setViewName("errorPage");
+            mav.addObject("message", "주문을 찾을 수 없습니다. ID: " + orderid);
+            return mav;
+        }
+
+        // 티켓 상세 정보 조회
+        //List<TicketsDetailDTO> details = ticketsService.getTicketDetailsByReservationId(reservationid);
+        //reservation.setDetails(details);
+
+        // 주문 날짜를 Date 객체로 변환하고 취소 마감시간을 설정하는 로직
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date orderDate = null;
+        try {
+            // 주문 날짜를 Date 객체로 변환
+            orderDate = formatter.parse(order.getOrderdate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        
+        // 취소 마감시간 설정 (임의로 3일 후로 설정)
+        Calendar cal = Calendar.getInstance();
+        if (orderDate != null) {
+            cal.setTime(orderDate);
+            cal.add(Calendar.DATE, 3);
+            order.setCancelDeadline(cal.getTime());
+        }
+        
+        // 결제 내역 설정
+        int serviceFee = session.getAttribute("serviceFee") != null ? Integer.parseInt(session.getAttribute("serviceFee").toString()) : 0;
+        int deliveryFee = session.getAttribute("deliveryFee") != null ? Integer.parseInt(session.getAttribute("deliveryFee").toString()) : 0;
+        int totalDiscount = session.getAttribute("totalDiscount") != null ? Integer.parseInt(session.getAttribute("totalDiscount").toString()) : 0;
+        int totalPrice = order.getPrice() * order.getQuantity();
+        int finalpaymentamount = session.getAttribute("finalpaymentamount") != null ? Integer.parseInt(session.getAttribute("totalPaymentAmount").toString()) : 0;
+        String couponName = session.getAttribute("couponName") != null ? session.getAttribute("couponName").toString() : "";
+        //포인트
+        
+        mav.addObject("serviceFee", serviceFee);
+        mav.addObject("deliveryFee", deliveryFee);
+        mav.addObject("couponName", couponName);
+        //포인트
+        mav.addObject("totalDiscount", totalDiscount);
+        mav.addObject("totalPrice", totalPrice);
+        mav.addObject("finalpaymentamount", finalpaymentamount);
+        mav.addObject("order", order);
+
+        return mav;
     }
     
     /*
