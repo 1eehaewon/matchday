@@ -130,7 +130,6 @@ public class OrderCont {
         String userId = (String) session.getAttribute("userID");
         int usedpoints = Integer.parseInt(requestParams.getOrDefault("usedpoints", "0"));
 
-        // 상품별 정보 가져오기
         List<String> goodsidList = Arrays.asList(requestParams.get("goodsid").split(","));
         List<String> quantities = Arrays.asList(requestParams.get("quantity").split(","));
         List<String> sizes = Arrays.asList(requestParams.get("size").split(","));
@@ -179,13 +178,14 @@ public class OrderCont {
 
                 if (amount == paid_amount) {
                     String orderid = generateOrderId();
+                    String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
                     for (int i = 0; i < goodsidList.size(); i++) {
                         OrderDTO orderDto = new OrderDTO();
                         orderDto.setOrderid(orderid);
                         orderDto.setUserid(userId);
                         orderDto.setGoodsid(goodsidList.get(i));
-                        orderDto.setOrderdate(orderid);
+                        orderDto.setOrderdate(currentDate); // 결제 날짜 설정
                         orderDto.setOrderstatus("Completed");
                         if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
                             orderDto.setCouponid(couponid);
@@ -193,8 +193,7 @@ public class OrderCont {
                             orderDto.setCouponid(null);
                         }
                         orderDto.setUsedpoints(usedpoints);
-                        orderDto.setFinalpaymentamount(finalpaymentamount); // 최종 결제 금액 설정
-                        orderDto.setShippingstartdate(new Timestamp(System.currentTimeMillis()));
+                        orderDto.setFinalpaymentamount(finalpaymentamount);
                         orderDto.setShippingstatus("Pending");
                         orderDto.setRecipientname(recipientname);
                         orderDto.setRecipientemail(recipientemail);
@@ -206,9 +205,9 @@ public class OrderCont {
                         int quantity = Integer.parseInt(quantities.get(i));
                         int price = Integer.parseInt(prices.get(i));
                         int totalPrice = Integer.parseInt(totalPrices.get(i));
-                        orderDto.setPrice(price); // 개당 가격 설정
+                        orderDto.setPrice(price);
                         orderDto.setQuantity(quantity);
-                        orderDto.setTotalprice(totalPrice); // 개당 가격 * 수량 설정
+                        orderDto.setTotalprice(totalPrice);
                         orderDto.setReceiptmethodcode("receiving02");
 
                         List<OrderdetailDTO> orderDetails = new ArrayList<>();
@@ -216,8 +215,8 @@ public class OrderCont {
                         orderDetail.setGoodsid(goodsidList.get(i));
                         orderDetail.setSize(sizes.get(i));
                         orderDetail.setQuantity(quantity);
-                        orderDetail.setPrice(price); // 개당 가격 설정
-                        orderDetail.setTotalamount(price * quantity); // 개당 가격 * 수량 설정
+                        orderDetail.setPrice(price);
+                        orderDetail.setTotalamount(price * quantity);
                         orderDetails.add(orderDetail);
 
                         orderDto.setOrderDetails(orderDetails);

@@ -180,11 +180,16 @@
     <form id="payment-form">
         <input type="hidden" name="userid" value="${sessionScope.userID}">
         <input type="hidden" name="orderid" id="orderid" value="${order.orderid}">
+        <input type="hidden" name="goodsid" id="goodsid" value="${goods.goodsid}">
         <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
         <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
         <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
-        <input type="hidden" name="finalpaymentamount" id="finalpaymentamount">
-        <input type="hidden" name="usedpoints" id="usedpoints">
+        <input type="hidden" name="quantity" id="quantity" value="${quantity}">
+        <input type="hidden" name="price" id="price" value="${price}">
+        <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
+        <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
+        <input type="hidden" name="totalPrice" id="total-price" value="${totalPrice}">
+        <input type="hidden" name="size" id="size" value="${size}">
     </form>
 
     <div class="order_tit">
@@ -196,6 +201,7 @@
         </ol>
     </div>
 
+    <!-- 주문상세내역 -->
     <section class="order-section">
         <h2>주문상세내역</h2>
         <form>
@@ -213,21 +219,21 @@
                             </tr>
                             </thead>
                             <tbody class="text-center">
-                            <c:forEach var="i" begin="0" end="${fn:length(goodsList) - 1}">
+                            <c:forEach var="goods" items="${goodsList}" varStatus="status">
                                 <tr>
                                     <td>
                                         <div class="product-image">
-                                            <c:if test="${not empty goodsList[i].filename}">
-                                                <img src="${pageContext.request.contextPath}/storage/goods/${goodsList[i].filename}" alt="${goodsList[i].productname}" style="width: 100px; height: 100px; object-fit: cover;">
+                                            <c:if test="${not empty goods.filename}">
+                                                <img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 100px; height: 100px; object-fit: cover;">
                                             </c:if>
                                         </div>
                                         <br>
-                                        <span class="productname-text">${goodsList[i].productname}</span>
+                                        <span class="productname-text">${goods.productname}</span>
                                     </td>
-                                    <td class="size-text">${sizeList[i]}</td>
-                                    <td class="quantity-text">${quantityList[i]}</td>
-                                    <td class="price-text"><fmt:formatNumber value="${priceList[i]}" pattern="#,###원" /></td>
-                                    <td class="totalprice-text"><fmt:formatNumber value="${totalPriceList[i]}" pattern="#,###원" /></td>
+                                    <td class="size-text">${sizeList[status.index]}</td>
+                                    <td class="quantity-text">${quantityList[status.index]}</td>
+                                    <td class="price-text"><fmt:formatNumber value="${priceList[status.index]}" pattern="#,###원" /></td>
+                                    <td class="totalprice-text"><fmt:formatNumber value="${priceList[status.index] * quantityList[status.index]}" pattern="#,###원" /></td>
                                 </tr>
                             </c:forEach>
                             </tbody>
@@ -237,7 +243,9 @@
             </div>
         </form>
     </section>
+    <!-- 주문상세내역 end -->
 
+    <!-- 주문자 정보 -->
     <section class="customer-section">
         <h2>주문자 정보</h2>
         <form id="order-form">
@@ -256,17 +264,18 @@
         </form>
     </section>
 
+    <!-- 배송 정보 -->
     <section class="delivery-section">
         <h2>배송 정보</h2>
         <form id="delivery-form">
             <div class="mb-3">
                 <label for="postcode" class="form-label">우편번호</label>
-                <input type="text" class="form-control" id="postcode" value="${order.shippingaddress}" readonly>
+                <input type="text" class="form-control" id="postcode" readonly>
                 <button type="button" class="btn btn-primary mt-2" id="find-postcode">우편번호 찾기</button>
             </div>
             <div class="mb-3">
                 <label for="shippingaddress" class="form-label">배송 주소</label>
-                <input type="text" class="form-control" id="shippingaddress" name="shippingaddress" value="${order.shippingaddress}" readonly>
+                <input type="text" class="form-control" id="shippingaddress" name="shippingaddress" readonly>
             </div>
             <div class="mb-3">
                 <label for="detailAddress" class="form-label">상세주소</label>
@@ -289,6 +298,7 @@
         </form>
     </section>
 
+    <!-- 할인 혜택 -->
     <section class="discount-section">
         <h2>할인 혜택</h2>
         <form id="discount-form">
@@ -327,10 +337,11 @@
 $(document).ready(function() {
     function updateTotalAmount() {
         var totalPrice = 0;
-        $('.totalprice-text').each(function() {
-            totalPrice += parseInt($(this).text().replace(/[^0-9]/g, ''), 10);
+        $(".totalprice-text").each(function() {
+            totalPrice += parseInt($(this).text().replace(/[^0-9]/g, ''), 10) || 0;
         });
 
+        var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10) || 0;
         var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
         var points = parseInt($('#pointsToUse').val(), 10) || 0;
 
@@ -340,6 +351,8 @@ $(document).ready(function() {
         $('#final-amount').text(finalPaymentAmount.toLocaleString() + '원');
         $('#finalpaymentamount').val(finalPaymentAmount);
         $('#usedpoints').val(points);
+
+        return totalPrice;
     }
 
     $('#couponid').change(function() {
@@ -387,10 +400,16 @@ $(document).ready(function() {
     });
 
     $('#pay-button').click(function() {
+        var totalPrice = updateTotalAmount();
         var finalPaymentAmount = parseInt($('#finalpaymentamount').val(), 10) || 0;
         var couponId = $('#couponid').val();
         var couponName = $('#couponid').find(':selected').text();
+        var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
         var points = $('#pointsToUse').val();
+        var sizeList = ${fn:escapeXml(sizeList)};
+        var quantityList = ${fn:escapeXml(quantityList)};
+        var priceList = ${fn:escapeXml(priceList)};
+        var goodsidList = ${fn:escapeXml(goodsidList)};
 
         IMP.request_pay({
             pg: 'html5_inicis',
@@ -408,7 +427,11 @@ $(document).ready(function() {
                     imp_uid: rsp.imp_uid,
                     merchant_uid: rsp.merchant_uid,
                     paid_amount: rsp.paid_amount,
-                    totalPrice: finalPaymentAmount,
+                    goodsidList: JSON.stringify(goodsidList),
+                    sizeList: JSON.stringify(sizeList),
+                    quantityList: JSON.stringify(quantityList),
+                    priceList: JSON.stringify(priceList),
+                    totalPrice: totalPrice,
                     recipientname: $('#recipientname').val(),
                     recipientemail: $('#recipientemail').val(),
                     recipientphone: $('#recipientphone').val(),
@@ -417,6 +440,9 @@ $(document).ready(function() {
                     paymentmethodcode: $('#paymentmethodcode').val(),
                     couponid: couponId,
                     couponName: couponName,
+                    deliveryFee: deliveryFee,
+                    totalDiscount: discountAmount,
+                    totalPaymentAmount: finalPaymentAmount,
                     usedpoints: points,
                     finalpaymentamount: finalPaymentAmount
                 };
