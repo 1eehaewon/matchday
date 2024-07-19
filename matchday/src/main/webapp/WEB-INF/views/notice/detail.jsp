@@ -67,7 +67,7 @@
   <div class="spacing"></div>
     
   <c:choose>
-        <c:when test="${notice.category == 'event'}">
+        <c:when test="${notice.category == 'Event'}">
             <!-- 댓글 시작 -->
             <div class="row" style="margin-left: 26%">
                 <div class="col-sm-12">
