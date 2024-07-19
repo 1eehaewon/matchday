@@ -1,6 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-
+<!-- header.jsp -->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -133,8 +132,8 @@
                     <li class="nav-item"><a class="nav-link" href="/video/list">하이라이트</a></li>
                     <li class="nav-item"><a class="nav-link" href="/goods/list">SHOP</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">알림마당</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="headerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">알림마당</a>
+                        <ul class="dropdown-menu" aria-labelledby="headerDropdown">
                             <li><a class="dropdown-item" href="/notice/list">공지사항</a></li>
                             <li><a class="dropdown-item" href="/notice/evl">이벤트</a></li>
                         </ul>

@@ -1,5 +1,5 @@
+<!-- list.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ include file="../header.jsp"%>
 
 <style>
@@ -169,6 +169,9 @@
             margin: 5px 0;
         }
     }
+    .custom-margin {
+        margin-right: 65px; /* 원하는 여백 값으로 조절 */
+    }
 </style>
 
 <!-- 본문 시작 main.jsp -->
@@ -188,12 +191,11 @@
     <div class="row justify-content-end">
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">최신등록순</button>
-                <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <!-- <a class="dropdown-item" href="#">기본상품순</a> --> 
-                    <a class="dropdown-item" href="#" id="latestItems">최신등록순</a> 
-                    <a class="dropdown-item" href="#">높은가격순</a> 
-                    <a class="dropdown-item" href="#">낮은가격순</a>
+                <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="goodsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">최신등록순</button>
+                <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" aria-labelledby="goodsDropdownMenuButton">
+                    <a class="dropdown-item goods-dropdown-item" href="#" id="latestItems">최신등록순</a> 
+                    <a class="dropdown-item goods-dropdown-item" href="#">높은가격순</a> 
+                    <a class="dropdown-item goods-dropdown-item" href="#">낮은가격순</a>
                 </div>
             </div>
         </div>
@@ -201,8 +203,10 @@
 </div>
 
 <!-- 장바구니 버튼 -->
-<div class="centered-button">
-    <button type="button" onclick="location.href='${pageContext.request.contextPath}/cart/list'" class="btn btn-primary">장바구니로 이동~🛒</button>
+<div class="row justify-content-end mb-3">
+    <div class="col-auto custom-margin">
+        <button type="button" onclick="location.href='${pageContext.request.contextPath}/cart/list'" class="btn btn-primary">장바구니로 이동~🛒</button>
+    </div>
 </div>
 
 <div class="shop-container">
@@ -308,9 +312,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryItems = document.querySelectorAll('.left li');
     const shopItems = document.querySelectorAll('.goodsItem');
     
-    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const dropdownItems = document.querySelectorAll('.goods-dropdown-item');
     const shopContainer = document.querySelector('.right');
-    const dropdownButton = document.getElementById('dropdownMenuButton');
+    const dropdownButton = document.getElementById('goodsDropdownMenuButton');
     
     function filterItems(category) {
         const filterItems = Array.from(shopItems);
