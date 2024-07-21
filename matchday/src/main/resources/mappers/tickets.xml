@@ -106,7 +106,11 @@
 
     <!-- 사용자 ID로 예약 목록 조회 (예매일 기준 내림차순 정렬) -->
     <select id="getReservationsByUserId" parameterType="string" resultType="map">
-        SELECT t.*, m.matchdate, m.hometeamid, m.awayteamid, m.stadiumid, s.stadiumname, s.location
+        SELECT t.reservationid, t.matchid, t.quantity, t.price, t.userid, t.reservationdate,
+               t.paymentmethodcode, t.reservationstatus, t.collectionmethodcode, t.membershipid,
+               t.methodcode, t.couponid, t.usedpoints, t.finalpaymentamount, t.shippingstartdate,
+               t.shippingenddate, t.shippingstatus, t.recipientname, t.shippingaddress, t.shippingrequest, t.imp_uid,
+               m.matchdate, m.hometeamid, m.awayteamid, m.stadiumid, s.stadiumname, s.location
         FROM tickets t
         JOIN matches m ON t.matchid = m.matchid
         JOIN stadiums s ON m.stadiumid = s.stadiumid
@@ -124,18 +128,25 @@
 
     <!-- 예약 ID로 예약 정보 조회 -->
     <select id="getReservationById" parameterType="string" resultType="kr.co.matchday.tickets.TicketsDTO">
-        SELECT t.*, m.matchdate, s.stadiumname, s.location, p.paymentmethodname, u.name as userName
-        FROM tickets t
-        JOIN matches m ON t.matchid = m.matchid
-        JOIN stadiums s ON m.stadiumid = s.stadiumid
-        JOIN users u ON t.userid = u.userid
-        JOIN paymentmethods p ON t.paymentmethodcode = p.paymentmethodcode
-        WHERE t.reservationid = #{reservationid}
-    </select>
+	    SELECT t.reservationid, t.matchid, t.quantity, t.price, t.userid, t.reservationdate,
+               t.paymentmethodcode, t.reservationstatus, t.collectionmethodcode, t.membershipid,
+               t.methodcode, t.couponid, t.usedpoints, t.finalpaymentamount, t.shippingstartdate,
+               t.shippingenddate, t.shippingstatus, t.recipientname, t.shippingaddress, t.shippingrequest, t.imp_uid,
+               m.matchdate, s.stadiumname, s.location, p.paymentmethodname, u.name as userName, t.collectionmethodcode
+	    FROM tickets t
+	    JOIN matches m ON t.matchid = m.matchid
+	    JOIN stadiums s ON m.stadiumid = s.stadiumid
+	    JOIN users u ON t.userid = u.userid
+	    JOIN paymentmethods p ON t.paymentmethodcode = p.paymentmethodcode
+	    WHERE t.reservationid = #{reservationid}
+	</select>
 
     <!-- 예약 ID로 티켓 상세 정보 조회 -->
     <select id="getTicketDetailsByReservationId" resultType="kr.co.matchday.tickets.TicketsDetailDTO">
-        SELECT * FROM ticketdetails WHERE reservationid = #{reservationid}
+        SELECT ticketdetailid, reservationid, matchid, seatid, price, membershipdiscountamount,
+               coupondiscountamount, totalamount, iscanceled, canceldate, isrefunded
+        FROM ticketdetails
+        WHERE reservationid = #{reservationid}
     </select>
 
     <!-- 사용자 ID로 사용자가 가지고 있는 멤버십 정보 가져오기 -->
@@ -173,6 +184,8 @@
 
     <!-- 예약 ID로 포인트 기록 조회 -->
     <select id="getPointHistoryByReservationId" parameterType="string" resultType="kr.co.matchday.point.PointHistoryDTO">
-        SELECT * FROM pointhistory WHERE reservationid = #{reservationid} AND pointtype = '적립'
+        SELECT pointid, userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, reservationid
+        FROM pointhistory
+        WHERE reservationid = #{reservationid} AND pointtype = '적립'
     </select>
 </mapper>

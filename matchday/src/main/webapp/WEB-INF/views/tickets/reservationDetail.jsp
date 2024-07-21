@@ -62,16 +62,16 @@
     </div>
 
     <!-- 모바일 티켓 (QR 코드) 섹션 -->
-    <c:if test="${sessionScope.collectionmethodcode == 'receiving03'}">
-        <div class="card mb-4">
-            <div class="card-header">
-                모바일 티켓 (QR 코드)
-            </div>
-            <div class="card-body">
-                <img src="/tickets/generateQRCode?reservationid=${reservation.reservationid}" alt="QR Code" style="width: 500px; height: 500px" />
-            </div>
-        </div>
-    </c:if>
+	<c:if test="${reservation.collectionmethodcode == 'receiving03'}">
+	    <div class="card mb-4">
+	        <div class="card-header">
+	            모바일 티켓 (QR 코드)
+	        </div>
+	        <div class="card-body">
+	            <img src="/tickets/generateQRCode?reservationid=${reservation.reservationid}" alt="QR Code" style="width: 500px; height: 500px" />
+	        </div>
+	    </div>
+	</c:if>
 
     <div class="card mb-4">
         <div class="card-header">

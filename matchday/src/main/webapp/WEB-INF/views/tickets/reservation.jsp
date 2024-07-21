@@ -367,7 +367,7 @@
             window.history.back();
         });
 
-        // 결제 버튼 클릭 시 동작
+     // 결제 버튼 클릭 시 동작
         $('#pay-button').click(function() {
             var totalAmount = updateTotalAmount();
             var couponId = $('#coupon-select').val();
@@ -377,6 +377,8 @@
             var serviceFee = $('#service-fee').text().replace(/[^0-9]/g, '');
             var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
             var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
+
+            var collectionmethodcode = $('input[name="deliveryOption"]:checked').val();
 
             IMP.request_pay({
                 pg: 'html5_inicis',
@@ -397,7 +399,7 @@
                         paid_amount: rsp.paid_amount,
                         matchid: '${match.matchid}',
                         totalPrice: totalPrice,
-                        collectionmethodcode: $('input[name="deliveryOption"]:checked').val(),
+                        collectionmethodcode: collectionmethodcode,
                         recipientname: $('#name').val(),
                         shippingaddress: $('#address').val() + ' ' + $('#detailAddress').val(),
                         shippingrequest: $('#extraAddress').val(),

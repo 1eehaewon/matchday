@@ -385,6 +385,9 @@ public class TicketsCont {
                     session.setAttribute("membershipName", requestParams.get("membershipName"));
                     session.setAttribute("totalDiscount", requestParams.get("totalDiscount"));
                     session.setAttribute("totalPaymentAmount", requestParams.get("totalPaymentAmount"));
+                    
+                    // 세션에 수령 방법 코드 저장
+                    session.setAttribute("collectionmethodcode", collectionmethodcode);
 
                     response.put("success", true);
                     response.put("redirectUrl", "/tickets/reservationList?reservationid=" + reservationid);
@@ -406,6 +409,7 @@ public class TicketsCont {
 
         return response;
     }
+
 
     /**
      * 결제 취소 메서드
