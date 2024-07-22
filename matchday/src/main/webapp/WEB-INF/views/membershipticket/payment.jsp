@@ -63,11 +63,7 @@
                     <div class="form-check">
                         <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="shipping" value="receiving02">
                         <label class="form-check-label" for="shipping">배송 (0원)</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="mobile" value="receiving03">
-                        <label class="form-check-label" for="mobile">모바일 멤버쉽</label>
-                    </div>
+                    </div>                   
                 </form>
                 <div id="delivery-address">
                     <h2>배송지 주소</h2>
@@ -137,7 +133,7 @@
                     </tr>
                     <tr>
                         <th>취소기간</th>
-                        <td class="cancellation-deadline">금일 23:59 까지</td>
+                        <td class="cancellation-deadline" style="color: red;">결제 시간으로부터 24시간 이내</td>
                     </tr>
                     <tr>
                         <th>취소수수료</th>
@@ -187,9 +183,9 @@ $(document).ready(function() {
         var serviceFee = 0;
 
         if (deliveryOption === 'receiving02') {
-            deliveryFee = 100;
+            deliveryFee = 3200;
         } else if (deliveryOption === 'receiving01') {
-            serviceFee = 100;
+            serviceFee = 2000;
         }
 
         $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');

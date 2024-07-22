@@ -109,19 +109,42 @@ public class MembershipticketCont {
     @ResponseBody
     public ResponseEntity<String> refund(@RequestParam("usermembershipid") String userMembershipId) {
         try {
-            // 데이터베이스에서 imp_uid를 조회
+            logger.info("Refund requested for usermembershipid: {}", userMembershipId);
+            
+            // 데이터베이스에서 imp_uid와 결제 시간을 조회
             Map<String, Object> userMembership = membershipticketDao.getUserMembershipById(userMembershipId);
             if (userMembership == null) {
+                logger.error("User membership not found for id: {}", userMembershipId);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 usermembershipid를 찾을 수 없습니다.");
             }
 
             String impUid = (String) userMembership.get("imp_uid");
+            java.sql.Timestamp purchaseTimestamp = (java.sql.Timestamp) userMembership.get("purchasedate");
+
             if (impUid == null || impUid.isEmpty()) {
+                logger.error("imp_uid not found for usermembershipid: {}", userMembershipId);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 usermembershipid에 대한 imp_uid를 찾을 수 없습니다.");
+            }
+
+            // 현재 시간과 결제 시간을 비교
+            Date purchaseDate = new Date(purchaseTimestamp.getTime());
+            Date currentTime = new Date();
+
+            logger.info("Current time: {}, Purchase time: {}", currentTime, purchaseDate);
+
+            long diffInMillies = currentTime.getTime() - purchaseDate.getTime();
+            long diffInMinutes = (diffInMillies / 1000) / 60;
+
+            logger.info("Time difference in minutes: {}", diffInMinutes);
+
+            if (diffInMinutes >= 1440) { // 24시간 = 1440분
+                logger.warn("Refund request time exceeded for usermembershipid: {}", userMembershipId);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("환불 요청 시간이 초과되었습니다.");
             }
 
             String token = getToken();
             if (token == null) {
+                logger.error("Failed to obtain token for iamport");
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("아임포트 토큰 발급 실패");
             }
 
@@ -146,10 +169,12 @@ public class MembershipticketCont {
                     membershipticketDao.updateUserMembershipStatus(impUid, "환불완료");
                     return ResponseEntity.ok("환불 완료");
                 } else {
+                    logger.error("Payment cancellation failed: {}", json.getString("message"));
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body("결제 취소 실패: " + json.getString("message"));
                 }
             } else {
+                logger.error("Payment cancellation failed: {}", paymentResponse.getBody());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("결제 취소 실패: " + paymentResponse.getBody());
             }
@@ -158,6 +183,7 @@ public class MembershipticketCont {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("환불 실패");
         }
     }
+
 
     private String getToken() {
         try {
