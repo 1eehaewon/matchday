@@ -425,7 +425,7 @@
                 console.log('Distance:', distance); // 추가된 콘솔 로그
 
                 if (distance >= 0) {
-                    var days = Math.ceil(distance / (1000 * 60 * 60 * 24));
+                    var days = Math.ceil(distance / (1000 * 60 * 60 * 24))-1;
                     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
