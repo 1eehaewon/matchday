@@ -33,4 +33,11 @@ public class MypageDAO {
         return sqlSession.selectOne("mypage.getTotalPoints", userid);
     }
     
+    public void updateUserPoints(String userId, int points) {
+        MypageDTO mypageDTO = new MypageDTO();
+        mypageDTO.setUserID(userId);
+        mypageDTO.setTotalpoints(points);
+        sqlSession.update("mypage.updateUserPoints", mypageDTO);
+    }
+    
 }//class end

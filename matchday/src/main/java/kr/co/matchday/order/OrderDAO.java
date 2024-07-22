@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import kr.co.matchday.coupon.CouponDTO;
+import kr.co.matchday.mypage.MypageDAO;
+import kr.co.matchday.mypage.MypageDTO;
 import kr.co.matchday.tickets.TicketsDetailDTO;
 
 import java.util.HashMap;
@@ -17,15 +19,25 @@ public class OrderDAO {
     @Autowired
     private SqlSession sqlSession;
 
+    @Autowired
+    private MypageDAO mypageDao;
+    
     public void insert(OrderDTO orderDto) {
         System.out.println("Preparing to insert order: " + orderDto.toString());
         sqlSession.insert("kr.co.matchday.order.OrderDAO.insert", orderDto);
         System.out.println("Order inserted in database.");
 
-        // 주문 상세 정보 삽입
+        // 주문 상세 정보 삽입 
         for (OrderdetailDTO orderDetail : orderDto.getOrderDetails()) {
             orderDetail.setOrderid(orderDto.getOrderid());
             insertOrderDetail(orderDetail);
+        }
+
+        // 포인트 차감 로직 추가
+        if (orderDto.getUsedpoints() > 0) {
+            MypageDTO user = mypageDao.getUserById(orderDto.getUserid());
+            int updatedPoints = user.getTotalpoints() - orderDto.getUsedpoints();
+            mypageDao.updateUserPoints(orderDto.getUserid(), updatedPoints);
         }
     }
 

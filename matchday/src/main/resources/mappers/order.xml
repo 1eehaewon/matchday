@@ -14,8 +14,8 @@
 
     <!-- 주문 정보 삽입 -->
     <insert id="insert" parameterType="kr.co.matchday.order.OrderDTO">
-	    INSERT INTO `order` (orderid, userid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, shippingstartdate, shippingstatus, recipientname, recipientemail, recipientphone, shippingaddress, shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode, totalprice)
-	    VALUES (#{orderid}, #{userid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, #{shippingstartdate}, #{shippingstatus}, #{recipientname}, #{recipientemail}, #{recipientphone}, #{shippingaddress}, #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode}, #{totalprice})
+	    INSERT INTO `order` (orderid, userid, orderdate, orderstatus, couponid, usedpoints, finalpaymentamount, shippingstartdate, shippingstatus, recipientname, recipientemail, recipientphone, shippingaddress, shippingrequest, paymentmethodcode, price, quantity, receiptmethodcode, totalprice, deliveryfee, discountprice)
+	    VALUES (#{orderid}, #{userid}, #{orderdate}, #{orderstatus}, #{couponid}, #{usedpoints}, #{finalpaymentamount}, #{shippingstartdate}, #{shippingstatus}, #{recipientname}, #{recipientemail}, #{recipientphone}, #{shippingaddress}, #{shippingrequest}, #{paymentmethodcode}, #{price}, #{quantity}, #{receiptmethodcode}, #{totalprice}, #{deliveryfee}, #{discountprice})
 	</insert>
     
     <!-- 주문 상세정보 삽입 -->
@@ -61,11 +61,22 @@
     
     <!-- 사용자 ID로 주문 목록 조회 (주문일 기준 내림차순 정렬) -->
     <select id="getOrderByUserId" parameterType="string" resultType="kr.co.matchday.order.OrderDTO">
-	    SELECT o.*, g.*
+	    <!-- SELECT od.*, g.*
+        FROM orderdetail od
+        JOIN goods g ON od.goodsid = g.goodsid
+        JOIN 
+        WHERE od.userid = #{userid}
+        ORDER BY o.orderdate DESC -->
+       <!--  SELECT od.*, g.*, o.*
         FROM `order` o
-        JOIN goods g ON o.goodsid = g.goodsid
+        JOIN orderdetail od ON o.orderid = od.orderid
+        JOIN goods g ON od.goodsid = g.goodsid
         WHERE o.userid = #{userid}
-        ORDER BY o.orderdate DESC
+        ORDER BY o.orderdate DESC; -->
+        SELECT *
+        FROM `order` 
+        WHERE userid = #{userid}
+        ORDER BY orderdate DESC;
 	</select>
 	
 	<!-- 주문 ID로 주문 정보 조회 -->
@@ -76,4 +87,18 @@
         JOIN paymentmethods p ON o.paymentmethodcode = p.paymentmethodcode
         WHERE o.orderid = #{orderid}
     </select>
+    
+    <!-- 사용자 포인트 업데이트 -->
+	<update id="updateUserPoints" parameterType="string">
+	    UPDATE users u
+	    JOIN (
+	        SELECT userid, SUM(usedpoints) AS total_used
+	        FROM `order`
+	        WHERE userid = #{userid}
+	        GROUP BY userid
+	    ) o ON u.userid = o.userid
+	    SET u.totalpoints = u.totalpoints - o.total_used
+	    WHERE u.userid = #{userid}
+	</update>
+    
 </mapper>

@@ -104,10 +104,11 @@
 	                	<tr>
 	                		<td>${order.orderdate}</td>
 	                		<td><a href="/order/orderDetail?orderid=${order.orderid}" class="link-primary">${order.orderid}</a></td>
-	                		<td>${order.goodsid}</td>
+	                		<td>${orderdetail.goodsid}</td>
+
 	                		<td>
 	               			<c:forEach items="${goodsList}" var="goods">
-	                            <c:if test="${order.goodsid eq goods.goodsid}">
+	                            <c:if test="${orderdetail.goodsid eq goods.goodsid}">
 	                              <c:if test="${not empty goods.filename}">
 	                              	<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
 	                              	<img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 50px; height: 50px; object-fit: cover;">
@@ -124,10 +125,10 @@
 	                		</c:forEach>
 	                		</td>
 	                		<td>${order.quantity}개</td>
-	                		<td><fmt:formatNumber value="${order.finalpaymentamount}" pattern="#,###원"/></td>
+	                		<td><fmt:formatNumber value="${order.totalprice}" pattern="#,###원"/></td>
 	                		<td><fmt:formatDate value="${order.cancelDeadline}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 	                		<td>
-	                			<span class="badge ${order.orderstatus == 'Pending' ? 'badge-success' : 'badge-danger'}">${order.orderstatus == 'Completed' ? '결제완료' : '결제취소'}</span>
+	                			<span class="badge ${order.orderstatus == 'Completed' ? 'badge-success' : 'badge-danger'}">${order.orderstatus == 'Pending' ? '결제완료' : '결제취소'}</span>
 	                		</td>
 	                	</tr>
 	                </c:forEach>
@@ -136,7 +137,4 @@
         </div>
     </div>
 </div>
-<script>
-	console.log(vsdfs${orderdetailList}d);
-</script>
 <%@ include file="../footer.jsp" %>

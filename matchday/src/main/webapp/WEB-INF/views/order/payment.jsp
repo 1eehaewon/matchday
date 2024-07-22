@@ -187,7 +187,9 @@
         <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
         <input type="hidden" name="quantity" id="quantity" value="${quantity}">
         <input type="hidden" name="price" id="price" value="${price}">
-        <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
+        <input type="hidden" name="deliveryfee" id="deliveryfee" value="${deliveryfee}">
+        <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountprice - points}">
+        <input type="hidden" name="discountprice" id="discountprice" value="${discountprice}">
         <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
         <input type="hidden" name="totalPrice" id="total-price" value="${totalPrice}">
         <input type="hidden" name="size" id="size" value="${size}"> <!-- 사이즈 필드 추가 -->
@@ -283,13 +285,13 @@
             <div class="mb-3">
                 <label for="shippingrequest">배송 시 요청 사항</label>
                 <select id="shippingrequest" name="shippingrequest" class="form-select">
-                    <option value="배송 시 요청사항을 선택해주세요">배송 시 요청사항을 선택해주세요</option>
-                    <option value="부재 시 경비실에 맡겨주세요">부재 시 경비실에 맡겨주세요</option>
-                    <option value="부재 시 택배함에 넣어주세요">부재 시 택배함에 넣어주세요</option>
-                    <option value="부재 시 집 앞에 놔주세요">부재 시 집 앞에 놔주세요</option>
-                    <option value="배송 전 연락 바랍니다">배송 전 연락 바랍니다</option>
-                    <option value="파손의 위험이 있는 상품입니다. 배송 시 주의해 주세요">파손의 위험이 있는 상품입니다. 배송 시 주의해 주세요</option>
-                    <option value="빠른 배송 부탁 드립니다">빠른 배송 부탁 드립니다</option>
+                    <option value="배송 시 요청사항을 선택해주세요.">배송 시 요청사항을 선택해주세요.</option>
+                    <option value="부재 시 경비실에 맡겨주세요.">부재 시 경비실에 맡겨주세요.</option>
+                    <option value="부재 시 택배함에 넣어주세요.">부재 시 택배함에 넣어주세요.</option>
+                    <option value="부재 시 집 앞에 놔주세요.">부재 시 집 앞에 놔주세요.</option>
+                    <option value="배송 전 연락 바랍니다.">배송 전 연락 바랍니다.</option>
+                    <option value="파손의 위험이 있는 상품입니다. 배송 시 주의해 주세요.">파손의 위험이 있는 상품입니다. 배송 시 주의해 주세요.</option>
+                    <option value="빠른 배송 부탁 드립니다">빠른 배송 부탁 드립니다.</option>
                     <option value="">직접 입력</option>
                 </select>
                 <textarea name="shippingrequest" id="shippingrequestText" onkeyup="" rows="5" maxlength="50" placeholder="최대 50까지 입력 가능합니다." style="display: none;"></textarea>
@@ -315,13 +317,13 @@
             <label for="point" id="usedpointsLabel" class="form-label">사용할 포인트 :
                 <input type="number" id="pointsToUse" name="usedpoints" min="0" max="${totalpoints}" value="" placeholder="0 point" class="form-label">
             </label>
-            <button type="button" id="usePointsButton">포인트 사용</button>
+            <button type="button" id="usePointsButton" class="btn btn-info">포인트 사용</button>
         </form>
     </section>
 
     <div class="total-amount">
         <br>
-        배송비 : <span id="delivery-fee">0</span> (100,000원 이상 구매 시 무료)
+        배송비 : <span id="delivery-fee">${deliveryfee}</span> (100,000원 이상 구매 시 무료)
         <br>
         최종 결제 금액 : <span id="final-amount">${finalpaymentamount}원</span>
     </div>
@@ -340,9 +342,10 @@ $(document).ready(function() {
         var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
         var points = parseInt($('#pointsToUse').val(), 10) || 0;
 
-        var discountAmount = Math.floor(totalPrice * (discountRate / 100));
-        var finalPaymentAmount = totalPrice - discountAmount - points;
+        var discountprice = Math.floor(totalPrice * (discountRate / 100)); //쿠폰 할인 금액
+        var finalPaymentAmount = totalPrice - discountprice + deliveryFee - points;
 
+        $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
         $('#final-amount').text(finalPaymentAmount.toLocaleString() + '원');
         $('#finalpaymentamount').val(finalPaymentAmount);
         $('#usedpoints').val(points);
@@ -399,8 +402,9 @@ $(document).ready(function() {
         var finalPaymentAmount = parseInt($('#finalpaymentamount').val(), 10) || 0;
         var couponId = $('#couponid').val();
         var couponName = $('#couponid').find(':selected').text();
+        var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
+        var discountprice = Math.floor(totalPrice * (discountRate / 100)); //쿠폰 할인 금액
         var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
-        var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
         var points = $('#pointsToUse').val();
         var quantity = parseInt($('#quantity').val(), 10) || 1; // 수량 값 가져오기
         var size = $('#size').val(); // 사이즈 값 가져오기
@@ -421,8 +425,6 @@ $(document).ready(function() {
                     imp_uid: rsp.imp_uid,
                     merchant_uid: rsp.merchant_uid,
                     paid_amount: rsp.paid_amount,
-                    goodsid: $('#goodsid').val(),
-                    totalPrice: totalPrice,
                     recipientname: $('#recipientname').val(),
                     recipientemail: $('#recipientemail').val(),
                     recipientphone: $('#recipientphone').val(),
@@ -432,10 +434,12 @@ $(document).ready(function() {
                     couponid: couponId,
                     couponName: couponName,
                     deliveryFee: deliveryFee,
-                    totalDiscount: totalDiscount,
                     totalPaymentAmount: finalPaymentAmount,
                     usedpoints: points,
                     finalpaymentamount: finalPaymentAmount,
+                    discountprice : discountprice,
+                    goodsid: $('#goodsid').val(),
+                    totalPrice: totalPrice,
                     price: parseInt($('#price').val(), 10),
                     quantity: quantity, // 수량 값 추가
                     size: size // 사이즈 값 추가
@@ -450,8 +454,9 @@ $(document).ready(function() {
                     traditional: true,
                     success: function(data) {
                         if (data.success) {
-                            window.opener.location.href = data.redirectUrl;
-                            window.close();
+                        	alert('결제가 완료되었습니다.');
+                            window.opener.location.href = data.redirectUrl; // 팝업 호출 base page url 이동
+                            window.close();									// 현재 팝업 close
                         } else {
                             alert('결제 검증에 실패했습니다.');
                         }

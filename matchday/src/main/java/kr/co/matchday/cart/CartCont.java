@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.goods.GoodsDAO;
@@ -43,14 +44,19 @@ public class CartCont {
     private MypageDAO mypageDao;
 	
     @PostMapping("/insert")
+    @ResponseBody
     public String insert(@ModelAttribute CartDTO cartDto, HttpSession session) {
+    	System.out.println("-----insert INININ됨");
         String userid = (String) session.getAttribute("userID");
+        System.out.println("-----insert 1111됨");
         if (userid == null) {
             return "redirect:/member/login";
         }
+        System.out.println("-----insert 222됨");
         cartDto.setUserid(userid);
         cartDao.insert(cartDto);
-        return "redirect:/cart/list";
+        System.out.println("-----insert 3333됨");
+        return "SUCCESS";
     }
 
     @GetMapping("/list")
@@ -77,10 +83,12 @@ public class CartCont {
 
     @GetMapping("/cartPayment")
     public String cartPayment(
+    		@RequestParam("cartid") String cartid,
             @RequestParam("goodsid") String goodsid,
             @RequestParam("size") String size,
             @RequestParam("quantity") String quantity,
             @RequestParam("price") String price,
+            @RequestParam("deliveryfee") String deliveryfee,
             @RequestParam("totalPrice") String totalPrice,
             HttpSession session, Model model) {
         String userid = (String) session.getAttribute("userID");
@@ -95,7 +103,14 @@ public class CartCont {
         List<Integer> totalPriceList = Arrays.asList(totalPrice.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
 
         List<GoodsDTO> goodsList = goodsidList.stream().map(goodsDao::detail).collect(Collectors.toList());
-
+        model.addAttribute("goodsid", goodsid);
+        model.addAttribute("size", size);
+        model.addAttribute("quantity", quantity);
+        model.addAttribute("price", price);
+        model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("deliveryfee", deliveryfee);
+        model.addAttribute("cartid", cartid);
+        
         model.addAttribute("goodsList", goodsList);
         model.addAttribute("sizeList", sizeList);
         model.addAttribute("quantityList", quantityList);

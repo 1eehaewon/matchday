@@ -177,21 +177,12 @@
 </head>
 <body>
 <div class="container">
-    <form id="payment-form">
-        <input type="hidden" name="userid" value="${sessionScope.userID}">
-        <input type="hidden" name="orderid" id="orderid" value="${order.orderid}">
-        <input type="hidden" name="goodsid" id="goodsid" value="${goods.goodsid}">
+ 	<form id="payment-form">
+ 		<input type="hidden" name="userid" value="${sessionScope.userID}">
         <input type="hidden" name="orderstatus" id="orderstatus" value="주문완료">
         <input type="hidden" name="paymentmethodcode" id="paymentmethodcode" value="pay01">
         <input type="hidden" name="receiptmethodcode" id="receiptmethodcode" value="receiving02">
-        <input type="hidden" name="quantity" id="quantity" value="${quantity}">
-        <input type="hidden" name="price" id="price" value="${price}">
-        <input type="hidden" name="finalpaymentamount" id="finalpaymentamount" value="${totalPrice - discountAmount - points}">
-        <input type="hidden" name="usedpoints" id="usedpoints" value="${points}">
-        <input type="hidden" name="totalPrice" id="total-price" value="${totalPrice}">
-        <input type="hidden" name="size" id="size" value="${size}">
     </form>
-
     <div class="order_tit">
         <h1>주문 및 결제</h1>
         <ol>
@@ -220,7 +211,7 @@
                             </thead>
                             <tbody class="text-center">
                             <c:forEach var="goods" items="${goodsList}" varStatus="status">
-                                <tr>
+                                <tr class='product-row'>
                                     <td>
                                         <div class="product-image">
                                             <c:if test="${not empty goods.filename}">
@@ -231,6 +222,7 @@
                                         <span class="productname-text">${goods.productname}</span>
                                     </td>
                                     <td class="size-text">${sizeList[status.index]}</td>
+                                    <td style="display : none;" class="goodsid-text">${goodsList[status.index].goodsid}</td>
                                     <td class="quantity-text">${quantityList[status.index]}</td>
                                     <td class="price-text"><fmt:formatNumber value="${priceList[status.index]}" pattern="#,###원" /></td>
                                     <td class="totalprice-text"><fmt:formatNumber value="${priceList[status.index] * quantityList[status.index]}" pattern="#,###원" /></td>
@@ -316,13 +308,13 @@
             <label for="point" id="usedpointsLabel" class="form-label">사용할 포인트 :
                 <input type="number" id="pointsToUse" name="usedpoints" min="0" max="${totalpoints}" value="" placeholder="0 point" class="form-label">
             </label>
-            <button type="button" id="usePointsButton">포인트 사용</button>
+            <button type="button" id="usePointsButton" class="btn btn-info">포인트 사용</button>
         </form>
     </section>
 
     <div class="total-amount">
         <br>
-        배송비 : <span id="delivery-fee">0</span> (100,000원 이상 구매 시 무료)
+        배송비 : <span id="deliveryfee">${deliveryfee}</span> (100,000원 이상 구매 시 무료)
         <br>
         최종 결제 금액 : <span id="final-amount">${finalpaymentamount}원</span>
     </div>
@@ -341,18 +333,19 @@ $(document).ready(function() {
             totalPrice += parseInt($(this).text().replace(/[^0-9]/g, ''), 10) || 0;
         });
 
-        var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10) || 0;
+        var deliveryFee = parseInt($('#deliveryfee').text().replace(/[^0-9]/g, ''), 10) || 0;
         var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
         var points = parseInt($('#pointsToUse').val(), 10) || 0;
 
-        var discountAmount = Math.floor(totalPrice * (discountRate / 100));
-        var finalPaymentAmount = totalPrice - discountAmount - points;
+        var discountprice = Math.floor(totalPrice * (discountRate / 100)); //쿠폰 할인 금액
+        var finalPaymentAmount = totalPrice - discountprice + deliveryFee - points;
 
+        $('#deliveryfee').text(deliveryFee.toLocaleString() + '원');
         $('#final-amount').text(finalPaymentAmount.toLocaleString() + '원');
         $('#finalpaymentamount').val(finalPaymentAmount);
         $('#usedpoints').val(points);
 
-        return {totalPrice, discountAmount, finalPaymentAmount};
+        return {totalPrice, discountprice, finalPaymentAmount};
     }
 
     $('#couponid').change(function() {
@@ -360,7 +353,24 @@ $(document).ready(function() {
     });
 
     $('#usePointsButton').click(function() {
-        updateTotalAmount();
+    	var totalPrice = 0;
+        $(".totalprice-text").each(function() {
+            totalPrice += parseInt($(this).text().replace(/[^0-9]/g, ''), 10) || 0;
+        });
+
+        var deliveryFee = parseInt($('#deliveryfee').text().replace(/[^0-9]/g, ''), 10) || 0;
+        var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
+        var points = parseInt($('#pointsToUse').val(), 10) || 0;
+
+        var discountprice = Math.floor(totalPrice * (discountRate / 100)); //쿠폰 할인 금액
+        var finalPaymentAmount = totalPrice - discountprice + deliveryFee;
+        
+        // 포인트 체크
+        if(points < 0 || points > finalPaymentAmount || points >  "${totalpoints}"){
+        	alert("사용 포인트를 확인해주세요.");
+        }else{
+        	updateTotalAmount();
+        }
     });
 
     updateTotalAmount();
@@ -402,30 +412,31 @@ $(document).ready(function() {
     $('#pay-button').click(function() {
         var amounts = updateTotalAmount();
         var totalPrice = amounts.totalPrice;
-        var discountAmount = amounts.discountAmount;
+        var discountRate = parseInt($('#couponid').find(':selected').data('discount'), 10) || 0;
+        var discountprice = Math.floor(totalPrice * (discountRate / 100)); //쿠폰 할인 금액
         var finalPaymentAmount = amounts.finalPaymentAmount;
         var couponId = $('#couponid').val();
         var couponName = $('#couponid').find(':selected').text();
-        var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
+        var deliveryFee = $('#deliveryfee').text().replace(/[^0-9]/g, '');
         var points = $('#pointsToUse').val();
-
         var sizeList = [];
         var quantityList = [];
         var priceList = [];
         var goodsidList = [];
 
         $(".product-row").each(function() {
-            sizeList.push($(this).find('.goods-size').text());
-            quantityList.push($(this).find('.goods-quantity').text());
-            priceList.push($(this).find('.goods-price').text());
-            goodsidList.push($(this).find('.goods-id').text());
+            sizeList.push($(this).find('.size-text').text());
+            quantityList.push($(this).find('.quantity-text').text());
+            priceList.push(parseInt($(this).find('.price-text').text()),10);
+            goodsidList.push($(this).find('.goodsid-text').text());
         });
 
         console.log("sizeList: ", sizeList);
         console.log("quantityList: ", quantityList);
-        console.log("priceList: ", priceList);
+        console.log("priceList: ", priceList);	
         console.log("goodsidList: ", goodsidList);
 
+        
         IMP.request_pay({
             pg: 'html5_inicis',
             pay_method: 'card',
@@ -442,11 +453,6 @@ $(document).ready(function() {
                     imp_uid: rsp.imp_uid,
                     merchant_uid: rsp.merchant_uid,
                     paid_amount: rsp.paid_amount,
-                    goodsidList: goodsidList,
-                    sizeList: sizeList,
-                    quantityList: quantityList,
-                    priceList: priceList,
-                    totalPrice: totalPrice,
                     recipientname: $('#recipientname').val(),
                     recipientemail: $('#recipientemail').val(),
                     recipientphone: $('#recipientphone').val(),
@@ -456,19 +462,25 @@ $(document).ready(function() {
                     couponid: couponId,
                     couponName: couponName,
                     deliveryFee: deliveryFee,
-                    totalDiscount: discountAmount,
+                    totalDiscount: discountprice,
                     totalPaymentAmount: finalPaymentAmount,
                     usedpoints: points,
-                    finalpaymentamount: finalPaymentAmount
+                    finalpaymentamount: finalPaymentAmount,
+                   
+                    goodsid: "${goodsid}",
+                    totalPrice: "${totalPrice}",
+                    price: "${price}",
+                    quantity: "${quantity}",
+                    size: "${size}",
+                    cartid: "${cartid}"		// 구매완료 후 장바구니 삭제용
                 };
-
+                
                 console.log('formData:', formData);
 
                 $.ajax({
                     type: 'POST',
                     url: '/order/verifyPayment',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
+                    data: formData,
                     traditional: true,
                     success: function(data) {
                         if (data.success) {

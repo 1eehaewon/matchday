@@ -360,26 +360,26 @@ table tr:hover {
                                 <c:forEach items="${stockDto}" var="row" varStatus="idx">
                                     <c:choose>
                                         <c:when test="${row.size eq 'FREE' && goodsDto.category ne 'Uniform'}"> <!-- 카테고리가 유니폼이 아니면 FREE만 나오게 -->
-                                            <option value="FREE" stock="${row.stockquantity}">FREE ${row.stockquantity}개</option>
+                                            <option value="FREE" stock="${row.stockquantity}">FREE</option>
                                         </c:when>
                                         <c:when test="${row.size eq 'S' && goodsDto.category eq 'Uniform'}">
-                                            <option value="S" stock="${row.stockquantity}">S ${row.stockquantity}개</option>
+                                            <option value="S" stock="${row.stockquantity}">S</option>
                                         </c:when>
                                         <c:when test="${row.size eq 'M' && goodsDto.category eq 'Uniform'}">
-                                            <option value="M" stock="${row.stockquantity}">M ${row.stockquantity}개</option>
+                                            <option value="M" stock="${row.stockquantity}">M</option>
                                         </c:when>
                                         <c:when test="${row.size eq 'L' && goodsDto.category eq 'Uniform'}">
-                                            <option value="L" stock="${row.stockquantity}">L ${row.stockquantity}개</option>
+                                            <option value="L" stock="${row.stockquantity}">L</option>
                                         </c:when>
                                         <c:when test="${row.size eq 'XL' && goodsDto.category eq 'Uniform'}">
-                                            <option value="XL" stock="${row.stockquantity}">XL ${row.stockquantity}개</option>
+                                            <option value="XL" stock="${row.stockquantity}">XL</option>
                                         </c:when>
                                     </c:choose>
                                 </c:forEach>
                             </select>
                         </dd>
                         <dt>배송비</dt>
-                        <dd>3,500원 (100,000원 이상 구매시 무료)</dd>
+                        <dd><span id="deliveryfee"></span> (100,000원 이상 구매시 무료)</dd>
                         <dt>주문 수량</dt>
                         <dd>
                             <div class="quantity-control">
@@ -411,16 +411,17 @@ table tr:hover {
                         <p>쇼핑을 계속 하시겠습니까?</p>
                         <div class="modal-actions">
                             <button onclick="continueShopping()">쇼핑 계속하기</button>
-                            <button onclick="goToCart()">장바구니로 이동</button>
+                            <button onclick="location.href = '/cart/list'">장바구니로 이동</button>
                         </div>
                     </div>
                 </div>
                 <!-- 장바구니 폼 -->
-                <form id="addToCartForm" method="post" action="${pageContext.request.contextPath}/cart/insert">
+                <form id="addToCartForm" name="addToCartForm">
                     <input type="hidden" name="userid" value="${sessionScope.userID}">
                     <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
                     <input type="hidden" name="size" id="form-size" value="">
                     <input type="hidden" name="quantity" id="form-quantity" value="">
+                    <input type="hidden" name="deliveryfee" id="form-deliveryfee">
                     <input type="hidden" name="unitprice" id="form-unitprice">
                     <input type="hidden" name="totalprice" id="form-totalprice">
                 </form>
@@ -509,6 +510,8 @@ table tr:hover {
 <!-- 본문 끝 -->
 
 <script>
+	var deliveryfee = 3500;
+	
     // 로그인 상태 확인 함수 예시
     function isLoggedIn() {
         // 세션 스코프에서 userid 가져오기
@@ -536,15 +539,23 @@ table tr:hover {
         var totalPrice = quantity * price;
         var selectSize = document.getElementById('size');
         selectSize = selectSize.options[selectSize.selectedIndex].value;
+        deliveryfee = 3500; // 기본 배송비 3500원
 
+     	// 100,000원 이상 구매 시 무료
+        if (totalPrice >= 100000) {
+            deliveryfee = 0;
+        }
+        
         // 업데이트된 값들을 화면에 표시합니다
         document.getElementById('order-quantity').innerText = quantity + '개';
+        document.getElementById('deliveryfee').innerText = deliveryfee.toLocaleString() + '원';
         document.getElementById('total-price').innerText = totalPrice.toLocaleString() + '원';
 
         // 숨겨진 입력 필드를 업데이트합니다
         document.getElementById('form-size').value = selectSize;
         document.getElementById('form-quantity').value = quantity;
         document.getElementById('form-unitprice').value = price;
+        document.getElementById('form-deliveryfee').value = deliveryfee;        
         document.getElementById('form-totalprice').value = totalPrice;
     }
 
@@ -608,9 +619,9 @@ table tr:hover {
                 return;
             }
         }
-
+        
         if (isLoggedIn()) {
-            window.open(url + "&size=" + selectSize + "&price=" + price + "&quantity=" + quantity + "&totalPrice=" + totalPrice, "popupWindow", "width=1200,height=800,scrollbars=yes");
+            window.open(url + "&deliveryfee=" + deliveryfee + "&size=" + selectSize + "&price=" + price + "&quantity=" + quantity + "&totalPrice=" + totalPrice, "popupWindow", "width=1200,height=800,scrollbars=yes");
         } else {
             // 로그인이 되어있지 않으면 팝업을 열지 않음
             alert("로그인이 필요합니다.");
@@ -672,8 +683,8 @@ table tr:hover {
         console.log('수량:', quantity);
         console.log('총 가격:', totalPrice);
 
-        // 모달 창 띄우기
-        showCartModal();
+        goToCart();
+        
     } // addToCart() end
 
     // 장바구니 모달 가져오기
@@ -701,7 +712,22 @@ table tr:hover {
     }
     // 장바구니로 이동 버튼 클릭 시 동작
     function goToCart() {
-        document.getElementById('addToCartForm').submit(); // 폼 제출 후 장바구니 목록 페이지 URL로 이동
+    	updateTotalPrice();
+    	
+    	var cardForm = $("#addToCartForm").serialize();
+    	console.log(cardForm)
+    	$.ajax({
+            url: '/cart/insert',  // 리뷰 삭제 요청을 처리할 URL
+            type: 'POST',
+            data: cardForm,
+            success: function(response) {
+            	// 모달 창 띄우기
+                showCartModal();
+            },
+            error: function(error) {
+            	console.log(error);
+            }
+        });
     }
 
     // 상품 수정 함수
@@ -754,7 +780,7 @@ table tr:hover {
 
     function writeopenPopup(url) { // 상품 쓰기 팝업
         if (isLoggedIn()) {
-            var width = 1000;
+            var width = 1200;
             var height = 900;
             var left = (screen.width - width) / 2;
             var top = (screen.height - height) / 2;

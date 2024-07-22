@@ -92,7 +92,7 @@
                 <tr>
                     <th>배송 상태</th>
                     <td>
-                        <c:set var="currentDate" value="<%= new java.util.Date() %>" />
+                        <%-- <c:set var="currentDate" value="<%= new java.util.Date() %>" /> --%>
                         <c:choose>
                             <c:when test="${currentDate.after(order.shippingenddate)}">
                                 배송완료
@@ -161,7 +161,7 @@
                 </tr>
                 <tr>
                     <th>배송료</th>
-                    <td>${deliveryFee}원</td>
+                    <td><fmt:formatNumber value="${order.deliveryfee}" pattern="#,###원"/></td>
                 </tr>
                 <tr>
                     <th>사용한 쿠폰</th>
@@ -185,11 +185,11 @@
                 </tr>
                 <tr>
                     <th>총 할인액</th>
-                    <td>${totalDiscount}원</td>
+                    <td><fmt:formatNumber value="${order.discountprice}" pattern="#,###원"/></td>
                 </tr>
                 <tr>
                     <th>총 결제금액</th>
-                    <td>
+                    <td><fmt:formatNumber value="${order.finalpaymentamount}" pattern="#,###원"/>
                     	<c:forEach items="${order.orderDetails}" var="orderDetail">
                     		<fmt:formatNumber value="${orderDetail.totalamount}" pattern="#,###원"/>
                     	</c:forEach>

@@ -38,6 +38,7 @@ import kr.co.matchday.cart.CartDTO;
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.goods.GoodsDAO;
 import kr.co.matchday.goods.GoodsDTO;
+import kr.co.matchday.goods.StockDTO;
 import kr.co.matchday.mypage.MypageDAO;
 import kr.co.matchday.mypage.MypageDTO;
 
@@ -65,6 +66,7 @@ public class OrderCont {
                           @RequestParam("size") String size,
                           @RequestParam("quantity") int quantity,
                           @RequestParam("price") int price,
+                          @RequestParam("deliveryfee") int deliveryfee,
                           @RequestParam("totalPrice") int totalPrice,
                           @RequestParam(value = "couponid", required = false) String couponid,
                           @RequestParam(value = "usedpoints", required = false, defaultValue = "0") int usedpoints,
@@ -84,6 +86,7 @@ public class OrderCont {
         model.addAttribute("quantity", quantity);
         model.addAttribute("price", price);
         model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("deliveryfee", deliveryfee);
         model.addAttribute("couponid", couponid);
         model.addAttribute("usedpoints", usedpoints);
 
@@ -116,6 +119,11 @@ public class OrderCont {
     public Map<String, Object> verifyPayment(@RequestParam Map<String, String> requestParams, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
+        System.out.println("HERE !! ");
+        System.out.println(requestParams);
+        System.out.println(requestParams.get("goodsid"));
+        
+        
         String imp_uid = requestParams.get("imp_uid");
         String merchant_uid = requestParams.get("merchant_uid");
         int paid_amount = parseInteger(requestParams.get("paid_amount"), 0);
@@ -127,15 +135,24 @@ public class OrderCont {
         String shippingrequest = requestParams.get("shippingrequest");
         String paymentmethodcode = requestParams.get("paymentmethodcode");
         String couponid = requestParams.get("couponid");
+        int deliveryFee = parseInteger(requestParams.get("deliveryFee"), 0);
+        int discountprice = parseInteger(requestParams.get("discountprice"), 0);
         String userId = (String) session.getAttribute("userID");
         int usedpoints = parseInteger(requestParams.get("usedpoints"), 0);
-
+System.out.println("usedpoints = " + usedpoints);
         List<String> goodsidList = Arrays.asList(requestParams.get("goodsid").split(","));
         List<String> quantities = Arrays.asList(requestParams.get("quantity").split(","));
         List<String> sizes = Arrays.asList(requestParams.get("size").split(","));
         List<String> prices = Arrays.asList(requestParams.get("price").split(","));
         List<String> totalPrices = Arrays.asList(requestParams.get("totalPrice").split(","));
-
+        
+        String allcartid = requestParams.get("cartid");
+        List<String> cartidList = new ArrayList<String>();
+        
+        if(allcartid != "" && allcartid != null) {
+        	cartidList = Arrays.asList(allcartid.split(","));		// 장바구니 삭제용
+        }
+        
         if (userId == null) {
             response.put("success", false);
             response.put("message", "세션에서 사용자 ID를 찾을 수 없습니다.");
@@ -167,8 +184,9 @@ public class OrderCont {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> paymentResponse = restTemplate.exchange(
-                "https://api.iamport.kr/payments/" + imp_uid, HttpMethod.GET, entity, String.class);
+        "https://api.iamport.kr/payments/" + imp_uid, HttpMethod.GET, entity, String.class);
 
+        String redirectUrl = "/order/orderDetail?orderid=";
         if (paymentResponse.getStatusCode() == HttpStatus.OK) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -178,61 +196,84 @@ public class OrderCont {
 
                 if (amount == paid_amount) {
                     String orderid = generateOrderId();
+                    redirectUrl = redirectUrl + orderid;
                     String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
+                    
+                    OrderDTO orderDto = new OrderDTO();
+                    orderDto.setOrderid(orderid);
+                    orderDto.setUserid(userId);
+                    //orderDto.setGoodsid(goodsidList.get(i));
+                    orderDto.setOrderdate(currentDate); // 결제 날짜 설정
+                    orderDto.setOrderstatus("Completed");
+                    if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
+                        orderDto.setCouponid(couponid);
+                    } else {
+                        orderDto.setCouponid(null);
+                    }
+                    orderDto.setUsedpoints(usedpoints);
+                    orderDto.setFinalpaymentamount(finalpaymentamount);
+                    orderDto.setShippingstatus("Pending");
+                    orderDto.setRecipientname(recipientname);
+                    orderDto.setRecipientemail(recipientemail);
+                    orderDto.setRecipientphone(recipientphone);
+                    orderDto.setShippingaddress(shippingaddress);
+                    orderDto.setShippingrequest(shippingrequest);
+                    orderDto.setPaymentmethodcode(paymentmethodcode);
+                    orderDto.setDeliveryfee(deliveryFee);
+                    orderDto.setDiscountprice(discountprice);
+
+                    List<OrderdetailDTO> orderDetails = new ArrayList<>();	// TB : orderDetail : 장바구니 개별 구매내역 리스트
+                    int Orderquantity = 0;		// TB : order (전체 주문내역 : 장바구니 선택 구매 갯수 합계)
+                    int Orderprice = 0;			// TB : order (전체 주문내역 : 장바구니 선택 구매 가격 합계)
+                    
                     for (int i = 0; i < goodsidList.size(); i++) {
-                        OrderDTO orderDto = new OrderDTO();
-                        orderDto.setOrderid(orderid);
-                        orderDto.setUserid(userId);
-                        orderDto.setGoodsid(goodsidList.get(i));
-                        orderDto.setOrderdate(currentDate); // 결제 날짜 설정
-                        orderDto.setOrderstatus("Completed");
-                        if (couponid != null && !couponid.isEmpty() && !couponid.equals("null")) {
-                            orderDto.setCouponid(couponid);
-                        } else {
-                            orderDto.setCouponid(null);
-                        }
-                        orderDto.setUsedpoints(usedpoints);
-                        orderDto.setFinalpaymentamount(finalpaymentamount);
-                        orderDto.setShippingstatus("Pending");
-                        orderDto.setRecipientname(recipientname);
-                        orderDto.setRecipientemail(recipientemail);
-                        orderDto.setRecipientphone(recipientphone);
-                        orderDto.setShippingaddress(shippingaddress);
-                        orderDto.setShippingrequest(shippingrequest);
-                        orderDto.setPaymentmethodcode(paymentmethodcode);
-
-                        int quantity = parseInteger(quantities.get(i), 1);
-                        int price = parseInteger(prices.get(i), 0);
-                        int totalPrice = parseInteger(totalPrices.get(i), 0);
-                        orderDto.setPrice(price);
-                        orderDto.setQuantity(quantity);
-                        orderDto.setTotalprice(totalPrice);
-                        orderDto.setReceiptmethodcode("receiving02");
-
-                        List<OrderdetailDTO> orderDetails = new ArrayList<>();
-                        OrderdetailDTO orderDetail = new OrderdetailDTO();
-                        orderDetail.setGoodsid(goodsidList.get(i));
-                        orderDetail.setSize(sizes.get(i));
-                        orderDetail.setQuantity(quantity);
-                        orderDetail.setPrice(price);
-                        orderDetail.setTotalamount(price * quantity);
-                        orderDetails.add(orderDetail);
-
-                        orderDto.setOrderDetails(orderDetails);
-
-                        try {
-                            orderDao.insert(orderDto);
-                            System.out.println("Order and Order details inserted successfully");
-                        } catch (Exception e) {
-                            System.err.println("Error inserting order: " + e.getMessage());
-                            e.printStackTrace();
-                            response.put("success", false);
-                            response.put("message", "Order insertion failed.");
-                            return response;
-                        }
+	                	int quantity = parseInteger(quantities.get(i), 1);
+	                    int price = parseInteger(prices.get(i), 0);
+	                   
+	                    Orderquantity = Orderquantity + quantity;
+	                    Orderprice = Orderprice + (price*quantity);
+	                    
+	                    OrderdetailDTO orderDetail = new OrderdetailDTO();
+	                    orderDetail.setGoodsid(goodsidList.get(i));
+	                    orderDetail.setSize(sizes.get(i));
+	                    orderDetail.setQuantity(quantity);
+	                    orderDetail.setPrice(price);
+	                    orderDetail.setTotalamount(price * quantity);
+	                    orderDetails.add(orderDetail);
+	
+	                    // 재고수정 start!
+	                    StockDTO stockDto = new StockDTO();
+	                    stockDto.setGoodsid(goodsidList.get(i));
+	                    stockDto.setSize(sizes.get(i));
+	                    stockDto.setStockquantity(quantity);
+	                    goodsDao.stockupdate(stockDto);			
+	                    // 재고수정 end!
+	                    
+	                    if(cartidList.size() > 0) {
+	                    	cartDao.delete(Integer.parseInt(cartidList.get(i)));			// 장바구니 삭제
+	                    }
+	                    
+	                    orderDto.setOrderDetails(orderDetails);
                     }
 
+                    orderDto.setPrice(Orderprice);
+                    orderDto.setQuantity(Orderquantity);
+                    orderDto.setTotalprice(Orderprice);
+                    orderDto.setReceiptmethodcode("receiving02");
+                   
+                    
+                    try {
+                        orderDao.insert(orderDto);
+                        System.out.println("Order and Order details inserted successfully");
+                    } catch (Exception e) {
+                        System.err.println("Error inserting order: " + e.getMessage());
+                        e.printStackTrace();
+                        response.put("success", false);
+                        response.put("message", "Order insertion failed.");
+                        return response;
+                    }
+                    
                     if (couponid != null && !couponid.equals("0")) {
                         orderDao.updateCouponUsage(couponid);
                     }
@@ -255,6 +296,7 @@ public class OrderCont {
                     }
 
                     response.put("success", true);
+                    response.put("redirectUrl", redirectUrl);
                 } else {
                     response.put("success", false);
                     response.put("message", "결제 금액이 일치하지 않습니다.");
@@ -356,9 +398,7 @@ public class OrderCont {
         mav.addObject("order", order);
         
         List<GoodsDTO> goodsList = goodsDao.list();
-     
         model.addAttribute("goodsList", goodsList);
-
         
         return mav;
     }

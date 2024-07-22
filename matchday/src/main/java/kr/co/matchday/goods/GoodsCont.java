@@ -23,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.order.OrderDAO;
+import kr.co.matchday.order.OrderDTO;
 import kr.co.matchday.review.ReviewDAO;
 import kr.co.matchday.review.ReviewDTO;
 import net.utility.Utility;
@@ -40,6 +42,9 @@ public class GoodsCont {
 
 	@Autowired
 	private ReviewDAO reviewDao;
+	
+	@Autowired
+	private OrderDAO orderDao;
 	
 	/* @RequestMapping("/list") 
 	@GetMapping("/list")

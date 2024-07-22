@@ -265,6 +265,7 @@
                                                 </c:if>
                                             </c:forEach>
                                         </td>
+                                        <td data-cartid="${cart.cartid}" style="display :none;"></td>
                                         <td data-size="${cart.size}">${cart.size}</td>
                                         <td data-quantity="${cart.quantity}">
                                             <button type="button" onclick="decrementQuantity(this)" class="수량-button">-</button>
@@ -293,12 +294,12 @@
                             <dt>총 <strong id="totalSelectedCount">0</strong> 개의 상품금액 </dt>
                             <dd><strong id="totalSelectedPrice">0</strong>원</dd>
                         </dl>
-                        <span><img src="order_price_plus.png" alt="더하기" /></span>
+                        <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_plus.png" alt="더하기" /></span>
                         <dl>
                             <dt>배송비</dt>
                             <dd><strong id="totalDeliveryCharge">0</strong>원</dd>
                         </dl>
-                        <span><img src="order_price_total.png" alt="합계" /></span>
+                        <span><img src="https://cdn-pro-web-210-60.cdn-nhncommerce.com/difkorea4_godomall_com/data/skin/front/TOPSKIN/img/order/order_price_total.png" alt="합계" /></span>
                         <dl class="price_total">
                             <dt>합계</dt>
                             <dd><strong id="totalSettlePrice">0</strong>원</dd>
@@ -316,6 +317,8 @@
 </div>
 
 <script>
+	var deliveryCharge = "";
+	
     function toggleCheckboxes(checked) {
         var checkboxes = document.getElementsByName('selectedItems');
         for (var checkbox of checkboxes) {
@@ -360,7 +363,7 @@
         document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
         document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString();
         
-        var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
         document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
         
         var totalSettlePrice = totalSelectedPrice + deliveryCharge;
@@ -391,7 +394,7 @@
         document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
         document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString();
 
-        var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
         document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
         
         var totalSettlePrice = totalSelectedPrice + deliveryCharge;
@@ -460,9 +463,11 @@
         }
 
         var goodsidList = [];
+		var deliveryfee = '';
         var sizeList = [];
         var quantityList = [];
         var priceList = [];
+        var cartIdList = [];
         var totalPriceList = [];
 
         var rows = Array.from(document.querySelectorAll('input[name="selectedItems"]:checked')).map(checkbox => checkbox.closest('tr'));
@@ -472,6 +477,7 @@
             quantityList.push(row.querySelector('td[data-quantity] .quantity-input').value);
             priceList.push(row.querySelector('td[data-price]').dataset.price);
             totalPriceList.push(row.querySelector('td[data-totalprice]').dataset.totalprice);
+            cartIdList.push(row.querySelector('td[data-cartid]').dataset.cartid);
         });
 
         var form = document.createElement('form');
@@ -479,12 +485,24 @@
         form.action = '${pageContext.request.contextPath}/cart/cartPayment';
         form.target = 'cartPaymentPopup';
 
+        var cartidInput = document.createElement('input');
+        cartidInput.type = 'hidden';
+        cartidInput.name = 'cartid';
+        cartidInput.value = cartIdList.join(',');
+        form.appendChild(cartidInput);
+        
         var goodsidInput = document.createElement('input');
         goodsidInput.type = 'hidden';
         goodsidInput.name = 'goodsid';
         goodsidInput.value = goodsidList.join(',');
         form.appendChild(goodsidInput);
 
+        var deliveryfeeInput = document.createElement('input');
+        deliveryfeeInput.type = 'hidden';
+        deliveryfeeInput.name = 'deliveryfee';
+        deliveryfeeInput.value = deliveryCharge;
+        form.appendChild(deliveryfeeInput);
+        
         var sizeInput = document.createElement('input');
         sizeInput.type = 'hidden';
         sizeInput.name = 'size';
@@ -510,7 +528,11 @@
         form.appendChild(totalPriceInput);
 
         document.body.appendChild(form);
-        window.open('', 'cartPaymentPopup', 'width=800,height=600');
+        var width = 1200;
+        var height = 900;
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+        window.open('', "cartPaymentPopup", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
         form.submit();
     }
 </script>

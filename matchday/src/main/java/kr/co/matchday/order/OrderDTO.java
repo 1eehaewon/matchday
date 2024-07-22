@@ -16,7 +16,7 @@ public class OrderDTO {
 	
     private String orderid; // 주문 ID
     private String userid; // 사용자 ID
-    private String goodsid; // 굿즈 ID
+    //private String goodsid; // 굿즈 ID
     private String orderdate; // 주문 날짜
     private String orderstatus; // 주문 상태 ('Pending', 'Completed')
     private String couponid; // 쿠폰 ID
@@ -37,4 +37,6 @@ public class OrderDTO {
     private int totalprice; // 총 결제 금액
     private List<OrderdetailDTO> orderDetails; // 주문 상세 목록
     private Date cancelDeadline; // 취소 마감시간
+    private int deliveryfee; //배송비
+    private int discountprice; //할인 금액
 }
