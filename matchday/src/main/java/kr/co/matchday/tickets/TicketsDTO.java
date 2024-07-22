@@ -44,4 +44,7 @@ public class TicketsDTO {
     private List<TicketsDetailDTO> details; // 티켓 상세 정보 리스트
     private Date cancelDeadline; // 취소 마감시간
     private Date matchdate; // 경기 날짜
+    private String hometeam;
+    private String awayteam;
+    private int discount;
 }

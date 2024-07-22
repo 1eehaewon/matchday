@@ -271,7 +271,16 @@ public class TicketsDAO {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getRateByCategoryId", pointcategoryid);
     }
     
+    /**
+     * 예약 ID로 포인트 이력 정보를 조회하는 메서드
+     * @param reservationid 예약 ID
+     * @return PointHistoryDTO 객체
+     */
     public PointHistoryDTO getPointHistoryByReservationId(String reservationid) {
         return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getPointHistoryByReservationId", reservationid);
+    }
+    
+    public Map<String, Object> getAdditionalReservationInfo(String reservationid) {
+        return sqlSession.selectOne("kr.co.matchday.tickets.TicketsDAO.getAdditionalReservationInfo", reservationid);
     }
 }

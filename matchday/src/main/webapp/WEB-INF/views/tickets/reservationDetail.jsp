@@ -26,6 +26,38 @@
         justify-content: center;
         gap: 10px;
     }
+    /* 모달 스타일 */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 
 <div class="container mt-4">
@@ -61,17 +93,17 @@
         </div>
     </div>
 
-    <!-- 모바일 티켓 (QR 코드) 섹션 -->
-	<c:if test="${reservation.collectionmethodcode == 'receiving03'}">
-	    <div class="card mb-4">
-	        <div class="card-header">
-	            모바일 티켓 (QR 코드)
-	        </div>
-	        <div class="card-body">
-	            <img src="/tickets/generateQRCode?reservationid=${reservation.reservationid}" alt="QR Code" style="width: 500px; height: 500px" />
-	        </div>
-	    </div>
-	</c:if>
+    <!-- 모바일 티켓 확인 버튼 추가 -->
+    <c:if test="${reservation.collectionmethodcode == 'receiving03'}">
+        <div class="card mb-4">
+            <div class="card-header">
+                모바일 티켓
+            </div>
+            <div class="card-body text-center">
+                <button id="showMobileTicket" class="btn btn-primary">모바일 티켓 확인</button>
+            </div>
+        </div>
+    </c:if>
 
     <div class="card mb-4">
         <div class="card-header">
@@ -113,29 +145,29 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>수수료</th>
-                    <td>${serviceFee}원</td>
-                </tr>
-                <tr>
-                    <th>배송료</th>
-                    <td>${deliveryFee}원</td>
-                </tr>
-                <tr>
-                    <th>사용한 쿠폰</th>
-                    <td>${couponName}</td>
-                </tr>
-                <tr>
-                    <th>사용한 멤버십</th>
-                    <td>${membershipName}</td>
-                </tr>
-                <tr>
-                    <th>총 할인액</th>
-                    <td>${totalDiscount}원</td>
-                </tr>
-                <tr>
-                    <th>총 결제금액</th>
-                    <td>${totalPaymentAmount}원</td>
-                </tr>
+				    <th>총 금액</th>
+				    <td>${totalPrice}원</td>
+				</tr>
+				<tr>
+				    <th>배송료</th>
+				    <td>${deliveryFee}원</td>
+				</tr>
+				<tr>
+				    <th>사용한 쿠폰</th>
+				    <td>${couponName}</td>
+				</tr>
+				<tr>
+				    <th>사용한 멤버십</th>
+				    <td>${membershipName}</td>
+				</tr>
+				<tr>
+				    <th>총 할인액</th>
+				    <td>${reservation.discount}원</td>
+				</tr>
+				<tr>
+				    <th>총 결제금액</th>
+				    <td>${totalPaymentAmount}원</td>
+				</tr>
             </table>
         </div>
     </div>
@@ -180,14 +212,52 @@
     </div>
 
     <div class="btn-group" align="center">
-        <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+        <c:choose>
+            <c:when test="${reservation.reservationstatus == 'Cancelled'}">
+                <button id="cancel-payment" class="btn btn-danger" disabled>결제 취소</button>
+            </c:when>
+            <c:otherwise>
+                <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+            </c:otherwise>
+        </c:choose>
         &nbsp;&nbsp;
         <button id="go-back" class="btn btn-secondary">목록으로</button>
     </div>
+</div>
+
+<!-- 모달 -->
+<div id="mobileTicketModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <iframe src="/tickets/mobileTicket?reservationid=${reservation.reservationid}" style="width:100%; height:500px;"></iframe>
+    </div>
+</div>
 
 <script>
     $(document).ready(function() {
+        var modal = document.getElementById("mobileTicketModal");
+        var btn = document.getElementById("showMobileTicket");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
         $('#cancel-payment').click(function() {
+            if (${reservation.reservationstatus == 'Cancelled'}) {
+                alert('이미 결제취소 된 건 입니다.');
+                return;
+            }
             if (confirm('정말로 결제를 취소하시겠습니까?')) {
                 $.ajax({
                     url: '/tickets/cancelPayment',

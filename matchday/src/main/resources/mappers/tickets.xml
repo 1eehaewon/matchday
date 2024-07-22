@@ -47,7 +47,8 @@
             paymentmethodcode, reservationstatus, collectionmethodcode,
             membershipid, methodcode, couponid, usedpoints,
             finalpaymentamount, shippingstartdate, shippingenddate,
-            shippingstatus, recipientname, shippingaddress, shippingrequest, imp_uid
+            shippingstatus, recipientname, shippingaddress, shippingrequest, imp_uid,
+            discount  <!-- discount 필드 추가 -->
         ) VALUES (
             #{reservationid}, #{matchid}, #{quantity}, #{price}, #{userid}, #{reservationdate},
             #{paymentmethodcode}, #{reservationstatus}, #{collectionmethodcode},
@@ -55,7 +56,8 @@
             <if test="couponid != null">#{couponid},</if>
             <if test="couponid == null">NULL,</if>
             #{usedpoints}, #{finalpaymentamount}, #{shippingstartdate}, #{shippingenddate},
-            #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}, #{impUid}
+            #{shippingstatus}, #{recipientname}, #{shippingaddress}, #{shippingrequest}, #{impUid},
+            #{discount}  <!-- discount 필드 추가 -->
         )
     </insert>
 
@@ -74,13 +76,13 @@
     
     <!-- 사용자 ID로 쿠폰 목록 가져오기 -->
     <select id="getCouponsByUserId" resultType="kr.co.matchday.coupon.CouponDTO">
-        SELECT c.couponid, c.coupontypeid, c.userid, c.usage,
+        SELECT c.couponid, c.coupontypeid, c.userid, c.`usage`,
                cm.couponname, cm.startdate, cm.enddate, cm.applicableproduct, cm.discountrate
         FROM coupon c
         JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
         WHERE c.userid = #{userId}
           AND cm.applicableproduct = #{applicableProduct}
-          AND c.usage = #{usage}
+          AND c.`usage` = #{usage}
     </select>
 
     <!-- 쿠폰 ID로 할인율 가져오기 -->
@@ -127,17 +129,21 @@
     </select>
 
     <!-- 예약 ID로 예약 정보 조회 -->
-    <select id="getReservationById" parameterType="string" resultType="kr.co.matchday.tickets.TicketsDTO">
+	<select id="getReservationById" parameterType="string" resultType="kr.co.matchday.tickets.TicketsDTO">
 	    SELECT t.reservationid, t.matchid, t.quantity, t.price, t.userid, t.reservationdate,
-               t.paymentmethodcode, t.reservationstatus, t.collectionmethodcode, t.membershipid,
-               t.methodcode, t.couponid, t.usedpoints, t.finalpaymentamount, t.shippingstartdate,
-               t.shippingenddate, t.shippingstatus, t.recipientname, t.shippingaddress, t.shippingrequest, t.imp_uid,
-               m.matchdate, s.stadiumname, s.location, p.paymentmethodname, u.name as userName, t.collectionmethodcode
+	           t.paymentmethodcode, t.reservationstatus, t.collectionmethodcode, t.membershipid,
+	           t.methodcode, t.couponid, t.usedpoints, t.finalpaymentamount, t.shippingstartdate,
+	           t.shippingenddate, t.shippingstatus, t.recipientname, t.shippingaddress, t.shippingrequest, t.imp_uid,
+	           t.discount,  <!-- 할인금액 필드 추가 -->
+	           m.matchdate, s.stadiumname, s.location, p.paymentmethodname, u.name as userName,
+	           ht.teamname as hometeam, at.teamname as awayteam
 	    FROM tickets t
 	    JOIN matches m ON t.matchid = m.matchid
 	    JOIN stadiums s ON m.stadiumid = s.stadiumid
 	    JOIN users u ON t.userid = u.userid
 	    JOIN paymentmethods p ON t.paymentmethodcode = p.paymentmethodcode
+	    JOIN teams ht ON m.hometeamid = ht.teamname
+	    JOIN teams at ON m.awayteamid = at.teamname
 	    WHERE t.reservationid = #{reservationid}
 	</select>
 
@@ -184,8 +190,38 @@
 
     <!-- 예약 ID로 포인트 기록 조회 -->
     <select id="getPointHistoryByReservationId" parameterType="string" resultType="kr.co.matchday.point.PointHistoryDTO">
-        SELECT pointid, userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, reservationid
+        SELECT pointhistoryid, userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, reservationid
         FROM pointhistory
         WHERE reservationid = #{reservationid} AND pointtype = '적립'
+    </select>
+    
+    <!-- 예약 ID로 추가 정보를 가져오는 쿼리 -->
+    <select id="getAdditionalReservationInfo" parameterType="String" resultType="map">
+        SELECT
+            t.finalpaymentamount AS totalPaymentAmount,
+            t.shippingstartdate AS shippingStartDate,
+            t.shippingenddate AS shippingEndDate,
+            t.shippingstatus AS shippingStatus,
+            t.recipientname AS recipientName,
+            t.shippingaddress AS shippingAddress,
+            t.shippingrequest AS shippingRequest,
+            t.imp_uid AS impUid,
+            t.usedpoints AS usedPoints,
+            t.price AS price,  <!-- price를 가져옴 -->
+            t.discount AS discount,  <!-- 할인금액 필드 추가 -->
+            rm.methodname AS collectionMethodName,
+            pm.paymentmethodname AS paymentMethodName,
+            cm.couponname AS couponName,  <!-- couponmaster 테이블에서 가져옴 -->
+            m.membershipname AS membershipName,
+            (SELECT IFNULL(SUM(td.membershipdiscountamount), 0) + IFNULL(SUM(td.coupondiscountamount), 0)
+               FROM ticketdetails td WHERE td.reservationid = t.reservationid) AS totalDiscount,
+            CASE WHEN t.collectionmethodcode = 'receiving02' THEN 3200 ELSE 0 END AS shippingFee   <!-- 배송료 계산 로직 추가 -->
+        FROM tickets t
+        LEFT JOIN receivingmethods rm ON t.collectionmethodcode = rm.methodcode
+        LEFT JOIN paymentmethods pm ON t.paymentmethodcode = pm.paymentmethodcode
+        LEFT JOIN coupon c ON t.couponid = c.couponid
+        LEFT JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid  <!-- couponmaster 테이블 조인 -->
+        LEFT JOIN memberships m ON t.membershipid = m.membershipid
+        WHERE t.reservationid = #{reservationid}
     </select>
 </mapper>

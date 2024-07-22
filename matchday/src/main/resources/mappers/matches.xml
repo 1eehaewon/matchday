@@ -79,5 +79,7 @@
 	    JOIN stadiums s ON m.stadiumid = s.stadiumid
 	    WHERE m.hometeamid = #{teamname} OR m.awayteamid = #{teamname}
 	</select>
+	
+	
     
 </mapper>
