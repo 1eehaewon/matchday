@@ -109,6 +109,8 @@
 			<main>
 				<div class="container-fluid px-4">
 					<h1 class="mt-4">관리자모드</h1>
+					<p>전체 방문자 수: ${totalVisitors}</p>
+					<p>오늘 방문자 수: ${todayVisitors}</p>
 			</main>
 			<footer class="py-4 bg-light mt-auto">
 				<div class="container-fluid px-4">

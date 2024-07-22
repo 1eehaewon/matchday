@@ -19,7 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.matchday.visit.VisitDAO;
 
 @Controller
 @RequestMapping("/admin")
@@ -34,9 +36,21 @@ public class AdminCont {
 	@Autowired
 	AdminService adminService;
 	
+	@Autowired
+	VisitDAO visitDao;
+	
 	// 관리자모드메인페이지
 	@GetMapping("/dashboard")
-	public String dashboard() {
+	public String dashboard(HttpServletRequest request) {
+		
+		// /home.do 페이지의 방문자 수를 조회합니다.
+        int todayVisitors = visitDao.getTodayVisitors();
+        int totalVisitors = visitDao.getTotalVisitors();
+
+        // 조회한 데이터를 JSP에 전달합니다.
+        request.setAttribute("todayVisitors", todayVisitors);
+        request.setAttribute("totalVisitors", totalVisitors);
+		
 		return "/admin/dashboard";
 	}
 

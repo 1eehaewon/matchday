@@ -128,28 +128,41 @@
 	<select id="getUserActivity" resultType="map">
 		SELECT
 		u.userid,
-		(SELECT COUNT(*) FROM loginhistory WHERE userid = u.userid) AS loginCount,
+		(SELECT
+		COUNT(*) FROM loginhistory WHERE userid = u.userid) AS loginCount,
 		(SELECT MAX(logindate) FROM loginhistory WHERE userid = u.userid) AS
 		lastLoginDate,
-		(SELECT MAX(ipaddress) FROM loginhistory WHERE userid = u.userid) AS
+		(SELECT MAX(ipaddress) FROM loginhistory WHERE userid =
+		u.userid) AS
 		lastLoginIp,
-		(SELECT COUNT(*) FROM review WHERE userid = u.userid) AS reviewCount,
-		(SELECT COUNT(*) FROM inquiries WHERE userid = u.userid) AS inquiryCount,
-		COALESCE(t.totalTicketAmount, 0) + COALESCE(m.totalMembershipAmount,
-		0) + COALESCE(o.totalOrderAmount, 0) AS totalSpent,
+		(SELECT COUNT(*) FROM review WHERE userid =
+		u.userid) AS reviewCount,
+		(SELECT COUNT(*) FROM inquiries WHERE userid
+		= u.userid) AS inquiryCount,
+		COALESCE(t.totalTicketAmount, 0) +
+		COALESCE(m.totalMembershipAmount,
+		0) + COALESCE(o.totalOrderAmount, 0)
+		AS totalSpent,
 		u.totalpoints
 		FROM
 		users u
 		LEFT JOIN
-		(SELECT userid, SUM(finalpaymentamount) as totalTicketAmount FROM tickets
-		GROUP BY userid) t ON u.userid = t.userid
+		(SELECT userid,
+		SUM(finalpaymentamount) as totalTicketAmount FROM tickets
+		GROUP BY
+		userid) t ON u.userid = t.userid
 		LEFT JOIN
-		(SELECT um.userid, SUM(m.price) as totalMembershipAmount FROM usermemberships
-		um JOIN memberships m ON um.membershipid = m.membershipid GROUP BY
-		um.userid) m ON u.userid = m.userid
+		(SELECT um.userid,
+		SUM(m.price) as totalMembershipAmount FROM usermemberships
+		um JOIN
+		memberships m ON um.membershipid = m.membershipid GROUP BY
+		um.userid) m
+		ON u.userid = m.userid
 		LEFT JOIN
-		(SELECT userid, SUM(finalpaymentamount) as totalOrderAmount FROM `order`
-		GROUP BY userid) o ON u.userid = o.userid
+		(SELECT userid, SUM(finalpaymentamount)
+		as totalOrderAmount FROM `order`
+		GROUP BY userid) o ON u.userid =
+		o.userid
 		WHERE u.userid = #{userId}
 	</select>
 	<select id="getPointHistory" resultType="map">
@@ -161,110 +174,118 @@
 		FROM pointhistory
 		WHERE userid = #{userId}
 	</select>
-	
+
 	<!-- 사용자구매내역 -->
 	<select id="getPurchaseHistory" resultType="map">
-        SELECT 
-            'order' AS type,
-            o.goodsid AS itemName,
-            o.finalpaymentamount AS amount,
-            o.quantity AS quantity,
-            o.orderdate AS date
-        FROM `order` o
-        JOIN goods g ON o.goodsid = g.goodsid
-        WHERE o.userid = #{userId}
-        UNION ALL
-        SELECT 
-            'ticket' AS type,
-            t.matchid AS itemName,
-            t.finalpaymentamount AS amount,
-            t.quantity AS quantity,
-            t.reservationdate AS date
-        FROM tickets t
-        JOIN matches m ON t.matchid = m.matchid
-        WHERE t.userid = #{userId}
-        UNION ALL
-        SELECT 
-            'membership' AS type,
-            um.membershipid AS itemName,
-            mb.price AS amount,
-            NULL AS quantity,
-            um.purchasedate AS date
-        FROM usermemberships um
-        JOIN memberships mb ON um.membershipid = mb.membershipid
-        WHERE um.userid = #{userId}
-    </select>
-    
-    <!-- 일별매출 차트 -->
-    <select id="getDailySales" resultType="map">
-        SELECT
-            d.date,
-            COALESCE(SUM(o.total_order_amount), 0) +
-            COALESCE(SUM(m.total_membership_amount), 0) +
-            COALESCE(SUM(t.total_ticket_amount), 0) AS total_sales
-        FROM (
-            SELECT CURDATE() AS date
-            UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
-            UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
-            UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
-            UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
-            UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
-            UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
-        ) AS d
-        LEFT JOIN (
-            SELECT
-                DATE(orderdate) AS date,
-                SUM(finalpaymentamount) AS total_order_amount
-            FROM `order`
-            GROUP BY DATE(orderdate)
-        ) o ON d.date = o.date
-        LEFT JOIN (
-            SELECT
-                DATE(purchasedate) AS date,
-                SUM(m.price) AS total_membership_amount
-            FROM usermemberships um
-            JOIN memberships m ON um.membershipid = m.membershipid
-            GROUP BY DATE(purchasedate)
-        ) m ON d.date = m.date
-        LEFT JOIN (
-            SELECT
-                DATE(reservationdate) AS date,
-                SUM(finalpaymentamount) AS total_ticket_amount
-            FROM tickets
-            GROUP BY DATE(reservationdate)
-        ) t ON d.date = t.date
-        GROUP BY d.date
-        ORDER BY d.date;
-    </select>
+		SELECT
+		'order' AS type,
+		od.goodsid AS itemName,
+		o.finalpaymentamount AS amount,
+		od.quantity AS quantity,
+		o.orderdate AS date
+		FROM orderdetail od
+		JOIN `order` o ON o.orderid = od.orderid
+		JOIN goods g ON od.goodsid = g.goodsid
+		WHERE o.userid = #{userId}
+		UNION ALL
+		SELECT
+		'ticket' AS type,
+		t.matchid AS itemName,
+		t.finalpaymentamount AS amount,
+		t.quantity AS quantity,
+		t.reservationdate AS date
+		FROM tickets t
+		JOIN matches m ON t.matchid = m.matchid
+		WHERE t.userid = #{userId}
+		UNION ALL
+		SELECT
+		'membership' AS type,
+		um.membershipid AS itemName,
+		mb.price AS amount,
+		NULL AS quantity,
+		um.purchasedate AS date
+		FROM usermemberships um
+		JOIN memberships mb ON um.membershipid = mb.membershipid
+		WHERE um.userid = #{userId}
+	</select>
+
+	<!-- 일별매출 차트 -->
+	<select id="getDailySales" resultType="map">
+		SELECT
+		d.date,
+		COALESCE(SUM(o.total_order_amount), 0) +
+		COALESCE(SUM(m.total_membership_amount), 0) +
+		COALESCE(SUM(t.total_ticket_amount), 0) AS total_sales
+		FROM (
+		SELECT CURDATE() AS date
+		UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
+		UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
+		UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
+		UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
+		UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
+		UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
+		) AS d
+		LEFT JOIN (
+		SELECT
+		DATE(orderdate) AS date,
+		SUM(finalpaymentamount) AS total_order_amount
+		FROM `order`
+		GROUP BY DATE(orderdate)
+		) o ON d.date = o.date
+		LEFT JOIN (
+		SELECT
+		DATE(purchasedate) AS date,
+		SUM(m.price) AS total_membership_amount
+		FROM usermemberships um
+		JOIN memberships m ON um.membershipid = m.membershipid
+		GROUP BY DATE(purchasedate)
+		) m ON d.date = m.date
+		LEFT JOIN (
+		SELECT
+		DATE(reservationdate) AS date,
+		SUM(finalpaymentamount) AS total_ticket_amount
+		FROM tickets
+		GROUP BY DATE(reservationdate)
+		) t ON d.date = t.date
+		GROUP BY d.date
+		ORDER BY d.date;
+	</select>
 
 	<!-- 항목별 비율 차트 -->
 	<select id="getItemSales" resultType="map">
-        SELECT
-        (SELECT SUM(finalpaymentamount) FROM `order`) AS total_order_amount,
-        (SELECT SUM(m.price)
-         FROM usermemberships um
-         JOIN memberships m ON um.membershipid = m.membershipid) AS total_membership_amount,
-        (SELECT SUM(finalpaymentamount) FROM tickets) AS total_ticket_amount;
-    </select>
-    
-     <!-- 월별 티켓 판매 수 쿼리 -->
-    <select id="getMonthlyTicketSales" resultType="map">
-        SELECT
-            m.month,
-            COALESCE(SUM(t.quantity), 0) AS ticket_sales
-        FROM
-            (
-                SELECT DATE_FORMAT(CURDATE() - INTERVAL (a.a + b.a * 10) MONTH, '%Y-%m') AS month
-                FROM (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a
-                CROSS JOIN (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b
-                WHERE DATE_FORMAT(CURDATE() - INTERVAL (a.a + b.a * 10) MONTH, '%Y-%m') >= DATE_FORMAT(CURDATE() - INTERVAL 11 MONTH, '%Y-%m')
-            ) m
-        LEFT JOIN (
-            SELECT DATE_FORMAT(reservationdate, '%Y-%m') AS month, quantity
-            FROM tickets
-        ) t ON m.month = t.month
-        GROUP BY m.month
-        ORDER BY m.month;
-    </select>
+		SELECT
+		(SELECT SUM(finalpaymentamount) FROM `order`) AS total_order_amount,
+		(SELECT SUM(m.price)
+		FROM usermemberships um
+		JOIN memberships m ON um.membershipid = m.membershipid) AS
+		total_membership_amount,
+		(SELECT SUM(finalpaymentamount) FROM tickets) AS total_ticket_amount;
+	</select>
+
+	<!-- 월별 티켓 판매 수 쿼리 -->
+	<select id="getMonthlyTicketSales" resultType="map">
+		SELECT
+		m.month,
+		COALESCE(SUM(t.quantity), 0) AS ticket_sales
+		FROM
+		(
+		SELECT DATE_FORMAT(CURDATE() - INTERVAL (a.a + b.a * 10) MONTH, '%Y-%m') AS
+		month
+		FROM (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+		UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
+		SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a
+		CROSS JOIN (SELECT 0 a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL
+		SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+		UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b
+		WHERE DATE_FORMAT(CURDATE() - INTERVAL (a.a + b.a * 10) MONTH, '%Y-%m') >=
+		DATE_FORMAT(CURDATE() - INTERVAL 11 MONTH, '%Y-%m')
+		) m
+		LEFT JOIN (
+		SELECT DATE_FORMAT(reservationdate, '%Y-%m') AS month, quantity
+		FROM tickets
+		) t ON m.month = t.month
+		GROUP BY m.month
+		ORDER BY m.month;
+	</select>
 </mapper>
 

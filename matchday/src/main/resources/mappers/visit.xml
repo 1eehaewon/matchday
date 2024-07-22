@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <!-- visit.xml -->
+ 
+ <mapper namespace="visit">
+    
+    <!-- 방문 기록을 삽입합니다. -->
+    <insert id="recordVisit">
+        INSERT INTO visit (session_id, visit_time)
+        VALUES (#{sessionId}, NOW())
+    </insert>
+
+    <!-- 오늘 방문자 수를 조회합니다. -->
+    <select id="getTodayVisitors" resultType="int">
+        SELECT COUNT(DISTINCT session_id)
+        FROM visit
+        WHERE DATE(visit_time) = CURDATE()
+    </select>
+
+    <!-- 전체 방문자 수를 조회합니다. -->
+    <select id="getTotalVisitors" resultType="int">
+        SELECT COUNT(DISTINCT session_id)
+        FROM visit
+    </select>
+    
+</mapper>

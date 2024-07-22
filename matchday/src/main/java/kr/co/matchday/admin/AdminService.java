@@ -11,6 +11,7 @@ public class AdminService {
 	@Autowired
 	AdminDAO adminDao;
 
+	//회원 정지
 	@Transactional
 	public void suspendUsers(List<String> userIds) {
 		for (String userId : userIds) {
