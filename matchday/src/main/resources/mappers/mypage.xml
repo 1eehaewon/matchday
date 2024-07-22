@@ -137,12 +137,5 @@
         SET totalpoints = #{totalpoints}
         WHERE userid = #{userid}
     </update>
-    
-    <update id="updateUserPoints" parameterType="kr.co.matchday.mypage.MypageDTO">
-	    UPDATE mypage
-	    SET totalpoints = #{totalpoints}
-	    WHERE userid = #{userid}
-	</update>
-    
 </mapper>
 

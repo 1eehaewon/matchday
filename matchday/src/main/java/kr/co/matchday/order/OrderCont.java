@@ -251,7 +251,7 @@ System.out.println("usedpoints = " + usedpoints);
 	                    // 재고수정 end!
 	                    
 	                    if(cartidList.size() > 0) {
-	                    	cartDao.delete(Integer.parseInt(cartidList.get(i)));			// 장바구니 삭제
+	                    	cartDao.delete(Integer.parseInt(cartidList.get(i)));	// 장바구니 삭제
 	                    }
 	                    
 	                    orderDto.setOrderDetails(orderDetails);

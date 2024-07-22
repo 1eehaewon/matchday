@@ -33,12 +33,12 @@ public class OrderDAO {
             insertOrderDetail(orderDetail);
         }
 
-        // 포인트 차감 로직 추가
+        /*// 포인트 차감 로직 추가
         if (orderDto.getUsedpoints() > 0) {
             MypageDTO user = mypageDao.getUserById(orderDto.getUserid());
             int updatedPoints = user.getTotalpoints() - orderDto.getUsedpoints();
             mypageDao.updateUserPoints(orderDto.getUserid(), updatedPoints);
-        }
+        }*/
     }
 
     public void insertOrderDetail(OrderdetailDTO orderDetailDto) {
