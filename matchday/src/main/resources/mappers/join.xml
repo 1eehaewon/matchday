@@ -9,6 +9,7 @@
  <mapper namespace="join">
     
     <!-- CONCAT으로 DTO에만 생성하고 테이블에는 열 생성안함 -->
+    <!-- 회원가입 -->
     <insert id="insert" parameterType="kr.co.matchday.join.JoinDTO">
         INSERT INTO users (UserID, Password, Name, Zipcode, Address1, Address2, Email, Number, Gender, JoinDate)
         VALUES (#{userID}, #{password}, #{name}, #{zipcode}, #{address1}, #{address2}, CONCAT(#{emailID}, '@', #{emailDomain}), #{number}, #{gender}, #{joinDate})
