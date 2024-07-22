@@ -172,7 +172,19 @@
 	    SELECT reservationid, reservationdate
 	    FROM tickets
 	    WHERE userid = #{userID}
+	    ORDER BY reservationdate DESC
 	</select>
+	
+	<!-- 회원이 구매한 주문 정보 조회 -->
+	<select id="getPurchasedOrders" parameterType="string" resultType="kr.co.matchday.order.OrderDTO">
+	    SELECT orderid, orderdate
+	    FROM `order`
+	    WHERE userid = #{userID}
+	    ORDER BY orderdate DESC
+	</select>
+
+
+
     
     
 </mapper>

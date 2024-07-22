@@ -19,6 +19,7 @@
                         <h2 class="mb-0 fw-bold">구매 내역</h2>
                     </div>
                     <div class="card-body p-5">
+                        <h3>티켓 내역</h3>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -33,7 +34,28 @@
                                         <td>${item.reservationid}</td>
                                         <td>${item.reservationdate}</td>
                                         <td>
-                                            <button class="btn btn-primary" onclick="selectReservation('${item.reservationid}')">선택</button>
+                                            <button class="btn btn-primary" onclick="selectItem('${item.reservationid}')">선택</button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                        <h3>주문 내역</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>주문 ID</th>
+                                    <th>주문일자</th>
+                                    <th>선택</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="order" items="${orderList}">
+                                    <tr>
+                                        <td>${order.orderid}</td>
+                                        <td>${order.orderdate}</td>
+                                        <td>
+                                            <button class="btn btn-primary" onclick="selectItem('${order.orderid}')">선택</button>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -46,8 +68,8 @@
     </div>
 
     <script>
-        function selectReservation(reservationid) {
-            window.opener.document.getElementById('referenceID').value = reservationid;
+        function selectItem(id) {
+            window.opener.document.getElementById('referenceID').value = id;
             window.close();
         }
     </script>

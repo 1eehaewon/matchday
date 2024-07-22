@@ -170,10 +170,6 @@
                         <td id="ticket-price">${totalPrice}원</td>
                     </tr>
                     <tr>
-                        <th>수수료</th>
-                        <td id="service-fee">2,000원</td>
-                    </tr>
-                    <tr>
                         <th>배송료</th>
                         <td id="delivery-fee">0원</td>
                     </tr>
@@ -182,19 +178,24 @@
                         <td id="subtotal-amount">0원</td>
                     </tr>
                     <tr>
-                        <th>멤버십</th>
-                        <td>
-                            <c:if test="${!empty memberships}">
-                                <select id="membership-select" class="form-select">
-                                    <c:forEach var="membership" items="${memberships}">
-                                        <option value="${membership.membershipid}" data-discount="2000" data-teamname="${membership.teamname}">
-                                            ${membership.membershipname} (${membership.teamname})
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                            </c:if>
-                        </td>
-                    </tr>
+					    <th>멤버십</th>
+					    <td>
+					        <c:choose>
+					            <c:when test="${not empty memberships}">
+					                <select id="membership-select" class="form-select">
+					                    <c:forEach var="membership" items="${memberships}">
+					                        <option value="${membership.membershipid}" data-discount="2000" data-teamname="${membership.teamname}">
+					                            ${membership.membershipname} (${membership.teamname})
+					                        </option>
+					                    </c:forEach>
+					                </select>
+					            </c:when>
+					            <c:otherwise>
+					                <span>적용 가능한 멤버십이 없습니다.</span>
+					            </c:otherwise>
+					        </c:choose>
+					    </td>
+					</tr>
                     <tr>
                         <th>할인쿠폰</th>
                         <td>
@@ -239,9 +240,8 @@
 
         // 총 합계 금액 업데이트 함수
         function updateSubtotalAmount() {
-            var serviceFee = parseInt($('#service-fee').text().replace(/[^0-9]/g, ''), 10);
             var deliveryFee = parseInt($('#delivery-fee').text().replace(/[^0-9]/g, ''), 10);
-            var subtotalAmount = totalPrice + serviceFee + deliveryFee;
+            var subtotalAmount = totalPrice + deliveryFee;
             $('#subtotal-amount').text(subtotalAmount.toLocaleString() + '원');
             return subtotalAmount;
         }
@@ -259,10 +259,8 @@
         function updateDeliveryFee() {
             var deliveryOption = $('input[name="deliveryOption"]:checked').val();
             var deliveryFee = deliveryOption === 'receiving02' ? 3200 : 0;
-            var serviceFee = deliveryOption === 'receiving01' ? 2000 : 0;
 
             $('#delivery-fee').text(deliveryFee.toLocaleString() + '원');
-            $('#service-fee').text(serviceFee.toLocaleString() + '원');
 
             if (deliveryOption === 'receiving02') {
                 $('#delivery-address').show();
@@ -283,7 +281,7 @@
             var subtotalAmount = updateSubtotalAmount();
             var discountAmount = Math.floor(subtotalAmount * (discountRate / 100));
             
-            var membershipAmount = selectedMembership.val() ? seatCount * membershipDiscount : 0;
+            var membershipAmount = seatCount * membershipDiscount;
             var totalDiscount = discountAmount + membershipAmount;
             $('#discount').text(totalDiscount.toLocaleString() + '원');
             updateTotalAmount();
@@ -367,14 +365,13 @@
             window.history.back();
         });
 
-     // 결제 버튼 클릭 시 동작
+        // 결제 버튼 클릭 시 동작
         $('#pay-button').click(function() {
             var totalAmount = updateTotalAmount();
             var couponId = $('#coupon-select').val();
             var membershipId = $('#membership-select').val();
             var couponName = $('#coupon-select').find(':selected').text();
             var membershipName = $('#membership-select').find(':selected').text();
-            var serviceFee = $('#service-fee').text().replace(/[^0-9]/g, '');
             var deliveryFee = $('#delivery-fee').text().replace(/[^0-9]/g, '');
             var totalDiscount = $('#discount').text().replace(/[^0-9]/g, '');
 
@@ -408,7 +405,6 @@
                         membershipid: membershipId,
                         couponName: couponName,
                         membershipName: membershipName,
-                        serviceFee: serviceFee,
                         deliveryFee: deliveryFee,
                         totalDiscount: totalDiscount,
                         totalPaymentAmount: totalAmount

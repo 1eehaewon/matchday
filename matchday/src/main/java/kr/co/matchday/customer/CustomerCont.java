@@ -29,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.order.OrderDTO;
 import kr.co.matchday.tickets.TicketsDTO;
 
 @Controller
@@ -474,14 +475,15 @@ public class CustomerCont {
         return mav;
     }
     
-    // 팝업창으로 구매 내역을 전달하는 메서드
     @GetMapping("/purchaseHistoryPopup")
     public ModelAndView purchaseHistoryPopup(HttpSession session) {
         String userID = (String) session.getAttribute("userID");
         List<TicketsDTO> purchaseList = customerDao.getPurchaseHistory(userID);
+        List<OrderDTO> orderList = customerDao.getPurchasedOrders(userID);
         
         ModelAndView mav = new ModelAndView("customerService/purchaseHistoryPopup");
         mav.addObject("purchaseList", purchaseList);
+        mav.addObject("orderList", orderList);
         return mav;
     }
 

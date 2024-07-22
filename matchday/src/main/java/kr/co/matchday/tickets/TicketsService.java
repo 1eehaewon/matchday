@@ -140,20 +140,23 @@ public class TicketsService {
         // 사용자 ID가 존재하는 경우 사용자에게 제공되는 쿠폰 목록을 가져옴
         List<CouponDTO> coupons = getCouponsByUserId(userId);
 
-        // 사용자 ID가 존재하는 경우 사용자의 멤버십 목록을 가져옴
-        List<Map<String, Object>> memberships = getMembershipsByUserId(userId);
-        List<Map<String, Object>> applicableMemberships = new ArrayList<>();
+        // 사용자 ID로 사용자의 모든 멤버십 목록을 가져옴
+        List<Map<String, Object>> allMemberships = getMembershipsByUserId(userId);
 
-        // 각 멤버십이 매치의 홈팀 또는 원정팀과 일치하는지 확인
-        for (Map<String, Object> membership : memberships) {
+        // 모든 멤버십을 로그로 출력하여 확인
+        System.out.println("All memberships: " + allMemberships);
+
+        // 경기 팀과 일치하는 멤버십을 필터링
+        List<Map<String, Object>> applicableMemberships = new ArrayList<>();
+        for (Map<String, Object> membership : allMemberships) {
             String teamName = (String) membership.get("teamname");
-            if (teamName != null) {
-                // 멤버십의 팀명이 매치의 홈팀 또는 원정팀과 일치하는 경우 적용 가능한 멤버십 목록에 추가
-                if (teamName.equals(match.getHometeamid()) || teamName.equals(match.getAwayteamid())) {
-                    applicableMemberships.add(membership);
-                }
+            if (teamName != null && (teamName.equals(match.getHometeamid()) || teamName.equals(match.getAwayteamid()))) {
+                applicableMemberships.add(membership);
             }
         }
+
+        // 필터링된 멤버십을 로그로 출력하여 확인
+        System.out.println("Applicable memberships: " + applicableMemberships);
 
         // 모델에 필요한 데이터를 추가
         model.addAttribute("match", match);  // 매치 정보
