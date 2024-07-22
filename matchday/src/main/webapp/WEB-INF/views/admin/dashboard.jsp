@@ -19,6 +19,28 @@
 <link href="/css/admin.css" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
 	crossorigin="anonymous"></script>
+
+<style>
+.stats-card {
+	border-radius: 0.5rem;
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.stats-card-header {
+	background-color: #007bff;
+	color: white;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.stats-card-body {
+	padding: 2rem;
+}
+
+.stats-value {
+	font-size: 2rem;
+	font-weight: bold;
+}
+</style>
 </head>
 <body class="sb-nav-fixed">
 	<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -108,9 +130,34 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">관리자모드</h1>
-					<p>전체 방문자 수: ${totalVisitors}</p>
-					<p>오늘 방문자 수: ${todayVisitors}</p>
+        <h1 class="mt-4 mb-4">관리자 페이지</h1>
+        
+        <div class="row">
+            <!-- 전체 방문자 수 카드 -->
+            <div class="col-md-6 mb-4">
+                <div class="card stats-card">
+                    <div class="card-header stats-card-header">
+                        전체 방문자 수
+                    </div>
+                    <div class="card-body stats-card-body">
+                        <p class="stats-value">${totalVisitors}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 오늘 방문자 수 카드 -->
+            <div class="col-md-6 mb-4">
+                <div class="card stats-card">
+                    <div class="card-header stats-card-header">
+                        오늘 방문자 수
+                    </div>
+                    <div class="card-body stats-card-body">
+                        <p class="stats-value">${todayVisitors}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 			</main>
 			<footer class="py-4 bg-light mt-auto">
 				<div class="container-fluid px-4">
