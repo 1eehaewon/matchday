@@ -86,7 +86,7 @@
 
 	<update id="stockupdate" parameterType="kr.co.matchday.goods.StockDTO">
 		UPDATE stock
-		SET stockquantity = stockquantity - #{stockquantity}
+		SET stockquantity = #{stockquantity}
 		WHERE goodsid = #{goodsid} AND size = #{size};
 	</update>
 	
@@ -95,7 +95,11 @@
 		WHERE goodsid = #{goodsid}
 	</delete>
 	
-	
+	<update id="buystockupdate" parameterType="kr.co.matchday.goods.StockDTO">
+		UPDATE stock
+		SET stockquantity = stockquantity - #{stockquantity}
+		WHERE goodsid = #{goodsid} AND size = #{size};
+	</update>
 	
 	
 	<!-- 구매하기 하고나서 추가 

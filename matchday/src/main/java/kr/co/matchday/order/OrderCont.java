@@ -247,7 +247,7 @@ System.out.println("usedpoints = " + usedpoints);
 	                    stockDto.setGoodsid(goodsidList.get(i));
 	                    stockDto.setSize(sizes.get(i));
 	                    stockDto.setStockquantity(quantity);
-	                    goodsDao.stockupdate(stockDto);			
+	                    goodsDao.buystockupdate(stockDto);			
 	                    // 재고수정 end!
 	                    
 	                    if(cartidList.size() > 0) {
@@ -363,7 +363,7 @@ System.out.println("usedpoints = " + usedpoints);
     
   //Mypage 결제 내역
     @GetMapping("/orderList")
-    public ModelAndView orderList(HttpSession session,Model model) {
+    public ModelAndView orderList(@RequestParam(value = "orderid", required = false) String orderid, HttpSession session,Model model) {
         String userId = (String) session.getAttribute("userID");
         if (userId == null) {
             System.out.println("User ID not found in session.");
@@ -372,7 +372,8 @@ System.out.println("usedpoints = " + usedpoints);
 
         System.out.println("Fetching orders for userId: " + userId);
         List<OrderDTO> order = orderDao.getOrderByUserId(userId);
-
+        List<OrderdetailDTO> orderDetail = new ArrayList<>();
+        
         // 주문 날짜를 Date 객체로 변환하고 취소 마감시간을 설정하는 로직
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat outputFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -400,12 +401,24 @@ System.out.println("usedpoints = " + usedpoints);
         List<GoodsDTO> goodsList = goodsDao.list();
         model.addAttribute("goodsList", goodsList);
         
+        // 모든 주문에 대한 상세 정보를 조회
+        if (orderid != null && !orderid.isEmpty()) {
+            orderDetail = orderDao.getOrderDetailByOrderId(orderid);
+        } else {
+            // 전체 주문에 대한 상세 정보를 조회
+            for (OrderDTO orderDto : order) {
+                List<OrderdetailDTO> details = orderDao.getOrderDetailByOrderId(orderDto.getOrderid());
+                orderDto.setOrderDetails(details);
+            }
+        }
+        mav.addObject("orderDetail", orderDetail); // 상세 정보를 추가
+        
         return mav;
     }
     
     //결제 상세 정보
     @GetMapping("/orderDetail")
-    public ModelAndView reservationDetail(@RequestParam("orderid") String orderid, HttpSession session) {
+    public ModelAndView reservationDetail(@RequestParam("orderid") String orderid, HttpSession session, Model model) {
         ModelAndView mav = new ModelAndView("order/orderDetail");
 
         // 주문 정보 조회
@@ -415,10 +428,11 @@ System.out.println("usedpoints = " + usedpoints);
             mav.addObject("message", "주문을 찾을 수 없습니다. ID: " + orderid);
             return mav;
         }
-
-        // 티켓 상세 정보 조회
-        //List<TicketsDetailDTO> details = ticketsService.getTicketDetailsByReservationId(reservationid);
-        //reservation.setDetails(details);
+        List<GoodsDTO> goodsList = goodsDao.list();
+        model.addAttribute("goodsList", goodsList);
+        // 주문 상세 정보 조회
+        List<OrderdetailDTO> orderdetail = orderDao.getOrderDetailByOrderId(orderid);
+        model.addAttribute("orderdetail", orderdetail);
 
         // 주문 날짜를 Date 객체로 변환하고 취소 마감시간을 설정하는 로직
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

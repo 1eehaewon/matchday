@@ -191,7 +191,7 @@
                     <th>총 결제금액</th>
                     <td><fmt:formatNumber value="${order.finalpaymentamount}" pattern="#,###원"/>
                     	<c:forEach items="${order.orderDetails}" var="orderDetail">
-                    		<fmt:formatNumber value="${orderDetail.totalamount}" pattern="#,###원"/>
+                    	<fmt:formatNumber value="${orderDetail.totalamount}" pattern="#,###원"/>
                     	</c:forEach>
                     </td>
                 </tr>
@@ -215,11 +215,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach items="${order.orderDetails}" var="orderDetail">
+                <c:forEach items="${orderdetail}" var="orderdetail">
+                
                         <tr>
                         	<td style="text-align: center; vertical-align: middle; font-size: 21px;">
 	               			<c:forEach items="${goodsList}" var="goods">
-	                            <c:if test="${order.goodsid eq goods.goodsid}">
+	                            <c:if test="${orderdetail.goodsid eq goods.goodsid}">
 	                              <c:if test="${not empty goods.filename}">
 	                              	<a href="${pageContext.request.contextPath}/goods/detail?goodsid=${goods.goodsid}">
 	                              	<img src="${pageContext.request.contextPath}/storage/goods/${goods.filename}" alt="${goods.productname}" style="width: 50px; height: 50px; object-fit: cover;">
@@ -230,10 +231,10 @@
 	                            </c:if>
                             </c:forEach>
 	                		</td>
-                            <td style="text-align: center; vertical-align: middle; font-size: 25px;">${orderDetail.size}</td>
-                            <td style="text-align: center; vertical-align: middle; font-size: 25px;">${orderDetail.quantity}개</td>
-                            <td style="text-align: center; vertical-align: middle; font-size: 25px;"><fmt:formatNumber value="${orderDetail.price}" pattern="#,###원"/></td>
-                            <td style="text-align: center; vertical-align: middle; font-size: 25px;"><fmt:formatNumber value="${orderDetail.totalamount}" pattern="#,###원"/></td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;">${orderdetail.size}</td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;">${orderdetail.quantity}개</td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;"><fmt:formatNumber value="${orderdetail.price}" pattern="#,###원"/></td>
+                            <td style="text-align: center; vertical-align: middle; font-size: 25px;"><fmt:formatNumber value="${orderdetail.totalamount}" pattern="#,###원"/></td>
                         </tr>
                     </c:forEach>
                 </tbody>

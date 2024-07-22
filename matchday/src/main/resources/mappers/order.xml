@@ -67,16 +67,17 @@
         JOIN 
         WHERE od.userid = #{userid}
         ORDER BY o.orderdate DESC -->
-       <!--  SELECT od.*, g.*, o.*
+        SELECT od.*, g.*, o.*
         FROM `order` o
         JOIN orderdetail od ON o.orderid = od.orderid
         JOIN goods g ON od.goodsid = g.goodsid
         WHERE o.userid = #{userid}
-        ORDER BY o.orderdate DESC; -->
-        SELECT *
+        ORDER BY o.orderdate DESC
+        
+        <!-- SELECT *
         FROM `order` 
         WHERE userid = #{userid}
-        ORDER BY orderdate DESC;
+        ORDER BY orderdate DESC -->
 	</select>
 	
 	<!-- 주문 ID로 주문 정보 조회 -->
@@ -86,6 +87,14 @@
         JOIN users u ON o.userid = u.userid
         JOIN paymentmethods p ON o.paymentmethodcode = p.paymentmethodcode
         WHERE o.orderid = #{orderid}
+    </select>
+    
+    <!-- 주문 ID로 주문 상세 정보 조회 -->
+    <select id="getOrderDetailByOrderId" parameterType="string" resultType="kr.co.matchday.order.OrderdetailDTO">
+        SELECT o.*, od.*
+		FROM orderdetail od
+		JOIN `order` o ON o.orderid = od.orderid
+		WHERE o.orderid = #{orderid}
     </select>
     
     <!-- 사용자 포인트 업데이트 -->

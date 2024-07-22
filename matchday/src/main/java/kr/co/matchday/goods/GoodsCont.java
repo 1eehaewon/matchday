@@ -149,9 +149,6 @@ public class GoodsCont {
         }
         goodsDto.setCaution((String) map.get("caution"));
         goodsDto.setDeliveryreturnsexchangesinfo((String) map.get("deliveryreturnsexchangesinfo"));
-
-        // goodsDTO 객체를 데이터베이스에 삽입합니다.
-        goodsDao.insert(goodsDto);
         
         StockDTO stockDto = new StockDTO();
         stockDto.setGoodsid((String) map.get("goodsid"));
@@ -170,6 +167,9 @@ public class GoodsCont {
         stockDto.setSize((String) map.get("size5"));
         stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity5")));
         goodsDao.stockinsert(stockDto);
+        
+        // goodsDTO 객체를 데이터베이스에 삽입합니다.
+        goodsDao.insert(goodsDto);
         
         return "redirect:/goods/list";
     } // insert end
@@ -275,6 +275,8 @@ public class GoodsCont {
         goodsDto.setFilename(filename);
         goodsDto.setFilesize(filesize);
         
+        goodsDao.update(goodsDto);
+        
         StockDTO stockDto = new StockDTO();
         stockDto.setGoodsid((String) map.get("goodsid"));
         stockDto.setSize((String) map.get("size1"));
@@ -293,7 +295,7 @@ public class GoodsCont {
         stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity5")));
         goodsDao.stockupdate(stockDto);
         
-        goodsDao.update(goodsDto);
+        //oodsDao.update(goodsDto);
 
         return "redirect:/goods/list";
     }//update end
