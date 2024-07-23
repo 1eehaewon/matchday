@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import kr.co.matchday.coupon.CouponDTO;
 import kr.co.matchday.mypage.MypageDAO;
 import kr.co.matchday.mypage.MypageDTO;
+import kr.co.matchday.point.PointHistoryDTO;
 import kr.co.matchday.tickets.TicketsDetailDTO;
 
 import java.util.HashMap;
@@ -35,9 +36,10 @@ public class OrderDAO {
 
         /*// 포인트 차감 로직 추가
         if (orderDto.getUsedpoints() > 0) {
-            MypageDTO user = mypageDao.getUserById(orderDto.getUserid());
-            int updatedPoints = user.getTotalpoints() - orderDto.getUsedpoints();
-            mypageDao.updateUserPoints(orderDto.getUserid(), updatedPoints);
+            Map<String, Object> params = new HashMap<>();
+            params.put("userid", orderDto.getUserid());
+            params.put("usedpoints", orderDto.getUsedpoints());
+            sqlSession.update("kr.co.matchday.order.OrderDAO.deductUserPoints", params);
         }*/
     }
 
@@ -68,9 +70,21 @@ public class OrderDAO {
     }
 
     public int updateCouponUsage(String couponid) {
-        return sqlSession.update("kr.co.matchday.order.OrderDAO.updateCouponUsage", couponid);
+    	System.out.println("쿠폰 사용 업데이트 시도: " + couponid);
+    	int result = sqlSession.update("kr.co.matchday.order.OrderDAO.updateCouponUsage", couponid);
+    	if (result > 0) {
+            System.out.println("쿠폰 사용 업데이트 성공: " + couponid);
+        } else {
+            System.out.println("쿠폰 사용 업데이트 실패: " + couponid);
+        }
+        return result;
     }
 
+   //포인트 기록 삽입 메서드
+   public void insertPointHistory(PointHistoryDTO pointHistoryDTO) {
+       sqlSession.insert("kr.co.matchday.order.OrderDAO.insertPointHistory", pointHistoryDTO);
+   }
+    
     public String getMaxOrderId(String date) {
         return sqlSession.selectOne("kr.co.matchday.order.OrderDAO.getMaxOrderId", date);
     }
@@ -101,4 +115,26 @@ public class OrderDAO {
     public List<OrderdetailDTO> getOrderDetailByOrderId(String orderid) {
         return sqlSession.selectList("kr.co.matchday.order.OrderDAO.getOrderDetailByOrderId", orderid);
     }
+    
+    //주문 상태를 업데이트하는 메서드
+   public void updateOrderStatus(String orderid, String orderstatus) {
+       Map<String, String> params = new HashMap<>();
+       params.put("orderid", orderid);
+       params.put("orderstatus", orderstatus);
+       sqlSession.update("kr.co.matchday.order.OrderDAO.updateOrderStatus", params);
+   }
+    
+    //주문 ID로 imp_uid 가져오는 메서드
+    public String getImpUidByOrderId(String orderid) {
+        return sqlSession.selectOne("kr.co.matchday.order.OrderDAO.getImpUidByOrderId", orderid);
+    }
+    
+    //쿠폰 사용 상태를 'Not Used'로 업데이트하는 메서드
+    public int resetCouponUsage(String couponid) {
+        System.out.println("Updating coupon usage to 'Not Used' for couponid: " + couponid);
+        int result = sqlSession.update("kr.co.matchday.order.OrderDAO.resetCouponUsage", couponid);
+        System.out.println("Update result (Not Used): " + result);
+        return result;
+    }
+    
 }

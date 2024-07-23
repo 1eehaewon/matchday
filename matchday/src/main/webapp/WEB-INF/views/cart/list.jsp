@@ -353,7 +353,9 @@
                 totalSelectedCount++;
                 var row = checkbox.parentNode.parentNode;
                 var quantity = parseInt(row.querySelector('.quantity-input').value);
-                var unitPrice = parseInt(row.cells[4].textContent.replace('원', '').replace(',', ''));
+                var unitPriceText = row.cells[4].textContent.replace('원', '').replace(',', '').trim();
+                var unitPrice = parseInt(unitPriceText); // Parsing price here
+                
                 var totalPrice = quantity * unitPrice;
                 totalSelectedPrice += totalPrice;
                 row.cells[5].textContent = totalPrice.toLocaleString() + ("원");

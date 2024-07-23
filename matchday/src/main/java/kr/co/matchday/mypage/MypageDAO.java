@@ -33,4 +33,14 @@ public class MypageDAO {
         return sqlSession.selectOne("mypage.getTotalPoints", userid);
     }
     
+    public void buyupdateTotalPoints(String userid) {
+        Integer usedPoints = sqlSession.selectOne("getUsedPointsByUserId", userid);
+        if (usedPoints == null) {
+            usedPoints = 0; // 또는 적절한 기본값
+        }
+        // 이어서 totalpoints 업데이트 로직
+    }
+
+    
+    
 }//class end

@@ -135,6 +135,7 @@ public class GoodsCont {
         goodsDto.setProductname((String) map.get("productname"));
         goodsDto.setDescription((String) map.get("description"));
         //goodsDto.setSize((String) map.get("size"));
+        System.out.println("가격전");
         goodsDto.setPrice(Integer.parseInt((String) map.get("price")));
         //goodsDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity")));
         /*goodsDto.setIssoldout(((String) map.get("issoldout")).charAt(0)); // issoldout은 String에서 char로 변환할 때 첫 번째 문자를 사용*/
@@ -149,6 +150,9 @@ public class GoodsCont {
         }
         goodsDto.setCaution((String) map.get("caution"));
         goodsDto.setDeliveryreturnsexchangesinfo((String) map.get("deliveryreturnsexchangesinfo"));
+        System.out.println("가격");
+        // goodsDTO 객체를 데이터베이스에 삽입합니다.
+        goodsDao.insert(goodsDto);
         
         StockDTO stockDto = new StockDTO();
         stockDto.setGoodsid((String) map.get("goodsid"));
@@ -168,8 +172,20 @@ public class GoodsCont {
         stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity5")));
         goodsDao.stockinsert(stockDto);
         
-        // goodsDTO 객체를 데이터베이스에 삽입합니다.
-        goodsDao.insert(goodsDto);
+        /* 위의 사이즈랑 같은 방법
+        // Handle stock quantities
+        String[] sizes = { "size1", "size2", "size3", "size4", "size5" };
+        for (String sizeKey : sizes) {
+            String size = (String) map.get(sizeKey);
+            String quantityStr = (String) map.get("stockquantity" + sizeKey.substring(4));
+            
+            if (size != null && !size.isEmpty() && quantityStr != null && !quantityStr.isEmpty()) {
+                stockDto.setSize(size);
+                stockDto.setStockquantity(Integer.parseInt(quantityStr));
+                goodsDao.stockinsert(stockDto);
+            }
+        }
+         */
         
         return "redirect:/goods/list";
     } // insert end
@@ -295,7 +311,7 @@ public class GoodsCont {
         stockDto.setStockquantity(Integer.parseInt((String) map.get("stockquantity5")));
         goodsDao.stockupdate(stockDto);
         
-        //oodsDao.update(goodsDto);
+        //goodsDao.update(goodsDto);
 
         return "redirect:/goods/list";
     }//update end

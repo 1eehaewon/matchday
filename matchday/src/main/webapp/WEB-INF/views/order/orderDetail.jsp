@@ -131,10 +131,10 @@
                     <td>
                         <c:choose>
                             <c:when test="${order.orderstatus == 'Completed'}">
-                                주문완료
+                                주문 완료
                             </c:when>
                             <c:when test="${order.orderstatus == 'Cancelled'}">
-                                결제취소
+                                결제 취소
                             </c:when>
                             <c:otherwise>
                                 ${order.orderstatus}
@@ -156,36 +156,31 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>수수료</th>
-                    <td>${serviceFee}원</td>
-                </tr>
-                <tr>
                     <th>배송료</th>
                     <td><fmt:formatNumber value="${order.deliveryfee}" pattern="#,###원"/></td>
                 </tr>
                 <tr>
-                    <th>사용한 쿠폰</th>
-                    <td>
-                    	<c:choose>
-                            <c:when test="${order.couponid == order.couponid}">
-                                ${order.couponid}
-                            </c:when>
-                            <c:when test="${order.couponid == null}">
-                                사용안함
-                            </c:when>
-                            <c:otherwise>
-                                ${order.couponid}
-                            </c:otherwise>
-                        </c:choose>
-                    ${order.couponid}</td>
+                    <th>사용한 쿠폰 / 할인율</th>
+					<td>
+					    <c:choose>
+					        <c:when test="${order.couponid != null}">
+					            <c:forEach items="${couponList}" var="coupon">
+				                    ${coupon.couponname} / ${coupon.discountrate}%
+					            </c:forEach>
+					        </c:when>
+					        <c:otherwise>
+					            사용 안함
+					        </c:otherwise>
+					    </c:choose>
+					</td>
+                </tr>
+                <tr>
+                    <th>할인액</th>
+                    <td><fmt:formatNumber value="${order.discountprice}" pattern="#,###원"/></td>
                 </tr>
                 <tr>
                     <th>사용한 포인트</th>
                     <td>${order.usedpoints}&nbsp;point</td>
-                </tr>
-                <tr>
-                    <th>총 할인액</th>
-                    <td><fmt:formatNumber value="${order.discountprice}" pattern="#,###원"/></td>
                 </tr>
                 <tr>
                     <th>총 결제금액</th>
@@ -215,8 +210,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                <c:forEach items="${orderdetail}" var="orderdetail">
-                
+                	<c:forEach items="${orderdetail}" var="orderdetail">
                         <tr>
                         	<td style="text-align: center; vertical-align: middle; font-size: 21px;">
 	               			<c:forEach items="${goodsList}" var="goods">
@@ -258,7 +252,14 @@
     </div>
 
     <div class="btn-group" align="center">
-        <button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+    	<c:choose>
+            <c:when test="${order.orderstatus == 'Cancelled'}">
+                <button id="cancel-payment" class="btn btn-danger" disabled>결제 취소</button>
+            </c:when>
+        	<c:otherwise>
+        		<button id="cancel-payment" class="btn btn-danger">결제 취소</button>
+        	</c:otherwise>
+        </c:choose>
         &nbsp;&nbsp;
         <button id="go-back" class="btn btn-secondary">목록으로</button>
     </div>
@@ -266,15 +267,19 @@
 <script>
     $(document).ready(function() {
         $('#cancel-payment').click(function() {
+        	if (${order.orderstatus == 'Cancelled'}) {
+	            alert('이미 결제취소 된 건 입니다.');
+	            return;
+            }
             if (confirm('정말로 결제를 취소하시겠습니까?')) {
                 $.ajax({
-                    url: '/tickets/cancelPayment',
+                    url: '/order/cancelPayment',
                     type: 'POST',
-                    data: { reservationid: '${reservation.reservationid}' },
+                    data: { orderid: '${order.orderid}' },
                     success: function(response) {
                         if (response.success) {
                             alert('결제가 취소되었습니다.');
-                            window.location.href = '/tickets/reservationList';
+                            window.location.href = '/order/orderList';
                         } else {
                             alert('결제 취소에 실패했습니다: ' + response.message);
                         }

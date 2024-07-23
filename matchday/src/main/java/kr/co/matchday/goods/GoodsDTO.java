@@ -18,9 +18,9 @@ public class GoodsDTO {
 	private String category; // 굿즈 카테고리
 	private String productname; // 상품명
 	private String description; // 설명
-	private String size; // 사이즈
+	//private String size; // 사이즈
 	private int price; // 가격
-	private int stockquantity; // 재고 수량
+	//private int stockquantity; // 재고 수량
 	/* private char issoldout; */
 	private String issoldout; // 품절 여부	
 	private String filename; // 파일 이름

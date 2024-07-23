@@ -19,6 +19,16 @@ public class CartDAO {
     public int insert(CartDTO cartDto) {
         return sqlSession.insert("cart.insert", cartDto);
     }
+    
+    // 장바구니에서 수량 업데이트
+    public int updateQuantity(CartDTO cartDto) {
+        return sqlSession.update("cart.updateQuantity", cartDto);
+    }
+
+    // 장바구니에 상품이 존재하는지 확인
+    public CartDTO checkIfExists(CartDTO cartDto) {
+        return sqlSession.selectOne("cart.checkIfExists", cartDto);
+    }
 
     // 사용자의 장바구니 목록 조회 
     public List<CartDTO> getCartList(String userid) {

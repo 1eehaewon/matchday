@@ -137,5 +137,20 @@
         SET totalpoints = #{totalpoints}
         WHERE userid = #{userid}
     </update>
+
+	<!-- totalpoints 업데이트 -->
+	<update id="buyupdateTotalPoints">
+	    UPDATE users u
+	    JOIN (
+	        SELECT userid, SUM(usedpoints) AS totalUsedPoints
+	        FROM `order`
+	        WHERE orderid = #{orderid}
+	        GROUP BY userid
+	    ) o ON u.userid = o.userid
+	    SET u.totalpoints = u.totalpoints - o.totalUsedPoints
+	    WHERE u.userid = #{userid};
+	</update>
+
+    
 </mapper>
 
