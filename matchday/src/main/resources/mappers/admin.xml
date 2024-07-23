@@ -123,6 +123,13 @@
 		SET grade = 'X'
 		WHERE userid = #{userid}
 	</update>
+	
+	<!-- 회원 정지 해제 -->
+	<update id="unsuspendUser">
+		UPDATE users
+		SET grade = 'A'
+		WHERE userid = #{userid}
+	</update>
 
 	<!-- 회원 상세 -->
 	<select id="getUserActivity" resultType="map">

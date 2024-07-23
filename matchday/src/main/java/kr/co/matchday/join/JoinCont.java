@@ -19,10 +19,15 @@ public class JoinCont {
 	@Autowired
 	JoinDAO joinDao;
 	
+	@GetMapping("/agreement")
+	public String agreement() {
+        return "/member/agreement";
+    }
+	
 	@GetMapping("/join")
 	public String join() {
-        return "/member/join"; // join.jsp를 반환
-    }
+		return "/member/join";
+	}
 	
 	@PostMapping("/join/insert") // join.jsp 폼의 action="/member/join/insert"
     @ResponseBody

@@ -65,7 +65,12 @@ public class AdminDAO {
   	
   	//회원정지
   	public void suspendUserById(String userId) {
-        sqlSession.delete("admin.suspendUser", userId);
+        sqlSession.update("admin.suspendUser", userId);
+    }
+  	
+  //회원정지 해제
+  	public void unsuspendUserById(String userId) {
+        sqlSession.update("admin.unsuspendUser", userId);
     }
   	
   	//각회원정보
