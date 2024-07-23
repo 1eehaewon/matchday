@@ -16,7 +16,7 @@
                         <div class="text-center mb-4">
                             <button id="viewPurchases" class="btn btn-outline-secondary btn-lg">내가 구매한 상품조회</button>
                         </div>
-                        <form name="customerForm" id="customerForm" method="post" action="insert" enctype="multipart/form-data">
+                        <form name="customerForm" id="customerForm" method="post" action="insert" enctype="multipart/form-data" onsubmit="return validateForm()">
                             <div class="mb-4">
                                 <label for="referenceID" class="form-label custom-form-label">주문 / 예매번호</label>
                                 <input type="text" name="referenceID" id="referenceID" readonly class="form-control custom-form-control">
@@ -62,7 +62,7 @@
 <script>
 $(document).ready(function() {
     $("#viewPurchases").click(function() {
-        window.open("/customerService/purchaseHistoryPopup", "purchaseHistoryPopup", "width=800,height=600,scrollbars=yes");
+        window.open("/customerService/purchaseHistoryPopup", "purchaseHistoryPopup", "width=1000,height=800,scrollbars=yes");
     });
 
     // Summernote 초기화
@@ -103,6 +103,20 @@ $(document).ready(function() {
         });
     }
 });
+
+// 폼 검증 함수
+function validateForm() {
+    var referenceID = document.getElementById("referenceID").value.trim();
+    var title = document.getElementById("title").value.trim();
+    var content = $('.summernote').summernote('isEmpty') ? "" : $('.summernote').summernote('code').trim();
+    
+    if (referenceID === "" || title === "" || content === "" || content === "<p><br></p>") {
+        alert("주문/예매번호, 제목, 내용을 작성해주세요.");
+        return false; // 폼 제출을 막음
+    }
+    
+    return true; // 폼 제출을 허용
+}
 </script>
 
 <%@ include file="../footer.jsp" %>

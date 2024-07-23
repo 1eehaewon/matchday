@@ -155,28 +155,7 @@
                         <input type="text" name="address2" id="address2" class="form-control">
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="form-check">
-                            <input type="checkbox" id="smsEmailConsent" name="smsEmailConsent" class="form-check-input">
-                            <label for="smsEmailConsent" class="form-check-label">SMS, 이메일로 상품 및 이벤트 정보를 받겠습니다. (선택)</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="form-check">
-                            <input type="checkbox" id="under14" name="under14" class="form-check-input">
-                            <label for="under14" class="form-check-label">14세 미만입니다.</label>
-                        </div>
-                    </td>
-                </tr>
-                <tr id="guardianConsent" class="hidden">
-                    <td colspan="2">
-                        <p>만 14세 미만 회원은 법정대리인(부모님) 동의를 받은 경우만 회원가입이 가능합니다.</p>
-                        <!-- 추가적인 법정대리인 동의 정보 입력란을 여기에 추가할 수 있습니다 -->
-                    </td>
-                </tr>
+                
                 <tr>
                     <td colspan="2" class="text-center">
                         <button type="submit" class="btn btn-primary">회원가입</button>

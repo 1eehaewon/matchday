@@ -65,4 +65,12 @@ public class MembershipticketDAO {
         sqlSession.update("kr.co.matchday.membershipticket.MembershipticketDAO.updateExpirationStatus");
     }
     
+    public boolean isMembershipPurchased(String userID, String membershipID) {
+        Map<String, String> params = new HashMap<>();
+        params.put("userID", userID);
+        params.put("membershipID", membershipID);
+        Integer count = sqlSession.selectOne("kr.co.matchday.membershipticket.MembershipticketDAO.isMembershipPurchased", params);
+        return count != null && count > 0;
+    }
+
 }

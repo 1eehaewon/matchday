@@ -167,9 +167,25 @@ public class AdminCont {
             return ResponseEntity.ok("회원 정지가 완료되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 삭제 중 오류가 발생했습니다.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정지 중 오류가 발생했습니다.");
         }
     }//suspendUsers() end
+    
+    //회원 정지해제
+    @PostMapping("/unsuspendUsers")
+    public ResponseEntity<String> unsuspendUsers(@RequestParam(value = "userIds", required = false) String[] userIds) {
+        if (userIds == null || userIds.length == 0) {
+            return ResponseEntity.badRequest().body("정지해제할 회원을 선택해주세요.");
+        }
+        
+        try {
+            adminService.unsuspendUsers(Arrays.asList(userIds));
+            return ResponseEntity.ok("회원 정지해제가 완료되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 정지해제 중 오류가 발생했습니다.");
+        }
+    }
     
     //각회원정보
     @GetMapping

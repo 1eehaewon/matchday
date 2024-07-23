@@ -18,4 +18,12 @@ public class AdminService {
 			adminDao.suspendUserById(userId);
 		}
 	}
+	
+	//회원 정지 해제
+		@Transactional
+		public void unsuspendUsers(List<String> userIds) {
+			for (String userId : userIds) {
+				adminDao.unsuspendUserById(userId);
+			}
+		}
 }// class end

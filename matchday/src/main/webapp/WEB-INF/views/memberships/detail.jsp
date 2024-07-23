@@ -160,6 +160,33 @@
         <li>아래의 이미지를 참고하시기 바랍니다.</li>
         <img src="/storage/images/Frame 2.png" alt="공지사항 이미지">
     </div>
+    
+<script>
+    $(document).ready(function() {
+        var membershipID = "${memberships.membershipid}";
+
+        $.ajax({
+            type: 'POST',
+            url: '/membershipticket/isMembershipPurchased',
+            contentType: 'application/json',
+            data: JSON.stringify({ membershipID: membershipID }),
+            success: function(response) {
+                if (response.purchased) {
+                    // 이미 구매한 멤버쉽이면 버튼을 비활성화하고 메시지를 표시
+                    $('.btn-info').prop('disabled', true);
+                    $('.btn-info').text('이미 구매한 멤버쉽입니다');
+                }
+            },
+            error: function(error) {
+                console.error('Error checking membership purchase:', error);
+            }
+        });
+    });
+
+    function openPaymentPopup(membershipID) {
+        window.open('/membershipticket/payment?membershipID=' + membershipID, '결제 페이지', 'width=900,height=600,scrollbars=yes');
+    }
+</script>
       
 </body>
 

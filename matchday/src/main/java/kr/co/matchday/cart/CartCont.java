@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import jakarta.servlet.http.HttpSession;
 import kr.co.matchday.goods.GoodsDAO;
 import kr.co.matchday.goods.GoodsDTO;
+import kr.co.matchday.goods.StockDTO;
 import kr.co.matchday.mypage.MypageDAO;
 import kr.co.matchday.mypage.MypageDTO;
 import kr.co.matchday.coupon.CouponDTO;
@@ -46,16 +47,42 @@ public class CartCont {
     @PostMapping("/insert")
     @ResponseBody
     public String insert(@ModelAttribute CartDTO cartDto, HttpSession session) {
-    	System.out.println("-----insert INININ됨");
         String userid = (String) session.getAttribute("userID");
-        System.out.println("-----insert 1111됨");
         if (userid == null) {
             return "redirect:/member/login";
         }
-        System.out.println("-----insert 222됨");
+
         cartDto.setUserid(userid);
-        cartDao.insert(cartDto);
-        System.out.println("-----insert 3333됨");
+
+        // 재고 수량 조회
+        List<StockDTO> stockList = goodsDao.stocklist(cartDto.getGoodsid());
+        int availableStock = stockList.stream()
+            .filter(stock -> stock.getSize().equals(cartDto.getSize()))
+            .mapToInt(StockDTO::getStockquantity)
+            .findFirst()
+            .orElse(0);
+
+        if (cartDto.getQuantity() > availableStock) {
+            return "ERROR: Not enough stock available.";
+        }
+
+        // 장바구니에 이미 존재하는지 확인
+        CartDTO existingCartItem = cartDao.checkIfExists(cartDto);
+
+        if (existingCartItem != null) {
+            // 이미 존재하면 수량 업데이트
+            if (existingCartItem.getQuantity() + cartDto.getQuantity() > availableStock) {
+                return "ERROR: Not enough stock available.";
+            }
+            existingCartItem.setQuantity(existingCartItem.getQuantity() + cartDto.getQuantity());
+            existingCartItem.setTotalprice(existingCartItem.getUnitprice() * existingCartItem.getQuantity());
+            cartDao.updateQuantity(existingCartItem);
+        } else {
+            // 존재하지 않으면 새로 추가
+            cartDao.insert(cartDto);
+        }
+
+
         return "SUCCESS";
     }
 
@@ -101,7 +128,27 @@ public class CartCont {
         List<Integer> quantityList = Arrays.asList(quantity.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Integer> priceList = Arrays.asList(price.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Integer> totalPriceList = Arrays.asList(totalPrice.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+        
+        // 재고 수량 검증
+        for (int i = 0; i < goodsidList.size(); i++) {
+            String itemGoodsId = goodsidList.get(i);
+            String itemSize = sizeList.get(i);
+            int requestedQuantity = quantityList.get(i);
 
+            List<StockDTO> stockList = goodsDao.stocklist(itemGoodsId);
+            int availableStock = stockList.stream()
+                .filter(stock -> stock.getSize().equals(itemSize))
+                .mapToInt(StockDTO::getStockquantity)
+                .findFirst()
+                .orElse(0);
+
+            if (requestedQuantity > availableStock) {
+                model.addAttribute("error", "상품 " + itemGoodsId + "의 재고가 부족합니다.");
+                return "error";
+            }
+        }
+        
+        // 장바구니에서 선택된 항목 조회 및 모델에 추가
         List<GoodsDTO> goodsList = goodsidList.stream().map(goodsDao::detail).collect(Collectors.toList());
         model.addAttribute("goodsid", goodsid);
         model.addAttribute("size", size);

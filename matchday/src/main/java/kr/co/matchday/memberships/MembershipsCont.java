@@ -36,13 +36,18 @@ public class MembershipsCont {
         int totalRecords = membershipsDao.countMemberships();
         int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
-        Map<String, Integer> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("limit", pageSize);
         params.put("offset", offset);
+
+        // 현재 날짜를 yyyy-MM-dd 형식으로 가져오기
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        params.put("currentDate", currentDate);
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("memberships/list");
         mav.addObject("list", membershipsDao.listWithPaging(params));
+        mav.addObject("currentDate", currentDate); // 현재 날짜를 JSP로 전달
         mav.addObject("currentPage", page);
         mav.addObject("totalPages", totalPages);
         return mav;
@@ -169,9 +174,17 @@ public class MembershipsCont {
     // 검색 기능 추가
     @GetMapping("/search")
     public ModelAndView search(@RequestParam(defaultValue = "") String membershipname) {
+        // 현재 날짜를 yyyy-MM-dd 형식으로 가져오기
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("membershipname", "%" + membershipname + "%");
+        params.put("currentDate", currentDate);
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("memberships/list");
-        mav.addObject("list", membershipsDao.search(membershipname));
+        mav.addObject("list", membershipsDao.search(params));
+        mav.addObject("currentDate", currentDate); // 현재 날짜를 JSP로 전달
         mav.addObject("membershipname", membershipname); // 검색어
         return mav;
     }

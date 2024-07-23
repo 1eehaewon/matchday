@@ -115,7 +115,7 @@
                     </c:when>
                     <c:otherwise>
                         <a class="btn btn-outline-light btn-sm" href="/member/login">LOGIN</a>
-                        <a class="btn btn-outline-light btn-sm" href="/member/join">JOIN</a>
+                        <a class="btn btn-outline-light btn-sm" href="/member/agreement">JOIN</a>
                     </c:otherwise>
                 </c:choose>
             </div>

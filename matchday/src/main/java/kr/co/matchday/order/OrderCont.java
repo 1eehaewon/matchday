@@ -41,6 +41,8 @@ import kr.co.matchday.goods.GoodsDTO;
 import kr.co.matchday.goods.StockDTO;
 import kr.co.matchday.mypage.MypageDAO;
 import kr.co.matchday.mypage.MypageDTO;
+import kr.co.matchday.point.PointHistoryDTO;
+import kr.co.matchday.tickets.TicketsDTO;
 
 @Controller
 @RequestMapping("/order")
@@ -145,6 +147,8 @@ System.out.println("usedpoints = " + usedpoints);
         List<String> sizes = Arrays.asList(requestParams.get("size").split(","));
         List<String> prices = Arrays.asList(requestParams.get("price").split(","));
         List<String> totalPrices = Arrays.asList(requestParams.get("totalPrice").split(","));
+
+System.out.println("imp_uid: " + imp_uid);       
         
         String allcartid = requestParams.get("cartid");
         List<String> cartidList = new ArrayList<String>();
@@ -222,7 +226,8 @@ System.out.println("usedpoints = " + usedpoints);
                     orderDto.setPaymentmethodcode(paymentmethodcode);
                     orderDto.setDeliveryfee(deliveryFee);
                     orderDto.setDiscountprice(discountprice);
-
+                    orderDto.setImpUid(imp_uid);
+                    
                     List<OrderdetailDTO> orderDetails = new ArrayList<>();	// TB : orderDetail : 장바구니 개별 구매내역 리스트
                     int Orderquantity = 0;		// TB : order (전체 주문내역 : 장바구니 선택 구매 갯수 합계)
                     int Orderprice = 0;			// TB : order (전체 주문내역 : 장바구니 선택 구매 가격 합계)
@@ -256,15 +261,15 @@ System.out.println("usedpoints = " + usedpoints);
 	                    
 	                    orderDto.setOrderDetails(orderDetails);
                     }
-
+                    
+                    // 주문 상세 추가
                     orderDto.setPrice(Orderprice);
                     orderDto.setQuantity(Orderquantity);
                     orderDto.setTotalprice(Orderprice);
                     orderDto.setReceiptmethodcode("receiving02");
-                   
                     
                     try {
-                        orderDao.insert(orderDto);
+                        orderDao.insert(orderDto); // 주문 저장
                         System.out.println("Order and Order details inserted successfully");
                     } catch (Exception e) {
                         System.err.println("Error inserting order: " + e.getMessage());
@@ -274,16 +279,28 @@ System.out.println("usedpoints = " + usedpoints);
                         return response;
                     }
                     
+                    // 쿠폰 사용 업데이트
                     if (couponid != null && !couponid.equals("0")) {
                         orderDao.updateCouponUsage(couponid);
                     }
-
+                    /*
                     MypageDTO mypageDto = mypageDao.getUserById(userId);
                     if (mypageDto != null) {
+                    	//사용자 포인트 업데이트
                         int totalpoints = mypageDto.getTotalpoints();
                         if (totalpoints >= usedpoints) {
-                            int remainingPoints = totalpoints - usedpoints;
-                            // 포인트 업데이트 로직 필요 (mypageDao.updatePoints 등)
+                            mypageDao.buyupdateTotalPoints(userId);
+
+                            PointHistoryDTO pointHistory = new PointHistoryDTO();
+                            pointHistory.setUserid(userId);
+                            pointHistory.setPointcategoryid("point_use");
+                            pointHistory.setPointtype("사용");
+                            pointHistory.setPointamount(-usedpoints);
+                            //pointHistory.setOrderid(orderid);
+                            orderDao.insertPointHistory(pointHistory);
+
+                            response.put("success", true);
+                            response.put("redirectUrl", redirectUrl);
                         } else {
                             response.put("success", false);
                             response.put("message", "사용 가능한 포인트가 부족합니다.");
@@ -293,7 +310,7 @@ System.out.println("usedpoints = " + usedpoints);
                         response.put("success", false);
                         response.put("message", "사용자 포인트 정보를 찾을 수 없습니다.");
                         return response;
-                    }
+                    }*/
 
                     response.put("success", true);
                     response.put("redirectUrl", redirectUrl);
@@ -361,7 +378,7 @@ System.out.println("usedpoints = " + usedpoints);
         return null;
     }
     
-  //Mypage 결제 내역
+    //Mypage 결제 내역
     @GetMapping("/orderList")
     public ModelAndView orderList(@RequestParam(value = "orderid", required = false) String orderid, HttpSession session,Model model) {
         String userId = (String) session.getAttribute("userID");
@@ -419,7 +436,13 @@ System.out.println("usedpoints = " + usedpoints);
     //결제 상세 정보
     @GetMapping("/orderDetail")
     public ModelAndView reservationDetail(@RequestParam("orderid") String orderid, HttpSession session, Model model) {
-        ModelAndView mav = new ModelAndView("order/orderDetail");
+    	String userId = (String) session.getAttribute("userID");
+        if (userId == null) {
+            System.out.println("User ID not found in session.");
+            return new ModelAndView("redirect:/login"); // 로그인 페이지로 리다이렉트
+        }
+    	
+    	ModelAndView mav = new ModelAndView("order/orderDetail");
 
         // 주문 정보 조회
         OrderDTO order = orderDao.getOrderById(orderid);
@@ -428,12 +451,18 @@ System.out.println("usedpoints = " + usedpoints);
             mav.addObject("message", "주문을 찾을 수 없습니다. ID: " + orderid);
             return mav;
         }
+        //굿즈 상품
         List<GoodsDTO> goodsList = goodsDao.list();
         model.addAttribute("goodsList", goodsList);
+        
         // 주문 상세 정보 조회
         List<OrderdetailDTO> orderdetail = orderDao.getOrderDetailByOrderId(orderid);
         model.addAttribute("orderdetail", orderdetail);
 
+        //쿠폰
+        List<CouponDTO> couponList = orderDao.getCouponsByUserId(userId);
+        model.addAttribute("couponList", couponList);
+        
         // 주문 날짜를 Date 객체로 변환하고 취소 마감시간을 설정하는 로직
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date orderDate = null;
@@ -472,6 +501,225 @@ System.out.println("usedpoints = " + usedpoints);
 
         return mav;
     }
+    
+    
+    /* 결제 취소 메서드 */
+    @PostMapping("/cancelPayment")
+    @ResponseBody
+    public Map<String, Object> cancelPayment(@RequestParam("orderid") String orderid) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+        	// 주문 ID로 imp_uid 가져오기
+            String impUid = orderDao.getImpUidByOrderId(orderid);
+
+            if (impUid == null || impUid.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "결제 정보를 찾을 수 없습니다.");
+                return response;
+            }
+System.out.println("imp_uid 1"+impUid);
+			//아임포트 토큰 가져오기
+            String token = getToken();
+            if (token == null) {
+                response.put("success", false);
+                response.put("message", "토큰을 가져오지 못했습니다.");
+                return response;
+            }
+System.out.println("imp_uid 2"+impUid);
+			//아임포트 API 호출하여 결제 취소
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, String> body = new HashMap<>();
+            body.put("imp_uid", impUid);
+            body.put("reason", "사용자 요청에 의한 취소");
+System.out.println("imp_uid 3"+impUid);
+
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> cancelResponse = restTemplate.postForEntity(
+            "https://api.iamport.kr/payments/cancel", entity, String.class);
+System.out.println("imp_uid 4"+impUid);
+            if (cancelResponse.getStatusCode() == HttpStatus.OK) {
+                //cancelPointHistoryByOrderId(orderid);
+            	cancelOrderAndUpdateCoupon(orderid);
+
+                response.put("success", true);
+                response.put("message", "결제가 성공적으로 취소되었습니다.");
+            } else {
+                response.put("success", false);
+                response.put("message", "결제 취소에 실패했습니다.");
+            }	System.out.println("imp_uid 5"+impUid);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "결제 취소 처리 중 오류가 발생했습니다.");
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+    
+    /* 주문 취소 및 쿠폰 사용 상태 업데이트 */
+    public void cancelOrderAndUpdateCoupon(String orderid) {
+        // 주문 상태 업데이트
+        System.out.println("Cancelling orderid: " + orderid);
+        orderDao.updateOrderStatus(orderid, "Cancelled");
+
+        // 쿠폰 사용 상태를 'Not Used'로 업데이트
+        OrderDTO order = orderDao.getOrderById(orderid);
+        String couponid = order.getCouponid();
+        if (couponid != null && !couponid.isEmpty()) {
+            int result = orderDao.resetCouponUsage(couponid);
+            System.out.println("Coupon usage update result (Not Used): " + result);
+        }
+    }
+    
+    /* 예약 ID로 포인트 기록 취소 *//*
+    public void cancelPointHistoryByorderId(String orderid) {
+        // orderid로 기존 포인트 적립 내역 가져오기
+        PointHistoryDTO existingPointHistory = orderDao.getPointHistoryByorderId(orderid);
+
+        if (existingPointHistory != null) {
+            // 기존 포인트 적립 내역의 금액을 음수로 설정하고 결제 취소 내역 추가
+            PointHistoryDTO cancelPointHistory = new PointHistoryDTO();
+            cancelPointHistory.setUserid(existingPointHistory.getUserid());
+            cancelPointHistory.setPointcategoryid(existingPointHistory.getPointcategoryid());
+            cancelPointHistory.setPointtype("적립취소");
+            cancelPointHistory.setReviewid(existingPointHistory.getReviewid());
+            cancelPointHistory.setPointsource("결제취소");
+            cancelPointHistory.setPointamount(-existingPointHistory.getPointamount());
+            cancelPointHistory.setOrderid(orderid);
+
+            // 로깅 추가
+            System.out.println("Cancel Point History: " + cancelPointHistory);
+
+            // 적립 취소 기록 삽입
+            orderDao.insertPointHistory(cancelPointHistory);
+            System.out.println("Point history cancellation inserted successfully.");
+        } else {
+            System.out.println("No existing point history found for orderid: " + orderid);
+        }
+    }*/
+    
+    
+    /* 주문 환불 및 재고 복구 */
+    public void cancelOrderAndUpdateStock(String orderid) {
+        // 주문 상태 업데이트
+        orderDao.updateOrderStatus(orderid, "Cancelled");
+
+        // 주문 상세 정보 가져오기
+        List<OrderdetailDTO> orderDetails = orderDao.getOrderDetailByOrderId(orderid);
+        
+        // 재고 복구
+        for (OrderdetailDTO orderDetail : orderDetails) {
+            StockDTO stockDto = new StockDTO();
+            stockDto.setGoodsid(orderDetail.getGoodsid());
+            stockDto.setSize(orderDetail.getSize());
+            stockDto.setStockquantity(orderDetail.getQuantity());
+            goodsDao.restoreStock(stockDto);
+        }
+    }
+    
+    /*
+    private String getToken(Environment env) {
+        try {
+            // RestTemplate을 사용하여 API 호출
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // 환경 변수에서 API 키와 시크릿 가져오기
+            String apiKey = env.getProperty("iamport.api_key");
+            String apiSecret = env.getProperty("iamport.api_secret");
+
+            // API 호출 요청 데이터 준비
+            Map<String, String> request = new HashMap<>();
+            request.put("imp_key", apiKey);
+            request.put("imp_secret", apiSecret);
+
+            // 요청 데이터를 JSON 문자열로 변환
+            String jsonRequest = new ObjectMapper().writeValueAsString(request);
+            HttpEntity<String> entity = new HttpEntity<>(jsonRequest, headers);
+
+            // API 호출
+            ResponseEntity<String> response = restTemplate.postForEntity("https://api.iamport.kr/users/getToken", entity, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // 응답에서 액세스 토큰 추출
+                JSONObject json = new JSONObject(response.getBody());
+                if (!json.isNull("response")) {
+                    return json.getJSONObject("response").getString("access_token");
+                } else {
+                    System.out.println("Failed to get token, response is null: " + json.getString("message"));
+                }
+            } else {
+                System.out.println("Failed to get token, response: " + response.getBody());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /*
     @GetMapping("/cartPayment")

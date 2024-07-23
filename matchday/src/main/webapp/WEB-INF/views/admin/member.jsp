@@ -45,6 +45,10 @@
 			<div class="delete-button-container">
 				<button onclick="suspendSelectedUsers()">선택한 회원 정지</button>
 			</div>
+			<!-- 선택한 회원 정지 해제 버튼 -->
+			<div class="delete-button-container">
+				<button onclick="unsuspendSelectedUsers()">선택한 회원 정지 해제</button>
+			</div>
 		</div>
 	</div>
 </div>
@@ -63,7 +67,7 @@
         }
     }
 
- // 회원 삭제 요청
+ // 회원 정지 요청
     function suspendSelectedUsers() {
         if (selectedUsers.length === 0) {
             alert("정지할 회원을 선택해주세요.");
@@ -87,6 +91,29 @@
         }
     }
  
+    // 회원 정지 해제 요청
+    function unsuspendSelectedUsers() {
+        if (selectedUsers.length === 0) {
+            alert("정지 해제할 회원을 선택해주세요.");
+            return;
+        }
+        
+        if (confirm("선택한 회원의 정지를 해제하시겠습니까?")) {
+            $.ajax({
+                type: "POST",
+                url: "/admin/unsuspendUsers",
+                data: { userIds: selectedUsers }, // 선택된 회원들의 userId 배열
+                success: function(response) {
+                    alert(response);
+                    location.reload(); // 페이지 새로고침
+                },
+                error: function(xhr, status, error) {
+                    alert("회원 정지 해제 중 오류가 발생했습니다.");
+                    console.error(error);
+                }
+            });
+        }
+    }
     
 </script>
 

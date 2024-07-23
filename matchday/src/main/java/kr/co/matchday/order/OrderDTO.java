@@ -39,4 +39,5 @@ public class OrderDTO {
     private Date cancelDeadline; // 취소 마감시간
     private int deliveryfee; //배송비
     private int discountprice; //할인 금액
+    private String impUid; // 결제 UID
 }

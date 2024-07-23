@@ -462,7 +462,7 @@ $(document).ready(function() {
                     couponid: couponId,
                     couponName: couponName,
                     deliveryFee: deliveryFee,
-                    totalDiscount: discountprice,
+                    discountprice: discountprice,
                     totalPaymentAmount: finalPaymentAmount,
                     usedpoints: points,
                     finalpaymentamount: finalPaymentAmount,
@@ -484,6 +484,7 @@ $(document).ready(function() {
                     traditional: true,
                     success: function(data) {
                         if (data.success) {
+                        	alert('결제가 완료되었습니다.');
                             window.opener.location.href = data.redirectUrl;
                             window.close();
                         } else {

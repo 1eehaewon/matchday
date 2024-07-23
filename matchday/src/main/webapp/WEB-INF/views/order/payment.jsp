@@ -473,6 +473,34 @@ $(document).ready(function() {
         window.close();
     }
 });
+
+$(document).ready(function() {
+    $('#cancel-payment').click(function() {
+        var orderid = '${order.orderid}';
+        if (confirm('정말로 결제를 취소하시겠습니까?')) {
+            $.ajax({
+                url: '/order/cancelPayment',
+                type: 'POST',
+                data: { orderid: orderid },
+                success: function(response) {
+                    if (response.success) {
+                        alert('결제가 취소되었습니다.');
+                        window.location.href = '/order/orderList';
+                    } else {
+                        alert('결제 취소에 실패했습니다: ' + response.message);
+                    }
+                },
+                error: function(error) {
+                    alert('결제 취소 요청 중 오류가 발생했습니다.');
+                }
+            });
+        }
+    });
+
+    $('#go-back').click(function() {
+        window.location.href = '/order/orderList';
+    });
+});
 </script>
 </body>
 </html>

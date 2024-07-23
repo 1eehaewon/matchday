@@ -317,8 +317,20 @@
 </div>
 
 <script>
+
 	var deliveryCharge = "";
 	
+	document.addEventListener("DOMContentLoaded", function() {
+	    var quantityInputs = document.querySelectorAll('.quantity-input');
+	    for (var input of quantityInputs) {
+	        input.addEventListener('change', updateTotalPrice);
+	    }
+	    
+	    // 페이지 로드 시 총합 업데이트
+	    calculateTotal();
+	});
+	
+	// 전체 선택/해제 기능
     function toggleCheckboxes(checked) {
         var checkboxes = document.getElementsByName('selectedItems');
         for (var checkbox of checkboxes) {
@@ -327,6 +339,7 @@
         calculateTotal();
     }
 
+ 	// 수량 증가
     function incrementQuantity(button) {
         var input = button.parentNode.querySelector('.quantity-input');
         var newValue = parseInt(input.value) + 1;
@@ -334,6 +347,7 @@
         updateTotalPrice();
     }
 
+ // 수량 감소
     function decrementQuantity(button) {
         var input = button.parentNode.querySelector('.quantity-input');
         var newValue = parseInt(input.value) - 1;
@@ -343,6 +357,7 @@
         }
     }
 
+ 	// 총 가격 업데이트
     function updateTotalPrice() {
         var totalSelectedCount = 0;
         var totalSelectedPrice = 0;
@@ -353,10 +368,13 @@
                 totalSelectedCount++;
                 var row = checkbox.parentNode.parentNode;
                 var quantity = parseInt(row.querySelector('.quantity-input').value);
-                var unitPrice = parseInt(row.cells[4].textContent.replace('원', '').replace(',', ''));
+                var unitPriceText = row.querySelector('td[data-price]').dataset.price.replace('원', '').replace(',', '').trim();
+                var unitPrice = parseInt(unitPriceText); // Parsing price here
+                
                 var totalPrice = quantity * unitPrice;
                 totalSelectedPrice += totalPrice;
-                row.cells[5].textContent = totalPrice.toLocaleString() + ("원");
+                row.querySelector('td[data-totalprice]').dataset.totalprice = totalPrice;
+                row.querySelector('td[data-totalprice]').textContent = totalPrice.toLocaleString() + "원";
             }
         }
 
@@ -370,6 +388,12 @@
         document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
     }
 
+ 	// 체크박스 변경 시 총합 업데이트
+    function calculateTotal() {
+        updateTotalPrice();
+ 	}
+ 	
+ 	// 페이지 로드 시
     document.addEventListener("DOMContentLoaded", function() {
         var quantityInputs = document.querySelectorAll('.quantity-input');
         for (var input of quantityInputs) {
@@ -408,6 +432,7 @@
         }
     });
 
+ 	// 선택된 상품 삭제
     function deleteSelectedItems() {
         var selectedItems = [];
         var checkboxes = document.getElementsByName('selectedItems');
@@ -428,6 +453,7 @@
         }
     }
 
+ 	// 전체 상품 삭제
     function deleteAllItems() {
         if (confirm("전체 상품을 삭제하시겠습니까?")) {
             var checkboxes = document.getElementsByName('selectedItems');
@@ -444,10 +470,11 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('deleteSelectedButton').addEventListener('click', deleteSelectedItems);
-        document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
+	    document.getElementById('deleteSelectedButton').addEventListener('click', deleteSelectedItems);
+	    document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
     });
 
+ 	// 구매하기
     function proceedToCartPayment() {
         var selectedItems = [];
         var checkboxes = document.getElementsByName('selectedItems');
@@ -534,6 +561,15 @@
         var top = (screen.height - height) / 2;
         window.open('', "cartPaymentPopup", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
         form.submit();
+    }
+ 	
+ 	// 숨겨진 입력 필드 생성
+    function createHiddenInput(name, value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        return input;
     }
 </script>
 

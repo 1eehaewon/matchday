@@ -152,14 +152,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>품절 여부</th>
-                        <td>
-                            <label><input type="radio" name="issoldout" value='N'> 재고 있음</label>
-                            <label><input type="radio" name="issoldout" value='Y'> 품절</label>
-                            <span id="issoldoutMsg" style="color: red;"></span>
-                        </td>
-                    </tr>
-                    <tr>
                         <td colspan="2" style="text-align: center;">
                             <input type="submit" value="상품등록" class="btn btn-success">
                         </td>
@@ -274,16 +266,6 @@
                 isValid = false;
             } else {
                 stockquantityMsg.textContent = '';
-            }
-
-            // 라디오 버튼 유효성 검사
-            var issoldoutChecked = document.querySelector('input[name="issoldout"]:checked');
-            var issoldoutMsg = document.getElementById('issoldoutMsg');
-            if (!issoldoutChecked) {
-                issoldoutMsg.textContent = '품절 여부를 선택해주세요.';
-                isValid = false;
-            } else {
-                issoldoutMsg.textContent = '';
             }
 
             // 폼이 유효하지 않으면 제출 방지

@@ -36,10 +36,11 @@
 
 
     <select id="getUserMembershipById" parameterType="String" resultType="java.util.HashMap">
-        SELECT usermembershipid, userid, membershipid, status, purchasedate, imp_uid
-        FROM usermemberships
-        WHERE usermembershipid = #{userMembershipId}
-    </select>
+    SELECT usermembershipid, userid, membershipid, status, purchasedate, imp_uid, 
+           (SELECT enddate FROM memberships WHERE memberships.membershipid = usermemberships.membershipid) as enddate
+    FROM usermemberships
+    WHERE usermembershipid = #{userMembershipId}
+</select>
 
     <update id="updateUserMembershipStatusByImpUid" parameterType="java.util.HashMap">
         UPDATE usermemberships
@@ -59,6 +60,12 @@
         WHERE memberships.membershipid = usermemberships.membershipid
     )
 	</update>
+	
+	<select id="isMembershipPurchased" parameterType="java.util.HashMap" resultType="int">
+    SELECT COUNT(*)
+    FROM usermemberships
+    WHERE userid = #{userID} AND membershipid = #{membershipID} AND status = 'completed'
+</select>
     
 
 </mapper>

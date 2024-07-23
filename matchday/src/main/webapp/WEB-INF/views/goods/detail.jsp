@@ -353,7 +353,7 @@ table tr:hover {
                 </div>
                 <div class="product-description">
                     <dl>
-                        <dt>사이즈</dt>
+                        <%-- <dt>사이즈</dt>
                         <dd>
                             <select id="size" name="size" class="form-select" style="width: 200px;">
                                 <option value="NO">사이즈를 선택하세요.</option>
@@ -377,7 +377,57 @@ table tr:hover {
                                     </c:choose>
                                 </c:forEach>
                             </select>
-                        </dd>
+                        </dd> --%>
+                        <dt>사이즈</dt>
+						<dd>
+						    <select id="size" name="size" class="form-select" style="width: 200px;">
+						        <option value="NO">사이즈를 선택하세요.</option>
+						        <c:forEach items="${stockDto}" var="row" varStatus="idx">
+						            <c:choose>
+						                <c:when test="${row.size eq 'FREE' && goodsDto.category ne 'Uniform'}">
+						                    <option value="FREE" stock="${row.stockquantity}">
+						                        FREE
+						                        <c:if test="${row.stockquantity <= 10}">
+						                            (재고 수량 ${row.stockquantity}개)
+						                        </c:if>
+						                    </option>
+						                </c:when>
+						                <c:when test="${row.size eq 'S' && goodsDto.category eq 'Uniform'}">
+						                    <option value="S" stock="${row.stockquantity}">
+						                        S
+						                        <c:if test="${row.stockquantity <= 10}">
+						                            (재고 수량 ${row.stockquantity}개)
+						                        </c:if>
+						                    </option>
+						                </c:when>
+						                <c:when test="${row.size eq 'M' && goodsDto.category eq 'Uniform'}">
+						                    <option value="M" stock="${row.stockquantity}">
+						                        M
+						                        <c:if test="${row.stockquantity <= 10}">
+						                            (재고 수량 ${row.stockquantity}개)
+						                        </c:if>
+						                    </option>
+						                </c:when>
+						                <c:when test="${row.size eq 'L' && goodsDto.category eq 'Uniform'}">
+						                    <option value="L" stock="${row.stockquantity}">
+						                        L
+						                        <c:if test="${row.stockquantity <= 10}">
+						                            (재고 수량 ${row.stockquantity}개)
+						                        </c:if>
+						                    </option>
+						                </c:when>
+						                <c:when test="${row.size eq 'XL' && goodsDto.category eq 'Uniform'}">
+						                    <option value="XL" stock="${row.stockquantity}">
+						                        XL
+						                        <c:if test="${row.stockquantity <= 10}">
+						                            (재고 수량 ${row.stockquantity}개)
+						                        </c:if>
+						                    </option>
+						                </c:when>
+						            </c:choose>
+						        </c:forEach>
+						    </select>
+						</dd> 
                         <dt>배송비</dt>
                         <dd><span id="deliveryfee"></span> (100,000원 이상 구매시 무료)</dd>
                         <dt>주문 수량</dt>
@@ -431,7 +481,7 @@ table tr:hover {
                     <c:if test="${sessionScope.grade == 'M'}">
                         <input type="hidden" name="goodsid" value="${goodsDto.goodsid}">
                         <input type="button" value="상품수정" onclick="goods_update()" class="btn btn-success">
-                        <input type="button" value="상품삭제" onclick="goods_delete()" class="btn btn-danger">
+                        <!-- <input type="button" value="상품삭제" onclick="goods_delete()" class="btn btn-danger"> -->
                     </c:if>
                 </form>
             </div> <!-- 글 -->
@@ -594,7 +644,7 @@ table tr:hover {
     function buyopenPopup(url) { //구매하기 팝업
         var selectSize = document.getElementById('size');
         var quantity = parseInt(document.getElementById('quantity-input').value);
-        var price = ${goodsDto.price};
+        var price = ${goodsDto.price}; ${cart.unitprice}
         var totalPrice = quantity * price;
 
         // 선택햔 사이즈 재고 체크
