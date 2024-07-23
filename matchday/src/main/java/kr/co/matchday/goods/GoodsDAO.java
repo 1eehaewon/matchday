@@ -69,5 +69,8 @@ public class GoodsDAO {
 	    sqlSession.update("goods.buystockupdate", stockDto);
 	}//update end
     
+    public void restoreStock(StockDTO stockDto) {
+        sqlSession.update("goods.restoreStock", stockDto);
+    }//restoreStock end
 	
 }//class end

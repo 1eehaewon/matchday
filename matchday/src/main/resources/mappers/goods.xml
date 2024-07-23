@@ -111,14 +111,13 @@
         SET stockquantity = stockquantity - #{stockquantity}
         WHERE goodsid = #{goodsid} AND size = #{size}
     </update>
-	
-	
-	<!-- 구매하기 하고나서 추가 
-		<update id="stockupdate" parameterType="kr.co.matchday.goods.StockDTO">
-		UPDATE stock
-		SET stockquantity = stockquantity-1
-		WHERE goodsid = #{goodsid} AND size = #{size};
-	</update> -->
+    
+	<!-- 재고 복구 -->
+    <update id="restoreStock" parameterType="kr.co.matchday.goods.StockDTO">
+        UPDATE stock
+        SET stockquantity = stockquantity + #{stockquantity}
+        WHERE goodsid = #{goodsid} AND size = #{size}
+    </update>
 	
 
 	

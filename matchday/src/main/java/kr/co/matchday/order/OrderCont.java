@@ -227,7 +227,7 @@ System.out.println("imp_uid: " + imp_uid);
                     orderDto.setDeliveryfee(deliveryFee);
                     orderDto.setDiscountprice(discountprice);
                     orderDto.setImpUid(imp_uid);
-
+                    
                     List<OrderdetailDTO> orderDetails = new ArrayList<>();	// TB : orderDetail : 장바구니 개별 구매내역 리스트
                     int Orderquantity = 0;		// TB : order (전체 주문내역 : 장바구니 선택 구매 갯수 합계)
                     int Orderprice = 0;			// TB : order (전체 주문내역 : 장바구니 선택 구매 가격 합계)
@@ -267,7 +267,6 @@ System.out.println("imp_uid: " + imp_uid);
                     orderDto.setQuantity(Orderquantity);
                     orderDto.setTotalprice(Orderprice);
                     orderDto.setReceiptmethodcode("receiving02");
-                   
                     
                     try {
                         orderDao.insert(orderDto); // 주문 저장
@@ -511,6 +510,7 @@ System.out.println("imp_uid: " + imp_uid);
         Map<String, Object> response = new HashMap<>();
 
         try {
+        	// 주문 ID로 imp_uid 가져오기
             String impUid = orderDao.getImpUidByOrderId(orderid);
 
             if (impUid == null || impUid.isEmpty()) {
@@ -518,14 +518,16 @@ System.out.println("imp_uid: " + imp_uid);
                 response.put("message", "결제 정보를 찾을 수 없습니다.");
                 return response;
             }
-
+System.out.println("imp_uid 1"+impUid);
+			//아임포트 토큰 가져오기
             String token = getToken();
             if (token == null) {
                 response.put("success", false);
                 response.put("message", "토큰을 가져오지 못했습니다.");
                 return response;
             }
-
+System.out.println("imp_uid 2"+impUid);
+			//아임포트 API 호출하여 결제 취소
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);
@@ -534,12 +536,12 @@ System.out.println("imp_uid: " + imp_uid);
             Map<String, String> body = new HashMap<>();
             body.put("imp_uid", impUid);
             body.put("reason", "사용자 요청에 의한 취소");
+System.out.println("imp_uid 3"+impUid);
 
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
-
             ResponseEntity<String> cancelResponse = restTemplate.postForEntity(
-                    "https://api.iamport.kr/payments/cancel", entity, String.class);
-
+            "https://api.iamport.kr/payments/cancel", entity, String.class);
+System.out.println("imp_uid 4"+impUid);
             if (cancelResponse.getStatusCode() == HttpStatus.OK) {
                 //cancelPointHistoryByOrderId(orderid);
             	cancelOrderAndUpdateCoupon(orderid);
@@ -549,7 +551,7 @@ System.out.println("imp_uid: " + imp_uid);
             } else {
                 response.put("success", false);
                 response.put("message", "결제 취소에 실패했습니다.");
-            }
+            }	System.out.println("imp_uid 5"+impUid);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "결제 취소 처리 중 오류가 발생했습니다.");
@@ -602,6 +604,25 @@ System.out.println("imp_uid: " + imp_uid);
     }*/
     
     
+    /* 주문 환불 및 재고 복구 */
+    public void cancelOrderAndUpdateStock(String orderid) {
+        // 주문 상태 업데이트
+        orderDao.updateOrderStatus(orderid, "Cancelled");
+
+        // 주문 상세 정보 가져오기
+        List<OrderdetailDTO> orderDetails = orderDao.getOrderDetailByOrderId(orderid);
+        
+        // 재고 복구
+        for (OrderdetailDTO orderDetail : orderDetails) {
+            StockDTO stockDto = new StockDTO();
+            stockDto.setGoodsid(orderDetail.getGoodsid());
+            stockDto.setSize(orderDetail.getSize());
+            stockDto.setStockquantity(orderDetail.getQuantity());
+            goodsDao.restoreStock(stockDto);
+        }
+    }
+    
+    /*
     private String getToken(Environment env) {
         try {
             // RestTemplate을 사용하여 API 호출
@@ -643,7 +664,7 @@ System.out.println("imp_uid: " + imp_uid);
         return null;
     }
     
-    
+    */
     
     
     

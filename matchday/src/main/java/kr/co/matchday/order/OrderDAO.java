@@ -101,7 +101,7 @@ public class OrderDAO {
         return order;
     }
 */
- // OrderDAO.java
+    //사용자 ID로 주문 정보 가져오기
     public List<OrderDTO> getOrderByUserId(String userid) {
         return sqlSession.selectList("kr.co.matchday.order.OrderDAO.getOrderByUserId", userid);
     }
