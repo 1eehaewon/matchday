@@ -31,6 +31,7 @@
         SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.bookingstartdate, m.bookingenddate, m.referee, s.stadiumname
         FROM matches m
         JOIN stadiums s ON m.stadiumid = s.stadiumid
+        ORDER BY m.matchdate DESC
     </select>
 
     <!-- 특정 경기 정보를 가져오는 쿼리 -->
@@ -65,6 +66,7 @@
         FROM matches m
         JOIN stadiums s ON m.stadiumid = s.stadiumid
         WHERE m.bookingenddate >= DATE_SUB(#{currentDate}, INTERVAL 1 DAY)
+        ORDER BY m.matchdate DESC
     </select>
 
     <!-- 현재 날짜가 지난 경기를 삭제하는 쿼리 -->
@@ -73,13 +75,12 @@
     </delete>
     
     <!-- 특정 팀 이름으로 경기 정보를 검색하는 쿼리 -->
-	<select id="searchMatchesByTeamName" parameterType="string" resultType="kr.co.matchday.matches.MatchesDTO">
-	    SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.bookingstartdate, m.bookingenddate, m.referee, s.stadiumname
-	    FROM matches m
-	    JOIN stadiums s ON m.stadiumid = s.stadiumid
-	    WHERE m.hometeamid = #{teamname} OR m.awayteamid = #{teamname}
-	</select>
-	
-	
+    <select id="searchMatchesByTeamName" parameterType="string" resultType="kr.co.matchday.matches.MatchesDTO">
+        SELECT m.matchid, m.hometeamid, m.awayteamid, m.stadiumid, m.matchdate, m.bookingstartdate, m.bookingenddate, m.referee, s.stadiumname
+        FROM matches m
+        JOIN stadiums s ON m.stadiumid = s.stadiumid
+        WHERE m.hometeamid = #{teamname} OR m.awayteamid = #{teamname}
+        ORDER BY m.matchdate DESC
+    </select>
     
 </mapper>

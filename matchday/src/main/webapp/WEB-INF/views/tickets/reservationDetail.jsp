@@ -46,7 +46,7 @@
         border: 1px solid #888;
         width: 90%;
         max-width: 450px; /* 티켓 페이지와 맞게 조정 */
-        height: auto;
+        height: 800px;
         max-height: 90%;
         overflow-y: auto; /* 모달 내용이 길어질 경우 스크롤 */
     }

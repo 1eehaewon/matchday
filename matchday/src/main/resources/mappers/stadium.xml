@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.matchday.stadium.StadiumMapper">
+
+    <insert id="insertStadium" parameterType="kr.co.matchday.stadium.StadiumDTO">
+        INSERT INTO stadiums (stadiumid, stadiumname, location, capacity, usagestatus, parkingspaces, stadiumimage, contactnumber)
+        VALUES (#{stadiumId}, #{stadiumName}, #{location}, #{capacity}, #{usageStatus}, #{parkingSpaces}, #{stadiumImage}, #{contactNumber})
+    </insert>
+
+    <select id="getMaxStadiumId" resultType="java.lang.String">
+        SELECT MAX(stadiumid) FROM stadiums
+    </select>
+
+    <select id="getStadiumById" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT stadiumid FROM stadiums WHERE stadiumid = #{stadiumId}
+    </select>
+
+    <select id="getAllStadiums" resultType="kr.co.matchday.stadium.StadiumDTO">
+        SELECT stadiumid as stadiumId, stadiumname as stadiumName, location, capacity, usagestatus as usageStatus, parkingspaces as parkingSpaces, contactnumber as contactNumber
+        FROM stadiums
+    </select>
+
+    <insert id="insertSeat">
+        INSERT INTO seats (seatid, stadiumid, section, seatnumber, price, seatstatus)
+        VALUES (#{seatId}, #{stadiumId}, #{section}, #{seatNumber}, #{price}, #{seatStatus})
+    </insert>
+
+</mapper>
