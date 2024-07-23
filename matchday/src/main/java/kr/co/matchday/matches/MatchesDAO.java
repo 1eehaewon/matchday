@@ -15,6 +15,10 @@ public class MatchesDAO {
     @Autowired
     private SqlSession sqlSession; // MyBatis의 SqlSession 주입
     
+    public MatchesDAO() {
+		System.out.println("-----MatchesDAO() 객체 생성됨");
+	}
+    
     // 새로운 경기 정보를 삽입하는 메서드
     public void insert(MatchesDTO matchesDTO) {
         sqlSession.insert("kr.co.matchday.matches.MatchesDAO.insert", matchesDTO);

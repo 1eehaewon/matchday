@@ -36,14 +36,20 @@ public class HomeController {
    public String home(Model model) {
        List<InstagramDTO> instagramList = instagramDao.list();
        model.addAttribute("instagramList", instagramList);    
-       
+
        List<VideoDTO> videoList = videoDao.list();
        model.addAttribute("videoList", videoList);
-       
-       List<MatchesDTO> matchList = matchesService.getMatchesWithinFiveDays(); // 경기 일정 가져오기
-       model.addAttribute("matchList", matchList); // 모델에 추가
+
+       List<MatchesDTO> matchList = matchesService.getMatchesWithinFiveDays();
+       model.addAttribute("matchList", matchList);
+
+       // 데이터 로그 출력
+       System.out.println("Instagram List: " + instagramList);
+       System.out.println("Video List: " + videoList);
+       System.out.println("Match List: " + matchList);
        
        return "index";
-   }//home() end
+   }
+
 
 }//class end

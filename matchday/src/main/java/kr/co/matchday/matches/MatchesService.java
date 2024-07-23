@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -143,11 +145,28 @@ public class MatchesService {
         calendar.add(Calendar.DATE, 5);
         Date fiveDaysLater = calendar.getTime();
 
-        return matchesDAO.list()
-                .stream()
-                .filter(match -> !match.getMatchdate().before(today) && !match.getMatchdate().after(fiveDaysLater))
-                .sorted((m1, m2) -> m1.getMatchdate().compareTo(m2.getMatchdate())) // 날짜 순으로 정렬
-                .collect(Collectors.toList());
+        List<MatchesDTO> allMatches = matchesDAO.list();
+        List<MatchesDTO> filteredMatches = new ArrayList<>();
+
+        for (MatchesDTO match : allMatches) {
+            if (!match.getMatchdate().before(today) && !match.getMatchdate().after(fiveDaysLater)) {
+                filteredMatches.add(match);
+            }
+        }
+
+        // 데이터 로그 출력
+        System.out.println("Filtered Matches: " + filteredMatches);
+
+        // 날짜 순으로 정렬
+        Collections.sort(filteredMatches, new Comparator<MatchesDTO>() {
+            public int compare(MatchesDTO m1, MatchesDTO m2) {
+                return m1.getMatchdate().compareTo(m2.getMatchdate());
+            }
+        });
+
+        return filteredMatches;
     }
+
+
 
 }
