@@ -5160,3 +5160,449 @@ $(document).ready(function() {
 
 <%@ include file="../footer.jsp" %>
    
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   <script>
+    var deliveryCharge = 3500; // 기본 배송비
+
+    // 전체 선택/해제 기능
+    function toggleCheckboxes(checked) {
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = checked;
+        }
+        calculateTotal();
+    }
+
+    // 수량 증가
+    function incrementQuantity(button) {
+        var input = button.parentNode.querySelector('.quantity-input');
+        var newValue = parseInt(input.value) + 1;
+        input.value = newValue;
+        updateTotalPrice();
+    }
+
+    // 수량 감소
+    function decrementQuantity(button) {
+        var input = button.parentNode.querySelector('.quantity-input');
+        var newValue = parseInt(input.value) - 1;
+        if (newValue >= 0) {
+            input.value = newValue;
+            updateTotalPrice();
+        }
+    }
+
+    // 총 가격 업데이트
+    function updateTotalPrice() {
+        var totalSelectedCount = 0;
+        var totalSelectedPrice = 0;
+
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                totalSelectedCount++;
+                var row = checkbox.parentNode.parentNode;
+                var quantity = parseInt(row.querySelector('.quantity-input').value);
+                var unitPriceText = row.querySelector('td[data-price]').dataset.price.replace('원', '').replace(',', '').trim();
+                var unitPrice = parseInt(unitPriceText);
+
+                var totalPrice = quantity * unitPrice;
+                totalSelectedPrice += totalPrice;
+                row.querySelector('td[data-totalprice]').dataset.totalprice = totalPrice;
+                row.querySelector('td[data-totalprice]').textContent = totalPrice.toLocaleString() + "원";
+            }
+        }
+
+        document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+        document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString();
+
+        deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+        document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
+
+        var totalSettlePrice = totalSelectedPrice + deliveryCharge;
+        document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
+    }
+
+    // 체크박스 변경 시 총합 업데이트
+    function calculateTotal() {
+        updateTotalPrice();
+    }
+
+    // 페이지 로드 시
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.quantity-input').forEach(function(input) {
+            input.addEventListener('change', updateTotalPrice);
+        });
+
+        var cartItems = document.getElementsByName('selectedItems');
+        if (cartItems.length === 0) {
+            document.getElementById('noDataMessage').style.display = 'block';
+        }
+
+        document.getElementById('deleteSelectedButton').addEventListener('click', deleteSelectedItems);
+        document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
+    });
+
+    // 선택된 상품 삭제
+    function deleteSelectedItems() {
+        var selectedItems = Array.from(document.getElementsByName('selectedItems'))
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        if (selectedItems.length === 0) {
+            alert("삭제할 상품을 선택해주세요.");
+            return;
+        }
+
+        if (confirm("선택한 상품을 삭제하시겠습니까?")) {
+            var url = '/cart/delete?cartid=' + selectedItems.join(',');
+            location.href = url;
+        }
+    }
+
+    // 전체 상품 삭제
+    function deleteAllItems() {
+        if (confirm("전체 상품을 삭제하시겠습니까?")) {
+            var checkboxes = document.getElementsByName('selectedItems');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = true;
+            }
+            var selectedItems = Array.from(checkboxes).map(checkbox => checkbox.value);
+            var url = '/cart/delete?cartid=' + selectedItems.join(',');
+            location.href = url;
+        }
+    }
+
+    // 구매하기
+    function proceedToCartPayment() {
+        var selectedItems = Array.from(document.getElementsByName('selectedItems'))
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        if (selectedItems.length === 0) {
+            alert("상품을 선택해주세요.");
+            return;
+        }
+
+        var goodsidList = [];
+        var sizeList = [];
+        var quantityList = [];
+        var priceList = [];
+        var cartIdList = [];
+        var totalPriceList = [];
+
+        Array.from(document.querySelectorAll('input[name="selectedItems"]:checked')).forEach(function(checkbox) {
+            var row = checkbox.closest('tr');
+            goodsidList.push(row.querySelector('td[data-goodsid]').dataset.goodsid);
+            sizeList.push(row.querySelector('td[data-size]').dataset.size);
+            quantityList.push(row.querySelector('td[data-quantity] .quantity-input').value);
+            priceList.push(row.querySelector('td[data-price]').dataset.price);
+            totalPriceList.push(row.querySelector('td[data-totalprice]').dataset.totalprice);
+            cartIdList.push(row.querySelector('td[data-cartid]').dataset.cartid);
+        });
+
+        var form = document.createElement('form');
+        form.method = 'GET';
+        form.action = '/cart/cartPayment';
+        form.target = 'cartPaymentPopup';
+
+        form.appendChild(createHiddenInput('cartid', cartIdList.join(',')));
+        form.appendChild(createHiddenInput('goodsid', goodsidList.join(',')));
+        form.appendChild(createHiddenInput('deliveryfee', deliveryCharge));
+        form.appendChild(createHiddenInput('size', sizeList.join(',')));
+        form.appendChild(createHiddenInput('quantity', quantityList.join(',')));
+        form.appendChild(createHiddenInput('price', priceList.join(',')));
+        form.appendChild(createHiddenInput('totalPrice', totalPriceList.join(',')));
+
+        document.body.appendChild(form);
+        var width = 1200;
+        var height = 900;
+        var left = (screen.width - width) / 2;
+        var top = (screen.height - height) / 2;
+        window.open('', "cartPaymentPopup", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+        form.submit();
+    }
+
+    // 숨겨진 입력 필드 생성
+    function createHiddenInput(name, value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        return input;
+    }
+</script>
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   document.addEventListener("DOMContentLoaded", function() {
+    var quantityInputs = document.querySelectorAll('.quantity-input');
+    for (var input of quantityInputs) {
+        input.addEventListener('change', updateTotalPrice);
+    }
+    
+    // 페이지 로드 시 총합 업데이트
+    calculateTotal();
+});
+
+function toggleCheckboxes(checked) {
+    var checkboxes = document.getElementsByName('selectedItems');
+    for (var checkbox of checkboxes) {
+        checkbox.checked = checked;
+    }
+    calculateTotal();
+}
+
+function incrementQuantity(button) {
+    var input = button.parentNode.querySelector('.quantity-input');
+    var newValue = parseInt(input.value) + 1;
+    input.value = newValue;
+    updateTotalPrice();
+}
+
+function decrementQuantity(button) {
+    var input = button.parentNode.querySelector('.quantity-input');
+    var newValue = parseInt(input.value) - 1;
+    if (newValue >= 0) {
+        input.value = newValue;
+        updateTotalPrice();
+    }
+}
+
+function updateTotalPrice() {
+    var totalSelectedCount = 0;
+    var totalSelectedPrice = 0;
+
+    var checkboxes = document.getElementsByName('selectedItems');
+    for (var checkbox of checkboxes) {
+        if (checkbox.checked) {
+            totalSelectedCount++;
+            var row = checkbox.parentNode.parentNode;
+            var quantity = parseInt(row.querySelector('.quantity-input').value);
+            var unitPriceText = row.querySelector('td[data-price]').dataset.price.replace('원', '').replace(',', '').trim();
+            var unitPrice = parseInt(unitPriceText);
+            
+            var totalPrice = quantity * unitPrice;
+            totalSelectedPrice += totalPrice;
+            row.querySelector('td[data-totalprice]').dataset.totalprice = totalPrice;
+            row.querySelector('td[data-totalprice]').textContent = totalPrice.toLocaleString() + "원";
+        }
+    }
+
+    document.getElementById('totalSelectedCount').textContent = totalSelectedCount;
+    document.getElementById('totalSelectedPrice').textContent = totalSelectedPrice.toLocaleString();
+    
+    var deliveryCharge = totalSelectedPrice >= 100000 ? 0 : 3500;
+    document.getElementById('totalDeliveryCharge').textContent = deliveryCharge.toLocaleString();
+    
+    var totalSettlePrice = totalSelectedPrice + deliveryCharge;
+    document.getElementById('totalSettlePrice').textContent = totalSettlePrice.toLocaleString();
+}
+
+function calculateTotal() {
+    updateTotalPrice();
+}
+
+function deleteSelectedItems() {
+    var selectedItems = [];
+    var checkboxes = document.getElementsByName('selectedItems');
+    for (var checkbox of checkboxes) {
+        if (checkbox.checked) {
+            selectedItems.push(checkbox.value);
+        }
+    }
+
+    if (selectedItems.length === 0) {
+        alert("삭제할 상품을 선택해주세요.");
+        return;
+    }
+
+    if (confirm("선택한 상품을 삭제하시겠습니까?")) {
+        var url = '/cart/delete?cartid=' + selectedItems.join(',');
+        location.href = url;
+    }
+}
+
+function deleteAllItems() {
+    if (confirm("전체 상품을 삭제하시겠습니까?")) {
+        var checkboxes = document.getElementsByName('selectedItems');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = true;
+        }
+        var selectedItems = [];
+        for (var checkbox of checkboxes) {
+            selectedItems.push(checkbox.value);
+        }
+        var url = '/cart/delete?cartid=' + selectedItems.join(',');
+        location.href = url;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById('deleteSelectedButton').addEventListener('click', deleteSelectedItems);
+    document.getElementById('deleteAllButton').addEventListener('click', deleteAllItems);
+});
+
+function proceedToCartPayment() {
+    var selectedItems = [];
+    var checkboxes = document.getElementsByName('selectedItems');
+    for (var checkbox of checkboxes) {
+        if (checkbox.checked) {
+            selectedItems.push(checkbox.value);
+        }
+    }
+
+    if (selectedItems.length === 0) {
+        alert("상품을 선택해주세요.");
+        return;
+    }
+
+    var goodsidList = [];
+    var deliveryfee = '';
+    var sizeList = [];
+    var quantityList = [];
+    var priceList = [];
+    var cartIdList = [];
+    var totalPriceList = [];
+
+    var rows = Array.from(document.querySelectorAll('input[name="selectedItems"]:checked')).map(checkbox => checkbox.closest('tr'));
+    rows.forEach(function(row) {
+        goodsidList.push(row.querySelector('td[data-goodsid]').dataset.goodsid);
+        sizeList.push(row.querySelector('td[data-size]').dataset.size);
+        quantityList.push(row.querySelector('td[data-quantity] .quantity-input').value);
+        priceList.push(row.querySelector('td[data-price]').dataset.price);
+        totalPriceList.push(row.querySelector('td[data-totalprice]').dataset.totalprice);
+        cartIdList.push(row.querySelector('td[data-cartid]').dataset.cartid);
+    });
+
+    var form = document.createElement('form');
+    form.method = 'GET';
+    form.action = '${pageContext.request.contextPath}/cart/cartPayment';
+    form.target = 'cartPaymentPopup';
+
+    var cartidInput = document.createElement('input');
+    cartidInput.type = 'hidden';
+    cartidInput.name = 'cartid';
+    cartidInput.value = cartIdList.join(',');
+    form.appendChild(cartidInput);
+    
+    var goodsidInput = document.createElement('input');
+    goodsidInput.type = 'hidden';
+    goodsidInput.name = 'goodsid';
+    goodsidInput.value = goodsidList.join(',');
+    form.appendChild(goodsidInput);
+
+    var deliveryfeeInput = document.createElement('input');
+    deliveryfeeInput.type = 'hidden';
+    deliveryfeeInput.name = 'deliveryfee';
+    deliveryfeeInput.value = deliveryCharge;
+    form.appendChild(deliveryfeeInput);
+    
+    var sizeInput = document.createElement('input');
+    sizeInput.type = 'hidden';
+    sizeInput.name = 'size';
+    sizeInput.value = sizeList.join(',');
+    form.appendChild(sizeInput);
+
+    var quantityInput = document.createElement('input');
+    quantityInput.type = 'hidden';
+    quantityInput.name = 'quantity';
+    quantityInput.value = quantityList.join(',');
+    form.appendChild(quantityInput);
+
+    var priceInput = document.createElement('input');
+    priceInput.type = 'hidden';
+    priceInput.name = 'price';
+    priceInput.value = priceList.join(',');
+    form.appendChild(priceInput);
+
+    var totalPriceInput = document.createElement('input');
+    totalPriceInput.type = 'hidden';
+    totalPriceInput.name = 'totalPrice';
+    totalPriceInput.value = totalPriceList.join(',');
+    form.appendChild(totalPriceInput);
+
+    document.body.appendChild(form);
+    var width = 1200;
+    var height = 900;
+    var left = (screen.width - width) / 2;
+    var top = (screen.height - height) / 2;
+    window.open('', "cartPaymentPopup", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+    form.submit();
+}
+   

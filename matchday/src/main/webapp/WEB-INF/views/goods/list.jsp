@@ -177,7 +177,9 @@
 	    }
 	}
 
-	
+	.custom-margin {
+        margin-right: 58px; /* 원하는 여백 값으로 조절 */
+    }
 
 
 	
@@ -203,15 +205,21 @@
     <div class="row justify-content-end">
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">최신등록순</button>
-                <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <!-- <a class="dropdown-item" href="#">기본상품순</a> --> 
-                    <a class="dropdown-item" href="#" id="latestItems">최신등록순</a> 
-                    <a class="dropdown-item" href="#">높은가격순</a> 
-                    <a class="dropdown-item" href="#">낮은가격순</a>
+                <button class="btn btn-secondary dropdown-toggle custom-dropdown-btn" type="button" id="goodsDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">최신등록순</button>
+                <div class="dropdown-menu dropdown-menu-end custom-dropdown-menu" aria-labelledby="goodsDropdownMenuButton">
+                    <a class="dropdown-item goods-dropdown-item" href="#" id="latestItems">최신등록순</a> 
+                    <a class="dropdown-item goods-dropdown-item" href="#">높은가격순</a> 
+                    <a class="dropdown-item goods-dropdown-item" href="#">낮은가격순</a>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- 장바구니 버튼 -->
+<div class="row justify-content-end mb-3">
+    <div class="col-auto custom-margin">
+        <button type="button" onclick="location.href='${pageContext.request.contextPath}/cart/list'" class="btn btn-primary">장바구니로 이동~🛒</button>
     </div>
 </div>
 
@@ -322,9 +330,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const shopItems = document.querySelectorAll('.goodsItem');  // 오른쪽 상품 카드들을 선택합니다.
     
     /* 드롭다운 변수 */
-    const dropdownItems = document.querySelectorAll('.dropdown-item'); // 드롭다운 메뉴의 각 항목을 선택합니다.
+    const dropdownItems = document.querySelectorAll('.goods-dropdown-item'); // 드롭다운 메뉴의 각 항목을 선택합니다.
     const shopContainer = document.querySelector('.right'); // 오른쪽 상품 목록을 감싸는 컨테이너를 선택합니다.
-    const dropdownButton = document.getElementById('dropdownMenuButton'); // 드롭다운 버튼을 선택합니다.
+    const dropdownButton = document.getElementById('goodsDropdownMenuButton'); // 드롭다운 버튼을 선택합니다.
     
     // 선택된 카테고리에 따라 상품을 필터링하는 함수입니다.
     function filterItems(category) {
@@ -356,9 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 페이지 로드 시 초기 상태로 모든 상품을 보이도록 설정합니다.
     filterItems('All');
-    
-    
-    
+
     /* 드롭다운 기본상품순 */
 
     dropdownItems.forEach(item => {
