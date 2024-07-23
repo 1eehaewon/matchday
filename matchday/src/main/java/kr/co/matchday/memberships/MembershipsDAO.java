@@ -50,7 +50,7 @@ public class MembershipsDAO {
     }
 
     // 페이징을 위한 메서드 추가
-    public List<MembershipsDTO> listWithPaging(Map<String, Integer> params) {
+    public List<MembershipsDTO> listWithPaging(Map<String, Object> params) {
         return sqlSession.selectList("memberships.listWithPaging", params);
     }
 
@@ -59,7 +59,7 @@ public class MembershipsDAO {
     }
 
     // 검색 기능을 위한 메서드 추가
-    public List<MembershipsDTO> search(String membershipname) {
-        return sqlSession.selectList("memberships.search", "%" + membershipname + "%");
+    public List<MembershipsDTO> search(Map<String, Object> params) {
+        return sqlSession.selectList("memberships.search", params);
     }
 }

@@ -120,6 +120,7 @@ public class MembershipticketCont {
 
             String impUid = (String) userMembership.get("imp_uid");
             java.sql.Timestamp purchaseTimestamp = (java.sql.Timestamp) userMembership.get("purchasedate");
+            java.sql.Date endDate = (java.sql.Date) userMembership.get("enddate");
 
             if (impUid == null || impUid.isEmpty()) {
                 logger.error("imp_uid not found for usermembershipid: {}", userMembershipId);
@@ -129,8 +130,14 @@ public class MembershipticketCont {
             // 현재 시간과 결제 시간을 비교
             Date purchaseDate = new Date(purchaseTimestamp.getTime());
             Date currentTime = new Date();
+            Date endDateObj = new Date(endDate.getTime());
 
-            logger.info("Current time: {}, Purchase time: {}", currentTime, purchaseDate);
+            logger.info("Current time: {}, Purchase time: {}, End time: {}", currentTime, purchaseDate, endDateObj);
+
+            if (currentTime.after(endDateObj)) {
+                logger.warn("Refund request after membership end date for usermembershipid: {}", userMembershipId);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("멤버쉽 종료일 이후에는 환불이 불가능합니다.");
+            }
 
             long diffInMillies = currentTime.getTime() - purchaseDate.getTime();
             long diffInMinutes = (diffInMillies / 1000) / 60;
@@ -184,7 +191,6 @@ public class MembershipticketCont {
         }
     }
 
-
     private String getToken() {
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -218,5 +224,23 @@ public class MembershipticketCont {
             logger.error("Failed to get token", e);
         }
         return null;
+    }
+    
+    @PostMapping("/isMembershipPurchased")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> isMembershipPurchased(HttpSession session, @RequestBody Map<String, String> requestData) {
+        String userId = (String) session.getAttribute("userID");
+        String membershipID = requestData.get("membershipID");
+
+        Map<String, Boolean> response = new HashMap<>();
+        if (userId == null || membershipID == null) {
+            response.put("purchased", false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        boolean isPurchased = membershipticketDao.isMembershipPurchased(userId, membershipID);
+        response.put("purchased", isPurchased);
+
+        return ResponseEntity.ok(response);
     }
 }
