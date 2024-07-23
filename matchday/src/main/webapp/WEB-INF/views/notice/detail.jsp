@@ -97,14 +97,15 @@
             <!-- 댓글 끝 -->
         </c:when>
     </c:choose>
+    
   
 </main>
 
-
  <!-- 댓글 관련 자바스크립트 시작 -->
   <script>
-  	  let noticeid = '${notice.noticeid}'; //전역변수. 부모글 번호 
- 
+  	  let noticeid = '${notice.noticeid}'; //전역변수. 부모글 번호
+  	  let loginId = '${sessionScope.userID}'; // JSP 변수로 자바스크립트 변수에 값 전달
+  	  
       $(document).ready(function(){ //상세페이지 로딩시 댓글 목록 함수 출력
           replyList(); 
       });//ready() end
@@ -153,23 +154,16 @@
 				 alert(" 오류 " + error)
 			 }
 			 ,success: function(result){
-				 //alert("성공"+result);
-				 //console.log(result);
 				 let a = ''; //출력할 결과값
 				 $.each(result, function(key, value){
-					 //console.log(key);  //순서 0 1
-					 //console.log(value);//{cno: 1, product_code: 1, content: '비싸요~~', wname: 'test', regdate: '2024-05-23 12:09:40'}
-					 //console.log(value.cno);
-					 //console.log(value.product_code);
-					 //console.log(value.content);
-					 //console.log(value.wname);
-					 //console.log(value.regdate);
 					 
 					 a += '<div class="replyArea" style="border-bottom:1px solid darkgray; margin-bottom:15px;">';
 					 a += '    <div class="replyInfo' + value.replyid + '">';
 					 a += '        댓글번호:' + value.replyid + " / 작성자:" + value.userid + " " + value.createddate;
-					 a += '        <a href="javascript:replyUpdate(' + value.replyid + ',\'' + value.content + '\')">[수정]</a>';
-					 a += '        <a href="javascript:replyDelete(' + value.replyid + ')">[삭제]</a>';
+					 if (value.userid === loginId) { // 수정 및 삭제 링크 표시
+		                    a += '        <a href="javascript:replyUpdate(' + value.replyid + ',\'' + value.content + '\')">[수정]</a>';
+		                    a += '        <a href="javascript:replyDelete(' + value.replyid + ')">[삭제]</a>';
+		             }
 					 a += '    </div>';
 					 a += '    <div class="replyContent' + value.replyid + '">';
 					 a += '        <p>내용:' + value.content + '</p>';
@@ -301,6 +295,7 @@
 		    // $("#winnerModalBody").html(winnerListHTML); // 모달에 출력하는 경우
 		    // $("#winnerModal").modal("show"); // 모달 표시
 		}
+		
 		
   </script>
   <!-- 댓글 관련 자바스크립트 끝 -->

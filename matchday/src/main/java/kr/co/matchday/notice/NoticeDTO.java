@@ -17,8 +17,8 @@ public class NoticeDTO {
 	private String title;
 	private String content;
 	private String userid;
-	private Timestamp createddate;
-	private Timestamp modifieddate;
+	private String createddate;
+	private String modifieddate;
 	private String category;
 
 }//class end

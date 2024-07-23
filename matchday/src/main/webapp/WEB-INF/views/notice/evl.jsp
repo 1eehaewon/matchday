@@ -45,7 +45,7 @@
                                 </c:if>
                                 <td>${row.title}</td>
                                 <td>${row.userid}</td>
-                                <td><fmt:formatDate value="${row.createddate}" pattern="yyyy-MM-dd"/></td>
+                                <td>${row.createddate}</td>
                             </tr>
                         </c:forEach>
                     </tbody>

@@ -82,7 +82,7 @@
         SELECT noticeid, title, userid, createddate
         FROM notices
         WHERE category = 'notice'
-        ORDER BY noticeid
+        ORDER BY noticeid desc
         LIMIT #{startRow}, #{endRow}
     </select>
     
@@ -91,7 +91,7 @@
         SELECT noticeid, title, userid, createddate
         FROM notices
         WHERE category = 'event'
-        ORDER BY noticeid
+        ORDER BY noticeid desc
         LIMIT #{startRow}, #{endRow}
     </select>
 

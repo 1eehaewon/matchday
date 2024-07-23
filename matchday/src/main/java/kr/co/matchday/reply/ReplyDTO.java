@@ -17,6 +17,6 @@ public class ReplyDTO {
 	private int noticeid;
 	private String content;
 	private String userid;
-	private Timestamp createddate;
+	private String createddate;
 
 }//class end
