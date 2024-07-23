@@ -31,6 +31,8 @@ public class TicketsService {
 
     @Autowired
     private TicketsDAO ticketsDao;
+    
+    private static final int PAGE_SIZE = 10;
 
     /**
      * 티켓 결제 페이지로 이동
@@ -585,10 +587,12 @@ public class TicketsService {
             // QR 코드에 포함할 데이터 준비
             Map<String, Object> qrData = new HashMap<>();
             qrData.put("reservationid", reservationid);
-            qrData.put("matchid", reservation.getMatchid());
-            qrData.put("seats", details.stream().map(TicketsDetailDTO::getSeatid).toArray());
-            qrData.put("username", reservation.getUserName());
-            qrData.put("matchdate", reservation.getMatchdate().getTime());
+			/*
+			 * qrData.put("matchid", reservation.getMatchid()); qrData.put("seats",
+			 * details.stream().map(TicketsDetailDTO::getSeatid).toArray());
+			 * qrData.put("username", reservation.getUserName()); qrData.put("matchdate",
+			 * reservation.getMatchdate().getTime());
+			 */
 
             // 데이터 객체를 JSON 문자열로 변환
             ObjectMapper objectMapper = new ObjectMapper();

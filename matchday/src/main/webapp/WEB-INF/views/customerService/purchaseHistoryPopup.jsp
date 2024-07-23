@@ -13,54 +13,60 @@
 <body>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="card shadow-card border-0 rounded-lg mt-5">
                     <div class="card-header custom-card-header">
                         <h2 class="mb-0 fw-bold">구매 내역</h2>
                     </div>
                     <div class="card-body p-5">
-                        <h3>티켓 내역</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>상품명</th>
-                                    <th>주문일자</th>
-                                    <th>선택</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="item" items="${purchaseList}">
-                                    <tr>
-                                        <td>${item.reservationid}</td>
-                                        <td>${item.reservationdate}</td>
-                                        <td>
-                                            <button class="btn btn-primary" onclick="selectItem('${item.reservationid}')">선택</button>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                        <h3>주문 내역</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>주문 ID</th>
-                                    <th>주문일자</th>
-                                    <th>선택</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="order" items="${orderList}">
-                                    <tr>
-                                        <td>${order.orderid}</td>
-                                        <td>${order.orderdate}</td>
-                                        <td>
-                                            <button class="btn btn-primary" onclick="selectItem('${order.orderid}')">선택</button>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>티켓 내역</h3>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>상품명</th>
+                                            <th>주문일자</th>
+                                            <th>선택</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="item" items="${purchaseList}">
+                                            <tr>
+                                                <td>${item.reservationid}</td>
+                                                <td>${item.reservationdate}</td>
+                                                <td>
+                                                    <button class="btn btn-primary" onclick="selectItem('${item.reservationid}')">선택</button>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h3>주문 내역</h3>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>주문 ID</th>
+                                            <th>주문일자</th>
+                                            <th>선택</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="order" items="${orderList}">
+                                            <tr>
+                                                <td>${order.orderid}</td>
+                                                <td>${order.orderdate}</td>
+                                                <td>
+                                                    <button class="btn btn-primary" onclick="selectItem('${order.orderid}')">선택</button>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

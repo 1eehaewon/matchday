@@ -41,10 +41,14 @@
     }
     .modal-content {
         background-color: #fefefe;
-        margin: 15% auto;
+        margin: 5% auto;
         padding: 20px;
         border: 1px solid #888;
-        width: 80%;
+        width: 90%;
+        max-width: 450px; /* 티켓 페이지와 맞게 조정 */
+        height: auto;
+        max-height: 90%;
+        overflow-y: auto; /* 모달 내용이 길어질 경우 스크롤 */
     }
     .close {
         color: #aaa;
@@ -70,19 +74,19 @@
         <div class="card-body">
             <table class="table table-bordered">
                 <tr>
-                    <th>예약자</th>
+                    <th>이름</th>
                     <td>${reservation.userName}</td>
                 </tr>
                 <tr>
-                    <th>예약번호</th>
+                    <th>예매번호</th>
                     <td>${reservation.reservationid}</td>
                 </tr>
                 <tr>
-                    <th>이용기간</th>
-                    <td><fmt:formatDate value="${reservation.matchdate}" pattern="yyyy년 MM월 dd일 HH:mm:ss"/></td>
+                    <th>경기일자</th>
+                    <td id="match-date"><fmt:formatDate value="${reservation.matchdate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                 </tr>
                 <tr>
-                    <th>장소</th>
+                    <th>경기장</th>
                     <td>${reservation.stadiumName}</td>
                 </tr>
                 <tr>
@@ -100,7 +104,7 @@
                 모바일 티켓
             </div>
             <div class="card-body text-center">
-                <button id="showMobileTicket" class="btn btn-primary">모바일 티켓 확인</button>
+                <button id="showMobileTicket" class="btn btn-primary" <c:if test="${reservation.reservationstatus == 'Cancelled'}">disabled</c:if>>모바일 티켓 확인</button>
             </div>
         </div>
     </c:if>
@@ -112,7 +116,7 @@
         <div class="card-body">
             <table class="table table-bordered">
                 <tr>
-                    <th>예약일</th>
+                    <th>예매일</th>
                     <td>${reservation.reservationdate}</td>
                 </tr>
                 <tr>
@@ -174,37 +178,13 @@
 
     <div class="card mb-4">
         <div class="card-header">
-            예약 내역
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>좌석 ID</th>
-                        <th>가격</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="detail" items="${reservation.details}">
-                        <tr>
-                            <td>${detail.seatid}</td>
-                            <td>${detail.price}원</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
             예약 취소 유의사항
         </div>
         <div class="card-body">
             <table class="table table-bordered">
                 <tr>
                     <th>취소 마감시간</th>
-                    <td><fmt:formatDate value="${reservation.cancelDeadline}" pattern="yyyy년 MM월 dd일 HH:mm:ss"/></td>
+                    <td id="cancelDeadline"></td>
                 </tr>
             </table>
             <p class="text-danger mt-3">취소 유의사항을 여기에 추가하세요.</p>
@@ -229,7 +209,7 @@
 <div id="mobileTicketModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <iframe src="/tickets/mobileTicket?reservationid=${reservation.reservationid}" style="width:100%; height:500px;"></iframe>
+        <iframe id="mobileTicketIframe" src="" style="width:100%; height:100%;"></iframe>
     </div>
 </div>
 
@@ -238,23 +218,56 @@
         var modal = document.getElementById("mobileTicketModal");
         var btn = document.getElementById("showMobileTicket");
         var span = document.getElementsByClassName("close")[0];
+        var iframe = document.getElementById("mobileTicketIframe");
+        var cancelPaymentButton = document.getElementById('cancel-payment');
+        var cancelDeadline;
 
         btn.onclick = function() {
-            modal.style.display = "block";
+            if (!btn.disabled) {
+                iframe.src = '/tickets/mobileTicket?reservationid=${reservation.reservationid}';
+                modal.style.display = "block";
+            }
         }
 
         span.onclick = function() {
             modal.style.display = "none";
+            iframe.src = "";
         }
 
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
+                iframe.src = "";
             }
         }
 
+        function updateCancellationDeadline(matchDateStr) {
+            var matchDateParts = matchDateStr.split(' ');
+            var dateParts = matchDateParts[0].split('-');
+            var timeParts = matchDateParts[1].split(':');
+            var matchDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]);
+            if (!isNaN(matchDate)) {
+                matchDate.setDate(matchDate.getDate() - 3);
+                matchDate.setHours(12, 0, 0, 0);
+                cancelDeadline = matchDate;
+                var options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+                var formattedDate = new Intl.DateTimeFormat('ko-KR', options).format(matchDate);
+                document.getElementById('cancelDeadline').textContent = formattedDate + ' 까지 취소가능';
+            } else {
+                document.getElementById('cancelDeadline').textContent = '날짜 오류';
+            }
+        }
+
+        var matchDate = document.getElementById('match-date').textContent;
+        updateCancellationDeadline(matchDate);
+
         $('#cancel-payment').click(function() {
-            if (${reservation.reservationstatus == 'Cancelled'}) {
+            var now = new Date();
+            if (now > cancelDeadline) {
+                alert('결제취소 가능기간이 지났습니다.');
+                return;
+            }
+            if ('${reservation.reservationstatus}' === 'Cancelled') {
                 alert('이미 결제취소 된 건 입니다.');
                 return;
             }

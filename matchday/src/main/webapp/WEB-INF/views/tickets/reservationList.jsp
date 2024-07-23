@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ include file="../header.jsp" %>
 <style>
     .mypage-container {
@@ -83,21 +85,19 @@
                 <thead>
                     <tr>
                         <th>예매일</th>
-                        <th>예약번호</th>
-                        <th>상품명</th>
-                        <th>이용일/매수</th>
-                        <th>취소가능일</th>
+                        <th>예매번호</th>
+                        <th>경기명</th>
+                        <th>경기일/매수</th>
                         <th>현재상태</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach var="reservation" items="${reservations}">
                         <tr>
-                            <td>${reservation.reservationdate}</td>
+                            <td><fmt:formatDate value="${reservation.reservationdate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                             <td><a href="/tickets/reservationDetail?reservationid=${reservation.reservationid}" class="link-primary">${reservation.reservationid}</a></td>
                             <td>${reservation.hometeamid} vs ${reservation.awayteamid}</td>
-                            <td>${reservation.matchdate} / ${reservation.quantity}</td>
-                            <td>${reservation.cancellationdate}</td>
+                            <td><fmt:formatDate value="${reservation.matchdate}" pattern="yyyy-MM-dd HH:mm:ss"/> / ${reservation.quantity}</td>
                             <td>
                                 <span class="badge ${reservation.reservationstatus == 'Confirmed' ? 'badge-success' : 'badge-danger'}">${reservation.reservationstatus == 'Confirmed' ? '결제완료' : '결제취소'}</span>
                             </td>
