@@ -54,8 +54,8 @@
                             <select name="category" class="form-control" id="category">
                                 <option value="">카테고리 선택</option>
                                 <option value="Uniform" <c:if test="${goodsDto.category == 'Uniform'}">selected</c:if>>Uniform</option>
-                                <option value="Hairband" <c:if test="${goodsDto.category == 'Hairband'}">selected</c:if>>Hairband</option>
-                                <option value="Lightstick" <c:if test="${goodsDto.category == 'Lightstick'}">selected</c:if>>Lightstick</option>
+                                <option value="Cap" <c:if test="${goodsDto.category == 'Cap'}">selected</c:if>>Cap</option>
+                                <option value="Bag" <c:if test="${goodsDto.category == 'Bag'}">selected</c:if>>Bag</option>
                                 <option value="Muffler" <c:if test="${goodsDto.category == 'Muffler'}">selected</c:if>>Muffler</option>
                                 <option value="Keyring" <c:if test="${goodsDto.category == 'Keyring'}">selected</c:if>>Keyring</option>
                                 <option value="Soccerball" <c:if test="${goodsDto.category == 'Soccerball'}">selected</c:if>>Soccerball</option>

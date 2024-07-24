@@ -56,11 +56,12 @@ public class GoodsCont {
         return mav;
     }//list end*/
 
-	@RequestMapping("/list")
 	/* @GetMapping("/list") */
-	public ModelAndView list(@RequestParam(defaultValue = "1") int page, HttpSession session) {
-	    int pageSize = 16;
-	    int offset = (page - 1) * pageSize;
+	@RequestMapping("/list")
+	@ResponseBody
+	public ModelAndView list(@RequestParam(defaultValue = "all") String category,@RequestParam(defaultValue = "1") int page, HttpSession session) {
+	    int pageSize = 16; // 페이지 당 게시글 수
+	    int offset = (page - 1) * pageSize; // 페이징 시작 위치
 
 	    int totalRecords = goodsDao.countGoods();
 	    int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
@@ -69,15 +70,17 @@ public class GoodsCont {
 	    params.put("limit", pageSize);
 	    params.put("offset", offset);
 
+	    // ModelAndView 객체 생성 및 데이터를 추가
 	    ModelAndView mav = new ModelAndView();
 	    mav.setViewName("goods/list");
 	    mav.addObject("list", goodsDao.listWithPaging(params));
+	    mav.addObject("category", category);
 	    mav.addObject("currentPage", page);
 	    mav.addObject("totalPages", totalPages);
 
 	    // 세션에서 userID를 가져와서 사용자가 로그인한 상태인지 확인
-	    String userID = (String) session.getAttribute("userID");
-	    mav.addObject("userID", userID);
+	    //String userID = (String) session.getAttribute("userID");
+	    //mav.addObject("userID", userID);
 
 	    return mav;
 	}//list end

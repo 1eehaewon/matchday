@@ -230,9 +230,9 @@
 			<li data-name="전체" data-category="All">전체</li>
 			<li data-name="키링" data-category="Keyring">키링</li>
 			<li data-name="유니폼" data-category="Uniform">유니폼</li>
-			<li data-name="헤어밴드" data-category="Hairband">헤어밴드</li>
+			<li data-name="모자" data-category="Cap">모자</li>
 			<li data-name="머플러" data-category="Muffler">머플러</li>
-			<li data-name="응원봉" data-category="Lightstick">응원봉</li>
+			<li data-name="가방" data-category="Bag">가방</li>
 			<li data-name="축구공" data-category="Soccerball">축구공</li>
 		</ul>
 		<br>

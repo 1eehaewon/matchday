@@ -52,8 +52,8 @@
                             <select name="category" class="form-control" id="category">
                                 <option value="">카테고리 선택</option>
                                 <option value="Uniform">Uniform</option>
-                                <option value="Hairband">Hairband</option>
-                                <option value="Lightstick">Lightstick</option>
+                                <option value="Cap">Cap</option>
+                                <option value="Bag">Bag</option>
                                 <option value="Muffler">Muffler</option>
                                 <option value="Keyring">Keyring</option>
                                 <option value="Soccerball">Soccerball</option>
