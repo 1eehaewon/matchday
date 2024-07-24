@@ -21,6 +21,6 @@ public class CouponDTO {
 	private Date enddate;
 	private String applicableproduct;
 	private int discountrate;
-	
+	private boolean isDownloaded;
 	
 }//class end

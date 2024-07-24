@@ -42,7 +42,10 @@
         JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
         WHERE c.userid = #{userid}
           AND cm.applicableproduct = #{applicableProduct}
-          AND c.usage = #{usage}
+          <if test="usage != null">
+          	AND c.usage = #{usage}
+          </if>
+          
     </select>
 
     <!-- 쿠폰 ID로 할인율 가져오기 -->
@@ -93,7 +96,7 @@
     
     <!-- 주문 ID로 주문 상세 정보 조회 -->
     <select id="getOrderDetailByOrderId" parameterType="string" resultType="kr.co.matchday.order.OrderdetailDTO">
-        SELECT o.*, od.*
+        SELECT o.couponid, od.*
 		FROM orderdetail od
 		JOIN `order` o ON o.orderid = od.orderid
 		WHERE o.orderid = #{orderid}

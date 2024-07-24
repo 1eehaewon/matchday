@@ -507,11 +507,14 @@
             cartIdList.push(row.querySelector('td[data-cartid]').dataset.cartid);
         });
 
+        $("#form").remove();
+        
         var form = document.createElement('form');
         form.method = 'GET';
         form.action = '${pageContext.request.contextPath}/cart/cartPayment';
         form.target = 'cartPaymentPopup';
-
+        form.id = "form";
+        
         var cartidInput = document.createElement('input');
         cartidInput.type = 'hidden';
         cartidInput.name = 'cartid';
@@ -555,12 +558,38 @@
         form.appendChild(totalPriceInput);
 
         document.body.appendChild(form);
-        var width = 1200;
-        var height = 900;
-        var left = (screen.width - width) / 2;
-        var top = (screen.height - height) / 2;
-        window.open('', "cartPaymentPopup", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
-        form.submit();
+        
+        // 재고조회 통과해야 결제창 호출 
+        console.log(form);
+        
+        var formData = $("#form").serialize();
+        
+        console.log(formData);
+        
+        $.ajax({
+            url: '/cart/cartQuantitychk',
+            type: 'GET',
+            data: formData,
+            success: function(response) {
+            	console.log(response);
+                if (response == "true") {
+                	var width = 1200;
+                    var height = 900;
+                    var left = (screen.width - width) / 2;
+                    var top = (screen.height - height) / 2;
+                    window.open('', "cartPaymentPopup", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",scrollbars=yes");
+                    form.submit();
+                } else {
+                    alert(response);
+                }
+            },
+            error: function(error) {
+                alert('결제 취소 요청 중 오류가 발생했습니다.');
+            }
+        });
+        
+        
+        
     }
  	
  	// 숨겨진 입력 필드 생성

@@ -83,38 +83,48 @@
                 </tr>
                 <tr>
                     <th>배송 시작 일자</th>
-                    <td>${order.shippingstartdate}</td>
-                </tr>
-                <tr>
-                    <th>배송 종료 일자</th>
-                    <td>${order.shippingenddate}</td>
+                    	<td>
+				        <c:choose>
+				            <c:when test="${fn:trim(order.shippingstartdate) <= fn:trim(currentDateStr)}">
+				                <fmt:formatDate value="${order.shippingstartdate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				            </c:when>
+				            <c:otherwise>
+				
+				            </c:otherwise>
+				        </c:choose>
+					    </td>
+					</tr>
+					<tr>
+				    <th>배송 종료 일자</th>
+					    <td>
+				        <c:choose>
+				            <c:when test="${fn:trim(order.shippingenddate) <= fn:trim(currentDateStr)}">
+				                <fmt:formatDate value="${order.shippingenddate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				            </c:when>
+				            <c:otherwise>
+				
+				            </c:otherwise>
+				        </c:choose>
+				    	</td>
                 </tr>
                 <tr>
                     <th>배송 상태</th>
                     <td>
-                        <%-- <c:set var="currentDate" value="<%= new java.util.Date() %>" /> --%>
                         <c:choose>
-                            <c:when test="${currentDate.after(order.shippingenddate)}">
-                                배송완료
-                            </c:when>
-                            <c:otherwise>
-                                배송중
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <%-- <td>
-                    	<c:choose>
                             <c:when test="${order.shippingstatus == 'Completed'}">
                                 배송완료
                             </c:when>
                             <c:when test="${order.shippingstatus == 'Pending'}">
                                 배송중
                             </c:when>
+                            <c:when test="${order.shippingstatus == 'Preparing for Shipment'}">
+                                배송 준비 중
+                            </c:when>
                             <c:otherwise>
-                                ${order.shippingstatus}
+                                
                             </c:otherwise>
                         </c:choose>
-                    </td> --%>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -165,7 +175,9 @@
 					    <c:choose>
 					        <c:when test="${order.couponid != null}">
 					            <c:forEach items="${couponList}" var="coupon">
-				                    ${coupon.couponname} / ${coupon.discountrate}%
+					            	<c:if test="${order.couponid eq coupon.couponid}">
+				                    	${coupon.couponname} / ${coupon.discountrate}%
+					            	</c:if>
 					            </c:forEach>
 					        </c:when>
 					        <c:otherwise>
@@ -175,7 +187,7 @@
 					</td>
                 </tr>
                 <tr>
-                    <th>할인액</th>
+                    <th>쿠폰 할인액</th>
                     <td><fmt:formatNumber value="${order.discountprice}" pattern="#,###원"/></td>
                 </tr>
                 <tr>

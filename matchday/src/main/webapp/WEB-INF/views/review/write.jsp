@@ -151,9 +151,9 @@
                                     <th scope="row">주문 ID</th>
                                     <td>
                                         <select name="orderid" id="orderid" class="form-control">
-                                            <option value="">주문 번호를 확인하세요</option>
+                                            <option value="">주문 번호를 선택해주세요.</option>
                                             <c:forEach items="${orderList}" var="order">
-                                                <option value="${order.orderid}">${order.orderid}</option>
+                                                	<option value="${order.orderid}">${order.orderid}</option>
                                             </c:forEach>
                                         </select>
                                     </td>
@@ -175,9 +175,9 @@
                                     <td id="uploadBox">
                                         <div class="file_upload_sec" id="uploadSection">
                                             <input type="file" id="img" name="img" class="form-control" title="찾아보기">
-                                            <div class="btn_upload_box">
+                                            <!-- <div class="btn_upload_box">
                                                 <button type="button" id="addUploadBtn" class="btn btn-outline-secondary btn_gray_big"><span>+ 추가</span></button>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </td>                                   
                                 </tr>
@@ -233,11 +233,17 @@
         }
 
         function validateForm() {
+        	var orderid = document.getElementById('orderid').value.trim();
             var title = document.getElementById('title').value.trim();
             var content = document.getElementById('content').value.trim();
             var radios = document.getElementsByName('rating');
             var ratingChecked = false;
 
+            if (orderid === "") {
+            	alert('주문 번호를 선택 해주세요.');
+                return false;
+            }
+            
             if (title.length < 2) {
                 alert('제목은 두 글자 이상이어야 합니다.');
                 return false;

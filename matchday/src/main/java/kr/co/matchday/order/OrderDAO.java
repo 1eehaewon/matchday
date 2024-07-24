@@ -64,6 +64,13 @@ public class OrderDAO {
         params.put("usage", "Not Used");
         return sqlSession.selectList("kr.co.matchday.order.OrderDAO.getCouponsByUserId", params);
     }
+    
+    public List<CouponDTO> getAllCouponsByUserId(String userid) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userid", userid);
+        params.put("applicableProduct", "Goods");
+        return sqlSession.selectList("kr.co.matchday.order.OrderDAO.getCouponsByUserId", params);
+    }
 
     public int getDiscountRateByCouponId(String couponid) {
         return sqlSession.selectOne("kr.co.matchday.order.OrderDAO.getDiscountRateByCouponId", couponid);

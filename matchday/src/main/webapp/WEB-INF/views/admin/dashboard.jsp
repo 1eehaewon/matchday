@@ -108,8 +108,7 @@
 						<div class="collapse" id="collapsePointsLayouts"
 							aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
 							<nav class="sb-sidenav-menu-nested nav">
-								<a class="nav-link" href="/admin/point/setting">포인트 설정</a> <a
-									class="nav-link" href="/admin/point/history">포인트 내역</a>
+								<a class="nav-link" href="/admin/point/setting">포인트 설정</a> 
 							</nav>
 						</div>
 
@@ -119,6 +118,14 @@
 								<i class="fas fa-chart-area"></i>
 							</div> 매출현황
 						</a>
+						
+						<div class="sb-sidenav-menu-heading">경기장</div>
+						<a class="nav-link" href="/admin/stadium">
+							<div class="sb-nav-link-icon">
+								<i class="fas fa-chart-area"></i>
+							</div> 경기장등록
+						</a>
+						
 					</div>
 				</div>
 				<div class="sb-sidenav-footer">

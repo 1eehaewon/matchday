@@ -129,25 +129,6 @@ public class CartCont {
         List<Integer> priceList = Arrays.asList(price.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
         List<Integer> totalPriceList = Arrays.asList(totalPrice.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
         
-        // 재고 수량 검증
-        for (int i = 0; i < goodsidList.size(); i++) {
-            String itemGoodsId = goodsidList.get(i);
-            String itemSize = sizeList.get(i);
-            int requestedQuantity = quantityList.get(i);
-
-            List<StockDTO> stockList = goodsDao.stocklist(itemGoodsId);
-            int availableStock = stockList.stream()
-                .filter(stock -> stock.getSize().equals(itemSize))
-                .mapToInt(StockDTO::getStockquantity)
-                .findFirst()
-                .orElse(0);
-
-            if (requestedQuantity > availableStock) {
-                model.addAttribute("error", "상품 " + itemGoodsId + "의 재고가 부족합니다.");
-                return "error";
-            }
-        }
-        
         // 장바구니에서 선택된 항목 조회 및 모델에 추가
         List<GoodsDTO> goodsList = goodsidList.stream().map(goodsDao::detail).collect(Collectors.toList());
         model.addAttribute("goodsid", goodsid);
@@ -175,5 +156,52 @@ public class CartCont {
         model.addAttribute("totalpoints", mypageDto.getTotalpoints());
 
         return "cart/cartPayment";
+    }
+    
+    @GetMapping("/cartQuantitychk")
+    @ResponseBody
+    public String cartQuantitychk(
+    		@RequestParam("cartid") String cartid,
+            @RequestParam("goodsid") String goodsid,
+            @RequestParam("size") String size,
+            @RequestParam("quantity") String quantity,
+            @RequestParam("price") String price,
+            @RequestParam("deliveryfee") String deliveryfee,
+            @RequestParam("totalPrice") String totalPrice,
+            HttpSession session, Model model) {
+        String userid = (String) session.getAttribute("userID");
+        if (userid == null) {
+            return "redirect:/member/login";
+        }
+
+        List<String> goodsidList = Arrays.asList(goodsid.split(","));
+        List<String> sizeList = Arrays.asList(size.split(","));
+        List<Integer> quantityList = Arrays.asList(quantity.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> priceList = Arrays.asList(price.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+        List<Integer> totalPriceList = Arrays.asList(totalPrice.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList());
+        
+        // 재고 수량 검증
+        for (int i = 0; i < goodsidList.size(); i++) {
+            String itemGoodsId = goodsidList.get(i);
+            String itemSize = sizeList.get(i);
+            int requestedQuantity = quantityList.get(i);
+            	
+         
+            List<StockDTO> stockList = goodsDao.stocklist(itemGoodsId);
+            for (int j = 0; j < stockList.size(); j++) {
+            	int availableStock = 0;
+            	if(stockList.get(j).getSize().equals(itemSize)) {
+            		availableStock = stockList.get(j).getStockquantity();
+            		
+            		if (requestedQuantity > availableStock) {
+    	                model.addAttribute("error", "상품 " + itemGoodsId + "의 재고가 부족합니다.");
+    	                return "상품 " + itemGoodsId + "의 재고가 부족합니다.";
+    	            }
+            	}
+	            
+            }
+        }
+        
+        return "true";
     }
 }
