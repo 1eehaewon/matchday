@@ -124,9 +124,9 @@ $(document).ready(function() {
                     labels: ['굿즈', '티켓', '멤버쉽'],
                     datasets: [{
                         data: [
-                            data.total_order_amount,
-                            data.total_ticket_amount,
-                            data.total_membership_amount
+                        	data.total_order_amount || 0,
+                            data.total_ticket_amount || 0,
+                            data.total_membership_amount || 0
                         ],
                         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
                     }]
@@ -141,7 +141,7 @@ $(document).ready(function() {
                                     let percentage = Math.round((value / sum) * 100) + '%';
                                     return percentage;
                                 } else {
-                                    return percentage;
+                                    return '0%';
                                 }
                             },
                             color: '#fff',
