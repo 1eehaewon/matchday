@@ -69,6 +69,7 @@
 		c.userid = #{userid}
 	</select>
 
+	<!-- 보유한 쿠폰목록 -->
 	<select id="selectReceivedCoupons" parameterType="String"
 		resultType="kr.co.matchday.coupon.CouponDTO">
 		SELECT c.couponid, cm.couponname, c.usage, cm.startdate,
@@ -80,6 +81,7 @@
 		WHERE c.userid = #{userid}
 	</select>
 
+	<!-- 다운로드가능한 쿠폰 목록 -->
 	<select id="selectAvailableCoupons"
 		resultType="kr.co.matchday.admin.CouponMasterDTO">
 		SELECT coupontypeid, couponname, startdate, enddate,
@@ -92,74 +94,75 @@
 	<!-- insertUserCoupon 쿼리 -->
 	<insert id="insertUserCoupon"
 		parameterType="kr.co.matchday.coupon.CouponDTO">
-		INSERT INTO coupon (couponid, coupontypeid, userid, `usage`)
+		INSERT INTO coupon (couponid, coupontypeid, userid,
+		`usage`)
 		VALUES (#{couponid}, #{coupontypeid}, #{userid}, #{usage})
 	</insert>
 
-	<!-- selectCouponByType 쿼리 -->
+	<!-- 다운로드할때 있는 쿠폰인지 확인 -->
 	<select id="selectCouponByType"
 		resultType="kr.co.matchday.admin.CouponMasterDTO">
 		SELECT *
 		FROM couponmaster
-		WHERE coupontypeid = #{coupontypeid}
+		WHERE coupontypeid =
+		#{coupontypeid}
 	</select>
-	
+
+	<!-- 이미 다운로드했는지 확인 -->
 	<select id="checkUserDownloadedCoupon" resultType="int">
-        SELECT COUNT(*)
-        FROM coupon
-        WHERE userid = #{userid} AND coupontypeid = #{coupontypeid}
-    </select>
+		SELECT COUNT(*)
+		FROM coupon
+		WHERE userid = #{userid} AND coupontypeid = #{coupontypeid}
+	</select>
 
 	<!-- 사용자가 보유한 쿠폰 목록에서 만료된 쿠폰 제거 쿠폰마스터테이블 조인해서 enddate 가져옴 -->
-    <delete id="deleteExpiredCoupons">
+	<delete id="deleteExpiredCoupons">
         <![CDATA[
             DELETE c
             FROM coupon c
             INNER JOIN couponmaster cm ON c.coupontypeid = cm.coupontypeid
             WHERE cm.enddate < CURDATE()
         ]]>
-    </delete>
-    
-    <!-- 사용자의 총 포인트 계산 -->
-    <!-- <select id="getTotalPoints" resultType="int" parameterType="String">
-        SELECT
-            COALESCE(SUM(CASE WHEN pointtype IN('적립', '적립취소', '사용취소', '사용') THEN pointamount ELSE 0 END), 0) -
-            COALESCE(SUM(CASE WHEN pointtype = '사용' THEN pointamount ELSE 0 END), 0) AS totalpoints
-        FROM
-            pointhistory
-        WHERE
-            userid = #{userid}
-    </select> -->
-    
-    <select id="getTotalPoints" resultType="int" parameterType="String">
-        SELECT
-            COALESCE(SUM(CASE WHEN pointtype IN('적립', '적립취소', '사용취소', '사용') THEN pointamount ELSE 0 END), 0) AS totalpoints
-        FROM
-            pointhistory
-        WHERE
-            userid = #{userid}
-    </select>
+	</delete>
+
+	<!-- 사용자의 총 포인트 계산 -->
+	<!-- <select id="getTotalPoints" resultType="int" parameterType="String"> 
+		SELECT COALESCE(SUM(CASE WHEN pointtype IN('적립', '적립취소', '사용취소', '사용') THEN 
+		pointamount ELSE 0 END), 0) - COALESCE(SUM(CASE WHEN pointtype = '사용' THEN 
+		pointamount ELSE 0 END), 0) AS totalpoints FROM pointhistory WHERE userid 
+		= #{userid} </select> -->
+
+	<select id="getTotalPoints" resultType="int"
+		parameterType="String">
+		SELECT
+		COALESCE(SUM(CASE WHEN pointtype IN('적립', '적립취소', '사용취소', '사용') THEN pointamount ELSE 0
+		END), 0) AS totalpoints
+		FROM
+		pointhistory
+		WHERE
+		userid = #{userid}
+	</select>
 
 	<!-- totalpoints 업데이트 -->
-    <update id="updateTotalPoints">
-        UPDATE users
-        SET totalpoints = #{totalpoints}
-        WHERE userid = #{userid}
-    </update>
+	<update id="updateTotalPoints">
+		UPDATE users
+		SET totalpoints = #{totalpoints}
+		WHERE userid = #{userid}
+	</update>
 
 	<!-- totalpoints 업데이트 -->
 	<update id="buyupdateTotalPoints">
-	    UPDATE users u
-	    JOIN (
-	        SELECT userid, SUM(usedpoints) AS totalUsedPoints
-	        FROM `order`
-	        WHERE orderid = #{orderid}
-	        GROUP BY userid
-	    ) o ON u.userid = o.userid
-	    SET u.totalpoints = u.totalpoints - o.totalUsedPoints
-	    WHERE u.userid = #{userid};
+		UPDATE users u
+		JOIN (
+		SELECT userid, SUM(usedpoints) AS totalUsedPoints
+		FROM `order`
+		WHERE orderid = #{orderid}
+		GROUP BY userid
+		) o ON u.userid = o.userid
+		SET u.totalpoints = u.totalpoints - o.totalUsedPoints
+		WHERE u.userid = #{userid};
 	</update>
 
-    
+
 </mapper>
 
