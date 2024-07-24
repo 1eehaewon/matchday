@@ -499,7 +499,7 @@ table tr:hover {
             </ul> <!-- 상세보기 탭 -->
 
             <div id="info-content"> <!-- 상세보기 내용 -->
-                <div id="info01" class="tabcont on"> <!-- 상세정보 내용 -->
+                <div id="info01" class="tabcont on" style="text-align: center;"> <!-- 상세정보 내용 -->
                     ${goodsDto.description}
                 </div>
                 <div id="info02" class="tabcont"> <!-- 상품 주의사항 내용 -->
