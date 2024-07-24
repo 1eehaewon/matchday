@@ -287,12 +287,15 @@
     padding: 10px;
     border: 1px solid #ccc;
     margin-top: 10px;
+    margin-right: 200px;
+    margin-left: 200px;
     background-color: #fff;
 }
 
 .review-image {
-    max-width: 100%;
+    max-width: 500px;
     margin-bottom: 10px;
+    border: 1px solid #ccc;
 }
 
 .review-content {
@@ -515,7 +518,7 @@ table tr:hover {
                         <div id="review" class="tab-content active">
                             <table>
                                 <thead>
-                                      <tr>
+                                    <tr>
                                         <th>평점</th>
                                         <th>제목</th>
                                         <th>작성자</th>
@@ -530,7 +533,7 @@ table tr:hover {
                                                 <td>${review.rating}점</td>
                                                 <td>${review.title}</td>
                                                 <td>${review.userid}</td>
-                                                <td>${review.reviewdate}</td>
+                                                <td><fmt:formatDate value="${review.reviewdate}" pattern="yyyy-MM-dd"/></td>
                                                 <td>
                                                     <c:if test="${sessionScope.grade == 'M' || sessionScope.userID == review.userid}">
                                                         <input type="button" value="리뷰삭제" onclick="deleteReview('${review.reviewid}')" class="btn btn-danger">
@@ -541,7 +544,7 @@ table tr:hover {
                                                 <td colspan="5">
                                                     <div class="review-content-wrapper">
                                                         <img src="${pageContext.request.contextPath}/storage/review/${review.filename}" alt="Review Image" class="review-image">
-                                                        <div class="review-content">${review.content}</div>                                                     
+                                                        <div class="review-content">리뷰 내용 : ${review.content}</div>                                                     
                                                     </div>
                                                 </td>
                                             </tr>
@@ -644,7 +647,7 @@ table tr:hover {
     function buyopenPopup(url) { //구매하기 팝업
         var selectSize = document.getElementById('size');
         var quantity = parseInt(document.getElementById('quantity-input').value);
-        var price = ${goodsDto.price}; ${cart.unitprice}
+        var price = ${goodsDto.price};
         var totalPrice = quantity * price;
 
         // 선택햔 사이즈 재고 체크
@@ -818,15 +821,25 @@ table tr:hover {
 
     // 초기로 'review' 탭의 콘텐츠를 보이도록 설정
     document.getElementById('review').style.display = 'block';
-
+    
     function toggleReviewDetails(reviewid) {
+        var reviewDetails = document.getElementById(reviewid);
+        if (reviewDetails.style.display === 'none') {
+            reviewDetails.style.display = 'table-row';
+        } else {
+            reviewDetails.style.display = 'none';
+        }
+    }
+
+    /* function toggleReviewDetails(reviewid) {
         var reviewDetails = document.getElementById(reviewid);
         if (reviewDetails.style.display === 'none' || reviewDetails.style.display === '') {
             reviewDetails.style.display = 'block';
         } else {
             reviewDetails.style.display = 'none';
         }
-    }
+    } */
+    
 
     function writeopenPopup(url) { // 상품 쓰기 팝업
         if (isLoggedIn()) {

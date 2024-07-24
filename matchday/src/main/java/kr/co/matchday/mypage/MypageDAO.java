@@ -4,6 +4,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.matchday.order.OrderDTO;
+
 @Repository
 public class MypageDAO {
 	public MypageDAO() {
@@ -33,11 +35,9 @@ public class MypageDAO {
         return sqlSession.selectOne("mypage.getTotalPoints", userid);
     }
     
-    public void buyupdateTotalPoints(String userid) {
-        Integer usedPoints = sqlSession.selectOne("getUsedPointsByUserId", userid);
-        if (usedPoints == null) {
-            usedPoints = 0; // 또는 적절한 기본값
-        }
+    public void buyupdateTotalPoints(OrderDTO orderDto) {
+        sqlSession.update("buyupdateTotalPoints", orderDto);
+        
         // 이어서 totalpoints 업데이트 로직
     }
 

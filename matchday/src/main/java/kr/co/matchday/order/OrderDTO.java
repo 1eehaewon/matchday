@@ -22,9 +22,11 @@ public class OrderDTO {
     private String couponid; // 쿠폰 ID
     private int usedpoints; // 사용한 포인트
     private int finalpaymentamount; // 최종 결제 금액
-    private Timestamp shippingstartdate; // 배송 시작 날짜
-    private Timestamp shippingenddate; // 배송 종료 날짜
-    private String shippingstatus; // 배송 상태 ('Pending', 'Completed')
+    private Date shippingstartdate; // 배송 시작 날짜
+    private Date shippingenddate; // 배송 종료 날짜
+    //private Timestamp shippingstartdate; // 배송 시작 날짜
+    //private Timestamp shippingenddate; // 배송 종료 날짜
+    private String shippingstatus; // 배송 상태 ('Preparing for Shipment', 'Pending', 'Completed')
     private String recipientname; // 수령인 이름
     private String recipientemail; // 수령인 이메일
     private String recipientphone; // 수령인 전화번호

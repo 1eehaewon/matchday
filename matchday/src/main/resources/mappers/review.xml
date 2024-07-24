@@ -66,8 +66,9 @@
     
     <!-- 특정 상품에 대한 주문 목록 조회 -->
     <select id="getOrderListByGoodsId" parameterType="map" resultType="kr.co.matchday.order.OrderDTO">
-        SELECT orderid, goodsid
-        FROM `order`
+        SELECT o.orderid, od.goodsid
+		FROM orderdetail od
+		JOIN `order` o ON o.orderid = od.orderid
         WHERE goodsid = #{goodsid} AND userid = #{userid}
     </select>
 
