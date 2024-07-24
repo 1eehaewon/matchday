@@ -123,7 +123,7 @@
 		SET grade = 'X'
 		WHERE userid = #{userid}
 	</update>
-	
+
 	<!-- 회원 정지 해제 -->
 	<update id="unsuspendUser">
 		UPDATE users
@@ -185,24 +185,29 @@
 	<!-- 사용자구매내역 -->
 	<select id="getPurchaseHistory" resultType="map">
 		SELECT
-		'order' AS type,
+		'order' AS
+		type,
 		od.goodsid AS itemName,
 		o.finalpaymentamount AS amount,
 		od.quantity AS quantity,
 		o.orderdate AS date
 		FROM orderdetail od
-		JOIN `order` o ON o.orderid = od.orderid
-		JOIN goods g ON od.goodsid = g.goodsid
+		JOIN
+		`order` o ON o.orderid = od.orderid
+		JOIN goods g ON od.goodsid =
+		g.goodsid
 		WHERE o.userid = #{userId}
 		UNION ALL
 		SELECT
 		'ticket' AS type,
 		t.matchid AS itemName,
 		t.finalpaymentamount AS amount,
-		t.quantity AS quantity,
+		t.quantity AS
+		quantity,
 		t.reservationdate AS date
 		FROM tickets t
-		JOIN matches m ON t.matchid = m.matchid
+		JOIN matches m ON
+		t.matchid = m.matchid
 		WHERE t.userid = #{userId}
 		UNION ALL
 		SELECT
@@ -212,61 +217,73 @@
 		NULL AS quantity,
 		um.purchasedate AS date
 		FROM usermemberships um
-		JOIN memberships mb ON um.membershipid = mb.membershipid
-		WHERE um.userid = #{userId}
+		JOIN
+		memberships mb ON um.membershipid = mb.membershipid
+		WHERE um.userid =
+		#{userId}
 	</select>
 
 	<!-- 일별매출 차트 -->
 	<select id="getDailySales" resultType="map">
-		SELECT
-		d.date,
-		COALESCE(SUM(o.total_order_amount), 0) +
-		COALESCE(SUM(m.total_membership_amount), 0) +
-		COALESCE(SUM(t.total_ticket_amount), 0) AS total_sales
-		FROM (
-		SELECT CURDATE() AS date
-		UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
-		UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
-		UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
-		UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
-		UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
-		UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
-		) AS d
-		LEFT JOIN (
-		SELECT
-		DATE(orderdate) AS date,
-		SUM(finalpaymentamount) AS total_order_amount
-		FROM `order`
-		GROUP BY DATE(orderdate)
-		) o ON d.date = o.date
-		LEFT JOIN (
-		SELECT
-		DATE(purchasedate) AS date,
-		SUM(m.price) AS total_membership_amount
-		FROM usermemberships um
-		JOIN memberships m ON um.membershipid = m.membershipid
-		GROUP BY DATE(purchasedate)
-		) m ON d.date = m.date
-		LEFT JOIN (
-		SELECT
-		DATE(reservationdate) AS date,
-		SUM(finalpaymentamount) AS total_ticket_amount
-		FROM tickets
-		GROUP BY DATE(reservationdate)
-		) t ON d.date = t.date
-		GROUP BY d.date
-		ORDER BY d.date;
-	</select>
+    SELECT
+        d.date,
+        COALESCE(SUM(o.total_order_amount), 0) +
+        COALESCE(SUM(m.total_membership_amount), 0) +
+        COALESCE(SUM(t.total_ticket_amount), 0) AS total_sales
+    FROM (
+        SELECT CURDATE() AS date
+        UNION ALL SELECT CURDATE() - INTERVAL 1 DAY
+        UNION ALL SELECT CURDATE() - INTERVAL 2 DAY
+        UNION ALL SELECT CURDATE() - INTERVAL 3 DAY
+        UNION ALL SELECT CURDATE() - INTERVAL 4 DAY
+        UNION ALL SELECT CURDATE() - INTERVAL 5 DAY
+        UNION ALL SELECT CURDATE() - INTERVAL 6 DAY
+    ) AS d
+    LEFT JOIN (
+        SELECT
+            DATE(orderdate) AS date,
+            SUM(finalpaymentamount) AS total_order_amount
+        FROM `order`
+        WHERE orderstatus != 'Cancelled'  -- 취소된 항목 제외
+        GROUP BY DATE(orderdate)
+    ) o ON d.date = o.date
+    LEFT JOIN (
+        SELECT
+            DATE(purchasedate) AS date,
+            SUM(m.price) AS total_membership_amount
+        FROM usermemberships um
+        JOIN memberships m ON um.membershipid = m.membershipid
+        WHERE um.status != '환불완료'  -- 환불완료 항목 제외
+        GROUP BY DATE(purchasedate)
+    ) m ON d.date = m.date
+    LEFT JOIN (
+        SELECT
+            DATE(reservationdate) AS date,
+            SUM(finalpaymentamount) AS total_ticket_amount
+        FROM tickets
+        WHERE reservationstatus != 'Cancelled'  -- 취소된 항목 제외
+        GROUP BY DATE(reservationdate)
+    ) t ON d.date = t.date
+    GROUP BY d.date
+    ORDER BY d.date;
+</select>
+
 
 	<!-- 항목별 비율 차트 -->
 	<select id="getItemSales" resultType="map">
 		SELECT
-		(SELECT SUM(finalpaymentamount) FROM `order`) AS total_order_amount,
-		(SELECT SUM(m.price)
+		(SELECT COALESCE(SUM(finalpaymentamount), 0)
+		FROM `order`
+		WHERE orderstatus != 'Cancelled') AS total_order_amount,
+
+		(SELECT COALESCE(SUM(m.price), 0)
 		FROM usermemberships um
-		JOIN memberships m ON um.membershipid = m.membershipid) AS
-		total_membership_amount,
-		(SELECT SUM(finalpaymentamount) FROM tickets) AS total_ticket_amount;
+		JOIN memberships m ON um.membershipid = m.membershipid
+		WHERE um.status != '환불완료') AS total_membership_amount,
+
+		(SELECT COALESCE(SUM(finalpaymentamount), 0)
+		FROM tickets
+		WHERE reservationstatus != 'Cancelled') AS total_ticket_amount;
 	</select>
 
 	<!-- 월별 티켓 판매 수 쿼리 -->
@@ -290,9 +307,11 @@
 		LEFT JOIN (
 		SELECT DATE_FORMAT(reservationdate, '%Y-%m') AS month, quantity
 		FROM tickets
+		WHERE reservationstatus != 'Cancelled' -- 취소된 항목 제외
 		) t ON m.month = t.month
 		GROUP BY m.month
 		ORDER BY m.month;
 	</select>
+
 </mapper>
 

@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import kr.co.matchday.login.LoginDAO;
 import kr.co.matchday.visit.VisitDAO;
 
 @Controller
@@ -39,9 +41,22 @@ public class AdminCont {
 	@Autowired
 	VisitDAO visitDao;
 	
+	@Autowired
+	LoginDAO loginDao;
+	
+	/*//세션체크
+	 * private boolean isAdmin(HttpSession session) { String grade = (String)
+	 * session.getAttribute("grade"); return "M".equals(grade); }
+	 */
+	
 	// 관리자모드메인페이지
 	@GetMapping("/dashboard")
-	public String dashboard(HttpServletRequest request) {
+	public String dashboard(HttpServletRequest request, HttpSession session) {
+		
+		/*//세션체크
+		 * if (!isAdmin(session)) { return "redirect:/member/login"; // 또는 권한이 없는 페이지로
+		 * 리다이렉트 }
+		 */
 		
 		// /home.do 페이지의 방문자 수를 조회합니다.
         int todayVisitors = visitDao.getTodayVisitors();
