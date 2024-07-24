@@ -18,5 +18,6 @@ public class CouponMasterDTO {
 	private int issuecount;
 	private Date startdate;
 	private Date enddate;
+	private boolean downloaded;
 	private String applicableproduct;
 }

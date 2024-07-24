@@ -58,6 +58,12 @@ public class CouponCont {
 		List<CouponDTO> receivedCoupons = couponDao.selectReceivedCoupons(userID);
 		List<CouponMasterDTO> availableCoupons = couponDao.selectAvailableCoupons();
 
+		// 다운로드 여부 확인 및 설정
+	    for (CouponMasterDTO coupon : availableCoupons) {
+	        boolean isDownloaded = couponDao.checkUserDownloadedCoupon(userID, coupon.getCoupontypeid());
+	        coupon.setDownloaded(isDownloaded);
+	    }
+		
 		model.addAttribute("receivedCoupons", receivedCoupons);
 		model.addAttribute("availableCoupons", availableCoupons);
 		return "/member/coupon";
@@ -107,6 +113,7 @@ public class CouponCont {
             return new Response(false, "다운로드 중 오류가 발생했습니다.");
         }
     }
+	
 	
 	// 매일 자정에 실행되도록 설정
 	@Scheduled(cron = "0 0 0 * * ?")

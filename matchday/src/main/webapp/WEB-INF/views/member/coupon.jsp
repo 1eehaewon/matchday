@@ -67,6 +67,7 @@
             <li class="list-group-item active"><a href="/member/mypage/coupon">쿠폰함</a></li>
             <li class="list-group-item"><a href="/cart/list">장바구니</a></li>
             <li class="list-group-item"><a href="/tickets/reservationList">나의 예매내역</a></li>
+            <li class="list-group-item"><a href="/order/orderList">나의 주문내역</a></li>
             <li class="list-group-item"><a href="/membershipticket/membershippaymentlist">멤버쉽 구매내역</a></li>
         </ul>
     </div>
@@ -109,7 +110,6 @@
             <table class="form-table">
                 <thead>
                     <tr>
-                        <th>쿠폰번호</th>
                         <th>쿠폰명</th>
                         <th>사용시작일자</th>
                         <th>사용만료일자</th>
@@ -120,12 +120,20 @@
                 <tbody>
                     <c:forEach var="coupon" items="${availableCoupons}">
                         <tr>
-                            <td>${coupon.coupontypeid}</td>
                             <td>${coupon.couponname}</td>
                             <td>${coupon.startdate}</td>
                             <td>${coupon.enddate}</td>
                             <td>${coupon.applicableproduct}</td>
-                            <td><button onclick="downloadCoupon('${coupon.coupontypeid}')">다운로드</button></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${coupon.downloaded}">
+                                        <button disabled>다운완료</button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button onclick="downloadCoupon('${coupon.coupontypeid}')">다운로드</button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>

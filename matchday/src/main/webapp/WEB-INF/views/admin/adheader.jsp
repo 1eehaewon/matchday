@@ -89,8 +89,7 @@
 						<div class="collapse" id="collapsePointsLayouts"
 							aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
 							<nav class="sb-sidenav-menu-nested nav">
-								<a class="nav-link" href="/admin/point/setting">포인트 설정</a> <a
-									class="nav-link" href="/admin/point/history">포인트 내역</a>
+								<a class="nav-link" href="/admin/point/setting">포인트 설정</a> 
 							</nav>
 						</div>
 
