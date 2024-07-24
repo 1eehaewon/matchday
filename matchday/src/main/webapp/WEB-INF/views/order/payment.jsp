@@ -467,14 +467,14 @@ $(document).ready(function() {
             }
         });
     });
-
-    function closePopup() {
-        alert("결제가 취소되었습니다.");
-        window.close();
-    }
 });
 
-$(document).ready(function() {
+function closePopup() {
+    alert("결제가 취소되었습니다.");
+    window.close();
+}
+
+ $(document).ready(function() {
     $('#cancel-payment').click(function() {
         var orderid = '${order.orderid}';
         if (confirm('정말로 결제를 취소하시겠습니까?')) {
@@ -500,7 +500,7 @@ $(document).ready(function() {
     $('#go-back').click(function() {
         window.location.href = '/order/orderList';
     });
-});
+}); 
 </script>
 </body>
 </html>
