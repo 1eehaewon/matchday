@@ -119,6 +119,14 @@
 								<i class="fas fa-chart-area"></i>
 							</div> 매출현황
 						</a>
+						
+						<div class="sb-sidenav-menu-heading">경기장</div>
+						<a class="nav-link" href="/admin/stadium">
+							<div class="sb-nav-link-icon">
+								<i class="fas fa-chart-area"></i>
+							</div> 경기장등록
+						</a>
+						
 					</div>
 				</div>
 				<div class="sb-sidenav-footer">
