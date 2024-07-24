@@ -187,7 +187,7 @@
                     <td id="cancelDeadline"></td>
                 </tr>
             </table>
-            <p class="text-danger mt-3">취소 유의사항을 여기에 추가하세요.</p>
+            <p class="text-danger mt-3">결제하신 경기 관람일 3일전 오후 12시가 되면 결제취소가 불가능 합니다.</p>
         </div>
     </div>
 

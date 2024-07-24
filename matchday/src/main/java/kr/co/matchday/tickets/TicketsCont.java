@@ -161,5 +161,15 @@ public class TicketsCont {
         return ticketsService.getMobileTicket(reservationId);
     }
     
-    
+    /**
+     * 좌석 상태를 해제하는 API 엔드포인트 추가
+     * @param seatId 좌석 ID
+     * @param userId 사용자 ID
+     * @return 상태 해제 결과
+     */
+    @PostMapping("/releaseSeat")
+    @ResponseBody
+    public Map<String, Object> releaseSeat(@RequestParam("seatId") String seatId, @RequestParam("userId") String userId) {
+        return ticketsService.releaseSeat(seatId, userId);
+    }
 }

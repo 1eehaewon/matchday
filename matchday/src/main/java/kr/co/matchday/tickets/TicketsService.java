@@ -32,6 +32,9 @@ public class TicketsService {
     @Autowired
     private TicketsDAO ticketsDao;
     
+    @Autowired
+    private WebSocketController webSocketController;
+    
     private static final int PAGE_SIZE = 10;
 
     /**
@@ -173,7 +176,6 @@ public class TicketsService {
         // 예약 페이지의 뷰 이름 반환
         return "tickets/reservation";
     }
-
 
     /**
      * 결제 검증 메서드
@@ -380,6 +382,7 @@ public class TicketsService {
     }
 
 
+
     /**
      * 결제 취소 메서드
      * @param reservationid 예약 ID
@@ -456,6 +459,24 @@ public class TicketsService {
             int result = ticketsDao.resetCouponUsage(couponId);
             System.out.println("Coupon usage update result (Not Used): " + result);
         }
+    }
+    
+    /**
+     * 세션 만료 시 좌석 상태 해제
+     * @param seatId 좌석 ID
+     * @param userId 사용자 ID
+     * @return 상태 해제 결과
+     */
+    public Map<String, Object> releaseSeat(String seatId, String userId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        // WebSocket을 통해 좌석 상태 해제
+        webSocketController.releaseSeat(seatId, userId);
+        
+        // 상태 해제 결과 반환
+        response.put("success", true);
+        response.put("message", "좌석 상태가 해제되었습니다.");
+        return response;
     }
     
     /**

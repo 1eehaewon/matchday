@@ -21,6 +21,13 @@
             font-size: 1.5em;
             margin-bottom: 20px;
         }
+        .team-name {
+            display: block;
+        }
+        .vs-text {
+            display: block;
+            margin: 10px 0;
+        }
         .ticket-barcode img {
             width: 100%;
             height: auto;
@@ -36,7 +43,11 @@
 </head>
 <body>
     <div class="ticket-container">
-        <div class="ticket-header">${reservation.hometeam} vs ${reservation.awayteam}</div>
+        <div class="ticket-header">
+            <span class="team-name">${reservation.hometeam}</span>
+            <span class="vs-text">vs</span>
+            <span class="team-name">${reservation.awayteam}</span>
+        </div>
         <div class="ticket-barcode">
             <img src="/tickets/generateQRCode?reservationid=${reservation.reservationid}" alt="QR Code">
         </div>

@@ -199,7 +199,6 @@
             };
 
             var seats = JSON.parse('<c:out value="${seatsJson}" escapeXml="false"/>');
-            var reservedSeats = JSON.parse('<c:out value="${reservedSeatsJson}" escapeXml="false"/>');
             var section = document.getElementById('section').value;
             var matchId = document.getElementById('matchid').value;
             var stadiumId = document.getElementById('stadiumid').value;
@@ -208,43 +207,52 @@
             var seatMap = document.getElementById('seat-map');
             var ground = document.getElementById('ground');
 
-            if (seatMap && seats.length > 0) {
-                seats.forEach(function(seat) {
-                    var seatElement = document.createElement('div');
-                    seatElement.className = 'seat';
-                    seatElement.dataset.seatId = seat.seatid;
-                    seatElement.dataset.price = seat.price;
-                    seatElement.textContent = seat.seatnumber;
+            function initializeSeats() {
+                fetch('/seats/status?matchid=' + matchId + '&section=' + section + '&stadiumid=' + stadiumId)
+                    .then(response => response.json())
+                    .then(data => {
+                        seats.forEach(function(seat) {
+                            var seatElement = document.createElement('div');
+                            seatElement.className = 'seat';
+                            seatElement.dataset.seatId = seat.seatid;
+                            seatElement.dataset.price = seat.price;
+                            seatElement.textContent = seat.seatnumber;
 
-                    if (reservedSeats.includes(seat.seatid)) {
-                        seatElement.classList.add('reserved');
-                        seatElement.style.pointerEvents = 'none';
-                    } else {
-                        seatElement.addEventListener('click', seatClickListener);
-                    }
+                            if (data.reservedSeats.includes(seat.seatid)) {
+                                seatElement.classList.add('reserved');
+                                seatElement.style.pointerEvents = 'none';
+                            } else if (data.selectedSeats[seat.seatid] && data.selectedSeats[seat.seatid] !== userId) {
+                                seatElement.classList.add('unavailable');
+                                seatElement.style.pointerEvents = 'none';
+                            } else {
+                                seatElement.addEventListener('click', seatClickListener);
+                            }
 
-                    seatMap.appendChild(seatElement);
-                });
+                            seatMap.appendChild(seatElement);
+                        });
 
-                ground.className = 'ground ' + groundPosition;
-                ground.textContent = 'GROUND';
-                var seatMapContainer = document.getElementById('seat-map-container');
-                
-                if (groundPosition === 'north') {
-                    seatMapContainer.appendChild(seatMap);
-                    seatMapContainer.appendChild(ground);
-                } else if (groundPosition === 'south') {
-                    seatMapContainer.insertBefore(ground, seatMap);
-                } else if (groundPosition === 'east') {
-                    seatMapContainer.style.flexDirection = 'row';
-                    seatMapContainer.insertBefore(ground, seatMap);
-                } else if (groundPosition === 'west') {
-                    seatMapContainer.style.flexDirection = 'row';
-                    seatMapContainer.appendChild(ground);
-                }
+                        ground.className = 'ground ' + groundPosition;
+                        ground.textContent = 'GROUND';
+                        var seatMapContainer = document.getElementById('seat-map-container');
+
+                        if (groundPosition === 'north') {
+                            seatMapContainer.appendChild(seatMap);
+                            seatMapContainer.appendChild(ground);
+                        } else if (groundPosition === 'south') {
+                            seatMapContainer.insertBefore(ground, seatMap);
+                        } else if (groundPosition === 'east') {
+                            seatMapContainer.style.flexDirection = 'row';
+                            seatMapContainer.insertBefore(ground, seatMap);
+                        } else if (groundPosition === 'west') {
+                            seatMapContainer.style.flexDirection = 'row';
+                            seatMapContainer.appendChild(ground);
+                        }
+                    });
             }
 
             // WebSocket 연결 설정
+            var stompClient = null;
+
             function connectWebSocket() {
                 var socket = new SockJS('/ws');
                 stompClient = Stomp.over(socket);
@@ -253,14 +261,22 @@
                     console.log('Connected: ' + frame);
                     stompClient.subscribe('/topic/seatSelected', function(message) {
                         var seatMessage = JSON.parse(message.body);
-                        var seatElement = document.querySelector('.seat[data-seat-id="' + seatMessage.seatId + '"]');
-                        if (seatElement && seatMessage.userId !== userId) {
-                            if (seatMessage.status === 'selected') {
-                                seatElement.classList.add('unavailable');
-                                seatElement.style.pointerEvents = '';
-                            } else if (seatMessage.status === 'deselected') {
-                                seatElement.classList.remove('unavailable');
-                                seatElement.style.pointerEvents = '';
+                        var selectedSeats = seatMessage.selectedSeats;
+                        for (var seatId in selectedSeats) {
+                            var seatElement = document.querySelector('.seat[data-seat-id="' + seatId + '"]');
+                            if (seatElement) {
+                                var status = selectedSeats[seatId];
+                                if (status === 'reserved') {
+                                    seatElement.classList.add('reserved');
+                                    seatElement.style.pointerEvents = 'none';
+                                } else if (status === 'selected' && selectedSeats[seatId] !== userId) {
+                                    seatElement.classList.add('unavailable');
+                                    seatElement.style.pointerEvents = 'none';
+                                } else {
+                                    seatElement.classList.remove('unavailable');
+                                    seatElement.classList.remove('reserved');
+                                    seatElement.style.pointerEvents = '';
+                                }
                             }
                         }
                     });
@@ -272,8 +288,8 @@
                     this.classList.remove('selected');
                     sendSeatStatus(this.dataset.seatId, 'deselected');
                 } else {
-                    if (this.classList.contains('unavailable')) {
-                        alert('다른 회원이 구매진행중인 좌석입니다. 다른 좌석을 선택해주세요.');
+                    if (this.classList.contains('unavailable') || this.classList.contains('reserved')) {
+                        alert('다른 회원이 구매중인 좌석입니다. 다른 좌석을 선택해주세요.');
                         return;
                     }
                     if (document.querySelectorAll('.seat.selected').length < 5) {
@@ -350,9 +366,11 @@
                 });
 
                 // 좌석 선택 완료 후 WebSocket을 통해 상태를 업데이트
-                selectedSeats.forEach(function(seat) {
-                    sendSeatStatus(seat.dataset.seatId, 'reserved');
-                });
+                stompClient.send("/app/completeSelection", {}, JSON.stringify({
+                    seatIds: seats,
+                    status: 'reserved',
+                    userId: userId
+                }));
 
                 var matchId = encodeURIComponent(document.getElementById('matchid').value);
                 var stadiumId = encodeURIComponent(document.getElementById('stadiumid').value);
@@ -361,6 +379,7 @@
             });
 
             connectWebSocket();
+            initializeSeats();
 
             window.addEventListener('beforeunload', function() {
                 document.querySelectorAll('.seat.selected').forEach(function(seat) {

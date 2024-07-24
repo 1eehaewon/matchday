@@ -1,30 +1,59 @@
 package com.example.websocket;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Controller
 public class WebSocketController {
 
-    private static final Map<String, String> selectedSeats = new HashMap<>();
+    private final SimpMessagingTemplate messagingTemplate;
+    private static final Map<String, String> selectedSeats = new ConcurrentHashMap<>();
+
+    @Autowired
+    public WebSocketController(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @MessageMapping("/selectSeat")
     @SendTo("/topic/seatSelected")
     public SeatMessage selectSeat(SeatMessage message) {
-        if ("selected".equals(message.getStatus())) {
-            selectedSeats.put(message.getSeatId(), message.getUserId());
-        } else if ("reserved".equals(message.getStatus())) {
-            selectedSeats.put(message.getSeatId(), "reserved");
+        String seatId = message.getSeatId();
+        String status = message.getStatus();
+        String userId = message.getUserId();
+
+        if ("selected".equals(status)) {
+            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(userId)) {
+                message.setStatus("unavailable");
+            } else {
+                selectedSeats.put(seatId, userId);
+            }
+        } else if ("reserved".equals(status)) {
+            selectedSeats.put(seatId, "reserved");
         } else {
-            selectedSeats.remove(message.getSeatId());
+            selectedSeats.remove(seatId);
+        }
+
+        message.setSelectedSeats(new HashMap<>(selectedSeats));
+        return message;
+    }
+
+    @MessageMapping("/completeSelection")
+    @SendTo("/topic/seatSelected")
+    public SeatMessage completeSelection(SeatMessage message) {
+        for (String seatId : message.getSeatIds()) {
+            selectedSeats.put(seatId, "reserved");
         }
         message.setSelectedSeats(new HashMap<>(selectedSeats));
         return message;
@@ -39,19 +68,16 @@ public class WebSocketController {
         return message;
     }
 
-    @PostMapping("/websocket/checkSelectedSeats")
+    @GetMapping("/seats/status")
     @ResponseBody
-    public Map<String, Object> checkSelectedSeats(@RequestBody SeatCheckRequest request) {
-        Map<String, Object> response = new HashMap<>();
-        for (String seatId : request.getSeats()) {
-            if (selectedSeats.containsKey(seatId) && !selectedSeats.get(seatId).equals(request.getUserId()) && !selectedSeats.get(seatId).equals("reserved")) {
-                response.put("success", false);
-                response.put("message", "다른 사용자가 구매중인 좌석이 있습니다.");
-                return response;
-            }
-        }
-        response.put("success", true);
-        return response;
+    public Map<String, Object> getSeatStatus(@RequestParam String matchid, @RequestParam String section, @RequestParam String stadiumid) {
+        Map<String, Object> seatStatus = new HashMap<>();
+        seatStatus.put("reservedSeats", selectedSeats.entrySet().stream()
+            .filter(entry -> "reserved".equals(entry.getValue()))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList()));
+        seatStatus.put("selectedSeats", new HashMap<>(selectedSeats));
+        return seatStatus;
     }
 
     public boolean checkIfSeatsAvailable(String[] seats, String userId) {
@@ -63,8 +89,26 @@ public class WebSocketController {
         return true;
     }
 
+    public void releaseSeat(String seatId, String userId) {
+        if (selectedSeats.get(seatId).equals(userId)) {
+            selectedSeats.remove(seatId);
+            Map<String, String> message = new HashMap<>();
+            message.put("seatId", seatId);
+            message.put("status", "deselected");
+            message.put("userId", userId);
+            messagingTemplate.convertAndSend("/topic/seatSelected", message);
+        }
+    }
+
+    public void releaseSeats(String[] seatIds, String userId) {
+        for (String seatId : seatIds) {
+            releaseSeat(seatId, userId);
+        }
+    }
+
     public static class SeatMessage {
         private String seatId;
+        private List<String> seatIds;
         private String status;
         private String userId;
         private Map<String, String> selectedSeats;
@@ -76,6 +120,14 @@ public class WebSocketController {
 
         public void setSeatId(String seatId) {
             this.seatId = seatId;
+        }
+
+        public List<String> getSeatIds() {
+            return seatIds;
+        }
+
+        public void setSeatIds(List<String> seatIds) {
+            this.seatIds = seatIds;
         }
 
         public String getStatus() {
