@@ -62,7 +62,7 @@
                     </div>
                     <div class="form-check">
                         <input class="form-check-input delivery-option" type="radio" name="deliveryOption" id="shipping" value="receiving02">
-                        <label class="form-check-label" for="shipping">배송 (0원)</label>
+                        <label class="form-check-label" for="shipping">배송 (3,200원)</label>
                     </div>                   
                 </form>
                 <div id="delivery-address">
