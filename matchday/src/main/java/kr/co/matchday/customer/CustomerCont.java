@@ -36,6 +36,7 @@ import kr.co.matchday.tickets.TicketsDTO;
 @RequestMapping("/customerService")
 public class CustomerCont {
 
+    // Logger 설정
     private static final Logger logger = LoggerFactory.getLogger(CustomerCont.class);
 
     @Autowired
@@ -44,6 +45,7 @@ public class CustomerCont {
     @Autowired
     private JavaMailSender mailSender;
 
+    // 생성자
     public CustomerCont() {
         System.out.println("-----CustomerCont() 호출됨");
     }
@@ -55,7 +57,7 @@ public class CustomerCont {
                                      @RequestParam(required = false) String col,
                                      @RequestParam(required = false) String word) {
         int pageSize = 10; // 페이지 당 게시글 수
-        int start = (page - 1) * pageSize;
+        int start = (page - 1) * pageSize; // 페이징 시작 위치
 
         // 검색 및 페이징에 필요한 파라미터를 DTO에 설정
         CustomerDTO params = new CustomerDTO();
@@ -65,18 +67,19 @@ public class CustomerCont {
         params.setCol(col);
         params.setWord(word);
 
-        List<CustomerDTO> inquiryList;
-        int totalCount;
+        List<CustomerDTO> inquiryList; // 문의 목록
+        int totalCount; // 총 문의 수
 
+        // 검색어가 있는 경우와 없는 경우에 따라 다른 DAO 메서드 호출
         if (word != null && !word.trim().isEmpty()) {
-            inquiryList = customerDao.searchInquiries(params);
-            totalCount = customerDao.countSearchInquiries(params);
+            inquiryList = customerDao.searchInquiries(params); // 검색어가 있는 경우
+            totalCount = customerDao.countSearchInquiries(params); // 검색어에 해당하는 총 문의 수
         } else {
-            inquiryList = customerDao.customerListByCategory(params);
-            totalCount = customerDao.customerCountByCategory(params);
+            inquiryList = customerDao.customerListByCategory(params); // 검색어가 없는 경우
+            totalCount = customerDao.customerCountByCategory(params); // 해당 카테고리의 총 문의 수
         }
 
-        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize); // 총 페이지 수 계산
 
         // 날짜 포맷팅
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -128,8 +131,8 @@ public class CustomerCont {
         product2.setFormattedCreatedDate("2023-06-20");
         productList.add(product2);
 
-        mav.addObject("matchList", matchList);
-        mav.addObject("productList", productList);
+        mav.addObject("matchList", matchList); // 경기에 대한 문의 리스트 추가
+        mav.addObject("productList", productList); // 상품에 대한 문의 리스트 추가
         mav.addObject("userID", session.getAttribute("userID")); // 세션에서 userID를 가져와서 추가
 
         return mav;
@@ -151,7 +154,7 @@ public class CustomerCont {
             customerDto.setIsReplyHandled("답변처리중");
         }
 
-        int cnt = customerDao.customerInsert(customerDto);
+        int cnt = customerDao.customerInsert(customerDto); // 문의 등록
 
         ModelAndView mav = new ModelAndView("redirect:/customerService/customerPage");
         if (cnt > 0) {
@@ -167,15 +170,15 @@ public class CustomerCont {
     @GetMapping("/customerDetail/{inquiryID}")
     public ModelAndView detail(@PathVariable int inquiryID) {
         ModelAndView mav = new ModelAndView("customerService/customerDetail");
-        CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
-        mav.addObject("inquiry", inquiry);
+        CustomerDTO inquiry = customerDao.customerDetail(inquiryID); // 문의 상세 정보 가져오기
+        mav.addObject("inquiry", inquiry); // ModelAndView에 문의 정보 추가
         return mav;
     }
 
     // 문의 삭제를 처리하는 메서드
     @PostMapping("/delete/{inquiryID}")
     public ModelAndView deleteInquiry(@PathVariable("inquiryID") int inquiryID) {
-        int result = customerDao.deleteInquiry(inquiryID);
+        int result = customerDao.deleteInquiry(inquiryID); // 문의 삭제
         ModelAndView mav = new ModelAndView("redirect:/customerService/customerPage");
         if (result > 0) {
             mav.addObject("msg", "문의글이 성공적으로 삭제되었습니다.");
@@ -194,7 +197,7 @@ public class CustomerCont {
             CustomerDTO customerDto = new CustomerDTO();
             customerDto.setInquiryID(inquiryID);
             customerDto.setInqpasswd(password);
-            boolean isValid = customerDao.checkPassword(customerDto);
+            boolean isValid = customerDao.checkPassword(customerDto); // 비밀번호 확인
             response.put("valid", isValid);
         } catch (NumberFormatException e) {
             response.put("valid", false);
@@ -207,7 +210,7 @@ public class CustomerCont {
     public String updateInquiry(@ModelAttribute CustomerDTO customerDto, @RequestParam("category") String category, RedirectAttributes redirectAttributes) {
         try {
             customerDto.setBoardType(category); // 카테고리 설정
-            int result = customerDao.updateInquiry(customerDto);
+            int result = customerDao.updateInquiry(customerDto); // 문의 수정
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "문의글이 성공적으로 수정되었습니다.");
             } else {
@@ -219,115 +222,23 @@ public class CustomerCont {
         return "redirect:/customerService/customerPage";
     }
     
-    /*
+    // 고객 답변을 추가하는 메서드
     @PostMapping("/addReply")
     @ResponseBody
     public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
         Map<String, Object> response = new HashMap<>();
-        Logger logger = LoggerFactory.getLogger(CustomerCont.class);
-
-        logger.info("addReply 메서드 시작");
-        System.out.println("addReply 메서드 시작");
-
         try {
-            CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
+            CustomerDTO inquiry = customerDao.customerDetail(inquiryID); // 문의 상세 정보 가져오기
+            // 이미 답변이 있는지 확인
             if (inquiry.getInquiryReply() != null && !inquiry.getInquiryReply().isEmpty()) {
                 response.put("status", "error");
                 response.put("message", "이미 등록된 답변이 있습니다.");
                 return response;
             }
 
-            inquiry.setInquiryReply(inquiryReply);
+            inquiry.setInquiryReply(inquiryReply); // 답변 설정
             inquiry.setReplyDate(new Date()); // 답변 시간을 현재 시간으로 설정
-            int result = customerDao.replyInquiry(inquiry);
-
-            if (result > 0) {
-                response.put("status", "success");
-                logger.info("답변이 성공적으로 등록되었습니다.");
-                System.out.println("답변이 성공적으로 등록되었습니다.");
-
-                // 답변 등록 성공 시 이메일 발송
-                String email = customerDao.getUserEmail(inquiry.getUserID());
-                logger.info("이메일 발송 대상: " + email);
-                System.out.println("이메일 발송 대상: " + email);
-
-                if (email != null && !email.isEmpty()) {
-                    String recipient = email;
-                    String subject = "고객님의 문의에 대한 답변이 등록되었습니다.";
-                    String content = "<p>안녕하세요, 고객님.</p>" +
-                                     "<p>문의하신 내용에 대한 답변이 등록되었습니다.</p>" +
-                                     "<p>답변 내용: " + inquiryReply + "</p>";
-
-                    try {
-                        String mailserver = "mw-002.cafe24.com"; // cafe24 메일 서버
-                        Properties props = new Properties();
-                        props.put("mail.smtp.host", mailserver);
-                        props.put("mail.smtp.auth", "true");
-                        props.put("mail.smtp.port", "587"); // 필요시 수정
-                        props.put("mail.smtp.starttls.enable", "true"); // TLS 사용
-
-                        javax.mail.Authenticator myAuth = new MyAuthenticator();
-                        Session sess = Session.getInstance(props, myAuth);
-                        sess.setDebug(true); // Enable debug mode
-
-                        Message msg = new MimeMessage(sess);
-                        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
-                        msg.setFrom(new InternetAddress("webmaster@itwill.co.kr"));
-                        msg.setSubject(subject);
-                        msg.setContent(content, "text/html; charset=UTF-8");
-                        msg.setSentDate(new Date());
-
-                        logger.info("이메일 발송 준비 완료. 발송 시작.");
-                        System.out.println("이메일 발송 준비 완료. 발송 시작.");
-                        Transport.send(msg);
-                        logger.info("Email sent successfully to " + recipient);
-                        System.out.println("Email sent successfully to " + recipient);
-                    } catch (MessagingException e) {
-                        logger.error("MessagingException: ", e);
-                        System.err.println("MessagingException: " + e);
-                        response.put("status", "error");
-                        response.put("message", "답변은 등록되었으나 이메일 발송에 실패하였습니다.");
-                    } catch (Exception e) {
-                        logger.error("Exception: ", e);
-                        System.err.println("Exception: " + e);
-                        response.put("status", "error");
-                        response.put("message", "예기치 않은 오류로 이메일 발송에 실패하였습니다.");
-                    }
-                } else {
-                    logger.error("유효한 이메일 주소를 찾을 수 없습니다.");
-                    System.err.println("유효한 이메일 주소를 찾을 수 없습니다.");
-                    response.put("status", "error");
-                    response.put("message", "유효한 이메일 주소를 찾을 수 없습니다.");
-                }
-            } else {
-                response.put("status", "error");
-                response.put("message", "답변 등록에 실패하였습니다.");
-            }
-        } catch (Exception e) {
-            logger.error("Exception: ", e);
-            System.err.println("Exception: " + e);
-            response.put("status", "error");
-            response.put("message", "답변 등록 중 오류가 발생하였습니다.");
-        }
-        return response;
-    }
-    */
-    
-    @PostMapping("/addReply")
-    @ResponseBody
-    public Map<String, Object> addReply(@RequestParam int inquiryID, @RequestParam String inquiryReply) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            CustomerDTO inquiry = customerDao.customerDetail(inquiryID);
-            if (inquiry.getInquiryReply() != null && !inquiry.getInquiryReply().isEmpty()) {
-                response.put("status", "error");
-                response.put("message", "이미 등록된 답변이 있습니다.");
-                return response;
-            }
-
-            inquiry.setInquiryReply(inquiryReply);
-            inquiry.setReplyDate(new Date()); // 답변 시간을 현재 시간으로 설정
-            int result = customerDao.replyInquiry(inquiry);
+            int result = customerDao.replyInquiry(inquiry); // 답변 등록
 
             if (result > 0) {
                 response.put("status", "success");
@@ -335,7 +246,7 @@ public class CustomerCont {
                 // 이메일 발송
                 String email = customerDao.getUserEmail(inquiry.getUserID());
                 if (email != null && !email.isEmpty()) {
-                    sendEmail(email, inquiry.getTitle(), inquiryReply);
+                    sendEmail(email, inquiry.getTitle(), inquiryReply); // 이메일 발송
                 } else {
                     response.put("status", "error");
                     response.put("message", "유효한 이메일 주소를 찾을 수 없습니다.");
@@ -351,14 +262,16 @@ public class CustomerCont {
         return response;
     }
 
+    // 이메일 발송 메서드
     private void sendEmail(String to, String inquiryTitle, String inquiryReply) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setTo(to);
-            helper.setSubject("고객님의 문의에 대한 답변이 등록되었습니다.");
+            helper.setTo(to); // 수신자 설정
+            helper.setSubject("고객님의 문의에 대한 답변이 등록되었습니다."); // 제목 설정
             
+            // 이메일 본문 내용 설정
             StringBuilder content = new StringBuilder();
             content.append("<p>안녕하세요, 고객님.</p>");
             content.append("<p>고객님께서 문의하신 내용에 대한 답변이 등록되었습니다.</p>");
@@ -367,8 +280,8 @@ public class CustomerCont {
             content.append("<p>더 궁금한 사항이 있으시면 언제든지 문의해 주세요.</p>");
             content.append("<p>감사합니다.</p>");
 
-            helper.setText(content.toString(), true);
-            mailSender.send(message);
+            helper.setText(content.toString(), true); // HTML 형식으로 설정
+            mailSender.send(message); // 이메일 발송
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -378,7 +291,7 @@ public class CustomerCont {
     @GetMapping("/customerFaqForm")
     public ModelAndView customerFaqForm() {
         ModelAndView mav = new ModelAndView("customerService/customerFaqForm");
-        mav.addObject("faq", new CustomerDTO());
+        mav.addObject("faq", new CustomerDTO()); // 빈 FAQ DTO를 추가하여 폼 페이지로 전달
         return mav;
     }
 
@@ -387,7 +300,7 @@ public class CustomerCont {
     public String insertFaq(@ModelAttribute CustomerDTO customerDto, RedirectAttributes redirectAttributes) {
         customerDto.setBoardType("FAQ");
         customerDto.setUserID("webmaster"); // userID를 임의로 설정
-        int result = customerDao.insertFaq(customerDto);
+        int result = customerDao.insertFaq(customerDto); // FAQ 삽입
         if (result > 0) {
             redirectAttributes.addFlashAttribute("message", "FAQ가 성공적으로 등록되었습니다.");
         } else {
@@ -400,8 +313,8 @@ public class CustomerCont {
     @GetMapping("/customerFaqDetail/{inquiryID}")
     public ModelAndView customerFaqDetail(@PathVariable int inquiryID) {
         ModelAndView mav = new ModelAndView("customerService/customerFaqDetail");
-        CustomerDTO faq = customerDao.customerDetail(inquiryID);
-        mav.addObject("faq", faq);
+        CustomerDTO faq = customerDao.customerDetail(inquiryID); // FAQ 상세 정보 가져오기
+        mav.addObject("faq", faq); // ModelAndView에 FAQ 정보 추가
         return mav;
     }
 
@@ -409,8 +322,8 @@ public class CustomerCont {
     @GetMapping("/customerFaqForm/{inquiryID}")
     public ModelAndView customerFaqEditForm(@PathVariable int inquiryID) {
         ModelAndView mav = new ModelAndView("customerService/customerFaqForm");
-        CustomerDTO faq = customerDao.customerDetail(inquiryID);
-        mav.addObject("faq", faq);
+        CustomerDTO faq = customerDao.customerDetail(inquiryID); // 수정할 FAQ 정보 가져오기
+        mav.addObject("faq", faq); // ModelAndView에 FAQ 정보 추가
         return mav;
     }
 
@@ -418,8 +331,8 @@ public class CustomerCont {
     @PostMapping("/updateFaq")
     public String updateFaq(@ModelAttribute CustomerDTO customerDto, RedirectAttributes redirectAttributes) {
         try {
-            customerDto.setBoardType("FAQ");
-            int result = customerDao.updateFaq(customerDto);
+            customerDto.setBoardType("FAQ"); // 게시판 타입 설정
+            int result = customerDao.updateFaq(customerDto); // FAQ 수정
             if (result > 0) {
                 redirectAttributes.addFlashAttribute("message", "FAQ가 성공적으로 수정되었습니다.");
             } else {
@@ -434,7 +347,7 @@ public class CustomerCont {
     // FAQ 삭제를 처리하는 메서드
     @PostMapping("/deleteFaq/{inquiryID}")
     public String deleteFaq(@PathVariable int inquiryID, RedirectAttributes redirectAttributes) {
-        int result = customerDao.deleteFaq(inquiryID);
+        int result = customerDao.deleteFaq(inquiryID); // FAQ 삭제
         if (result > 0) {
             redirectAttributes.addFlashAttribute("message", "FAQ가 성공적으로 삭제되었습니다.");
         } else {
@@ -443,6 +356,7 @@ public class CustomerCont {
         return "redirect:/customerService/customerFaq";
     }
 
+    // 이미지 업로드를 처리하는 메서드
     @PostMapping("/uploadImage")
     @ResponseBody
     public String uploadImage(@RequestParam("file") MultipartFile file) {
@@ -452,7 +366,7 @@ public class CustomerCont {
             String uploadDir = new File("src/main/webapp/storage/customerimg").getAbsolutePath();
             String fileName = file.getOriginalFilename();
             File dest = new File(uploadDir + File.separator + fileName);
-            file.transferTo(dest);
+            file.transferTo(dest); // 파일 저장
 
             // 이미지 URL 설정 (웹 서버의 경로로 맞춰야 함)
             imageUrl = "/storage/customerimg/" + fileName;
@@ -468,24 +382,24 @@ public class CustomerCont {
         CustomerDTO params = new CustomerDTO();
         params.setBoardType("FAQ");
 
-        List<CustomerDTO> faqList = customerDao.getFaqList(params);
+        List<CustomerDTO> faqList = customerDao.getFaqList(params); // FAQ 목록 가져오기
 
         ModelAndView mav = new ModelAndView("customerService/customerFaq");
-        mav.addObject("faqList", faqList);
+        mav.addObject("faqList", faqList); // ModelAndView에 FAQ 목록 추가
         return mav;
     }
     
+    // 구매 내역 팝업을 반환하는 메서드
     @GetMapping("/purchaseHistoryPopup")
     public ModelAndView purchaseHistoryPopup(HttpSession session) {
         String userID = (String) session.getAttribute("userID");
-        List<TicketsDTO> purchaseList = customerDao.getPurchaseHistory(userID);
-        List<OrderDTO> orderList = customerDao.getPurchasedOrders(userID);
+        List<TicketsDTO> purchaseList = customerDao.getPurchaseHistory(userID); // 구매 내역 가져오기
+        List<OrderDTO> orderList = customerDao.getPurchasedOrders(userID); // 주문 내역 가져오기
         
         ModelAndView mav = new ModelAndView("customerService/purchaseHistoryPopup");
-        mav.addObject("purchaseList", purchaseList);
-        mav.addObject("orderList", orderList);
+        mav.addObject("purchaseList", purchaseList); // ModelAndView에 구매 내역 추가
+        mav.addObject("orderList", orderList); // ModelAndView에 주문 내역 추가
         return mav;
     }
-
 
 }
