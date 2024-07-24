@@ -50,7 +50,7 @@
                             <div class="d-flex justify-content-end mt-5">
                                 <button type="submit" class="btn btn-primary btn-lg custom-button me-2">제출하기</button>
                                 <a href="customerPage" class="btn btn-outline-primary btn-lg custom-button">취소</a>
-                            </div>
+                            </div><!-- 주석 -->
                         </form>
                     </div>
                 </div>
