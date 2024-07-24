@@ -25,25 +25,30 @@ public class ReplyCont {
 	
 	
 	@PostMapping("/insert")
-    @ResponseBody
-    public int ReplyServiceInsert(@RequestParam("noticeid") int noticeid
-                                    ,@RequestParam("content") String content
-                                    ,HttpSession session) throws Exception {
-                                    //HttpServletRequest req
-                                    //@ModelAttribute CommentDTO commentDto
-        
-        ReplyDTO replyDto = new ReplyDTO();
-        replyDto.setNoticeid(noticeid);
-        replyDto.setContent(content);        
-        replyDto.setUserid("webmaster");
-        //->로그인 기능을 구현했거나 따로 댓글 작성자를 입력받는 폼이 있다면 입력 받아온 값으로 사용하면 된다.
-        //->예) session.getAttribute("s_id") 활용
-        //->여기서는 따로 폼을 구현하지 않았기 때문에 임시로 "test" 라 한다
-        
-        int cnt = replyDao.replyInsert(replyDto);
-        
-        return cnt;
-    }//replyServiceInsert() end
+	@ResponseBody
+	public int ReplyServiceInsert(@RequestParam("noticeid") int noticeid,
+	                              @RequestParam("content") String content,
+	                              HttpSession session) throws Exception {
+
+	    // 세션에서 로그인된 사용자의 ID를 가져옵니다.
+	    String userId = (String) session.getAttribute("userID");
+	    
+	    // 사용자 ID가 세션에 없을 경우 예외를 발생시킵니다.
+	    if (userId == null) {
+	        throw new Exception("사용자가 로그인되지 않았거나 세션이 만료되었습니다.");
+	    }
+
+	    // ReplyDTO 객체를 생성하고, 속성들을 설정합니다.
+	    ReplyDTO replyDto = new ReplyDTO();
+	    replyDto.setNoticeid(noticeid);
+	    replyDto.setContent(content);
+	    replyDto.setUserid(userId);  // 로그인된 사용자의 ID를 설정합니다.
+
+	    // DAO를 통해 댓글을 삽입합니다.
+	    int cnt = replyDao.replyInsert(replyDto);
+
+	    return cnt;
+	}
     
     
     @GetMapping("/list")

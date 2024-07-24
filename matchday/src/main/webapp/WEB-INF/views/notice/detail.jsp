@@ -104,7 +104,8 @@
  <!-- 댓글 관련 자바스크립트 시작 -->
   <script>
   	  let noticeid = '${notice.noticeid}'; //전역변수. 부모글 번호
-  	  let loginId = '${sessionScope.userID}'; // JSP 변수로 자바스크립트 변수에 값 전달
+  	  let loginId  = '${sessionScope.userID}'; // JSP 변수로 자바스크립트 변수에 값 전달
+      let grade    = '${sessionScope.grade}';
   	  
       $(document).ready(function(){ //상세페이지 로딩시 댓글 목록 함수 출력
           replyList(); 
@@ -160,7 +161,7 @@
 					 a += '<div class="replyArea" style="border-bottom:1px solid darkgray; margin-bottom:15px;">';
 					 a += '    <div class="replyInfo' + value.replyid + '">';
 					 a += '        댓글번호:' + value.replyid + " / 작성자:" + value.userid + " " + value.createddate;
-					 if (value.userid === loginId) { // 수정 및 삭제 링크 표시
+					 if (value.userid === loginId || grade === 'M') { // 수정 및 삭제 링크 표시
 		                    a += '        <a href="javascript:replyUpdate(' + value.replyid + ',\'' + value.content + '\')">[수정]</a>';
 		                    a += '        <a href="javascript:replyDelete(' + value.replyid + ')">[삭제]</a>';
 		             }
