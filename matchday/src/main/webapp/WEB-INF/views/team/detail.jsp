@@ -14,25 +14,26 @@
 <!-- 본문 시작 detail.jsp -->
 <main>
  <div class="spacing"></div>
-   <div style="background-color: white">
+   <div style="background-color: white" class="container-fluid">
       <a style="font-size: 50px"><img src="/storage/teams/${team.filename}" class="img-responsive margin team-img" style="width:5%">${team.teamname}</a>
    </div>
-   <div style="background-color: white">
-      <h5 style="margin-left: 5%; color: #9932CC">창단일: ${team.foundingyear}</h5>
-      <h5 style="margin-left: 5%; color: #9932CC">감독: ${team.coach}</h5>
-      <h5 style="margin-left: 5%; color: #9932CC">연고지: ${team.city}</h5>
-      <h5 style="margin-left: 5%; color: #9932CC">소속리그: ${team.leaguecategory}</h5>
-      <h5 style="margin-left: 5%; color: #5A5AFF">${team.introduction}</h5>
+   <hr>
+   <div style="background-color: white;" class="container-fluid">
+      <h5 style="margin-left: 2%; color: #282828">창단일: ${team.foundingyear}</h5>
+      <h5 style="margin-left: 2%; color: #282828">감독: ${team.coach}</h5>
+      <h5 style="margin-left: 2%; color: #282828">연고지: ${team.city}</h5>
+      <h5 style="margin-left: 2%; color: #282828">소속리그: ${team.leaguecategory}</h5>
+      <h5 style="margin-left: 2%; color: #282828">${team.introduction}</h5>
       <hr>
    </div>
    <div class="spacing"></div>
    
    <div>
-      <h3 style="margin-left: 20px">Players</h3>
+      <h3 style="margin-left: 60px">Players</h3>
    </div>
    <div class="spacing"></div>
    
-   <div class="row" style="margin-left: 10px">
+   <div class="row" style="margin-left: 50px">
       <c:forEach items="${players}" var="player" varStatus="vs">
          <div class="col-sm-4 col-md-4 team-item" style="width: 270px; height: 270px;">
             <div class="player-info-box">
@@ -58,7 +59,7 @@
          <c:if test="${vs.count % 7 == 0}">
             </div><!-- row end -->
             <div style="height: 10px;"></div>
-            <div class="row" style="margin-left: 10px">
+            <div class="row" style="margin-left: 50px">
          </c:if>
       </c:forEach>
    </div>

@@ -15,7 +15,9 @@
         SELECT playerid, teamname, playername, position, backnumber, birthdate, height, weight, joiningyear, birthplace, filename, filesize
         FROM players
         WHERE teamname = #{teamname}
-        ORDER BY backnumber
+        ORDER BY 
+            CASE WHEN backnumber IS NULL THEN 1 ELSE 0 END,
+            backnumber
     </select>
     
     

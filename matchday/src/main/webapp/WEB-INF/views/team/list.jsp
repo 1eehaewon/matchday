@@ -8,9 +8,9 @@
 <main>
    <div class="spacing"></div>
    <div class="header-with-search">
-       <h1>Teams</h1>
+       <h1 style="margin-left: 7%">Teams</h1>
        <!-- 검색 -->
-       <form method="get" action="search" class="search-form" style="margin-right: 10%">
+       <form method="get" action="search" class="search-form" style="margin-right: 7%">
           <input type="text" name="teamname" value="${teamname}" placeholder="Team name">
           <input type="submit" value="검색" class="btn btn-secondary">
        </form>
@@ -20,7 +20,7 @@
    
     <div class="row">
       <c:forEach items="${list}" var="row" varStatus="vs">
-         <div class="col-sm-4 col-md-4 team-item" style="width: 200px; height: 100px;">
+         <div class="col-sm-4 col-md-4 team-item" style="width: 175px; height: 125px; margin-left: 7%">
             <c:choose>
                <c:when test="${row.filename != '-'}">
                   <a href="detail/${row.teamname}">
@@ -32,14 +32,14 @@
                </c:otherwise>
             </c:choose>
             <div class="team-info">
-               <p class="team-text" style="font-size: 12px;">${row.teamname}</p>
-               <p class="team-text" style="font-size: 10px;">${row.leaguecategory}</p>
+               <p class="team-text" style="font-size: 14px;">${row.teamname}</p>
+               <p class="team-text" style="font-size: 12px;">${row.leaguecategory}</p>
             </div>
          </div>
 		
 		
 		<!-- 한줄에 8칸씩 -->
-        <c:if test="${vs.count mod 8 == 0}">
+        <c:if test="${vs.count mod 6 == 0}">
         	</div><!-- row end -->
             <div style="height: 10px;"></div>
             <div class="row">
@@ -48,7 +48,7 @@
    </div>
    
  <c:if test="${sessionScope.grade == 'M'}">
-    <div class="text-right" style="margin-right: 10%; text-align: right">
+    <div class="text-right" style="margin-right: 7%; text-align: right">
        <button class="btn btn-primary" onclick="location.href='write'">팀 등록</button>
     </div>
  </c:if>
