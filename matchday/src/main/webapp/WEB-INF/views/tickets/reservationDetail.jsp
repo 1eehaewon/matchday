@@ -177,6 +177,27 @@
     </div>
 
     <div class="card mb-4">
+    <div class="card-header">
+            예약 내역
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>좌석 ID</th>
+                        <th>가격</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="detail" items="${reservation.details}">
+                        <tr>
+                            <td>${detail.seatid}</td>
+                            <td>${detail.price}원</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
         <div class="card-header">
             예약 취소 유의사항
         </div>

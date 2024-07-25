@@ -193,6 +193,7 @@
         SELECT pointhistoryid, userid, pointcategoryid, pointtype, reviewid, pointsource, pointamount, pointcreationdate, reservationid
         FROM pointhistory
         WHERE reservationid = #{reservationid} AND pointtype = '적립'
+        LIMIT 1
     </select>
     
     <!-- 예약 ID로 추가 정보를 가져오는 쿼리 -->

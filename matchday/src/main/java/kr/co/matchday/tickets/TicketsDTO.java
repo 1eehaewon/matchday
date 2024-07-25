@@ -1,6 +1,5 @@
 package kr.co.matchday.tickets;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +47,4 @@ public class TicketsDTO {
     private String hometeam;
     private String awayteam;
     private int discount;
-    
- 
 }

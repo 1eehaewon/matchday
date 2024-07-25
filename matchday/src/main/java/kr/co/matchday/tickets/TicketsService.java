@@ -31,11 +31,6 @@ public class TicketsService {
 
     @Autowired
     private TicketsDAO ticketsDao;
-    
-    @Autowired
-    private WebSocketController webSocketController;
-    
-    private static final int PAGE_SIZE = 10;
 
     /**
      * 티켓 결제 페이지로 이동
@@ -176,6 +171,7 @@ public class TicketsService {
         // 예약 페이지의 뷰 이름 반환
         return "tickets/reservation";
     }
+
 
     /**
      * 결제 검증 메서드
@@ -382,7 +378,6 @@ public class TicketsService {
     }
 
 
-
     /**
      * 결제 취소 메서드
      * @param reservationid 예약 ID
@@ -459,24 +454,6 @@ public class TicketsService {
             int result = ticketsDao.resetCouponUsage(couponId);
             System.out.println("Coupon usage update result (Not Used): " + result);
         }
-    }
-    
-    /**
-     * 세션 만료 시 좌석 상태 해제
-     * @param seatId 좌석 ID
-     * @param userId 사용자 ID
-     * @return 상태 해제 결과
-     */
-    public Map<String, Object> releaseSeat(String seatId, String userId) {
-        Map<String, Object> response = new HashMap<>();
-        
-        // WebSocket을 통해 좌석 상태 해제
-        webSocketController.releaseSeat(seatId, userId);
-        
-        // 상태 해제 결과 반환
-        response.put("success", true);
-        response.put("message", "좌석 상태가 해제되었습니다.");
-        return response;
     }
     
     /**
@@ -608,12 +585,10 @@ public class TicketsService {
             // QR 코드에 포함할 데이터 준비
             Map<String, Object> qrData = new HashMap<>();
             qrData.put("reservationid", reservationid);
-			/*
-			 * qrData.put("matchid", reservation.getMatchid()); qrData.put("seats",
-			 * details.stream().map(TicketsDetailDTO::getSeatid).toArray());
-			 * qrData.put("username", reservation.getUserName()); qrData.put("matchdate",
-			 * reservation.getMatchdate().getTime());
-			 */
+            qrData.put("matchid", reservation.getMatchid());
+            qrData.put("seats", details.stream().map(TicketsDetailDTO::getSeatid).toArray());
+            qrData.put("username", reservation.getUserName());
+            qrData.put("matchdate", reservation.getMatchdate().getTime());
 
             // 데이터 객체를 JSON 문자열로 변환
             ObjectMapper objectMapper = new ObjectMapper();
