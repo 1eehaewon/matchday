@@ -9,7 +9,7 @@
 		parameterType="kr.co.matchday.login.LoginDTO" resultType="int">
 		SELECT COUNT(*)
 		FROM users
-		WHERE UserID = #{userID} AND Password = #{password}
+		WHERE BINARY UserID = #{userID} AND Password = #{password}
 	</select>
 
 	<select id="getUserGrade" parameterType="String"
